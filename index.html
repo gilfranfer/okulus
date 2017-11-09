@@ -6,12 +6,15 @@
   	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   	<!-- Bootstrap CSS -->
-  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+
 	</head>
 	<body>
-    <section>
+    <section ng-controller="LanguageCntrl">
+      <header ng-include="'views/mainNav.html'"></header>
       <!-- Main Bootstrap container -->
-  		<div class="container">
+  		<div class="container mt-4">
   			<main id="main" ng-view></main>
         <footer class="footer mt-4">
   				<p>&copy; GilLab 2017</p>
@@ -29,7 +32,9 @@
   	<script src="js/lib/angular.min.js"></script>
   	<script src="js/lib/angular-route.min.js"></script>
     <script src="js/app/config.js"></script>
-    <script src="js/app/orgProfile.js"></script>
-
+    <script src="js/app/language.js"></script>
+<!--     <script src="js/app/orgProfile.js"></script>
+    <script src="js/app/admin.js"></script>
+ -->
   </body>
 </html>

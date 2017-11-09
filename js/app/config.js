@@ -3,50 +3,17 @@ var okulusApp = angular.module('okulusApp',['ngRoute']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
-			.when('/org/profile', {
-				templateUrl: 'views/orgProfile.html',
-				controller:  'OrgProfilenCntrl'
+			.when('/admin/org', {
+				templateUrl: 'views/orgProfile.html'
 			})
-
-			.when('/entrar', {
-				templateUrl: 'views/login.html'
+			.when('/admin/launchpad', {
+				templateUrl: 'views/admin/launchpad.html'
 			})
-			.when('/salir', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/acerca', {
-				templateUrl: 'views/about.html'
-			})
-			.when('admin/inicio', {
-				//A cards view with links to dashboard, control, reports, etc 
-				templateUrl: 'views/about.html'
-			})
-			.when('/miembros', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/miembro/:mid', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/grupos', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/grupo/:gid', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/reuniones/horarios', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/reportes/nuevo', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/admin/reportes', {
-				templateUrl: 'views/login.html'
-			})
-			.when('/admin/inicio', {
-				templateUrl: 'views/login.html'
+			.when('/admin/newgroup', {
+				templateUrl: 'views/admin/newgroup.html'
 			})
 			.otherwise({
-				redirectTo: 'acerca'
+				redirectTo: '/admin/launchpad'
 			});
 	}
 ]);
