@@ -22,21 +22,21 @@
         </label>
         <select id="gtype" name="gtype" class="form-control form-control-lg" 
                 ng-model="group.type" ng-required="true">
-          <option>Mixto</option>
-          <option>Hombres</option>
-          <option>Mujeres</option>
-          <option>Jovenes</option>
-          <option>Piloto</option>
+          <option value="mix">{{i18n.dropdowns.gtype.mix}}</option>
+          <option value="men">{{i18n.dropdowns.gtype.men}}</option>
+          <option value="women">{{i18n.dropdowns.gtype.women}}</option>
+          <option value="young">{{i18n.dropdowns.gtype.young}}</option>
+          <option value="pilot">{{i18n.dropdowns.gtype.pilot}}</option>
         </select>
       </div>
       <div class="col-md form-group">
-        <label for="gstatus">
-          {{i18n.groupForm.gstatusLabel}}
+        <label for="status">
+          {{i18n.dropdowns.status.label}}
         </label>
-        <select id="gstatus" name="gstatus" class="form-control form-control-lg" 
+        <select id="status" name="status" class="form-control form-control-lg" 
                 ng-model="group.status" ng-required="true">
-          <option>Activo</option>
-          <option>Inactivo</option>
+          <option>{{i18n.dropdowns.status.active}}</option>
+          <option>{{i18n.dropdowns.status.inactive}}</option>
         </select>
       </div>
     </div>
@@ -113,13 +113,13 @@
         </label>
         <select id="schdDay" name="schdDay" class="form-control form-control-lg" 
                 ng-model="group.schedule.weekday" ng-required="true">
-          <option>Lunes</option>
-          <option>Martes</option>
-          <option>Miercoles</option>
-          <option>Jueves</option>
-          <option>Viernes</option>
-          <option>Sabado</option>
-          <option>Domingo</option>
+          <option value="mon">{{i18n.dropdowns.weekdays.mon}}</option>
+          <option value="tue">{{i18n.dropdowns.weekdays.tue}}</option>
+          <option value="wed">{{i18n.dropdowns.weekdays.wed}}</option>
+          <option value="thu">{{i18n.dropdowns.weekdays.thu}}</option>
+          <option value="fri">{{i18n.dropdowns.weekdays.fri}}</option>
+          <option value="sat">{{i18n.dropdowns.weekdays.sat}}</option>
+          <option value="sun">{{i18n.dropdowns.weekdays.sun}}</option>
         </select>
       </div>
       <div class="col-md form-group">
