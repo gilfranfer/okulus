@@ -5,7 +5,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		};
 		$rootScope.i18n = {
 			navigation:{
-				
+				brand:"Okulus",
+				home:"Inicio",
+				admin:{
+					menuTitle:"Admin",
+					launchpad:"Escritorio",
+					orgDetails:"Ver Organizacion", newGroup:"Crear Grupo", 
+					newMember:"Crear Miembro", newReport:"Crear Reporte"
+				}
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
