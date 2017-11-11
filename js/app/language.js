@@ -1,7 +1,8 @@
 okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
-			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"}
+			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
+			reports:{maxDate:"2018-12-31",minDate:"2017-01-01"}
 		};
 		$rootScope.i18n = {
 			navigation:{
@@ -18,6 +19,17 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
 				newgroupCardTitle:"Nuevo Grupo",newgroupCardDesc:"Crear un nuevo Grupo Familiar",
 				newmemberCardTitle:"Nuevo Miembro",newmemberCardDesc:"Crear un nuevo Miembro"
+			},
+			reportForm:{
+				reportLegend:"Datos generales de la Reunion",
+				gnameLabel:"Grupo", gnamePlaceholder:"",
+				gidLabel: "Identificador", gidPlaceholder: "",
+				lnameLabel: "Lider", lnamePlaceholder: "",
+				dateLabel: "Fecha de reunion", datePlaceholder: "",
+				startTimeLabel: "Hora de Inicio", startTimePlaceholder: "",
+				endTimeLabel: "Hora de Fin", endTimePlaceholder: "",
+				notesLabel: "Notas", notesPlaceholder: "Agregar notas y comentarios de la reunion",
+				attendanceLegend: "Asistencia"
 			},
 			groupForm:{
 				basicInfoFieldset: "Datos del Grupo",

@@ -15,6 +15,9 @@ okulusApp.config(['$routeProvider',
 			.when('/admin/newmember', {
 				templateUrl: 'views/admin/newmember.html'
 			})
+			.when('/admin/newreport', {
+				templateUrl: 'views/admin/newreport.html'
+			})
 			.otherwise({
 				redirectTo: '/admin/launchpad'
 			});

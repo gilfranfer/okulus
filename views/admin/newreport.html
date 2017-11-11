@@ -1,0 +1,77 @@
+<form class="mt-3" name="reportForm" novalidate ng-submit="">
+
+  <fieldset class="mb-4">
+    <legend>{{i18n.reportForm.reportLegend}}</legend>
+    
+    <div class="form-row">
+      <!-- <div class="col-md-2 form-group">
+        <label for="gid">
+          {{i18n.reportForm.gidLabel}}
+        </label>
+        <input type="text" id="gid" name="gid" class="form-control form-control-lg" 
+          placeholder="{{i18n.reportForm.gidPlaceholder}}" ng-model="report.groupId" ng-required="true">
+      </div> -->
+      <div class="col-md form-group">
+        <label for="gname">
+          {{i18n.reportForm.gnameLabel}}
+        </label>
+        <input type="text" id="gname" name="gname" class="form-control form-control-lg" 
+          placeholder="{{i18n.reportForm.gnamePlaceholder}}" ng-model="report.groupName" ng-required="true">
+      </div>
+      <div class="col-md form-group">
+        <label for="lname">
+          {{i18n.reportForm.lnameLabel}}
+        </label>
+        <input type="text" id="lname" name="lname" class="form-control form-control-lg" 
+          placeholder="{{i18n.reportForm.lnamePlaceholder}}" ng-model="report.leadName" ng-required="true">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-md form-group">
+        <label for="date">
+          {{i18n.reportForm.dateLabel}}
+        </label>
+        <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}" 
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.datePlaceholder}}" 
+          ng-model="report.date" ng-required="true">
+      </div>
+      <div class="col-md form-group">
+        <label for="startTime">
+          {{i18n.reportForm.startTimeLabel}}
+        </label>
+        <input type="endTime" id="startTime" name="startTime" 
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.startTimePlaceholder}}" 
+          ng-model="report.startTime" ng-required="true">
+      </div>
+      <div class="col-md form-group">
+        <label for="endTime">
+          {{i18n.reportForm.endTimeLabel}}
+        </label>
+        <input type="time" id="endTime" name="endTime"
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.endTimePlaceholder}}" 
+          ng-model="report.endTime" ng-required="true">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-md form-group">
+        <label for="notes">
+          {{i18n.reportForm.notesLabel}}
+        </label>
+
+        <textarea id="notes" name="notes" class="form-control form-control-lg" placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
+
+        </textarea>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset class="mb-4">
+    <legend>{{i18n.reportForm.attendanceLegend}}</legend>
+    <div class="form-row">
+      <div class="col-md form-group">
+        
+      </div>
+    </div>
+  </fieldset>
