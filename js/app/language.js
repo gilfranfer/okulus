@@ -11,14 +11,15 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				admin:{
 					menuTitle:"Admin",
 					launchpad:"Escritorio",
-					orgDetails:"Ver Organizacion", newGroup:"Crear Grupo", 
+					orgDetails:"Ver Organizacion", newGroup:"Crear Grupo",
 					newMember:"Crear Miembro", newReport:"Crear Reporte"
 				}
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
 				newgroupCardTitle:"Nuevo Grupo",newgroupCardDesc:"Crear un nuevo Grupo Familiar",
-				newmemberCardTitle:"Nuevo Miembro",newmemberCardDesc:"Crear un nuevo Miembro"
+				newmemberCardTitle:"Nuevo Miembro",newmemberCardDesc:"Crear un nuevo Miembro",
+				newreportCardTitle:"Nuevo Reporte",newreportCardDesc:"Crear un nuevo Reporte de Reunion"
 			},
 			reportForm:{
 				reportLegend:"Datos generales de la Reunion",
@@ -53,7 +54,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				basicInfoFieldset: "Datos de la Organizacion",
 				orgnameLabel:"Nombre de la Organizacion", orgNamePlaceholder: "Mi Organizacion", orgnameAlert: "El nombre es obligatorio",
 				emailLabel:"Correo electronico", emailPlaceholder:"micorreo@gmail.com", emailAlert:"El correo es obligatorio",
-				urlLabel:"Sitio Web", urlPlaceholder:"http://www.misitio.com", urlAlert:"Sitio web incorrecto"			
+				urlLabel:"Sitio Web", urlPlaceholder:"http://www.misitio.com", urlAlert:"Sitio web incorrecto"
 			},
 			memberForm:{
 				fieldsetLegend: "Datos del miembro",
@@ -83,12 +84,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				gtype:{
 					mix:"Mixto", men:"Hombres",women:"Mujeres",young:"Jovenes",pilot:"Piloto"
-				} 
+				}
 			},
 			schd:{
 				fieldsetLegend:"Horario de Servicio"
 			}
 		};
-		
+
 	}
 ]);

@@ -2,27 +2,27 @@
 
   <fieldset class="mb-4">
     <legend>{{i18n.reportForm.reportLegend}}</legend>
-    
+
     <div class="form-row">
       <!-- <div class="col-md-2 form-group">
         <label for="gid">
           {{i18n.reportForm.gidLabel}}
         </label>
-        <input type="text" id="gid" name="gid" class="form-control form-control-lg" 
+        <input type="text" id="gid" name="gid" class="form-control form-control-lg"
           placeholder="{{i18n.reportForm.gidPlaceholder}}" ng-model="report.groupId" ng-required="true">
       </div> -->
       <div class="col-md form-group">
         <label for="gname">
           {{i18n.reportForm.gnameLabel}}
         </label>
-        <input type="text" id="gname" name="gname" class="form-control form-control-lg" 
+        <input type="text" id="gname" name="gname" class="form-control form-control-lg"
           placeholder="{{i18n.reportForm.gnamePlaceholder}}" ng-model="report.groupName" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="lname">
           {{i18n.reportForm.lnameLabel}}
         </label>
-        <input type="text" id="lname" name="lname" class="form-control form-control-lg" 
+        <input type="text" id="lname" name="lname" class="form-control form-control-lg"
           placeholder="{{i18n.reportForm.lnamePlaceholder}}" ng-model="report.leadName" ng-required="true">
       </div>
     </div>
@@ -32,16 +32,16 @@
         <label for="date">
           {{i18n.reportForm.dateLabel}}
         </label>
-        <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}" 
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.datePlaceholder}}" 
+        <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.datePlaceholder}}"
           ng-model="report.date" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="startTime">
           {{i18n.reportForm.startTimeLabel}}
         </label>
-        <input type="endTime" id="startTime" name="startTime" 
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.startTimePlaceholder}}" 
+        <input type="endTime" id="startTime" name="startTime"
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.startTimePlaceholder}}"
           ng-model="report.startTime" ng-required="true">
       </div>
       <div class="col-md form-group">
@@ -49,29 +49,230 @@
           {{i18n.reportForm.endTimeLabel}}
         </label>
         <input type="time" id="endTime" name="endTime"
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.endTimePlaceholder}}" 
+          class="form-control form-control-lg" placeholder="{{i18n.reportForm.endTimePlaceholder}}"
           ng-model="report.endTime" ng-required="true">
       </div>
     </div>
 
     <div class="form-row">
       <div class="col-md form-group">
-        <label for="notes">
-          {{i18n.reportForm.notesLabel}}
+        <label for="week">
+          Semana
         </label>
-
-        <textarea id="notes" name="notes" class="form-control form-control-lg" placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
-
-        </textarea>
+        <select id="week" name="week" class="form-control form-control-lg"
+                ng-model="member.week" ng-required="true">
+          <option>Semana 1</option>
+        </select>
       </div>
-    </div>
-  </fieldset>
+      <div class="col-md form-group">
+        <label for="money">
+          Ofrenda
+        </label>
+        <div class="input-group" id="money">
+          <span class="input-group-addon">$</span>
+          <input type="number" min="0" class="form-control form-control-lg" aria-label="Amount">
+          <span class="input-group-addon">.00</span>
+        </div>
+      </div>
 
-  <fieldset class="mb-4">
-    <legend>{{i18n.reportForm.attendanceLegend}}</legend>
+    </div>
+
     <div class="form-row">
       <div class="col-md form-group">
-        
+        <div id="status" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary btn-lg active">
+            <input type="radio" name="options" id="option1" autocomplete="off" checked>
+            Realizada
+          </label>
+          <label class="btn btn-dark btn-lg">
+            <input type="radio" name="options" id="option2" autocomplete="off">
+            Cancelada
+          </label>
+        </div>
       </div>
     </div>
   </fieldset>
+
+<!-- Attendance Members -->
+  <fieldset class="mb-4">
+    <legend>Asistencia de Miembros</legend>
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="">
+          Adultos
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">M</span>
+        </div>
+      </div>
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">H</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="">
+          Jovenes
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">M</span>
+        </div>
+      </div>
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">H</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="">
+          Niños
+        </label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">M</span>
+        </div>
+      </div>
+      <div class="col-sm form-group">
+        <div class="input-group">
+          <input type="number" min="0" class="form-control form-control-lg"
+          placeholder="" aria-label="" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2">H</span>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </fieldset>
+
+  <!-- Attendance Members -->
+    <fieldset class="mb-4">
+      <legend>Asistencia de Invitados</legend>
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <label for="">
+            Adultos
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">M</span>
+          </div>
+        </div>
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">H</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <label for="">
+            Jovenes
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">M</span>
+          </div>
+        </div>
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">H</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <label for="">
+            Niños
+          </label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">M</span>
+          </div>
+        </div>
+        <div class="col-sm form-group">
+          <div class="input-group">
+            <input type="number" min="0" class="form-control form-control-lg"
+            placeholder="" aria-label="" aria-describedby="basic-addon2">
+            <span class="input-group-addon" id="basic-addon2">H</span>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </fieldset>
+    <fieldset class="mb-4">
+      <legend>{{i18n.reportForm.notesLabel}}</legend>
+      <div class="form-row">
+        <div class="col-md form-group">
+          <textarea id="notes" name="notes" class="form-control form-control-lg"
+          placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
+          </textarea>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- Buttons row -->
+    <div class="form-row">
+        <div class="col-md form-group">
+          <button type="submit" class="btn btn-lg btn-block btn-outline-primary"
+            >
+            {{i18n.btns.saveBtn}}
+          </button>
+        </div>
+        <div class="col-md form-group">
+          <button type="button" class="btn btn-lg btn-block btn-outline-success"
+            >
+            Enviar
+          </button>
+        </div>
+    </div>
+
+</form>
