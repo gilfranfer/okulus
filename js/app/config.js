@@ -4,7 +4,7 @@ okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
 			.when('/admin/org', {
-				templateUrl: 'views/orgProfile.html'
+				templateUrl: 'views/admin/orgProfile.html'
 			})
 			.when('/admin/launchpad', {
 				templateUrl: 'views/admin/launchpad.html'
@@ -74,4 +74,3 @@ okulusApp.factory( 'I18nSvc', ['$rootScope',
 		};
 	}
 ]);
-
