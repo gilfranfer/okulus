@@ -40,7 +40,7 @@
         <label for="startTime">
           {{i18n.reportForm.startTimeLabel}}
         </label>
-        <input type="endTime" id="startTime" name="startTime"
+        <input type="time" id="startTime" name="startTime"
           class="form-control form-control-lg" placeholder="{{i18n.reportForm.startTimePlaceholder}}"
           ng-model="report.startTime" ng-required="true">
       </div>
@@ -78,13 +78,13 @@
     </div>
 
     <div class="form-row">
-      <div class="col-md form-group">
+        <div class="col-md form-group">
         <div id="status" class="btn-group" data-toggle="buttons">
           <label class="btn btn-primary btn-lg active">
             <input type="radio" name="options" id="option1" autocomplete="off" checked>
             Realizada
           </label>
-          <label class="btn btn-dark btn-lg">
+          <label class="btn btn-danger btn-lg">
             <input type="radio" name="options" id="option2" autocomplete="off">
             Cancelada
           </label>
@@ -93,186 +93,217 @@
     </div>
   </fieldset>
 
-<!-- Attendance Members -->
+<!-- Attendance -->
   <fieldset class="mb-4">
-    <legend>Asistencia de Miembros</legend>
+    <legend>Asistencia</legend>
+
+<!-- Members -->
     <div class="form-row">
-      <div class="col-sm form-group">
-        <label for="">
-          Adultos
-        </label>
+      <div class="col">
+        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
+          Miembros
+        </button>
+      </div>
+      <div class="col">
+        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Mujeres" readonly>
+      </div>
+      <div class="col">
+        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Hombres" readonly>
       </div>
     </div>
-    <div class="form-row">
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">M</span>
+    <div  class="collapse" id="collapseMembers">
+      <div class="card card-body">
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Adultos
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">H</span>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Jovenes
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Niños
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
+        </div>
+      </div>  
     </div>
 
-    <div class="form-row">
-      <div class="col-sm form-group">
-        <label for="">
-          Jovenes
-        </label>
+<!-- Invitados -->
+    <div class="form-row mt-3">
+      <div class="col">
+        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
+          Invitados
+        </button>
+      </div>
+      <div class="col">
+        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Mujeres" readonly>
+      </div>
+      <div class="col">
+        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Hombres" readonly>
       </div>
     </div>
-    <div class="form-row">
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">M</span>
+    <div  class="collapse" id="collapseGuests">
+      <div class="card card-body">
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Adultos
+            </label>
+          </div>
         </div>
-      </div>
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">H</span>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Jovenes
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="">
+              Niños
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">M</span>
+            </div>
+          </div>
+          <div class="col form-group">
+            <div class="input-group">
+              <input type="number" value="0" min="0" class="form-control form-control-lg"
+              placeholder="" aria-label="" aria-describedby="basic-addon2">
+              <span class="input-group-addon" id="basic-addon2">H</span>
+            </div>
+          </div>
+        </div>
+      </div>  
     </div>
 
-    <div class="form-row">
-      <div class="col-sm form-group">
-        <label for="">
-          Niños
-        </label>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">M</span>
-        </div>
-      </div>
-      <div class="col-sm form-group">
-        <div class="input-group">
-          <input type="number" min="0" class="form-control form-control-lg"
-          placeholder="" aria-label="" aria-describedby="basic-addon2">
-          <span class="input-group-addon" id="basic-addon2">H</span>
-        </div>
-      </div>
-    </div>
+  </fieldset>
 
+  <fieldset class="mb-4">
+    <legend>{{i18n.reportForm.notesLabel}}</legend>
+    <div class="form-row">
+      <div class="col-md form-group">
+        <textarea id="notes" name="notes" class="form-control form-control-lg"
+        placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
+        </textarea>
+      </div>
     </div>
   </fieldset>
 
-  <!-- Attendance Members -->
-    <fieldset class="mb-4">
-      <legend>Asistencia de Invitados</legend>
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <label for="">
-            Adultos
-          </label>
-        </div>
+  <!-- Buttons row -->
+  <div class="form-row">
+      <div class="col-md form-group">
+        <button type="submit" class="btn btn-lg btn-block btn-outline-primary"
+          >
+          {{i18n.btns.saveBtn}}
+        </button>
       </div>
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">M</span>
-          </div>
-        </div>
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">H</span>
-          </div>
-        </div>
+      <div class="col-md form-group">
+        <button type="button" class="btn btn-lg btn-block btn-outline-success"
+          >
+          Enviar
+        </button>
       </div>
-
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <label for="">
-            Jovenes
-          </label>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">M</span>
-          </div>
-        </div>
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">H</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <label for="">
-            Niños
-          </label>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">M</span>
-          </div>
-        </div>
-        <div class="col-sm form-group">
-          <div class="input-group">
-            <input type="number" min="0" class="form-control form-control-lg"
-            placeholder="" aria-label="" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2">H</span>
-          </div>
-        </div>
-      </div>
-
-      </div>
-    </fieldset>
-    <fieldset class="mb-4">
-      <legend>{{i18n.reportForm.notesLabel}}</legend>
-      <div class="form-row">
-        <div class="col-md form-group">
-          <textarea id="notes" name="notes" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
-          </textarea>
-        </div>
-      </div>
-    </fieldset>
-
-    <!-- Buttons row -->
-    <div class="form-row">
-        <div class="col-md form-group">
-          <button type="submit" class="btn btn-lg btn-block btn-outline-primary"
-            >
-            {{i18n.btns.saveBtn}}
-          </button>
-        </div>
-        <div class="col-md form-group">
-          <button type="button" class="btn btn-lg btn-block btn-outline-success"
-            >
-            Enviar
-          </button>
-        </div>
-    </div>
+  </div>
 
 </form>
