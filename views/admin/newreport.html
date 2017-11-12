@@ -60,7 +60,7 @@
           Semana
         </label>
         <select id="week" name="week" class="form-control form-control-lg"
-                ng-model="member.week" ng-required="true">
+                ng-model="report.week" ng-required="true">
           <option>Semana 1</option>
         </select>
       </div>
@@ -70,7 +70,8 @@
         </label>
         <div class="input-group" id="money">
           <span class="input-group-addon">$</span>
-          <input type="number" min="0" class="form-control form-control-lg" aria-label="Amount">
+          <input type="number" min="0" class="form-control form-control-lg"
+            ng-model="report.money">
           <span class="input-group-addon">.00</span>
         </div>
       </div>
@@ -105,10 +106,12 @@
         </button>
       </div>
       <div class="col">
-        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Mujeres" readonly>
+        <input class="form-control" type="text" readonly
+          placeholder="{{report.attendance.total}} Mujeres">
       </div>
       <div class="col">
-        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Hombres" readonly>
+        <input class="form-control" type="text" readonly
+          placeholder="{{report.attendance.total}} Hombres">
       </div>
     </div>
     <div  class="collapse" id="collapseMembers">
@@ -124,15 +127,15 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.members.female.adult">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.members.male.adult">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
@@ -148,15 +151,15 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.members.female.young">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.members.male.young">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
@@ -172,19 +175,19 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.members.female.kid">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.members.male.kid">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
-      </div>  
+      </div>
     </div>
 
 <!-- Invitados -->
@@ -195,10 +198,12 @@
         </button>
       </div>
       <div class="col">
-        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Mujeres" readonly>
+        <input class="form-control" type="text" readonly
+          placeholder="{{report.attendance.total}} Mujeres">
       </div>
       <div class="col">
-        <input class="form-control" type="text" placeholder="{{report.attendance.total}} Hombres" readonly>
+        <input class="form-control" type="text" readonly
+          placeholder="{{report.attendance.total}} Hombres">
       </div>
     </div>
     <div  class="collapse" id="collapseGuests">
@@ -214,15 +219,15 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.guests.female.adult">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.guests.male.adult">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
@@ -238,15 +243,15 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.guests.female.young">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.guests.male.young">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
@@ -262,19 +267,19 @@
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">M</span>
+                ng-model="report.attendance.guests.female.kid">
+              <span class="input-group-addon">M</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
-              placeholder="" aria-label="" aria-describedby="basic-addon2">
-              <span class="input-group-addon" id="basic-addon2">H</span>
+                ng-model="report.attendance.guests.male.kid">
+              <span class="input-group-addon">H</span>
             </div>
           </div>
         </div>
-      </div>  
+      </div>
     </div>
 
   </fieldset>
