@@ -1,0 +1,60 @@
+<fieldset class="mb-4">
+  <legend>{{i18n.addressFrgmnt.legend}}</legend>
+  
+  <!-- Street and number -->
+  <div class="form-row">
+    <div class="col-md-6 form-group">
+      <label for="street">
+        {{i18n.addressFrgmnt.streetLbl}}
+      </label>
+      <input type="text" name="street" id="street" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.streetHint}}" ng-model="address.street" ng-required="true">
+    </div>
+    <div class="col-md-3 form-group">
+      <label for="extNumber">
+        {{i18n.addressFrgmnt.extNumberLbl}}
+      </label>
+      <input type="number" name="extNumber" id="extNumber" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.extNumberHint}}" ng-model="address.extNumber" ng-required="true">
+    </div>
+    <div class="col-md-3 form-group">
+      <label for="intNumber">
+        {{i18n.addressFrgmnt.intNumberLbl}}
+      </label>
+      <input type="number" name="intNumber" id="intNumber" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.intNumberHint}}" ng-model="address.intNumber" ng-required="false">
+    </div>
+  </div>
+
+  <!-- Zip, City, State, Country -->
+  <div class="form-row">
+    <div class="col-md form-group">
+      <label for="zip">
+        {{i18n.addressFrgmnt.zipLbl}}
+      </label>
+      <input type="number" name="zip" id="zip" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.zipHint}}" ng-model="address.zip" ng-required="true">
+    </div>
+    <div class="col-md form-group">
+      <label for="city">
+        {{i18n.addressFrgmnt.cityLbl}}
+      </label>
+      <input type="text" name="city" id="city" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.cityHint}}" ng-model="address.city" ng-required="true">
+    </div>
+    <div class="col-md form-group">
+      <label for="state">
+        {{i18n.addressFrgmnt.stateLbl}}
+      </label>
+      <input type="text" name="state" id="state" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.stateHint}}" ng-model="address.state" ng-required="true">
+    </div>
+    <div class="col-md form-group">
+      <label for="country">
+        {{i18n.addressFrgmnt.countryLbl}}
+      </label>
+      <input type="text" name="country" id="country" class="form-control form-control-lg" 
+        placeholder="{{i18n.addressFrgmnt.countryHint}}" ng-model="address.country" ng-required="true">
+    </div>
+  </div>
+</fieldset>

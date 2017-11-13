@@ -46,25 +46,26 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				basicInfoFieldset: "Datos del Grupo",
 				gnameLabel:"Nombre del Grupo", gNamePlaceholder:"Semillas de Esperanza",
 				gtypeLabel:"Tipo", gstatusLabel:"Estado",
+				shcLegend:"Horario de Servicio",
 				schdDayLabel: "Dia de la semana",
 				schdTimeFromLabel: "De" ,
 				schdTimeToLabel: "a"
 			},
-			addressForm:{
-				addressFieldset: "Direccion principal",
-				streetLabel:"Calle", streetPlaceholder:"Av. Principal",
-				extNumberLabel: "Num ext", extNumberPlaceholder: "007",
-				intNumberLabel: "Num int", intNumberPlaceholder: "1",
-				zipLabel: "Codigo Postal", zipPlaceholder: "77777",
-				cityLabel: "Ciudad", cityPlaceholder: "Xalapa",
-				stateLabel: "Estado", statePlaceholder: "Veracruz",
-				countryLabel: "Pais", countryPlaceholder: "Mexico"
+			addressFrgmnt:{
+				legend: "Direccion",
+				streetLbl:"Calle", streetHint:"Av. Principal",
+				extNumberLbl: "Num ext", extNumberHint: "007",
+				intNumberLbl: "Num int", intNumberHint: "1",
+				zipLbl: "Codigo Postal", zipHint: "77777",
+				cityLbl: "Ciudad", cityHint: "Xalapa",
+				stateLbl: "Estado", stateHint: "Veracruz",
+				countryLbl: "Pais", countryHint: "Mexico"
 			},
 			orgForm:{
 				basicInfoFieldset: "Datos de la Organizacion",
-				orgnameLabel:"Nombre de la Organizacion", orgNamePlaceholder: "Mi Organizacion", orgnameAlert: "El nombre es obligatorio",
-				emailLabel:"Correo electronico", emailPlaceholder:"micorreo@gmail.com", emailAlert:"El correo es obligatorio",
-				urlLabel:"Sitio Web", urlPlaceholder:"http://www.misitio.com", urlAlert:"Sitio web incorrecto"
+				orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
+				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
+				urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 			},
 			memberForm:{
 				fieldsetLegend: "Datos del miembro",
@@ -96,9 +97,6 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				gtype:{
 					mix:"Mixto", men:"Hombres",women:"Mujeres",young:"Jovenes",pilot:"Piloto"
 				}
-			},
-			schd:{
-				fieldsetLegend:"Horario de Servicio"
 			}
 		};
 

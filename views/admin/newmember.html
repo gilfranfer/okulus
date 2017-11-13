@@ -60,65 +60,8 @@
 
   </fieldset>
 
-
   <!-- Address -->
-  <fieldset class="mb-4">
-    <legend>{{i18n.addressForm.addressFieldset}}</legend>
-    <div class="form-row">
-      <div class="col-md-6 form-group">
-        <label for="street">
-          {{i18n.addressForm.streetLabel}}
-        </label>
-        <input type="text" name="street" id="street" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.streetPlaceholder}}" ng-model="member.addres.street" ng-required="true">
-      </div>
-      <div class="col-md-3 form-group">
-        <label for="extNumber">
-          {{i18n.addressForm.extNumberLabel}}
-        </label>
-        <input type="number" name="extNumber" id="extNumber" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.extNumberPlaceholder}}" ng-model="member.addres.extNumber" ng-required="true">
-      </div>
-      <div class="col-md-3 form-group">
-        <label for="intNumber">
-          {{i18n.addressForm.intNumberLabel}}
-        </label>
-        <input type="number" name="intNumber" id="intNumber" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.intNumberPlaceholder}}" ng-model="member.addres.intNumber" ng-required="false">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="col-md form-group">
-        <label for="zip">
-          {{i18n.addressForm.zipLabel}}
-        </label>
-        <input type="number" name="zip" id="zip" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.zipPlaceholder}}" ng-model="member.addres.zip" ng-required="true">
-      </div>
-      <div class="col-md form-group">
-        <label for="city">
-          {{i18n.addressForm.cityLabel}}
-        </label>
-        <input type="text" name="city" id="city" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.cityPlaceholder}}" ng-model="member.addres.city" ng-required="true">
-      </div>
-      <div class="col-md form-group">
-        <label for="state">
-          {{i18n.addressForm.stateLabel}}
-        </label>
-        <input type="text" name="state" id="state" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.statePlaceholder}}" ng-model="member.addres.state" ng-required="true">
-      </div>
-      <div class="col-md form-group">
-        <label for="country">
-          {{i18n.addressForm.countryLabel}}
-        </label>
-        <input type="text" name="country" id="country" class="form-control form-control-lg" 
-          placeholder="{{i18n.addressForm.countryPlaceholder}}" ng-model="member.addres.country" ng-required="true">
-      </div>
-      
-    </div>
-  </fieldset>
+  <section ng-include="'views/fragments/addressForm.html'"></section>
 
   <!-- Buttons row -->
   <div class="form-row">
