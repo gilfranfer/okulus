@@ -1,11 +1,9 @@
 <div class="card-deck">
 
   <a class="card card-clickable text-white bg-primary mb-3" href="#!/admin/org">
-    <!-- <div class="card-header">Header</div> -->
     <div class="card-body">
       <h4 class="card-title">{{i18n.launchpad.orgCardTitle}}</h4>
       <p class="card-text">{{i18n.launchpad.orgCardDesc}}</p>
-      <!-- <p class="card-text"><small class="">Last updated 3 mins ago</small></p> -->
     </div>
   </a>
 
@@ -29,4 +27,127 @@
       <p class="card-text">{{i18n.launchpad.newreportCardDesc}}</p>
     </div>
   </a>
+</div>
+
+<!-- Groups Table -->
+<div class="row mb-1">
+  <div class="col">
+    <input type="text" placeholder="Type to filter" class="form-control form-control-lg" >
+  </div>
+  <div class="col">
+    <a class="btn btn-lg btn-block btn-success" href="#!/admin/newgroup">
+      {{i18n.launchpad.newgroupCardTitle}}
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-hover table-responsive-sm">
+      <caption>List of Groups</caption>
+      <thead>
+        <tr class="bg-primary text-light">
+          <th scope="col">#</th>
+          <th scope="col">Group Name</th>
+          <th scope="col">Lead Name</th>
+          <th scope="col">Host Name</th>
+          <th scope="col">Group Type</th>
+          <th scope="col">Abierto desde</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/group/1">Azueta</a></td>
+          <td><a href="#!/member/1">Liliana Ramirez</a></td>
+          <td><a href="#!/member/1">Evelia Ceballos</a></td>
+          <td>Piloto</td>
+          <td>Ene 12 2013</td>
+          <td>Activo</td>
+        </tr>
+        <tr class="">
+          <th scope="row">2</th>
+          <td><a href="#!/admin/group/123">Xalapa 2000</a></td>
+          <td><a href="#!/member/1">Eversayn Ramirez</a></td>
+          <td><a href="#!/member/1">Claudia Ramirez</a></td>
+          <td>Mixto</td>
+          <td>Dic 12 2012</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/group/123">Piedra de Agua</a></td>
+          <td><a href="#!/member/1">Polo Peralta</a></td>
+          <td><a href="#!/member/1">Guadalupe Ruiz</a></td>
+          <td>Mixto</td>
+          <td>Jul 24 2011</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/group/123">Coapexpan</a></td>
+          <td><a href="#!/member/1">Jesus Diaz</a></td>
+          <td><a href="#!/member/1">Armando Perez</a></td>
+          <td>Hombres</td>
+          <td>May 30 2015</td>
+          <td>Inactivo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Members Table -->
+<div class="row mb-1">
+  <div class="col">
+    <input type="text" placeholder="Type to filter" class="form-control form-control-lg" >
+  </div>
+  <div class="col">
+    <a class="btn btn-lg btn-block btn-success" href="#!/admin/newmember">
+      {{i18n.launchpad.newmemberCardTitle}}
+    </a>
+  </div>
+</div>
+<div class="row">
+  <div class="col">
+    <table class="table table-hover table-responsive-sm">
+      <caption>List of Members</caption>
+      <thead>
+        <tr class="bg-primary text-light">
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Miembro desde</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/member/3">Leslie Vergara</a></td>
+          <td><a href="mailto:less.vergara@gmail.com">less.vergara@gmail.com</a></td>
+          <td><a href="tel:3331190005">3331190005</a></td>
+          <td>Dic 12 2012</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/member/1">Liliana Ramirez</a></td>
+          <td>Liliana.Ramirez@gmail.com</td>
+          <td></td>
+          <td>Ene 12 2013</td>
+          <td>Activo</td>
+        </tr>
+        <tr class="">
+          <th scope="row">2</th>
+          <td><a href="#!/admin/member/2">Evelia Ceballos</a></td>
+          <td></td>
+          <td>2288112233</td>
+          <td>Dic 12 2016</td>
+          <td>Activo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
