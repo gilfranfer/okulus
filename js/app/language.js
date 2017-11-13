@@ -23,14 +23,24 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			reportForm:{
 				reportLegend:"Datos generales de la Reunion",
-				gnameLabel:"Grupo", gnamePlaceholder:"",
-				gidLabel: "Identificador", gidPlaceholder: "",
-				lnameLabel: "Lider", lnamePlaceholder: "",
-				dateLabel: "Fecha de reunion", datePlaceholder: "12/22/2017",
-				startTimeLabel: "Hora de Inicio", startTimePlaceholder: "12:00 p.m.",
-				endTimeLabel: "Hora de Fin", endTimePlaceholder: "2:00 p.m.",
-				notesLabel: "Notas", notesPlaceholder: "Agregar notas y comentarios de la reunion",
-				attendanceLegend: "Asistencia"
+				gnameLbl:"Grupo", gnamePlaceholder:"",
+				gidLbl: "Identificador", gidPlaceholder: "",
+				lnameLbl: "Lider", lnamePlaceholder: "",
+				anameLbl: "Asistente", anamePlaceholder: "",
+				hnameLbl: "Anfitrion", hnamePlaceholder: "",
+				dateLbl: "Fecha de reunion", datePlaceholder: "12/22/2017",
+				startTimeLbl: "Hora de Inicio", startTimePlaceholder: "12:00 p.m.",
+				endTimeLbl: "Hora de Fin", endTimePlaceholder: "2:00 p.m.",
+				weekLbl:"Semana", moneyLbl: "Ofrenda",
+				cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
+				notesLegend: "Notas", notesPlaceholder: "Agregar notas y comentarios de la reunion",
+				attendanceLegend: "Asistencia",
+				membersLbl: "Miembros", guestsLbl: "Invitados",
+				maleLbl: "Hombres", femaleLbl: "Mujeres",
+				maleAbrev: "Hom", femaleAbrev: "Muj",
+				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
+				studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
+
 			},
 			groupForm:{
 				basicInfoFieldset: "Datos del Grupo",
@@ -70,7 +80,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			btns:{
 				saveBtn: "Guardar Cambios",
-				cancelBtn: "Cancelar"
+				cancelBtn: "Cancelar",
+				sendBtn: "Enviar"
 			},
 			dropdowns:{
 				status:{
