@@ -10,7 +10,8 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/launchpad.html'
 			})
 			.when('/admin/newgroup', {
-				templateUrl: 'views/admin/newgroup.html'
+				templateUrl: 'views/admin/newgroup.html',
+				controller: 'GroupsCntrl'
 			})
 			.when('/admin/newmember', {
 				templateUrl: 'views/admin/newmember.html'

@@ -1,0 +1,33 @@
+<fieldset class="mb-4">
+  <legend>{{i18n.userForm.legend}}</legend>
+  <div class="form-row">
+    <div class="col-md form-group">
+      <label for="email">
+        Username
+      </label>
+      <input type="email" id="email" name="email" class="form-control form-control-lg" readonly 
+        placeholder="{{i18n.memberForm.emailPlaceholder}}" ng-model="member.email" ng-required="false">
+    </div>
+    <div class="col-md form-group">
+      <label for="email">
+        User Role
+      </label>
+      <select id="status" name="status" class="form-control form-control-lg" 
+              ng-model="member.user.role" ng-required="true">
+        <option>Admin</option>
+        <option>User</option>
+        <option>Viewer</option>
+      </select>
+    </div>
+    <div class="col-md form-group">
+      <label for="email">
+        User Status
+      </label>
+      <select id="status" name="status" class="form-control form-control-lg" 
+              ng-model="member.user.status" ng-required="true">
+        <option>{{i18n.dropdowns.status.active}}</option>
+        <option>{{i18n.dropdowns.status.inactive}}</option>
+      </select>
+    </div>
+  </div>
+</fieldset>
