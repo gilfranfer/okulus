@@ -63,18 +63,32 @@
   <!-- Address -->
   <section ng-include="'views/fragments/addressForm.html'"></section>
 
+ <!-- User Section -->
+ <!-- if Current User = Admin -->
+  <section ng-include="'views/fragments/userForm.html'" ng-if="true"></section>
+ <!-- endIf-->
+
+ <!-- Alert/Error row -->
+  <div class="form-row">
+    <div class="col">
+      <div class="alert alert-danger" role="alert" ng-show="memberForm.$invalid">
+        {{i18n.alerts.invalidForm}} 
+      </div>
+    </div>
+  </div>
+  
   <!-- Buttons row -->
   <div class="form-row">
       <div class="col-md form-group">
-        <button type="submit" class="btn btn-lg btn-block btn-outline-primary" 
-          ng-disabled="registerForm.$invalid">
+        <button type="button" class="btn btn-lg btn-block btn-success" 
+          ng-disabled="memberForm.$invalid">
           {{i18n.btns.saveBtn}}
         </button>
       </div>
       <div class="col-md form-group">
-        <button type="button" class="btn btn-lg btn-block btn-outline-danger" 
-          ng-disabled="registerForm.$invalid">
-          {{i18n.btns.cancelBtn}}
+        <button type="button" class="btn btn-lg btn-block btn-danger" 
+          ng-disabled="memberForm.$invalid">
+          {{i18n.btns.deleteBtn}}
         </button>
       </div>
   </div>

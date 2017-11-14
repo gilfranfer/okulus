@@ -6,14 +6,14 @@
         Username
       </label>
       <input type="email" id="email" name="email" class="form-control form-control-lg" readonly 
-        placeholder="{{i18n.memberForm.emailPlaceholder}}" ng-model="member.email" ng-required="false">
+        placeholder="{{i18n.memberForm.emailPlaceholder}}" ng-model="$parent.member.email" ng-required="true">
     </div>
     <div class="col-md form-group">
       <label for="email">
         User Role
       </label>
       <select id="status" name="status" class="form-control form-control-lg" 
-              ng-model="member.user.role" ng-required="true">
+              ng-model="$parent.member.user.role" ng-required="true">
         <option>Admin</option>
         <option>User</option>
         <option>Viewer</option>
@@ -24,7 +24,7 @@
         User Status
       </label>
       <select id="status" name="status" class="form-control form-control-lg" 
-              ng-model="member.user.status" ng-required="true">
+              ng-model="$parent.member.user.status" ng-required="true">
         <option>{{i18n.dropdowns.status.active}}</option>
         <option>{{i18n.dropdowns.status.inactive}}</option>
       </select>
