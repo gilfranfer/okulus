@@ -82,6 +82,15 @@
     </div>
   </fieldset>
 
+  <!-- Alert/Error row -->
+  <div class="form-row">
+    <div class="col">
+      <div class="alert alert-danger" role="alert" ng-show="groupForm.$invalid">
+        {{i18n.alerts.invalidForm}} 
+      </div>
+    </div>
+  </div>
+  
   <!-- Buttons row -->
   <div class="form-row">
       <!-- if activeUser.role = admin -->  

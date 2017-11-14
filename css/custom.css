@@ -1,3 +1,14 @@
 .card-clickable{
 	cursor: pointer;
 }
+
+.ng-invalid{
+	border-color: #dc3545;
+}
+
+.ng-valid{
+	border-color: #28a745;
+}
+.ng-untouched{
+	border-color: #ced4da!important	;
+}
