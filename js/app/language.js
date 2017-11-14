@@ -75,12 +75,19 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				phoneLabel:"Telefono", phonePlaceholder:"+52 (228) 8112233",
 				bday:"Fecha de nacimiento"
 			},
+			userForm:{
+				legend:"Usuario"
+			},
 			phonesForm:{
 				phonesFieldset: "Telefonos",
 				addphoneBtn: "Agregar Telefono"
 			},
+			alerts:{
+				invalidForm:"Hay datos faltantes o incorrectos en el formulario."
+			},
 			btns:{
-				saveBtn: "Guardar Cambios",
+				saveBtn: "Guardar",
+				deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar",
 				sendBtn: "Enviar"
 			},
