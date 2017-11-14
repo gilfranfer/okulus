@@ -14,14 +14,14 @@
       <label for="extNumber">
         {{i18n.addressFrgmnt.extNumberLbl}}
       </label>
-      <input type="number" name="extNumber" id="extNumber" class="form-control form-control-lg" 
+      <input type="number" min="0" name="extNumber" id="extNumber" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.extNumberHint}}" ng-model="$parent.address.extNumber" ng-required="true">
     </div>
     <div class="col-md-3 form-group">
       <label for="intNumber">
         {{i18n.addressFrgmnt.intNumberLbl}}
       </label>
-      <input type="number" name="intNumber" id="intNumber" class="form-control form-control-lg" 
+      <input type="number" min="0" name="intNumber" id="intNumber" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.intNumberHint}}" ng-model="$parent.address.intNumber" ng-required="false">
     </div>
   </div>
