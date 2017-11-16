@@ -3,21 +3,21 @@
   
   <!-- Street and number -->
   <div class="form-row">
-    <div class="col-md-6 form-group">
+    <div class="col-sm-6 form-group">
       <label for="street">
         {{i18n.addressFrgmnt.streetLbl}}
       </label>
       <input type="text" name="street" id="street" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.streetHint}}" ng-model="$parent.address.street" ng-required="true">
     </div>
-    <div class="col-md-3 form-group">
+    <div class="col form-group">
       <label for="extNumber">
         {{i18n.addressFrgmnt.extNumberLbl}}
       </label>
       <input type="number" min="0" name="extNumber" id="extNumber" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.extNumberHint}}" ng-model="$parent.address.extNumber" ng-required="true">
     </div>
-    <div class="col-md-3 form-group">
+    <div class="col form-group">
       <label for="intNumber">
         {{i18n.addressFrgmnt.intNumberLbl}}
       </label>
@@ -28,28 +28,28 @@
 
   <!-- Zip, City, State, Country -->
   <div class="form-row">
-    <div class="col-md form-group">
+    <div class="col-md-3 col-sm-6 form-group">
       <label for="zip">
         {{i18n.addressFrgmnt.zipLbl}}
       </label>
       <input type="number" min="0" name="zip" id="zip" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.zipHint}}" ng-model="$parent.address.zip" ng-required="true">
     </div>
-    <div class="col-md form-group">
+    <div class="col-md-3 col-sm-6 form-group">
       <label for="city">
         {{i18n.addressFrgmnt.cityLbl}}
       </label>
       <input type="text" name="city" id="city" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.cityHint}}" ng-model="$parent.address.city" ng-required="true">
     </div>
-    <div class="col-md form-group">
+    <div class="col-md-3 col-sm-6 form-group">
       <label for="state">
         {{i18n.addressFrgmnt.stateLbl}}
       </label>
       <input type="text" name="state" id="state" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.stateHint}}" ng-model="$parent.address.state" ng-required="true">
     </div>
-    <div class="col-md form-group">
+    <div class="col-md-3 col-sm-6 form-group">
       <label for="country">
         {{i18n.addressFrgmnt.countryLbl}}
       </label>

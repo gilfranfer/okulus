@@ -17,7 +17,7 @@
 
     <!-- Type and Status row -->
     <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col form-group">
         <label for="gtype">
           {{i18n.groupForm.gtypeLabel}}
         </label>
@@ -30,7 +30,7 @@
           <option value="pilot">{{i18n.dropdowns.gtype.pilot}}</option>
         </select>
       </div>
-      <div class="col-md form-group">
+      <div class="col form-group">
         <label for="status">
           {{i18n.dropdowns.status.label}}
         </label>
@@ -50,7 +50,7 @@
   <fieldset class="mb-4">
     <legend>{{i18n.groupForm.shcLegend}}</legend>
     <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col-sm-4 form-group">
          <label for="schdDay">
           {{i18n.groupForm.schdDayLabel}}
         </label>
@@ -65,14 +65,14 @@
           <option value="sun">{{i18n.dropdowns.weekdays.sun}}</option>
         </select>
       </div>
-      <div class="col-md form-group">
+      <div class="col form-group">
         <label for="schdTimeFrom">
           {{i18n.groupForm.schdTimeFromLabel}}
         </label>
         <input type="time" name="schdTimeFrom" id="schdTimeFrom" class="form-control form-control-lg" 
           ng-model="schedule.timeFrom" ng-required="false">
       </div>
-      <div class="col-md form-group">
+      <div class="col form-group">
         <label for="schdTimeTo">
           {{i18n.groupForm.schdTimeToLabel}}
         </label>
