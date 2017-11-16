@@ -1,4 +1,4 @@
-<form class="mt-3" name="groupForm" novalidate ng-submit="createGroup()">
+<form class="mt-3" name="groupForm" novalidate ng-submit="saveGroup()">
 
   <!-- Basic Group Information -->
   <fieldset class="mb-4">
@@ -55,7 +55,7 @@
           {{i18n.groupForm.schdDayLabel}}
         </label>
         <select id="schdDay" name="schdDay" class="form-control form-control-lg" 
-                ng-model="group.schedule.weekday" ng-required="true">
+                ng-model="schedule.weekday" ng-required="true">
           <option value="mon">{{i18n.dropdowns.weekdays.mon}}</option>
           <option value="tue">{{i18n.dropdowns.weekdays.tue}}</option>
           <option value="wed">{{i18n.dropdowns.weekdays.wed}}</option>
@@ -70,14 +70,14 @@
           {{i18n.groupForm.schdTimeFromLabel}}
         </label>
         <input type="time" name="schdTimeFrom" id="schdTimeFrom" class="form-control form-control-lg" 
-          ng-model="group.schedule.timeFrom" ng-required="true">
+          ng-model="schedule.timeFrom" ng-required="false">
       </div>
       <div class="col-md form-group">
         <label for="schdTimeTo">
           {{i18n.groupForm.schdTimeToLabel}}
         </label>
         <input type="time" name="schdTimeTo" id="schdTimeTo" class="form-control form-control-lg" 
-           ng-model="group.schedule.timeTo" ng-required="false">
+           ng-model="schedule.timeTo" ng-required="false">
       </div>
     </div>
   </fieldset>
@@ -107,12 +107,18 @@
         </button>
       </div>
       <div class="col-md form-group">
+        <button type="button" class="btn btn-lg btn-block btn-success" 
+           ng-click="newGroup()">
+          {{i18n.btns.newBtn}}
+        </button>
+      </div>
+      <div class="col-md form-group">
         <button type="button" class="btn btn-lg btn-block btn-danger" 
-          ng-disabled="groupForm.$invalid" ng-click="test()">
+           ng-click="deleteGroup()">
           {{i18n.btns.deleteBtn}}
         </button>
-        <!-- endif -->  
       </div>
+      <!-- endif -->  
   </div>
 
 </form>

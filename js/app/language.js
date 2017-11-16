@@ -87,6 +87,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			btns:{
 				saveBtn: "Guardar",
+				newBtn: "Nuevo",
 				deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar",
 				sendBtn: "Enviar"

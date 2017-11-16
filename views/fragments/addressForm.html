@@ -32,7 +32,7 @@
       <label for="zip">
         {{i18n.addressFrgmnt.zipLbl}}
       </label>
-      <input type="number" name="zip" id="zip" class="form-control form-control-lg" 
+      <input type="number" min="0" name="zip" id="zip" class="form-control form-control-lg" 
         placeholder="{{i18n.addressFrgmnt.zipHint}}" ng-model="$parent.address.zip" ng-required="true">
     </div>
     <div class="col-md form-group">
