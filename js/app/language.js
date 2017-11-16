@@ -44,6 +44,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			groupForm:{
 				basicInfoFieldset: "Datos del Grupo",
+				gnumberLabel:"#", gnumberPlaceholder:"1",
 				gnameLabel:"Nombre del Grupo", gNamePlaceholder:"Semillas de Esperanza",
 				gtypeLabel:"Tipo", gstatusLabel:"Estado",
 				shcLegend:"Horario de Servicio",

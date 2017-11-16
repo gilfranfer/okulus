@@ -6,7 +6,14 @@
     
     <!-- Name row -->
     <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col-2 form-group">
+        <label for="gname">
+          {{i18n.groupForm.gnumberLabel}}
+        </label>
+        <input type="text" id="gnumber" name="gnumber" class="form-control form-control-lg" 
+          placeholder="{{i18n.groupForm.gnumberPlaceholder}}" ng-model="group.number" ng-required="false">
+      </div>
+      <div class="col-10 form-group">
         <label for="gname">
           {{i18n.groupForm.gnameLabel}}
         </label>
