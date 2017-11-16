@@ -1,4 +1,4 @@
-var okulusApp = angular.module('okulusApp',['ngRoute']);
+var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 
 okulusApp.config(['$routeProvider',
 	function($routeProvider){

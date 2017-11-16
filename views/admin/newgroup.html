@@ -88,6 +88,12 @@
       <div class="alert alert-danger" role="alert" ng-show="groupForm.$invalid">
         {{i18n.alerts.invalidForm}} 
       </div>
+      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
+        {{response.messageOk}}
+      </div>
+      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
+        {{response.messageErr}}
+      </div>
     </div>
   </div>
   
