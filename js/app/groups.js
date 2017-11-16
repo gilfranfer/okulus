@@ -1,9 +1,10 @@
-okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', 'GroupsSvc',
-	function($rootScope, $scope, $firebaseArray, GroupsSvc){
+okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', 'GroupsSvc', 'AuditSvc',
+	function($rootScope, $scope, $firebaseArray, GroupsSvc, AuditSvc){
+	   
 	    let baseRef = firebase.database().ref().child('pibxalapa');
 	    let groupsRef = baseRef.child('groups');
+		
 		$scope.allGroups = $firebaseArray(groupsRef);
-
 	    $scope.allGroups.$loaded(function() {
 	    	if ($scope.allGroups.length === 0) {
 	    		GroupsSvc.getTestGroups().forEach( function (item){ $scope.allGroups.$add( item ); } );
@@ -41,21 +42,14 @@ okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', '
 	    $scope.saveGroup = function() {
 
 	    	if( !$scope.groupId ){
+
 				console.log("Creating new group");
 	    		let record = {group: $scope.group, address: $scope.address, schedule: $scope.schedule};
 		    	
 		    	$scope.allGroups.$add( record ).then(function(ref) {
 				    $scope.response = { messageOk: "Grupo creado"};
 				    $scope.groupId = ref.key;
-
-	    			let audit = {action:"create",by: "admin", date: firebase.database.ServerValue.TIMESTAMP};
-				    //Group audit folder
-				    ref.child("audit").push().set(audit);
-				    //global audit
-				    audit.on = "groups";
-				    audit.id = ref.key;
-				    baseRef.child("audit").push().set(audit);
-
+				    AuditSvc.recordAudit(ref, "create", "groups");
 				}).catch(function(err) {
 					$scope.response = { messageErr: err};
 				});
@@ -69,14 +63,7 @@ okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', '
 
 		    	$scope.allGroups.$save(record).then(function(ref) {
 				    $scope.response = { messageOk: "Grupo Actualizado"};
-	    			
-	    			let audit = {action:"update",by: "admin", date: firebase.database.ServerValue.TIMESTAMP};
-				    //Group audit folder
-				    ref.child("audit").push().set(audit);
-				    //global audit
-				    audit.on = "groups";
-				    audit.id = ref.key;
-				    baseRef.child("audit").push().set(audit);
+				    AuditSvc.recordAudit(ref, "update", "groups");
 				})
 				.catch(function(err) {
 					$scope.response = { messageErr: err};
