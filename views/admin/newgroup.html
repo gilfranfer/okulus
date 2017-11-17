@@ -43,8 +43,8 @@
         </label>
         <select id="status" name="status" class="form-control form-control-lg" 
                 ng-model="group.status" ng-required="true">
-          <option>{{i18n.dropdowns.status.active}}</option>
-          <option>{{i18n.dropdowns.status.inactive}}</option>
+          <option value="active">{{i18n.dropdowns.status.active}}</option>
+          <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
         </select>
       </div>
     </div>
@@ -77,14 +77,14 @@
           {{i18n.groupForm.schdTimeFromLabel}}
         </label>
         <input type="time" name="schdTimeFrom" id="schdTimeFrom" class="form-control form-control-lg" 
-          ng-model="schedule.timeFrom" ng-required="false">
+          ng-model="schedule.timeFrom" ng-required="false" readonly>
       </div>
       <div class="col form-group">
         <label for="schdTimeTo">
           {{i18n.groupForm.schdTimeToLabel}}
         </label>
         <input type="time" name="schdTimeTo" id="schdTimeTo" class="form-control form-control-lg" 
-           ng-model="schedule.timeTo" ng-required="false">
+           ng-model="schedule.timeTo" ng-required="false" readonly>
       </div>
     </div>
   </fieldset>

@@ -1,6 +1,8 @@
 okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', 'GroupsSvc', 'AuditSvc',
 	function($rootScope, $scope, $firebaseArray, GroupsSvc, AuditSvc){
 	   
+	   	console.log("on Groups Controller");
+
 	    let baseRef = firebase.database().ref().child('pibxalapa');
 	    let groupsRef = baseRef.child('groups');
 		
