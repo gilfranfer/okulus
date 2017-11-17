@@ -84,14 +84,17 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				addphoneBtn: "Agregar Telefono"
 			},
 			alerts:{
-				invalidForm:"Hay datos faltantes o incorrectos en el formulario."
+				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
+				confirmDelete: "Seguro que deseas eliminar este registro?"
 			},
 			btns:{
 				saveBtn: "Guardar",
 				newBtn: "Nuevo",
 				deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar",
-				sendBtn: "Enviar"
+				sendBtn: "Enviar",
+				yesBtn: "Si!",
+				noBtn: "No!"
 			},
 			dropdowns:{
 				status:{
