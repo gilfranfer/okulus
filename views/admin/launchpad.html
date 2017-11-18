@@ -7,10 +7,10 @@
     </div>
   </a>
 
-  <a class="card card-clickable text-white bg-primary mb-3" href="#!/admin/newgroup">
+  <a class="card card-clickable text-white bg-primary mb-3" href="#!/groups">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.launchpad.newgroupCardTitle}}</h4>
-      <p class="card-text">{{i18n.launchpad.newgroupCardDesc}}</p>
+      <h4 class="card-title">{{i18n.launchpad.groupCardTitle}}</h4>
+      <p class="card-text">{{i18n.launchpad.groupCardDesc}}</p>
     </div>
   </a>
 
@@ -30,42 +30,6 @@
 </div>
 
 
-<!-- Groups Table -->
-<div class="row mb-1">
-  <div class="col">
-    <input type="text" placeholder="Type to filter" class="form-control form-control-lg" >
-  </div>
-  <div class="col">
-    <a class="btn btn-lg btn-block btn-success" href="#!/admin/newgroup">
-      {{i18n.launchpad.newgroupCardTitle}}
-    </a>
-  </div>
-</div>
-<div class="row"  ng-controller="GroupsCntrl">
-  <div class="col">
-    <table class="table table-hover table-responsive-sm">
-      <caption>List of Groups</caption>
-      <thead>
-        <tr class="bg-primary text-light">
-          <th scope="col">#</th>
-          <th scope="col">Group Name</th>
-          <th scope="col">Group Type</th>
-          <th scope="col">Weekday</th>
-          <th scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="g in allGroups" ng-class="{'table-warning': g.group.status=='inactive'}">
-          <th scope="row">{{g.group.number}}</th>
-          <td><a ng-href="#!/admin/group/{{g.$id}}">{{g.group.name}}</a></td>
-          <td>{{g.group.type}}</td>
-          <td>{{g.schedule.weekday}}</td>
-          <td>{{g.group.status}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
 
 <!-- Members Table 
 <div class="row mb-1">

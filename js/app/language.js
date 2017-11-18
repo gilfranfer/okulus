@@ -17,7 +17,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
-				newgroupCardTitle:"Nuevo Grupo",newgroupCardDesc:"Crear un nuevo Grupo Familiar",
+				groupCardTitle:"Grupos Familiares",groupCardDesc:"Ver y Administrar Grupos Familiares",
 				newmemberCardTitle:"Nuevo Miembro",newmemberCardDesc:"Crear un nuevo Miembro",
 				newreportCardTitle:"Nuevo Reporte",newreportCardDesc:"Crear un nuevo Reporte de Reunion"
 			},
@@ -94,7 +94,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				cancelBtn: "Cancelar",
 				sendBtn: "Enviar",
 				yesBtn: "Si!",
-				noBtn: "No!"
+				noBtn: "No!",
+				newgroupBtn: "Crear Grupo"
 			},
 			dropdowns:{
 				status:{

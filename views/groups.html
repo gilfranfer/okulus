@@ -1,0 +1,35 @@
+<!-- Groups List -->
+<section ng-controller="GroupsCntrl">
+  
+  <div class="row mb-1">
+    <div class="col">
+      <input type="text" placeholder="Type to filter" class="form-control form-control-lg" ng-model="gFilter">
+    </div>
+    <div class="col">
+      <a class="btn btn-lg btn-block btn-success" href="#!/admin/newgroup">
+        {{i18n.btns.newgroupBtn}}
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6 col-md-4 col-lg-3" 
+      ng-repeat="g in allGroups">
+      <div class="card mb-3">
+        <h4 class="card-header">
+          <a ng-href="#!/admin/group/{{g.$id}}">#{{g.group.number}} {{g.group.name}}</a>
+        </h4>
+        <div class="card-body">
+          <h4 class="card-title">Horario</h4>
+          <p class="card-text">{{g.schedule.weekday}}</p>
+          <h4 class="card-title">Direccion</h4>
+          <p class="card-text">
+            
+          </p>
+          <a ng-href="#!/admin/group/{{g.$id}}" class="btn btn-primary">Ver Detalles</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
