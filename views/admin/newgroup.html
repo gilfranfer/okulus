@@ -30,11 +30,11 @@
         </label>
         <select id="gtype" name="gtype" class="form-control form-control-lg" 
                 ng-model="group.type" ng-required="true">
-          <option value="mix">{{i18n.dropdowns.gtype.mix}}</option>
-          <option value="men">{{i18n.dropdowns.gtype.men}}</option>
-          <option value="women">{{i18n.dropdowns.gtype.women}}</option>
-          <option value="young">{{i18n.dropdowns.gtype.young}}</option>
-          <option value="pilot">{{i18n.dropdowns.gtype.pilot}}</option>
+          <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
+          <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
+          <option value="{{i18n.dropdowns.gtype.women}}">{{i18n.dropdowns.gtype.women}}</option>
+          <option value="{{i18n.dropdowns.gtype.young}}">{{i18n.dropdowns.gtype.young}}</option>
+          <option value="{{i18n.dropdowns.gtype.pilot}}">{{i18n.dropdowns.gtype.pilot}}</option>
         </select>
       </div>
       <div class="col form-group">
@@ -48,6 +48,25 @@
         </select>
       </div>
     </div>
+
+    <div class="form-row">
+      <div class="col form-group">
+        <label for="email">
+          {{i18n.groupForm.emailLbl}}
+        </label>
+        <input type="email" name="email" id="email" class="form-control form-control-lg" 
+            placeholder="{{i18n.groupForm.emailHint}}" ng-model="group.email" ng-required="false">
+      </div>
+      <div class="col form-group">
+        <label for="email">
+          {{i18n.groupForm.phoneLbl}}
+        </label>
+        <input type="tel" name="phone" id="phone" class="form-control form-control-lg" 
+            placeholder="{{i18n.groupForm.phoneHint}}" ng-model="group.phone" ng-required="false">
+      </div>
+    </div>
+
+
   </fieldset>
 
   <!-- Address -->
@@ -63,13 +82,13 @@
         </label>
         <select id="schdDay" name="schdDay" class="form-control form-control-lg" 
                 ng-model="schedule.weekday" ng-required="true">
-          <option value="mon">{{i18n.dropdowns.weekdays.mon}}</option>
-          <option value="tue">{{i18n.dropdowns.weekdays.tue}}</option>
-          <option value="wed">{{i18n.dropdowns.weekdays.wed}}</option>
-          <option value="thu">{{i18n.dropdowns.weekdays.thu}}</option>
-          <option value="fri">{{i18n.dropdowns.weekdays.fri}}</option>
-          <option value="sat">{{i18n.dropdowns.weekdays.sat}}</option>
-          <option value="sun">{{i18n.dropdowns.weekdays.sun}}</option>
+          <option value="{{i18n.dropdowns.weekdays.mon}}">{{i18n.dropdowns.weekdays.mon}}</option>
+          <option value="{{i18n.dropdowns.weekdays.tue}}">{{i18n.dropdowns.weekdays.tue}}</option>
+          <option value="{{i18n.dropdowns.weekdays.wed}}">{{i18n.dropdowns.weekdays.wed}}</option>
+          <option value="{{i18n.dropdowns.weekdays.thu}}">{{i18n.dropdowns.weekdays.thu}}</option>
+          <option value="{{i18n.dropdowns.weekdays.fri}}">{{i18n.dropdowns.weekdays.fri}}</option>
+          <option value="{{i18n.dropdowns.weekdays.sat}}">{{i18n.dropdowns.weekdays.sat}}</option>
+          <option value="{{i18n.dropdowns.weekdays.sun}}">{{i18n.dropdowns.weekdays.sun}}</option>
         </select>
       </div>
       <div class="col form-group">
