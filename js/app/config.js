@@ -3,23 +3,24 @@ var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
+		
+			.when('/admin/launchpad', {
+				templateUrl: 'views/admin/launchpad.html'
+			})
 			.when('/groups', {
 				templateUrl: 'views/groups.html',
-				controller: 'GroupsCntrl'
+				controller: 'GroupListCntrl'
 			})
 			.when('/admin/newgroup', {
 				templateUrl: 'views/admin/newgroup.html',
 				controller: 'GroupsCntrl'
 			})
-			.when('/admin/group/:groupId', {
+			.when('/group/:groupId', {
 				templateUrl: 'views/admin/newgroup.html',
-				controller: 'GroupsCntrl'
+				controller: 'GroupDetailsCntrl'
 			})
 			.when('/admin/org', {
 				templateUrl: 'views/admin/orgProfile.html'
-			})
-			.when('/admin/launchpad', {
-				templateUrl: 'views/admin/launchpad.html'
 			})
 			.when('/admin/newmember', {
 				templateUrl: 'views/admin/newmember.html'

@@ -1,5 +1,5 @@
 <!-- Groups List -->
-<section ng-controller="GroupsCntrl">
+<section>
   
   <div class="row mb-1">
     <div class="col">
@@ -17,7 +17,7 @@
       ng-repeat="g in allGroups | filter:searchText">
       <div class="card mb-3">
         <h4 class="card-header">
-          <a ng-href="#!/admin/group/{{g.$id}}">#{{g.group.number}} {{g.group.name}}</a>
+          <a ng-href="#!/group/{{g.$id}}">#{{g.group.number}} {{g.group.name}}</a>
         </h4>
         <div class="card-body">
           <h4 class="card-title">Contacto</h4>
@@ -36,7 +36,7 @@
           </p>
           <h4 class="card-title">Dia de Reunion</h4>
           <p class="card-text">{{g.schedule.weekday}}</p>
-          <a ng-href="#!/admin/group/{{g.$id}}" class="btn btn-primary">Ver Detalles</a>
+          <a ng-href="#!/group/{{g.$id}}" class="btn btn-primary">Ver Detalles</a>
         </div>
       </div>
     </div>

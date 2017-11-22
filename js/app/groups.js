@@ -1,17 +1,7 @@
 okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', 'GroupsSvc', 'AuditSvc',
 	function($rootScope, $scope, $firebaseArray, GroupsSvc, AuditSvc){
 	   
-	   	console.log("on Groups Controller");
-
-	    let baseRef = firebase.database().ref().child('pibxalapa');
-	    let groupsRef = baseRef.child('groups');
-		
-		$scope.allGroups = $firebaseArray(groupsRef);
-	    $scope.allGroups.$loaded(function() {
-	    	if ($scope.allGroups.length === 0) {
-	    		GroupsSvc.getTestGroups().forEach( function (item){ $scope.allGroups.$add( item ); } );
-			}
-	    });
+	   	console.log("on Groups Controller: "+ $rootScope.allGroups);
 
 	    cleanScope = function(){
 	    	$scope.groupId = null;
@@ -75,10 +65,46 @@ okulusApp.controller('GroupsCntrl', ['$rootScope', '$scope', '$firebaseArray', '
   	}
 ]);
 
-okulusApp.factory('GroupsSvc', ['$rootScope',  
-	function($rootScope){
+okulusApp.controller('GroupListCntrl', ['GroupsSvc',
+	function(GroupsSvc){
+
+		GroupsSvc.loadAllGroupsList();
+
+	}
+]);
+
+okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$routeParams', '$firebaseArray', 'GroupsSvc', 'AuditSvc',
+	function($rootScope, $routeParams, $firebaseArray, GroupsSvc, AuditSvc){
+		
+		//Load Group
+		let whichGroup = $routeParams.groupId;
+	    let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+		console.log(whichGroup);
+
+	}
+]);
+
+okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray',
+	function($rootScope, $firebaseArray){
+		let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+		
+		
+
 		return {
-			createGroup: function(){
+			loadAllGroupsList: function(){
+
+				if(!$rootScope.allGroups){
+					console.log("Creating firebaseArray for Groups");
+					$rootScope.allGroups = $firebaseArray(groupsRef);
+
+					//TODO: Comment loade function
+					$rootScope.allGroups.$loaded(function() {
+				    	if ($rootScope.allGroups.length === 0) {
+				    		GroupsSvc.getTestGroups().forEach( function (item){ $rootScope.allGroups.$add( item ); } );
+						}
+				    });
+				}
+			    
 
 			},
 		    //Return test groups for prepopulation
