@@ -6,20 +6,22 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		};
 		$rootScope.i18n = {
 			navigation:{
-				brand:"Okulus",
-				home:"Inicio",
+				brand:"PIB Xalapa",
+				user:{
+					groups:"Mis Grupos"
+				},
 				admin:{
 					menuTitle:"Admin",
-					launchpad:"Escritorio",
-					orgDetails:"Ver Organizacion", newGroup:"Crear Grupo",
-					newMember:"Crear Miembro", newReport:"Crear Reporte"
+					monitor:"Monitor",
+					dashboard:"Resumen",
+					launchpad:"Escritorio"
 				}
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
-				groupCardTitle:"Grupos Familiares",groupCardDesc:"Ver y Administrar Grupos Familiares",
-				newmemberCardTitle:"Nuevo Miembro",newmemberCardDesc:"Crear un nuevo Miembro",
-				newreportCardTitle:"Nuevo Reporte",newreportCardDesc:"Crear un nuevo Reporte de Reunion"
+				groupCardTitle:"Grupos",groupCardDesc:"Administrar Grupos Familiares",
+				newmemberCardTitle:"Miembros",newmemberCardDesc:"Administrar Miembros",
+				newreportCardTitle:"Reportes",newreportCardDesc:"Administrar Reportes de Reunion"
 			},
 			reportForm:{
 				reportLegend:"Datos generales de la Reunion",
@@ -40,14 +42,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				maleAbrev: "Hom", femaleAbrev: "Muj",
 				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 				studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
-
 			},
 			groupForm:{
 				basicInfoFieldset: "Datos del Grupo",
 				gnumberLabel:"#", gnumberPlaceholder:"1",
 				gnameLabel:"Nombre del Grupo", gNamePlaceholder:"Semillas de Esperanza",
-				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
-				phoneLbl:"Telefono de contacto", phoneHint:"228 8112233",
+				emailLbl:"Correo", emailHint:"micorreo@gmail.com",
+				phoneLbl:"Teléfono", phoneHint:"228 8112233",
 				gtypeLabel:"Tipo", gstatusLabel:"Estado",
 				shcLegend:"Horario de Servicio",
 				schdDayLabel: "Dia de la semana",
@@ -55,7 +56,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				schdTimeToLabel: "a"
 			},
 			addressFrgmnt:{
-				legend: "Direccion",
+				legend: "Dirección",
 				streetLbl:"Calle", streetHint:"Av. Principal",
 				extNumberLbl: "Num ext", extNumberHint: "007",
 				intNumberLbl: "Num int", intNumberHint: "1",

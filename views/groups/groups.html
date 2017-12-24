@@ -1,0 +1,53 @@
+<!-- Groups List -->
+<section ng-controller="GroupsCntrl">
+
+  <div class="row mb-1">
+    <div class="col">
+      <input type="text" placeholder="Type to filter" class="form-control form-control-lg" ng-model="searchText">
+    </div>
+    <div class="col">
+      <a class="btn btn-lg btn-block btn-success" href="#!/groups/new">
+        {{i18n.btns.newgroupBtn}}
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-smd-6 col-lg-4 mb-3"
+      ng-repeat="g in allGroups | filter:searchText">
+      <!-- Group card -->
+      <div class="card h-100">
+        <h4 class="card-header">
+          <a ng-href="#!/groups/view/{{g.$id}}">
+            #{{g.group.number}} {{g.group.name}}
+          </a>
+        </h4>
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.groupForm.basicInfoFieldset}}
+          </h4>
+          <p class="card-text" ng-if="g.address">
+            <span class="font-weight-bold">{{i18n.addressFrgmnt.legend}}:</span>
+            {{g.address.street}}
+            #{{g.address.extNumber}}<span ng-if="g.address.intNumber">, Int {{g.address.intNumber}}</span><br>
+            {{g.address.city}} {{g.address.state}}, {{g.address.country}}<br>
+            {{i18n.addressFrgmnt.zipLbl}} {{g.address.zip}}
+          </p>
+          <p class="card-text" ng-if="g.group.phone">
+            <span class="font-weight-bold">{{i18n.groupForm.phoneLbl}}:</span>
+            <a href="tel:{{g.group.phone}}">{{g.group.phone}}</a>
+          </p>
+          <p class="card-text" ng-if="g.group.email">
+            <span class="font-weight-bold">{{i18n.groupForm.emailLbl}}:</span>
+            <a href="mailto:{{g.group.email}}">{{g.group.email}}</a>
+          </p>
+          <h4 class="card-title">{{i18n.groupForm.shcLegend}}:</h4>
+          <p class="card-text">{{g.schedule.weekday}}</p>
+
+          <a ng-href="#!/groups/view/{{g.$id}}" class="btn btn-primary">Ver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
