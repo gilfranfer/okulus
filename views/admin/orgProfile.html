@@ -2,15 +2,15 @@
 
   <fieldset class="mb-4">
     <legend>{{i18n.orgForm.basicInfoFieldset}}</legend>
-    
+
     <!-- Name row -->
     <div class="form-row">
       <div class="col-md form-group">
         <label for="orgname">
           {{i18n.orgForm.orgnameLbl}}
         </label>
-        <input type="text" name="orgname" class="form-control form-control-lg" 
-          placeholder="{{i18n.orgForm.orgNameHint}" ng-model="orgProfile.orgName" ng-required="true">
+        <input type="text" name="orgname" class="form-control form-control-lg"
+          placeholder="{{i18n.orgForm.orgNameHint}}" ng-model="orgProfile.orgName" ng-required="true">
       </div>
     </div>
 
@@ -20,15 +20,15 @@
         <label for="email">
           {{i18n.orgForm.emailLbl}}
         </label>
-        <input type="email" name="email" id="email" class="form-control form-control-lg" 
-          placeholder="{{i18n.orgForm.emailHint}" ng-model="orgProfile.email" ng-required="true">
+        <input type="email" name="email" id="email" class="form-control form-control-lg"
+          placeholder="{{i18n.orgForm.emailHint}}" ng-model="orgProfile.email" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="url">
           {{i18n.orgForm.urlLbl}}
         </label>
-        <input type="url" name="url" id="url" class="form-control form-control-lg" 
-          placeholder="{{i18n.orgForm.urlHint}" ng-model="orgProfile.url" ng-required="false">
+        <input type="url" name="url" id="url" class="form-control form-control-lg"
+          placeholder="{{i18n.orgForm.urlHint}}" ng-model="orgProfile.url" ng-required="false">
       </div>
     </div>
   </fieldset>
@@ -39,7 +39,7 @@
   <!-- Phones -->
   <fieldset class="mb-4">
     <legend>{{i18n.phonesForm.phonesFieldset}}</legend>
-    
+
     <!-- For -->
     <div class="form-group row">
       <label for="" class="col-2 col-form-label"> Principal </label>
@@ -62,13 +62,13 @@
   <!-- Buttons row -->
   <div class="form-row">
       <div class="col-md form-group">
-        <button type="submit" class="btn btn-lg btn-block btn-outline-primary" 
+        <button type="submit" class="btn btn-lg btn-block btn-outline-primary"
           ng-disabled="registerForm.$invalid">
           {{i18n.btns.saveBtn}}
         </button>
       </div>
       <div class="col-md form-group">
-        <button type="button" class="btn btn-lg btn-block btn-outline-danger" 
+        <button type="button" class="btn btn-lg btn-block btn-outline-danger"
           ng-disabled="registerForm.$invalid">
           {{i18n.btns.cancelBtn}}
         </button>
@@ -76,4 +76,3 @@
   </div>
 
 </form>
-
