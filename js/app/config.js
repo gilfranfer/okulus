@@ -3,22 +3,61 @@ var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
-		
+			.when('/home', {
+				templateUrl: 'views/home.html'
+			})
 			.when('/admin/launchpad', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
 				templateUrl: 'views/admin/launchpad.html'
 			})
+			.when('/admin/dashboard', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/admin/dashboard.html'
+			})
+			.when('/admin/monitor', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/admin/monitor.html'
+			})
+
 			.when('/groups', {
-				templateUrl: 'views/groups.html',
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn();
+				// 	}
+				// },
+				templateUrl: 'views/groups/groups.html',
 				controller: 'GroupListCntrl'
 			})
-			.when('/admin/newgroup', {
-				templateUrl: 'views/admin/newgroup.html',
-				controller: 'GroupsCntrl'
+			.when('/group/new', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/groups/newgroup.html'
 			})
-			.when('/group/:groupId', {
-				templateUrl: 'views/admin/newgroup.html',
+			.when('/group/view/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
+			
 			.when('/admin/org', {
 				templateUrl: 'views/admin/orgProfile.html'
 			})
@@ -29,58 +68,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/newreport.html'
 			})
 			.otherwise({
-				redirectTo: '/admin/launchpad'
+				redirectTo: '/home'
 			});
-	}
-]);
-
-
-okulusApp.factory( 'I18nSvc', ['$rootScope',
-
-	function($rootScope){
-		var currentAppVersion = "0.1.1"
-
-		var putTasksOnDefaultList = function(userData){
-			if (userData.tasks === undefined ){
-				console.log("No Tasks to Update");
-			}else{
-				var count = 0;
-				Object.keys(userData.tasks).map(
-					function (key) {
-						if( userData.tasks[key].inList === undefined){
-							userData.tasks[key].inList = "Default";
-						}
-						return userData.tasks[key];
-					});
-				console.log(count + " Tasks updated");
-			}
-		};
-
-		return{
-			upgradeUserConfig: function( user ){
-
-				user.$loaded().then( function(data) {
-				    if ( user.config === undefined
-				    		|| user.config.appVersion !== currentAppVersion ){
-						console.log("User needs some updates");
-						//Update App Version on Conf Folder
-						user.config = {appVersion:currentAppVersion};
-						//Create Default Task List (Consider to check if lists folder is empty )
-						user.lists = { "default": {name:"Default", date:firebase.database.ServerValue.TIMESTAMP} };
-						putTasksOnDefaultList(user);
-						user.$save();
-					}else{
-						console.log("User is up to date "+ currentAppVersion );
-					}
-				}).catch(function(error) {
-					console.error("Error:", error);
-				});
-
-				return "";
-			},
-			getAppVersion: function(){
-				return currentAppVersion;
-			}
-		};
 	}
 ]);
