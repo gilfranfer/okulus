@@ -1,19 +1,80 @@
-<div class="card-deck">
-  
-  <a class="card card-clickable text-white bg-primary mb-3" href="#!/admin/org">
-    <!-- <div class="card-header">Header</div> -->
-    <div class="card-body">
-      <h4 class="card-title">{{i18n.launchpad.orgCardTitle}}</h4>
-      <p class="card-text">{{i18n.launchpad.orgCardDesc}}</p>
-      <!-- <p class="card-text"><small class="">Last updated 3 mins ago</small></p> -->
-    </div>
-  </a>
+<section>
+  <article class="">
 
-  <a class="card card-clickable text-white bg-primary mb-3" href="#!/admin/newgroup">
-    <div class="card-body">
-      <h4 class="card-title">{{i18n.launchpad.newgroupCardTitle}}</h4>
-      <p class="card-text">{{i18n.launchpad.newgroupCardDesc}}</p>
+    <div class="card mb-3">
+      <div class="card-header">
+        Manage
+      </div>
+      <div class="card-body">
+        <h4 class="card-title"></h4>
+        <p class="card-text"></p>
+        <a href="#!/admin/organization" class="btn btn-primary btn-lg">{{i18n.launchpad.orgCardTitle}}</a>
+        <a href="#!/groups" class="btn btn-primary btn-lg">{{i18n.launchpad.groupsCardTitle}}</a>
+        <a href="#!/admin/newmember" class="btn btn-primary btn-lg">{{i18n.launchpad.membersCardTitle}}</a>
+        <a href="#!/admin/newmember" class="btn btn-primary btn-lg">{{i18n.launchpad.reportsCardTitle}}</a>
+      </div>
     </div>
-  </a>
 
+  </article>
+</section>
+
+
+
+<!-- Members Table
+<div class="row mb-1">
+  <div class="col">
+    <input type="text" placeholder="Type to filter" class="form-control form-control-lg" >
+  </div>
+  <div class="col">
+    <a class="btn btn-lg btn-block btn-success" href="#!/admin/newmember">
+      {{i18n.launchpad.newmemberCardTitle}}
+    </a>
+  </div>
 </div>
+<div class="row">
+  <div class="col">
+    <table class="table table-hover table-responsive-sm">
+      <caption>List of Members</caption>
+      <thead>
+        <tr class="bg-primary text-light">
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">Miembro desde</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/member/3">Leslie Vergara</a></td>
+          <td><a href="mailto:less.vergara@gmail.com">less.vergara@gmail.com</a></td>
+          <td><a href="tel:3331190005">3331190005</a></td>
+          <td>Dic 12 2012</td>
+          <td>Activo</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><a href="#!/admin/member/1">Liliana Ramirez</a></td>
+          <td>Liliana.Ramirez@gmail.com</td>
+          <td></td>
+          <td>Ene 12 2013</td>
+          <td>Activo</td>
+        </tr>
+        <tr class="">
+          <th scope="row">2</th>
+          <td><a href="#!/admin/member/2">Evelia Ceballos</a></td>
+          <td></td>
+          <td>2288112233</td>
+          <td>Dic 12 2016</td>
+          <td>Activo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+-->
+
+<!-- Reports by Week Table -->
+<!-- Active Users Table -->
