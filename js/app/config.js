@@ -3,8 +3,12 @@ var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
+			.when('/about', {
+				templateUrl: 'views/about.html'
+			})
 			.when('/home', {
-				templateUrl: 'views/home.html'
+				templateUrl: 'views/home.html',
+				controller: 'GroupListCntrl'
 			})
 			.when('/admin/launchpad', {
 				// resolve: {
@@ -40,7 +44,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/groups.html',
 				controller: 'GroupListCntrl'
 			})
-			.when('/group/new', {
+			.when('/groups/new', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
@@ -48,7 +52,7 @@ okulusApp.config(['$routeProvider',
 				// },
 				templateUrl: 'views/groups/newgroup.html'
 			})
-			.when('/group/view/:groupId', {
+			.when('/groups/view/:groupId', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
@@ -57,8 +61,8 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
-			
-			.when('/admin/org', {
+
+			.when('/admin/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
 			})
 			.when('/admin/newmember', {
@@ -68,7 +72,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/newreport.html'
 			})
 			.otherwise({
-				redirectTo: '/home'
+				redirectTo: '/about'
 			});
 	}
 ]);

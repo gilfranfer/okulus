@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-primary">
 
-  <a class="navbar-brand" href="#">
+  <a class="navbar-brand" href="#!/about">
     {{i18n.navigation.brand}}
   </a>
 
@@ -16,21 +16,27 @@
     <ul class="navbar-nav mr-auto">
 
 
-      <!-- User Menu -->
+      <!-- User Menu: if user logged -->
       <li class="nav-item">
-        <a class="nav-link" href="#!/dashboard">{{i18n.navigation.user.groups}}</a>
+        <a class="nav-link" href="#!/home">{{i18n.navigation.user.groups}}</a>
       </li>
-      <!-- Admin Menu -->
-      <li class="nav-item dropdown">
+      <!-- Admin Menu if admin logged -->
+      <li class="nav-item">
+        <a class="nav-link" href="#!/admin/launchpad">{{i18n.navigation.admin.launchpad}}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#!/admin/dashboard">{{i18n.navigation.admin.dashboard}}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
+      </li>
+      <!-- <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menuTitle}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#!/admin/dashboard">{{i18n.navigation.admin.dashboard}}</a>
-          <a class="dropdown-item" href="#!/admin/launchpad">{{i18n.navigation.admin.launchpad}}</a>
-          <a class="dropdown-item" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
         </div>
-      </li>
+      </li> -->
 
     </ul>
   </div>

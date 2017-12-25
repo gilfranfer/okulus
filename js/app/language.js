@@ -14,14 +14,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					menuTitle:"Admin",
 					monitor:"Monitor",
 					dashboard:"Resumen",
-					launchpad:"Escritorio"
+					launchpad:"Admin"
 				}
 			},
 			launchpad:{
-				orgCardTitle: "Organizacion", orgCardDesc: "Editar los datos de la Organizacion",
-				groupCardTitle:"Grupos",groupCardDesc:"Administrar Grupos Familiares",
-				newmemberCardTitle:"Miembros",newmemberCardDesc:"Administrar Miembros",
-				newreportCardTitle:"Reportes",newreportCardDesc:"Administrar Reportes de Reunion"
+				orgCardTitle: "Organizacion",
+				groupsCardTitle:"Grupos",
+				membersCardTitle:"Miembros",
+				reportsCardTitle:"Reportes"
 			},
 			reportForm:{
 				reportLegend:"Datos generales de la Reunion",
