@@ -61,7 +61,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/errors/general.html'
 			})
 
-			.when('/admin/organization', {
+			.when('/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
 			})
 			.when('/admin/newmember', {
