@@ -11,16 +11,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					groups:"Mis Grupos"
 				},
 				admin:{
-					menuTitle:"Admin",
-					monitor:"Monitor",
-					dashboard:"Resumen",
-					launchpad:"Admin"
+					dashboard:"Admin Dashboard",
+					monitor:"Monitor"
 				}
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion",
-				groupsCardTitle:"Grupos",
-				membersCardTitle:"Miembros",
+				groupsCardTitle:"Ver Grupos",
+				membersCardTitle:"Ver Miembros",
 				reportsCardTitle:"Reportes"
 			},
 			reportForm:{
@@ -51,9 +49,17 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				phoneLbl:"Teléfono", phoneHint:"228 8112233",
 				gtypeLabel:"Tipo", gstatusLabel:"Estado",
 				shcLegend:"Horario de Servicio",
-				schdDayLabel: "Dia de la semana",
-				schdTimeFromLabel: "De" ,
-				schdTimeToLabel: "a"
+				schdDayLabel: "Día",
+				schdHourLabel: "Hora",
+				schdMinLabel: "Min"
+			},
+			deletedGroup:{
+				title:"Grupo Eliminado",
+				message:"El grupo ha sido eliminado. Que quieres hacer ahora?"
+			},
+			generalError:{
+				title:"Oooops!!",
+				message:"Houston, We have some problems!"
 			},
 			addressFrgmnt:{
 				legend: "Dirección",
@@ -91,6 +97,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				confirmDelete: "Seguro que deseas eliminar este registro?"
 			},
 			btns:{
+				returnBtn: "Regresar",
 				saveBtn: "Guardar",
 				newBtn: "Nuevo",
 				deleteBtn: "Eliminar",

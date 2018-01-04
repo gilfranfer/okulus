@@ -10,14 +10,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/home.html',
 				controller: 'GroupListCntrl'
 			})
-			.when('/admin/launchpad', {
-				// resolve: {
-				// 	currentAuth: function(AuthenticationSvc){
-				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
-				// 	}
-				// },
-				templateUrl: 'views/admin/launchpad.html'
-			})
 			.when('/admin/dashboard', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
@@ -52,7 +44,7 @@ okulusApp.config(['$routeProvider',
 				// },
 				templateUrl: 'views/groups/newgroup.html'
 			})
-			.when('/groups/view/:groupId', {
+			.when('/groups/edit/:groupId', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
@@ -60,6 +52,13 @@ okulusApp.config(['$routeProvider',
 				// },
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
+			})
+			.when('/groups/deleted/:groupId', {
+				templateUrl: 'views/groups/deleted.html'
+			})
+
+			.when('/error', {
+				templateUrl: 'views/errors/general.html'
 			})
 
 			.when('/admin/organization', {

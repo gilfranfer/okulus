@@ -18,7 +18,7 @@
       <!-- Group card -->
       <div class="card h-100">
         <h4 class="card-header">
-          <a ng-href="#!/groups/view/{{g.$id}}">
+          <a ng-href="#!/groups/edit/{{g.$id}}">
             #{{g.group.number}} {{g.group.name}}
           </a>
         </h4>
@@ -41,10 +41,13 @@
             <span class="font-weight-bold">{{i18n.groupForm.emailLbl}}:</span>
             <a href="mailto:{{g.group.email}}">{{g.group.email}}</a>
           </p>
+          <!-- Schedule -->
           <h4 class="card-title">{{i18n.groupForm.shcLegend}}:</h4>
-          <p class="card-text">{{g.schedule.weekday}}</p>
+          <p class="card-text">
+            {{g.schedule.weekday}}, {{g.schedule.hour}}:{{g.schedule.minute}} hrs.
+          </p>
 
-          <a ng-href="#!/groups/view/{{g.$id}}" class="btn btn-primary">Ver</a>
+          <a ng-href="#!/groups/edit/{{g.$id}}" class="btn btn-primary">Ver</a>
         </div>
       </div>
     </div>
