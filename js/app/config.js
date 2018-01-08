@@ -66,6 +66,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/members.html',
 				controller: 'MembersListCntrl'
 			})
+			.when('/members/new', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/members/newmember.html'
+			})
+
 
 			.when('/error', {
 				templateUrl: 'views/errors/general.html'
