@@ -7,13 +7,15 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		$rootScope.i18n = {
 			navigation:{
 				brand:"PIB Xalapa",
-				user:{
-					groups:"Mis Grupos"
-				},
+				user:{ groups:"Mis Grupos" },
 				admin:{
 					dashboard:"Admin Dashboard",
 					monitor:"Monitor"
 				}
+			},
+			titles:{
+				groupsList: "Grupos Familiares",
+				membersList: "Miembros"
 			},
 			launchpad:{
 				orgCardTitle: "Organizacion",
@@ -53,6 +55,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				schdHourLabel: "Hora",
 				schdMinLabel: "Min"
 			},
+			searchForm:{
+				hint:"Buscar ..."
+			},
 			deletedGroup:{
 				title:"Grupo Eliminado",
 				message:"El grupo ha sido eliminado. Que quieres hacer ahora?"
@@ -83,7 +88,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				lnameLabel:"Apellido", lnamePlaceholder:"Mi apellido",
 				emailLabel:"Corre electronico", emailPlaceholder:"micorreo@gmail.com",
 				phoneLabel:"Telefono", phonePlaceholder:"+52 (228) 8112233",
-				bday:"Fecha de nacimiento"
+				bday:"Fecha de nacimiento", fullnameLabel: "Nombre"
 			},
 			userForm:{
 				legend:"Usuario"
@@ -97,15 +102,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				confirmDelete: "Seguro que deseas eliminar este registro?"
 			},
 			btns:{
-				returnBtn: "Regresar",
-				saveBtn: "Guardar",
-				newBtn: "Nuevo",
-				deleteBtn: "Eliminar",
-				cancelBtn: "Cancelar",
-				sendBtn: "Enviar",
-				yesBtn: "Si!",
-				noBtn: "No!",
-				newgroupBtn: "Crear Grupo"
+				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
+				newgroupBtn: "Crear Grupo", newMemberBtn: "Crear Miembro"
 			},
 			dropdowns:{
 				status:{

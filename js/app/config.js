@@ -57,6 +57,16 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/deleted.html'
 			})
 
+			.when('/members', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn();
+				// 	}
+				// },
+				templateUrl: 'views/members/members.html',
+				controller: 'MembersListCntrl'
+			})
+
 			.when('/error', {
 				templateUrl: 'views/errors/general.html'
 			})

@@ -1,0 +1,56 @@
+<!-- Members List -->
+<section>
+  <div class="row mb-1">
+      <h2>{{i18n.titles.membersList}}</h2>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-8">
+      <input type="text" placeholder="{{i18n.searchForm.hint}}" class="form-control form-control-lg" ng-model="searchText">
+    </div>
+    <div class="col-4">
+      <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
+        {{i18n.btns.newMemberBtn}}
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="m in allMembers | filter:searchText">
+      <!-- Group card -->
+      <div class="card h-100">
+        <h4 class="card-header">
+          <a ng-href="#!/members/edit/{{m.$id}}">
+            {{m.shortname}}
+          </a>
+        </h4>
+        <div class="card-body">
+          <!-- <h4 class="card-title"></h4> -->
+          <p>
+            <span class="font-weight-bold">{{i18n.memberForm.fullnameLabel}}:</span>
+            {{m.firstname}} {{m.lastname}}
+          </p>
+          <p class="card-text" ng-if="m.address">
+            <span class="font-weight-bold">{{i18n.addressFrgmnt.legend}}:</span>
+            {{m.address.street}}
+            #{{m.address.extNumber}}<span ng-if="m.address.intNumber">, Int {{m.address.intNumber}}</span><br>
+            {{m.address.city}} {{m.address.state}}, {{m.address.country}}<br>
+            {{i18n.addressFrgmnt.zipLbl}} {{m.address.zip}}
+          </p>
+          <p class="card-text" ng-if="m.phone">
+            <span class="font-weight-bold">{{i18n.groupForm.phoneLbl}}:</span>
+            <a href="tel:{{m.phone}}">{{m.phone}}</a>
+          </p>
+          <p class="card-text" ng-if="m.email">
+            <span class="font-weight-bold">{{i18n.groupForm.emailLbl}}:</span>
+            <a href="mailto:{{m.email}}">{{m.email}}</a>
+          </p>
+
+          <a ng-href="#!/members/edit/{{g.$id}}" class="btn btn-primary">Ver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
