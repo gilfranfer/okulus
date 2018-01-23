@@ -1,6 +1,5 @@
 <section ng-controller="GroupFormCntrl">
 
-
 <form class="mt-3" name="groupForm" novalidate ng-submit="saveGroup()">
 
   <!-- Basic Group Information -->
@@ -73,7 +72,7 @@
   </fieldset>
 
   <!-- Address -->
-  <section ng-include="'views/fragments/addressFieldset.html'"></section>
+  <article ng-include="'views/fragments/addressFieldset.html'"></article>
 
   <!-- Schedule -->
   <fieldset class="mb-4">
@@ -114,7 +113,7 @@
   <!-- Alert/Error row -->
   <div class="form-row">
     <div class="col">
-      <div class="alert alert-warning" role="alert" ng-show="groupForms.$invalid">
+      <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid && groupForm.$dirty">
         {{i18n.alerts.invalidForm}}
       </div>
       <div class="alert alert-success" role="alert" ng-show="response.messageOk">
@@ -127,10 +126,10 @@
   </div>
 
   <!-- Buttons rows -->
-  <div class="form-row" ng-if="isAdmin">
+  <div class="form-row">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-primary"
-        ng-disabled="groupForms.$invalid">
+        ng-disabled="groupForm.$invalid">
         {{i18n.btns.saveBtn}}
       </button>
     </div>
@@ -159,7 +158,6 @@
       </a>
     </div>
   </div>
-
 
 </form>
 

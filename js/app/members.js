@@ -4,6 +4,12 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 	}
 ]);
 
+okulusApp.controller('MemberFormCntrl', ['MembersSvc', '$rootScope',
+	function(MembersSvc, $rootScope){
+		MembersSvc.loadAllMembersList();
+	}
+]);
+
 okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 

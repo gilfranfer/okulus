@@ -6,7 +6,7 @@ okulusApp.controller('GroupListCntrl', ['GroupsSvc', '$rootScope',
 
 okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'GroupsSvc', 'AuditSvc',
 	function($rootScope, $scope, $location,$firebaseArray, GroupsSvc, AuditSvc){
-		$rootScope.isAdmin = true;
+		//$rootScope.isAdmin = true;
 	   	console.log("on Groups Controller");
 			$rootScope.response = null;
 	   	GroupsSvc.loadAllGroupsList();
@@ -85,7 +85,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams'
 	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, GroupsSvc){
 		console.log("On GroupDetailsCntrl");
 
-		$rootScope.isAdmin = true; //Remove this is we are not going to use the form as a view for members
+		//$rootScope.isAdmin = true; //Remove this is we are not going to use the form as a view for members
 		let whichGroup = $routeParams.groupId;
 
 
