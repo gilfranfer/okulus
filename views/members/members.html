@@ -6,7 +6,7 @@
 
   <div class="row mb-3">
     <div class="col-8">
-      <input type="text" placeholder="{{i18n.searchForm.hint}}" class="form-control form-control-lg" ng-model="searchText">
+      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
     </div>
     <div class="col-4">
       <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
@@ -28,26 +28,24 @@
         <div class="card-body">
           <!-- <h4 class="card-title"></h4> -->
           <p>
-            <span class="font-weight-bold">{{i18n.memberForm.fullnameLabel}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.member.fnameLbl}}:</span>
             {{m.firstname}} {{m.lastname}}
           </p>
           <p class="card-text" ng-if="m.address">
-            <span class="font-weight-bold">{{i18n.addressFrgmnt.legend}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
             {{m.address.street}}
             #{{m.address.extNumber}}<span ng-if="m.address.intNumber">, Int {{m.address.intNumber}}</span><br>
             {{m.address.city}} {{m.address.state}}, {{m.address.country}}<br>
-            {{i18n.addressFrgmnt.zipLbl}} {{m.address.zip}}
+            {{i18n.forms.address.zipLbl}} {{m.address.zip}}
           </p>
           <p class="card-text" ng-if="m.phone">
-            <span class="font-weight-bold">{{i18n.groupForm.phoneLbl}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span>
             <a href="tel:{{m.phone}}">{{m.phone}}</a>
           </p>
           <p class="card-text" ng-if="m.email">
-            <span class="font-weight-bold">{{i18n.groupForm.emailLbl}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.group.emailLbl}}:</span>
             <a href="mailto:{{m.email}}">{{m.email}}</a>
           </p>
-
-          <a ng-href="#!/members/edit/{{g.$id}}" class="btn btn-primary">Ver</a>
         </div>
       </div>
     </div>

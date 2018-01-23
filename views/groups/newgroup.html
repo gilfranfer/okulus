@@ -5,23 +5,23 @@
 
   <!-- Basic Group Information -->
   <fieldset class="mb-4">
-    <legend>{{i18n.groupForm.basicInfoFieldset}}</legend>
+    <legend>{{i18n.forms.group.legend}}</legend>
 
     <!-- Name row -->
     <div class="form-row">
       <div class="col-2 form-group">
-        <label for="gnumber">
-          {{i18n.groupForm.gnumberLabel}}
+        <label for="number">
+          {{i18n.forms.group.numberLbl}}
         </label>
         <input type="text" id="gnumber" name="gnumber" class="form-control form-control-lg"
-          placeholder="{{i18n.groupForm.gnumberPlaceholder}}" ng-model="group.number" ng-required="true">
+          placeholder="{{i18n.forms.group.numberHint}}" ng-model="group.number" ng-required="true">
       </div>
       <div class="col-10 form-group">
         <label for="gname">
-          {{i18n.groupForm.gnameLabel}}
+          {{i18n.forms.group.nameLbl}}
         </label>
         <input type="text" id="gname" name="gname" class="form-control form-control-lg"
-          placeholder="{{i18n.groupForm.gNamePlaceholder}}" ng-model="group.name" ng-required="true">
+          placeholder="{{i18n.forms.group.nameHint}}" ng-model="group.name" ng-required="true">
       </div>
     </div>
 
@@ -29,7 +29,7 @@
     <div class="form-row">
       <div class="col form-group">
         <label for="gtype">
-          {{i18n.groupForm.gtypeLabel}}
+          {{i18n.forms.group.typeLbl}}
         </label>
         <select id="gtype" name="gtype" class="form-control form-control-lg"
                 ng-model="group.type" ng-required="true">
@@ -55,17 +55,17 @@
     <div class="form-row">
       <div class="col form-group">
         <label for="email">
-          {{i18n.groupForm.emailLbl}}
+          {{i18n.forms.group.emailLbl}}
         </label>
         <input type="email" name="email" id="email" class="form-control form-control-lg"
-            placeholder="{{i18n.groupForm.emailHint}}" ng-model="group.email" ng-required="false">
+            placeholder="{{i18n.forms.group.emailHint}}" ng-model="group.email" ng-required="false">
       </div>
       <div class="col form-group">
         <label for="email">
-          {{i18n.groupForm.phoneLbl}}
+          {{i18n.forms.phone.phoneLbl}}
         </label>
         <input type="tel" name="phone" id="phone" class="form-control form-control-lg"
-            placeholder="{{i18n.groupForm.phoneHint}}" ng-model="group.phone" ng-required="false">
+            placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="group.phone" ng-required="false">
       </div>
     </div>
 
@@ -77,11 +77,11 @@
 
   <!-- Schedule -->
   <fieldset class="mb-4">
-    <legend>{{i18n.groupForm.shcLegend}}</legend>
+    <legend>{{i18n.forms.group.shcLegend}}</legend>
     <div class="form-row">
       <div class="col-6 form-group">
          <label for="schdDay">
-          {{i18n.groupForm.schdDayLabel}}
+          {{i18n.forms.group.schdDayLbl}}
         </label>
         <select id="schdDay" name="schdDay" class="form-control form-control-lg"
                 ng-model="schedule.weekday" ng-required="true">
@@ -96,14 +96,14 @@
       </div>
       <div class="col-3 form-group">
         <label for="schdHour">
-          {{i18n.groupForm.schdHourLabel}}
+          {{i18n.forms.group.schdHourLbl}}
         </label>
         <input type="number" name="schdHour" class="form-control form-control-lg" placeholder="19"
           ng-model="schedule.hour" ng-required="true" min="0" max="23" >
       </div>
       <div class="col-3 form-group">
         <label for="schdMin">
-          {{i18n.groupForm.schdMinLabel}}
+          {{i18n.forms.group.schdMinLbl}}
         </label>
         <input type="number" name="schdMin" class="form-control form-control-lg" placeholder="30"
           ng-model="schedule.minute" ng-required="true" min="0" max="59" >
@@ -114,7 +114,7 @@
   <!-- Alert/Error row -->
   <div class="form-row">
     <div class="col">
-      <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid">
+      <div class="alert alert-warning" role="alert" ng-show="groupForms.$invalid">
         {{i18n.alerts.invalidForm}}
       </div>
       <div class="alert alert-success" role="alert" ng-show="response.messageOk">
@@ -130,7 +130,7 @@
   <div class="form-row" ng-if="isAdmin">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-primary"
-        ng-disabled="groupForm.$invalid">
+        ng-disabled="groupForms.$invalid">
         {{i18n.btns.saveBtn}}
       </button>
     </div>

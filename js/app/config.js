@@ -74,7 +74,15 @@ okulusApp.config(['$routeProvider',
 				// },
 				templateUrl: 'views/members/newmember.html'
 			})
-
+			.when('/members/edit/:memberId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/members/newmember.html'
+				//controller: 'MemberDetailsCntrl'
+			})
 
 			.when('/error', {
 				templateUrl: 'views/errors/general.html'

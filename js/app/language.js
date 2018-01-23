@@ -13,15 +13,64 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					monitor:"Monitor"
 				}
 			},
+			btns:{
+				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
+				newgroupBtn: "Crear Grupo", newMemberBtn: "Crear Miembro"
+			},
+			alerts:{
+				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
+				confirmDelete: "Seguro que deseas eliminar este registro?"
+			},
 			titles:{
 				groupsList: "Grupos Familiares",
 				membersList: "Miembros"
 			},
-			launchpad:{
-				orgCardTitle: "Organizacion",
-				groupsCardTitle:"Ver Grupos",
-				membersCardTitle:"Ver Miembros",
-				reportsCardTitle:"Reportes"
+			forms:{
+				group:{
+					legend: "Datos del Grupo",
+					numberLbl:"#", numberHint:"1",
+					nameLbl:"Nombre del Grupo", nameHint:"Semillas de Esperanza",
+					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
+					typeLbl:"Tipo", 
+					statusLbl:"Estado",
+					shcLegend:"Horario de Servicio",
+					schdDayLbl: "Día",
+					schdHourLbl: "Hora",
+					schdMinLbl: "Min"
+				},
+				member:{
+					legend: "Datos del miembro",
+					fnameLbl:"Nombre", fnameHint:"Mi nombre",
+					lnameLbl:"Apellido", lnameHint:"Mi apellido",
+					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
+					bdayLbl:"Fecha de nacimiento"
+				},
+				phone:{
+					phoneLbl:"Teléfono", phoneHint:"228 8112233"
+				},
+				search:{
+					hint:"Buscar ..."
+				},
+				address:{
+					legend: "Dirección",
+					streetLbl:"Calle", streetHint:"Av. Principal",
+					extNumberLbl: "Num ext", extNumberHint: "007",
+					intNumberLbl: "Num int", intNumberHint: "1",
+					zipLbl: "Codigo Postal", zipHint: "77777",
+					cityLbl: "Ciudad", cityHint: "Xalapa",
+					stateLbl: "Estado", stateHint: "Veracruz",
+					countryLbl: "Pais", countryHint: "Mexico"
+				}
+			},
+			admin:{
+				launchpad:{
+					title: "Recursos",
+					orgBtn: "Organizacion",
+					groupsBtn:"Grupos Familiares",
+					membersBtn:"Miembros",
+					reportsBtn:"Reportes"
+				}
 			},
 			reportForm:{
 				reportLegend:"Datos generales de la Reunion",
@@ -43,38 +92,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 				studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
 			},
-			groupForm:{
-				basicInfoFieldset: "Datos del Grupo",
-				gnumberLabel:"#", gnumberPlaceholder:"1",
-				gnameLabel:"Nombre del Grupo", gNamePlaceholder:"Semillas de Esperanza",
-				emailLbl:"Correo", emailHint:"micorreo@gmail.com",
-				phoneLbl:"Teléfono", phoneHint:"228 8112233",
-				gtypeLabel:"Tipo", gstatusLabel:"Estado",
-				shcLegend:"Horario de Servicio",
-				schdDayLabel: "Día",
-				schdHourLabel: "Hora",
-				schdMinLabel: "Min"
-			},
-			searchForm:{
-				hint:"Buscar ..."
-			},
 			deletedGroup:{
 				title:"Grupo Eliminado",
 				message:"El grupo ha sido eliminado. Que quieres hacer ahora?"
 			},
-			generalError:{
+			error:{
 				title:"Oooops!!",
 				message:"Houston, We have some problems!"
-			},
-			addressFrgmnt:{
-				legend: "Dirección",
-				streetLbl:"Calle", streetHint:"Av. Principal",
-				extNumberLbl: "Num ext", extNumberHint: "007",
-				intNumberLbl: "Num int", intNumberHint: "1",
-				zipLbl: "Codigo Postal", zipHint: "77777",
-				cityLbl: "Ciudad", cityHint: "Xalapa",
-				stateLbl: "Estado", stateHint: "Veracruz",
-				countryLbl: "Pais", countryHint: "Mexico"
 			},
 			orgForm:{
 				basicInfoFieldset: "Datos de la Organizacion",
@@ -82,29 +106,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
 				urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 			},
-			memberForm:{
-				fieldsetLegend: "Datos del miembro",
-				fnameLabel:"Nombre", fnamePlaceholder:"Mi nombre",
-				lnameLabel:"Apellido", lnamePlaceholder:"Mi apellido",
-				emailLabel:"Corre electronico", emailPlaceholder:"micorreo@gmail.com",
-				phoneLabel:"Telefono", phonePlaceholder:"+52 (228) 8112233",
-				bday:"Fecha de nacimiento", fullnameLabel: "Nombre"
-			},
+			
 			userForm:{
 				legend:"Usuario"
-			},
-			phonesForm:{
-				phonesFieldset: "Telefonos",
-				addphoneBtn: "Agregar Telefono"
-			},
-			alerts:{
-				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
-				confirmDelete: "Seguro que deseas eliminar este registro?"
-			},
-			btns:{
-				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
-				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Crear Grupo", newMemberBtn: "Crear Miembro"
 			},
 			dropdowns:{
 				status:{
