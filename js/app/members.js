@@ -63,7 +63,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					let record = MembersSvc.getMember($scope.memberId);
 
 					//Move to Svc
-					$rootScope.allGroups.$remove(record).then(function(ref) {
+					$rootScope.allMembers.$remove(record).then(function(ref) {
 						cleanScope();
 					    $scope.response = { messageOk: "Miembro Eliminado"};
 					    AuditSvc.recordAudit(ref, "delete", "members");
