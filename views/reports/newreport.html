@@ -5,45 +5,42 @@
   <!-- Basic Group Information -->
   <fieldset class="mb-4">
     <legend>{{i18n.forms.report.title}}</legend>
-
+    <!-- Group and Host -->
     <div class="form-row">
-      <!-- <div class="col-md-2 form-group">
-        <label for="gid">
-          {{i18n.forms.report.gidLbl}}
-        </label>
-        <input type="text" id="gid" name="gid" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.gidHint}}" ng-model="report.groupId" ng-required="true">
-      </div> -->
-      <div class="col-md form-group">
+      <div class="col-sm-6 form-group">
         <label for="gname">
           {{i18n.forms.report.gnameLbl}}
         </label>
-        <input type="text" id="gname" name="gname" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.report.gnameHint}}" ng-model="report.groupName" ng-required="true">
+        <select type="text" id="gname" name="gname" class="form-control form-control-lg"
+        	ng-model="report.groupName" ng-required="true">
+        </select>
       </div>
-    </div>
-
-    <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col-sm-6 form-group">
         <label for="hname">
           {{i18n.forms.report.hnameLbl}}
         </label>
-        <input type="text" id="hname" name="hname" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.report.hnameHint}}" ng-model="report.hostName" ng-required="true">
+        <select type="text" id="hname" name="hname" class="form-control form-control-lg"
+         	ng-model="report.hostName" ng-required="true">
+        </select>
       </div>
-      <div class="col-md form-group">
+    </div>
+    <!-- Leader and Assitant -->
+    <div class="form-row">
+      <div class="col-sm-6 form-group">
         <label for="lname">
           {{i18n.forms.report.lnameLbl}}
         </label>
-        <input type="text" id="lname" name="lname" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.report.lnameHint}}" ng-model="report.leadName" ng-required="true">
+        <select type="text" id="lname" name="lname" class="form-control form-control-lg"
+         	ng-model="report.leadName" ng-required="true">
+        </select>
       </div>
-      <div class="col-md form-group">
+      <div class="col-sm-6 form-group">
         <label for="hname">
           {{i18n.forms.report.anameLbl}}
         </label>
-        <input type="text" id="aname" name="aname" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.report.anameHint}}" ng-model="report.assistantName" ng-required="true">
+        <select type="text" id="aname" name="aname" class="form-control form-control-lg"
+         	ng-model="report.assistantName" ng-required="false">
+        </select>
       </div>
     </div>
 
