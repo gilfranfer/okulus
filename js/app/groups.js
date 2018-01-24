@@ -20,17 +20,12 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 				$rootScope.response = null;
 	    };
 
-	    $scope.newGroup = function() {
-	    	cleanScope();
-	    };
-
 	    /*
 	    This method will be used to Create a new Group, or update the changes made to the recently created one.
 	    Note: Schedule Time is not getting persisted now because firebase cannot store Date Objects
 		$scope.groupId, $scope.group, $scope.address, $scope.schedule
 	    */
 	    $scope.saveGroup = function() {
-	    	console.log("saveGroup");
 	    	if( !$scope.groupId ){
 				console.log("Creating new group");
 	    		let record = {group: $scope.group, address: $scope.address, schedule: $scope.schedule};
@@ -71,7 +66,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 						cleanScope();
 					    $scope.response = { messageOk: "Grupo Eliminado"};
 					    AuditSvc.recordAudit(ref, "delete", "groups");
-							$location.path( "/groups/deleted/"+$scope.groupId );
+							$location.path( "/success/deleted");
 					}).catch(function(err) {
 						$scope.response = { messageErr: err};
 					});

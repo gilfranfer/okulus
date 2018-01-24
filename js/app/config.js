@@ -53,9 +53,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
-			.when('/groups/deleted/:groupId', {
-				templateUrl: 'views/groups/deleted.html'
-			})
 
 			.when('/members', {
 				// resolve: {
@@ -84,6 +81,10 @@ okulusApp.config(['$routeProvider',
 				//controller: 'MemberDetailsCntrl'
 			})
 
+
+			.when('/success/deleted', {
+				templateUrl: 'views/success/recordDeleted.html'
+			})
 			.when('/error', {
 				templateUrl: 'views/errors/general.html'
 			})

@@ -22,14 +22,14 @@
       <div class="card h-100">
         <h4 class="card-header">
           <a ng-href="#!/members/edit/{{m.$id}}">
-            {{m.shortname}}
+            {{m.member.shortname}}
           </a>
         </h4>
         <div class="card-body">
           <!-- <h4 class="card-title"></h4> -->
           <p>
             <span class="font-weight-bold">{{i18n.forms.member.fnameLbl}}:</span>
-            {{m.firstname}} {{m.lastname}}
+            {{m.member.firstname}} {{m.member.lastname}}
           </p>
           <p class="card-text" ng-if="m.address">
             <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
@@ -38,13 +38,13 @@
             {{m.address.city}} {{m.address.state}}, {{m.address.country}}<br>
             {{i18n.forms.address.zipLbl}} {{m.address.zip}}
           </p>
-          <p class="card-text" ng-if="m.phone">
+          <p class="card-text" ng-if="m.member.phone">
             <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span>
-            <a href="tel:{{m.phone}}">{{m.phone}}</a>
+            <a href="tel:{{m.phone}}">{{m.member.phone}}</a>
           </p>
-          <p class="card-text" ng-if="m.email">
+          <p class="card-text" ng-if="m.member.email">
             <span class="font-weight-bold">{{i18n.forms.group.emailLbl}}:</span>
-            <a href="mailto:{{m.email}}">{{m.email}}</a>
+            <a href="mailto:{{m.email}}">{{m.member.email}}</a>
           </p>
         </div>
       </div>

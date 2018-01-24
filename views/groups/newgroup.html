@@ -129,7 +129,7 @@
   <div class="form-row">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-primary"
-        ng-disabled="groupForm.$invalid">
+        ng-disabled="groupForm.$invalid || groupForm.$pristine">
         {{i18n.btns.saveBtn}}
       </button>
     </div>

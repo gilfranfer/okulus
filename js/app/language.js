@@ -92,9 +92,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 				studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
 			},
-			deletedGroup:{
-				title:"Grupo Eliminado",
-				message:"El grupo ha sido eliminado. Que quieres hacer ahora?"
+			success:{
+				deleted:{
+					title:"Registro Eliminado",
+					message:"El registro ha sido eliminado. Que quiere hacer ahora?"
+				}
 			},
 			error:{
 				title:"Oooops!!",
