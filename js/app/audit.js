@@ -19,10 +19,9 @@ okulusApp.factory('AuditSvc', ['$rootScope',
 				    //Audit in the object itself
 				    ref.child("audit").push().set(audit);
 				}
-		    //app global audit
-		    audit.on = on;
-		    audit.id = ref.key;
-		    baseRef.child("audit").push().set(audit);
+			    //app global audit
+			    audit.referenceId = ref.key;
+			    baseRef.child("audit").child(on).push().set(audit);
 			}
 		};
 	}
