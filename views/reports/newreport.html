@@ -1,72 +1,75 @@
-<form class="mt-3" name="reportForm" novalidate ng-submit="">
+<section ng-controller="ReportFormCntrl">
 
+<form class="mt-3" name="reportForm" novalidate ng-submit="saveReport()">
+
+  <!-- Basic Group Information -->
   <fieldset class="mb-4">
-    <legend>{{i18n.reportForm.reportLegend}}</legend>
+    <legend>{{i18n.forms.report.title}}</legend>
 
     <div class="form-row">
       <!-- <div class="col-md-2 form-group">
         <label for="gid">
-          {{i18n.reportForm.gidLbl}}
+          {{i18n.forms.report.gidLbl}}
         </label>
         <input type="text" id="gid" name="gid" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.gidPlaceholder}}" ng-model="report.groupId" ng-required="true">
+          placeholder="{{i18n.reportForm.gidHint}}" ng-model="report.groupId" ng-required="true">
       </div> -->
       <div class="col-md form-group">
         <label for="gname">
-          {{i18n.reportForm.gnameLbl}}
+          {{i18n.forms.report.gnameLbl}}
         </label>
         <input type="text" id="gname" name="gname" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.gnamePlaceholder}}" ng-model="report.groupName" ng-required="true">
+          placeholder="{{i18n.forms.report.gnameHint}}" ng-model="report.groupName" ng-required="true">
       </div>
     </div>
 
     <div class="form-row">
       <div class="col-md form-group">
         <label for="hname">
-          {{i18n.reportForm.hnameLbl}}
+          {{i18n.forms.report.hnameLbl}}
         </label>
         <input type="text" id="hname" name="hname" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.hnamePlaceholder}}" ng-model="report.hostName" ng-required="true">
+          placeholder="{{i18n.forms.report.hnameHint}}" ng-model="report.hostName" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="lname">
-          {{i18n.reportForm.lnameLbl}}
+          {{i18n.forms.report.lnameLbl}}
         </label>
         <input type="text" id="lname" name="lname" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.lnamePlaceholder}}" ng-model="report.leadName" ng-required="true">
+          placeholder="{{i18n.forms.report.lnameHint}}" ng-model="report.leadName" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="hname">
-          {{i18n.reportForm.anameLbl}}
+          {{i18n.forms.report.anameLbl}}
         </label>
         <input type="text" id="aname" name="aname" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.anamePlaceholder}}" ng-model="report.assistantName" ng-required="true">
+          placeholder="{{i18n.forms.report.anameHint}}" ng-model="report.assistantName" ng-required="true">
       </div>
     </div>
 
     <div class="form-row">
       <div class="col-md form-group">
         <label for="date">
-          {{i18n.reportForm.dateLbl}}
+          {{i18n.forms.report.dateLbl}}
         </label>
         <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.datePlaceholder}}"
+          class="form-control form-control-lg" placeholder="{{i18n.forms.report.dateHint}}"
           ng-model="report.date" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="startTime">
-          {{i18n.reportForm.startTimeLbl}}
+          {{i18n.forms.report.startTimeLbl}}
         </label>
         <input type="time" id="startTime" name="startTime"
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.startTimePlaceholder}}"
+          class="form-control form-control-lg" placeholder="{{i18n.forms.report.startTimeHint}}"
           ng-model="report.startTime" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="endTime">
-          {{i18n.reportForm.endTimeLbl}}
+          {{i18n.forms.report.endTimeLbl}}
         </label>
         <input type="time" id="endTime" name="endTime"
-          class="form-control form-control-lg" placeholder="{{i18n.reportForm.endTimePlaceholder}}"
+          class="form-control form-control-lg" placeholder="{{i18n.forms.report.endTimeHint}}"
           ng-model="report.endTime" ng-required="true">
       </div>
     </div>
@@ -74,7 +77,7 @@
     <div class="form-row">
       <div class="col-md form-group">
         <label for="week">
-          {{i18n.reportForm.weekLbl}}
+          {{i18n.forms.report.weekLbl}}
         </label>
         <select id="week" name="week" class="form-control form-control-lg"
                 ng-model="report.week" ng-required="true">
@@ -83,7 +86,7 @@
       </div>
       <div class="col-md form-group">
         <label for="money">
-          {{i18n.reportForm.moneyLbl}}
+          {{i18n.forms.report.moneyLbl}}
         </label>
         <div class="input-group" id="money">
           <span class="input-group-addon">$</span>
@@ -100,11 +103,11 @@
         <div id="status" class="btn-group" data-toggle="buttons">
           <label class="btn btn-primary btn-lg active">
             <input type="radio" name="options" id="option1" autocomplete="off" checked>
-            {{i18n.reportForm.okStatusLbl}}
+            {{i18n.forms.report.okStatusLbl}}
           </label>
           <label class="btn btn-danger btn-lg">
             <input type="radio" name="options" id="option2" autocomplete="off">
-            {{i18n.reportForm.cancelStatusLbl}}
+            {{i18n.forms.report.cancelStatusLbl}}
           </label>
         </div>
       </div>
@@ -113,22 +116,22 @@
 
 <!-- Study Details -->
   <fieldset class="mb-4">
-    <legend>{{i18n.reportForm.studyLegend}}</legend>
+    <legend>{{i18n.forms.report.studyLegend}}</legend>
 
     <div class="form-row">
       <div class="col-md form-group">
         <label for="study">
-          {{i18n.reportForm.studyLbl}}
+          {{i18n.forms.report.studyLbl}}
         </label>
         <input type="text" id="study" name="study" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.studyPlaceholder}}" ng-model="report.study" ng-required="true">
+          placeholder="{{i18n.forms.report.studyHint}}" ng-model="report.study" ng-required="true">
       </div>
       <div class="col-md form-group">
         <label for="series">
-          {{i18n.reportForm.seriesLbl}}
+          {{i18n.forms.report.seriesLbl}}
         </label>
         <input type="text" id="series" name="series" class="form-control form-control-lg"
-          placeholder="{{i18n.reportForm.seriesPlaceholder}}" ng-model="report.series" ng-required="true">
+          placeholder="{{i18n.forms.report.seriesHint}}" ng-model="report.series" ng-required="true">
       </div>
     </div>
 
@@ -136,22 +139,22 @@
 
 <!-- Attendance -->
   <fieldset class="mb-4">
-    <legend>{{i18n.reportForm.attendanceLegend}}</legend>
+    <legend>{{i18n.forms.report.attendanceLegend}}</legend>
 
 <!-- Members -->
     <div class="form-row">
       <div class="col">
         <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
-          {{i18n.reportForm.membersLbl}}
+          {{i18n.forms.report.membersLbl}}
         </button>
       </div>
       <div class="col">
         <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} {{i18n.reportForm.femaleLbl}}">
+          placeholder="{{report.attendance.total}} {{i18n.forms.report.femaleLbl}}">
       </div>
       <div class="col">
         <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} {{i18n.reportForm.maleLbl}}">
+          placeholder="{{report.attendance.total}} {{i18n.forms.report.maleLbl}}">
       </div>
     </div>
     <div  class="collapse" id="collapseMembers">
@@ -159,7 +162,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.adultLbl}}
+              {{i18n.forms.report.adultLbl}}
             </label>
           </div>
         </div>
@@ -168,14 +171,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.female.adult">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.male.adult">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -183,7 +186,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.youngLbl}}
+              {{i18n.forms.report.youngLbl}}
             </label>
           </div>
         </div>
@@ -192,14 +195,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.female.young">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.male.young">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -207,7 +210,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.kidLbl}}
+              {{i18n.forms.report.kidLbl}}
             </label>
           </div>
         </div>
@@ -216,14 +219,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.female.kid">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.members.male.kid">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -234,7 +237,7 @@
     <div class="form-row mt-3">
       <div class="col">
         <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
-          {{i18n.reportForm.guestsLbl}}
+          {{i18n.forms.report.guestsLbl}}
         </button>
       </div>
       <div class="col">
@@ -251,7 +254,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.adultLbl}}
+              {{i18n.forms.report.adultLbl}}
             </label>
           </div>
         </div>
@@ -260,14 +263,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.female.adult">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.male.adult">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -275,7 +278,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.youngLbl}}
+              {{i18n.forms.report.youngLbl}}
             </label>
           </div>
         </div>
@@ -284,14 +287,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.female.young">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.male.young">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -299,7 +302,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label for="">
-              {{i18n.reportForm.membersLbl}}
+              {{i18n.forms.report.membersLbl}}
             </label>
           </div>
         </div>
@@ -308,14 +311,14 @@
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.female.kid">
-              <span class="input-group-addon">{{i18n.reportForm.femaleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
           <div class="col form-group">
             <div class="input-group">
               <input type="number" value="0" min="0" class="form-control form-control-lg"
                 ng-model="report.attendance.guests.male.kid">
-              <span class="input-group-addon">{{i18n.reportForm.maleAbrev}}</span>
+              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
         </div>
@@ -325,11 +328,11 @@
   </fieldset>
 
   <fieldset class="mb-4">
-    <legend>{{i18n.reportForm.notesLegend}}</legend>
+    <legend>{{i18n.forms.report.notesLegend}}</legend>
     <div class="form-row">
       <div class="col-md form-group">
         <textarea id="notes" name="notes" class="form-control form-control-lg"
-        placeholder="{{i18n.reportForm.notesPlaceholder}}" ng-model="report.notes" ng-required="false">
+        placeholder="{{i18n.forms.report.notesHint}}" ng-model="report.notes" ng-required="false">
         </textarea>
       </div>
     </div>
@@ -362,3 +365,5 @@
   </div>
 
 </form>
+
+</section>

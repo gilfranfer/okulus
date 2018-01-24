@@ -46,6 +46,26 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
 					bdayLbl:"Fecha de nacimiento"
 				},
+				report:{
+					title:"Datos generales de la Reunion",
+					gnameLbl:"Grupo", gnameHint:"",
+					gidLbl: "Identificador", gidHint: "",
+					lnameLbl: "Lider", lnameHint: "",
+					anameLbl: "Asistente", anameHint: "",
+					hnameLbl: "Anfitrion", hnameHint: "",
+					dateLbl: "Fecha de reunion", dateHint: "12/22/2017",
+					startTimeLbl: "Hora de Inicio", startTimeHint: "12:00 p.m.",
+					endTimeLbl: "Hora de Fin", endTimeHint: "2:00 p.m.",
+					weekLbl:"Semana", moneyLbl: "Ofrenda",
+					cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
+					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunion",
+					attendanceLegend: "Asistencia",
+					membersLbl: "Miembros", guestsLbl: "Invitados",
+					maleLbl: "Hombres", femaleLbl: "Mujeres",
+					maleAbrev: "Hom", femaleAbrev: "Muj",
+					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
+					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
+				},
 				phone:{
 					phoneLbl:"Teléfono", phoneHint:"228 8112233"
 				},
@@ -83,26 +103,6 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					}
 				}
 			},
-			reportForm:{
-				reportLegend:"Datos generales de la Reunion",
-				gnameLbl:"Grupo", gnamePlaceholder:"",
-				gidLbl: "Identificador", gidPlaceholder: "",
-				lnameLbl: "Lider", lnamePlaceholder: "",
-				anameLbl: "Asistente", anamePlaceholder: "",
-				hnameLbl: "Anfitrion", hnamePlaceholder: "",
-				dateLbl: "Fecha de reunion", datePlaceholder: "12/22/2017",
-				startTimeLbl: "Hora de Inicio", startTimePlaceholder: "12:00 p.m.",
-				endTimeLbl: "Hora de Fin", endTimePlaceholder: "2:00 p.m.",
-				weekLbl:"Semana", moneyLbl: "Ofrenda",
-				cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
-				notesLegend: "Notas", notesPlaceholder: "Agregar notas y comentarios de la reunion",
-				attendanceLegend: "Asistencia",
-				membersLbl: "Miembros", guestsLbl: "Invitados",
-				maleLbl: "Hombres", femaleLbl: "Mujeres",
-				maleAbrev: "Hom", femaleAbrev: "Muj",
-				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
-				studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
-			},
 			success:{
 				deleted:{
 					title:"Registro Eliminado",
@@ -118,10 +118,6 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
 				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
 				urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
-			},
-			
-			userForm:{
-				legend:"Usuario"
 			},
 			dropdowns:{
 				status:{
