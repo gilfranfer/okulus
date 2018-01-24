@@ -81,8 +81,14 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/newmember.html',
 				controller: 'MemberDetailsCntrl'
 			})
-
-
+			.when('/reports/new', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/reports/newreport.html'
+			})
 			.when('/success/deleted', {
 				templateUrl: 'views/success/recordDeleted.html'
 			})
@@ -92,12 +98,6 @@ okulusApp.config(['$routeProvider',
 
 			.when('/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
-			})
-			.when('/admin/newmember', {
-				templateUrl: 'views/admin/newmember.html'
-			})
-			.when('/admin/newreport', {
-				templateUrl: 'views/admin/newreport.html'
 			})
 			.otherwise({
 				redirectTo: '/about'
