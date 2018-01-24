@@ -77,8 +77,8 @@ okulusApp.config(['$routeProvider',
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
 				// 	}
 				// },
-				templateUrl: 'views/members/newmember.html'
-				//controller: 'MemberDetailsCntrl'
+				templateUrl: 'views/members/newmember.html',
+				controller: 'MemberDetailsCntrl'
 			})
 
 

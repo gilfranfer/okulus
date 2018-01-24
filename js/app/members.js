@@ -18,13 +18,19 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 	    };
 
 	    $scope.saveMember = function() {
+	    	//Resolve birthday
+	    	let birthday = $scope.member.birthday;
+	    	let bday = null;
+	    	if(birthday){
+	    		bday = { day:birthday.getDate(),
+						 month: birthday.getMonth()+1,
+						 year:birthday.getFullYear() };
+			}
+
 	    	if( !$scope.memberId ){
 				console.log("Creating new member");
-				let birthday = $scope.member.birthday;
-	    		let record = {member: $scope.member, address: $scope.address};
-	    		record.member.bday = { day:birthday.getDate(),
-	    							 month: birthday.getMonth()+1,
-	    							 year:birthday.getFullYear() };
+				let record = {member: $scope.member, address: $scope.address};
+	    		record.member.bday = bday;
 
 		    	//Move to Svc
 		    	$rootScope.allMembers.$add( record ).then(function(ref) {
@@ -39,6 +45,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				let record = MembersSvc.getMember($scope.memberId);
 				record.member = $scope.member;
 				record.address = $scope.address;
+				record.member.bday = bday;
 
 			    //Move to Svc
 		    	$rootScope.allMembers.$save(record).then(function(ref) {
@@ -70,6 +77,35 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
   	}
 ]);
 
+okulusApp.controller('MemberDetailsCntrl', ['$rootScope', '$scope','$routeParams', '$location','$firebaseArray', '$firebaseObject', 'MembersSvc',
+	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, MembersSvc){
+		
+		let whichMember = $routeParams.memberId;
+
+		MembersSvc.loadAllMembersList(); //This is in case of a Refresh in the view
+		$rootScope.allMembers.$loaded(function() {
+			//Load Specific Member
+			let record = MembersSvc.getMember(whichMember);
+			if(record){
+				$scope.memberId = record.$id;
+				$scope.member = record.member;
+				$scope.address = record.address;
+
+				if(record.member.bday){
+					$scope.member.birthday = new Date(record.member.bday.year, 
+												  record.member.bday.month-1,
+												  record.member.bday.day);
+				}
+			}else{
+				$rootScope.response = { messageErr: "El Miembro '"+whichMember+ "' no existe"};
+				$location.path( "/error" );
+			}
+		});
+
+	}
+]);
+
+
 okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
@@ -80,7 +116,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				return $rootScope.allMembers.$getRecord(memberId);
 			},
 			loadAllMembersList: function(){
-				//if(!$rootScope.allGroups){
+				//if(!$rootScope.allMembers){
 					console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				//}

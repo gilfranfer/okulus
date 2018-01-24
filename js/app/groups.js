@@ -97,8 +97,6 @@ okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams'
 				$rootScope.response = { messageErr: "El Grupo '"+whichGroup+ "' no existe"};
 				$location.path( "/error" );
 			}
-			console.log(whichGroup);
-			console.log(record);
 		});
 
 	}
