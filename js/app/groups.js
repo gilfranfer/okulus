@@ -106,6 +106,8 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+		//Get only Active Status groups
+		let activeGroupsRef = firebase.database().ref().child('pibxalapa').child('groups');
 
 		return {
 			getGroup: function(groupId){
@@ -116,6 +118,11 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 					console.log("Creating firebaseArray for Groups");
 					$rootScope.allGroups = $firebaseArray(groupsRef);
 				//}
+			},
+			loadActiveGroups: function(){
+				if(!$rootScope.allActiveGroups){
+					$rootScope.allActiveGroups = $firebaseArray(activeGroupsRef);
+				}
 			}
 		};
 	}

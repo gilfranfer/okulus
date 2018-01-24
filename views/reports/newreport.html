@@ -1,4 +1,4 @@
-<section ng-controller="ReportFormCntrl">
+<section>
 
 <form class="mt-3" name="reportForm" novalidate ng-submit="saveReport()">
 
@@ -7,45 +7,57 @@
     <legend>{{i18n.forms.report.title}}</legend>
     <!-- Group and Host -->
     <div class="form-row">
-      <div class="col-sm-6 form-group">
+      <div class="col-sm form-group">
         <label for="gname">
           {{i18n.forms.report.gnameLbl}}
         </label>
-        <select type="text" id="gname" name="gname" class="form-control form-control-lg"
+        <select id="gname" name="gname" class="form-control form-control-lg"
         	ng-model="report.groupName" ng-required="true">
+        	<option ng-repeat="g in allActiveGroups" value="{{g.$id}}">
+        		#{{g.group.number}} {{g.group.name}}
+        	</option>
         </select>
       </div>
-      <div class="col-sm-6 form-group">
+      <div class="col-sm form-group">
         <label for="hname">
           {{i18n.forms.report.hnameLbl}}
         </label>
-        <select type="text" id="hname" name="hname" class="form-control form-control-lg"
+        <select id="hname" name="hname" class="form-control form-control-lg"
          	ng-model="report.hostName" ng-required="true">
+         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+        		{{m.member.shortname}}
+        	</option>
         </select>
       </div>
     </div>
     <!-- Leader and Assitant -->
     <div class="form-row">
-      <div class="col-sm-6 form-group">
+      <div class="col-sm form-group">
         <label for="lname">
           {{i18n.forms.report.lnameLbl}}
         </label>
-        <select type="text" id="lname" name="lname" class="form-control form-control-lg"
+        <select id="lname" name="lname" class="form-control form-control-lg"
          	ng-model="report.leadName" ng-required="true">
+         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+        		{{m.member.shortname}}
+        	</option>
         </select>
       </div>
-      <div class="col-sm-6 form-group">
+      <div class="col-sm form-group">
         <label for="hname">
           {{i18n.forms.report.anameLbl}}
         </label>
-        <select type="text" id="aname" name="aname" class="form-control form-control-lg"
+        <select id="aname" name="aname" class="form-control form-control-lg"
          	ng-model="report.assistantName" ng-required="false">
+         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+        		{{m.member.shortname}}
+        	</option>
         </select>
       </div>
     </div>
-
+    <!-- Date and Duration -->
     <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col-sm form-group">
         <label for="date">
           {{i18n.forms.report.dateLbl}}
         </label>
@@ -53,21 +65,13 @@
           class="form-control form-control-lg" placeholder="{{i18n.forms.report.dateHint}}"
           ng-model="report.date" ng-required="true">
       </div>
-      <div class="col-md form-group">
-        <label for="startTime">
-          {{i18n.forms.report.startTimeLbl}}
+      <div class="col-sm form-group">
+        <label for="duration">
+          {{i18n.forms.report.durationLbl}}
         </label>
-        <input type="time" id="startTime" name="startTime"
-          class="form-control form-control-lg" placeholder="{{i18n.forms.report.startTimeHint}}"
-          ng-model="report.startTime" ng-required="true">
-      </div>
-      <div class="col-md form-group">
-        <label for="endTime">
-          {{i18n.forms.report.endTimeLbl}}
-        </label>
-        <input type="time" id="endTime" name="endTime"
-          class="form-control form-control-lg" placeholder="{{i18n.forms.report.endTimeHint}}"
-          ng-model="report.endTime" ng-required="true">
+        <input id="duration" name="duration" class="form-control form-control-lg"
+          type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
+          ng-model="report.duration" ng-required="true">
       </div>
     </div>
 

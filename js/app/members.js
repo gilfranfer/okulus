@@ -110,6 +110,8 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let membersRef = firebase.database().ref().child('pibxalapa').child('members');
+		//Get only active members
+		let activeMembersRef = firebase.database().ref().child('pibxalapa').child('members');
 
 		return {
 			getMember: function(memberId){
@@ -120,6 +122,11 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				//}
+			},
+			loadActiveMembers: function(){
+				if(!$rootScope.allActiveMembers){
+					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
+				}
 			}
 		};
 	}

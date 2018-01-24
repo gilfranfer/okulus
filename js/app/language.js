@@ -2,8 +2,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
-			reports:{maxDate:"2018-12-31",minDate:"2017-01-01"}
+			reports:{
+						maxDate:"2018-12-31",minDate:"2017-01-01",
+						minDuration:"1", maxDuration:"300"
+					}
 		};
+
 		$rootScope.i18n = {
 			navigation:{
 				brand:"PIB Xalapa",
@@ -47,15 +51,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					bdayLbl:"Fecha de nacimiento"
 				},
 				report:{
-					title:"Datos generales de la Reunion",
+					title:"Datos generales de la Reunión",
 					gnameLbl:"Grupo", lnameLbl: "Lider",
-					anameLbl: "Asistente", hnameLbl: "Anfitrion", 
-					dateLbl: "Fecha de reunion", dateHint: "12/22/2017",
-					startTimeLbl: "Hora de Inicio", startTimeHint: "12:00 p.m.",
-					endTimeLbl: "Hora de Fin", endTimeHint: "2:00 p.m.",
+					anameLbl: "Asistente", hnameLbl: "Anfitrión", 
+					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
+					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
 					cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
-					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunion",
+					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
 					attendanceLegend: "Asistencia",
 					membersLbl: "Miembros", guestsLbl: "Invitados",
 					maleLbl: "Hombres", femaleLbl: "Mujeres",

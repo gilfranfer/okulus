@@ -87,7 +87,8 @@ okulusApp.config(['$routeProvider',
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
 				// 	}
 				// },
-				templateUrl: 'views/reports/newreport.html'
+				templateUrl: 'views/reports/newreport.html',
+				controller: 'ReportCntrl'
 			})
 			.when('/success/deleted', {
 				templateUrl: 'views/success/recordDeleted.html'
