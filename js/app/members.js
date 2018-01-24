@@ -20,7 +20,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 	    $scope.saveMember = function() {
 	    	if( !$scope.memberId ){
 				console.log("Creating new member");
+				let birthday = $scope.member.birthday;
 	    		let record = {member: $scope.member, address: $scope.address};
+	    		record.member.bday = { day:birthday.getDate(),
+	    							 month: birthday.getMonth()+1,
+	    							 year:birthday.getFullYear() };
 
 		    	//Move to Svc
 		    	$rootScope.allMembers.$add( record ).then(function(ref) {
