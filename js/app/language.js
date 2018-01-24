@@ -70,6 +70,17 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					groupsBtn:"Grupos Familiares",
 					membersBtn:"Miembros",
 					reportsBtn:"Reportes"
+				},
+				audit:{
+					title: "Auditoria de Movimientos",
+					select: "Revisar Movimientos en ",
+					groupsOptn:"Grupos",
+					membersOptn:"Miembros",
+					reportsOptn:"Reportes",
+					norecords: "No hay registros disponibles",
+					table:{
+						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
+					}
 				}
 			},
 			reportForm:{

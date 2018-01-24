@@ -24,7 +24,8 @@ okulusApp.config(['$routeProvider',
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
 				// 	}
 				// },
-				templateUrl: 'views/admin/monitor.html'
+				templateUrl: 'views/admin/monitor.html',
+				controller: 'MonitorCntrl'
 			})
 
 			.when('/groups', {
