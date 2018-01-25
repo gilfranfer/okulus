@@ -152,17 +152,21 @@
       <!-- Totals -->
       <div class="col">
       	<div class="input-group">
-          <input type="number" value="0" min="0" readonly
+          <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            ng-model="report.attendance.members.female.total">
+            value="{{report.attendance.members.female.adult +
+        			report.attendance.members.female.young +
+        			report.attendance.members.female.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
         </div>
       </div>
       <div class="col">
       	<div class="input-group">
-          <input type="number" value="0" min="0" readonly
+          <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            ng-model="report.attendance.members.male.total">
+            value="{{report.attendance.members.male.adult +
+        			report.attendance.members.male.young +
+        			report.attendance.members.male.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
         </div>
       </div>
@@ -261,17 +265,21 @@
       <!-- Totals -->
       <div class="col">
       	<div class="input-group">
-          <input type="number" value="0" min="0" readonly
+          <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            ng-model="report.attendance.guests.female.total">
+            value="{{report.attendance.guests.female.adult +
+        			report.attendance.guests.female.young +
+        			report.attendance.guests.female.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
         </div>
       </div>
       <div class="col">
       	<div class="input-group">
-          <input type="number" value="0" min="0" readonly
+          <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            ng-model="report.attendance.guests.male.total">
+            value="{{report.attendance.guests.male.adult +
+        			report.attendance.guests.male.young +
+        			report.attendance.guests.male.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
         </div>
       </div>

@@ -17,6 +17,5 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope', 'GroupsSvc', 'Member
 				}
 			}
 		};
-
 	}
 ]);
