@@ -86,6 +86,9 @@
 	        </select>
       	</div>
       	<div class="col-sm form-group">
+      		<label for="status">
+	          {{i18n.forms.report.statusLbl}}
+	        </label>
 	        <div id="status" class="btn-group" data-toggle="buttons">
 	          <label class="btn btn-primary btn-lg active">
 	            <input type="radio" name="options" id="option1" autocomplete="off" checked>
@@ -106,9 +109,8 @@
         </label>
         <div class="input-group" id="money">
           <span class="input-group-addon">$</span>
-          <input type="number" min="0" class="form-control form-control-lg"
+          <input type="number" min="0" step=".01" class="form-control form-control-lg"
             ng-model="report.money" ng-required="true">
-          <span class="input-group-addon">.00</span>
         </div>
       </div>
     </div>
@@ -137,35 +139,45 @@
 
   </fieldset>
 
-<!-- Attendance -->
+	<!-- Attendance -->
   <fieldset class="mb-4">
     <legend>{{i18n.forms.report.attendanceLegend}}</legend>
-
-<!-- Members -->
+	<!-- Members -->
     <div class="form-row">
       <div class="col">
-        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
+        <button class="btn btn-outline-primary btn-block btn-lg" type="button" data-toggle="collapse" data-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
           {{i18n.forms.report.membersLbl}}
         </button>
       </div>
+      <!-- Totals -->
       <div class="col">
-        <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} {{i18n.forms.report.femaleLbl}}">
+      	<div class="input-group">
+          <input type="number" value="0" min="0" readonly
+          	class="form-control form-control-lg" ng-required="true"
+            ng-model="report.attendance.members.female.total">
+          <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+        </div>
       </div>
       <div class="col">
-        <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} {{i18n.forms.report.maleLbl}}">
+      	<div class="input-group">
+          <input type="number" value="0" min="0" readonly
+          	class="form-control form-control-lg" ng-required="true"
+            ng-model="report.attendance.members.male.total">
+          <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+        </div>
       </div>
     </div>
+    <!-- Member Attendance details -->
     <div  class="collapse" id="collapseMembers">
       <div class="card-body border border-primary border-top-0 rounded-bottom">
+       <!-- Member Adults -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
               {{i18n.forms.report.adultLbl}}
             </label>
           </div>
-        </div>
+        </div> 
         <div class="form-row">
           <div class="col form-group">
             <div class="input-group">
@@ -184,7 +196,7 @@
             </div>
           </div>
         </div>
-
+       <!-- Member Young -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
@@ -210,7 +222,7 @@
             </div>
           </div>
         </div>
-
+       <!-- Member Kids -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
@@ -239,24 +251,35 @@
       </div>
     </div>
 
-<!-- Invitados -->
+	<!-- Guests -->
     <div class="form-row mt-3">
       <div class="col">
-        <button class="btn btn-outline-primary btn-block" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
+        <button class="btn btn-outline-primary btn-block btn-lg" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
           {{i18n.forms.report.guestsLbl}}
         </button>
       </div>
+      <!-- Totals -->
       <div class="col">
-        <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} Mujeres">
+      	<div class="input-group">
+          <input type="number" value="0" min="0" readonly
+          	class="form-control form-control-lg" ng-required="true"
+            ng-model="report.attendance.guests.female.total">
+          <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+        </div>
       </div>
       <div class="col">
-        <input class="form-control" type="text" readonly
-          placeholder="{{report.attendance.total}} Hombres">
+      	<div class="input-group">
+          <input type="number" value="0" min="0" readonly
+          	class="form-control form-control-lg" ng-required="true"
+            ng-model="report.attendance.guests.male.total">
+          <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+        </div>
       </div>
     </div>
+    <!-- Guest Attendance details -->
     <div  class="collapse" id="collapseGuests">
       <div class="card-body border border-primary border-top-0 rounded-bottom">
+        <!-- Guest Adults -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
@@ -282,7 +305,7 @@
             </div>
           </div>
         </div>
-
+        <!-- Guest Young -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
@@ -308,7 +331,7 @@
             </div>
           </div>
         </div>
-
+        <!-- Guest Kids -->
         <div class="form-row">
           <div class="col form-group">
             <label for="">
@@ -336,9 +359,9 @@
         </div>
       </div>
     </div>
-
   </fieldset>
 
+  <!-- Notes and Comments -->
   <fieldset class="mb-4">
     <legend>{{i18n.forms.report.notesLegend}}</legend>
     <div class="form-row">
@@ -350,30 +373,53 @@
     </div>
   </fieldset>
 
-
- <!-- Alert/Error row -->
+  <!-- Alert/Error row -->
   <div class="form-row">
     <div class="col">
-      <div class="alert alert-danger" role="alert" ng-show="reportForm.$invalid">
-        {{i18n.alerts.invalidForm}} 
+      <div class="alert alert-warning" role="alert" ng-show="reportForm.$invalid && reportForm.$dirty">
+        {{i18n.alerts.invalidForm}}
+      </div>
+      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
+        {{response.messageOk}}
+      </div>
+      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
+        {{response.messageErr}}
       </div>
     </div>
   </div>
 
-  <!-- Buttons row -->
+  <!-- Buttons rows -->
   <div class="form-row">
-      <div class="col-md form-group">
-        <button type="button" class="btn btn-lg btn-block btn-primary" 
-          ng-disabled="reportForm.$invalid">
-          {{i18n.btns.saveBtn}}
-        </button>
+    <div class="col-sm form-group" >
+      <button type="submit" class="btn btn-lg btn-block btn-primary"
+        ng-disabled="reportForm.$invalid || reportForm.$pristine">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+    <div class="col-sm form-group" ng-if="reportId">
+      <button type="button" class="btn btn-lg btn-block btn-danger"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.btns.deleteBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="deleteReport()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
       </div>
-      <div class="col-md form-group">
-        <button type="button" class="btn btn-lg btn-block btn-danger" 
-          ng-disabled="reportForm.$invalid">
-          {{i18n.btns.deleteBtn}}
-        </button>
-      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col form-group">
+      <a class="btn btn-lg btn-block btn-success" href="#!/reports">
+        {{i18n.btns.returnBtn}}
+      </a>
+    </div>
   </div>
 
 </form>
