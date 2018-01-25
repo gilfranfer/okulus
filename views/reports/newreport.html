@@ -74,42 +74,41 @@
           ng-model="report.duration" ng-required="true">
       </div>
     </div>
+    <!-- Week -->
+    <div class="form-row">
+      	<div class="col-sm form-group">
+	        <label for="week">
+	          {{i18n.forms.report.weekLbl}}
+	        </label>
+	        <select id="week" name="week" class="form-control form-control-lg"
+	                ng-model="report.week" ng-required="true">
+	          <option>Semana 1</option>
+	        </select>
+      	</div>
+      	<div class="col-sm form-group">
+	        <div id="status" class="btn-group" data-toggle="buttons">
+	          <label class="btn btn-primary btn-lg active">
+	            <input type="radio" name="options" id="option1" autocomplete="off" checked>
+	            {{i18n.forms.report.okStatusLbl}}
+	          </label>
+	          <label class="btn btn-danger btn-lg">
+	            <input type="radio" name="options" id="option2" autocomplete="off">
+	            {{i18n.forms.report.cancelStatusLbl}}
+	          </label>
+	        </div>
+    	</div>
+    </div>
 
     <div class="form-row">
-      <div class="col-md form-group">
-        <label for="week">
-          {{i18n.forms.report.weekLbl}}
-        </label>
-        <select id="week" name="week" class="form-control form-control-lg"
-                ng-model="report.week" ng-required="true">
-          <option>Semana 1</option>
-        </select>
-      </div>
-      <div class="col-md form-group">
+      <div class="col-sm form-group">
         <label for="money">
           {{i18n.forms.report.moneyLbl}}
         </label>
         <div class="input-group" id="money">
           <span class="input-group-addon">$</span>
           <input type="number" min="0" class="form-control form-control-lg"
-            ng-model="report.money">
+            ng-model="report.money" ng-required="true">
           <span class="input-group-addon">.00</span>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="form-row">
-        <div class="col-md form-group">
-        <div id="status" class="btn-group" data-toggle="buttons">
-          <label class="btn btn-primary btn-lg active">
-            <input type="radio" name="options" id="option1" autocomplete="off" checked>
-            {{i18n.forms.report.okStatusLbl}}
-          </label>
-          <label class="btn btn-danger btn-lg">
-            <input type="radio" name="options" id="option2" autocomplete="off">
-            {{i18n.forms.report.cancelStatusLbl}}
-          </label>
         </div>
       </div>
     </div>

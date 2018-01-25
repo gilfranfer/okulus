@@ -4,7 +4,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
 			reports:{
 						maxDate:"2018-12-31",minDate:"2017-01-01",
-						minDuration:"1", maxDuration:"300"
+						minDuration:"0", maxDuration:"300"
 					}
 		};
 
@@ -52,8 +52,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				report:{
 					title:"Datos generales de la Reunión",
-					gnameLbl:"Grupo", lnameLbl: "Lider",
-					anameLbl: "Asistente", hnameLbl: "Anfitrión", 
+					gnameLbl:"Grupo", lnameLbl: "Siervo",
+					anameLbl: "Aprendiz", hnameLbl: "Anfitrión", 
 					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
 					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
