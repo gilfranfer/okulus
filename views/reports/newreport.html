@@ -82,7 +82,9 @@
 	        </label>
 	        <select id="week" name="week" class="form-control form-control-lg"
 	                ng-model="report.week" ng-required="true">
-	          <option>Semana 1</option>
+	        	<option ng-repeat="w in allActiveWeeks" value="{{w.$id}}">
+	        		{{w.name}}
+	        	</option>
 	        </select>
       	</div>
       	<div class="col-sm form-group">
@@ -154,9 +156,9 @@
       	<div class="input-group">
           <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            value="{{report.attendance.members.female.adult +
-        			report.attendance.members.female.young +
-        			report.attendance.members.female.kid}}">
+            value="{{attendance.members.female.adult +
+        			attendance.members.female.young +
+        			attendance.members.female.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
         </div>
       </div>
@@ -164,9 +166,9 @@
       	<div class="input-group">
           <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            value="{{report.attendance.members.male.adult +
-        			report.attendance.members.male.young +
-        			report.attendance.members.male.kid}}">
+            value="{{attendance.members.male.adult +
+        			attendance.members.male.young +
+        			attendance.members.male.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
         </div>
       </div>
@@ -187,7 +189,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.female.adult">
+                ng-model="attendance.members.female.adult">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -195,7 +197,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.male.adult">
+                ng-model="attendance.members.male.adult">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
@@ -213,7 +215,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.female.young">
+                ng-model="attendance.members.female.young">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -221,7 +223,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.male.young">
+                ng-model="attendance.members.male.young">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
@@ -239,7 +241,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.female.kid">
+                ng-model="attendance.members.female.kid">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -247,7 +249,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.members.male.kid">
+                ng-model="attendance.members.male.kid">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
@@ -267,9 +269,9 @@
       	<div class="input-group">
           <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            value="{{report.attendance.guests.female.adult +
-        			report.attendance.guests.female.young +
-        			report.attendance.guests.female.kid}}">
+            value="{{attendance.guests.female.adult +
+        			attendance.guests.female.young +
+        			attendance.guests.female.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
         </div>
       </div>
@@ -277,9 +279,9 @@
       	<div class="input-group">
           <input type="number" min="0" readonly
           	class="form-control form-control-lg" ng-required="true"
-            value="{{report.attendance.guests.male.adult +
-        			report.attendance.guests.male.young +
-        			report.attendance.guests.male.kid}}">
+            value="{{attendance.guests.male.adult +
+        			attendance.guests.male.young +
+        			attendance.guests.male.kid}}">
           <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
         </div>
       </div>
@@ -300,7 +302,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.female.adult">
+                ng-model="attendance.guests.female.adult">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -308,7 +310,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.male.adult">
+                ng-model="attendance.guests.male.adult">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
@@ -326,7 +328,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.female.young">
+                ng-model="attendance.guests.female.young">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -334,7 +336,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.male.young">
+                ng-model="attendance.guests.male.young">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
@@ -352,7 +354,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.female.kid">
+                ng-model="attendance.guests.female.kid">
               <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
             </div>
           </div>
@@ -360,7 +362,7 @@
             <div class="input-group">
               <input type="number" value="0" min="0" max="99" value="0"
               class="form-control form-control-lg" ng-required="true"
-                ng-model="report.attendance.guests.male.kid">
+                ng-model="attendance.guests.male.kid">
               <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
             </div>
           </div>
