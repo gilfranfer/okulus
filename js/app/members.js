@@ -111,7 +111,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 
 		let membersRef = firebase.database().ref().child('pibxalapa').child('members');
 		//Get only active members
-		let activeMembersRef = firebase.database().ref().child('pibxalapa').child('members');
+		let activeMembersRef = firebase.database().ref().child('pibxalapa').child('members').orderByChild("member/status").equalTo("active");
 
 		return {
 			getMember: function(memberId){

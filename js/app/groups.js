@@ -107,7 +107,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
 		let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
 		//Get only Active Status groups
-		let activeGroupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+		let activeGroupsRef = firebase.database().ref().child('pibxalapa').child('groups').orderByChild("group/status").equalTo("active");
 
 		return {
 			getGroup: function(groupId){

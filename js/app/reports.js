@@ -64,7 +64,7 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope', 'GroupsSvc', 'Member
 okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let weeksRef = firebase.database().ref().child('pibxalapa').child('weeks').orderByChild("status").equalTo("open");;
+		let weeksRef = firebase.database().ref().child('pibxalapa').child('weeks').orderByChild("status").equalTo("open");
 
 		return {
 			loadActiveWeeks: function(){
