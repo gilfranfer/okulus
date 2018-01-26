@@ -55,8 +55,19 @@
         </select>
       </div>
     </div>
-    <!-- Date and Duration -->
+    <!-- Week and Date -->
     <div class="form-row">
+      <div class="col-sm form-group">
+          <label for="week">
+            {{i18n.forms.report.weekLbl}}
+          </label>
+          <select id="week" name="week" class="form-control form-control-lg"
+                  ng-model="report.week" ng-required="true">
+            <option ng-repeat="w in allActiveWeeks" value="{{w.$id}}">
+              {{w.name}}
+            </option>
+          </select>
+        </div>
       <div class="col-sm form-group">
         <label for="date">
           {{i18n.forms.report.dateLbl}}
@@ -65,6 +76,9 @@
           class="form-control form-control-lg" placeholder="{{i18n.forms.report.dateHint}}"
           ng-model="report.date" ng-required="true">
       </div>
+    </div>
+    <!-- Duration -->
+    <div class="form-row">
       <div class="col-sm form-group">
         <label for="duration">
           {{i18n.forms.report.durationLbl}}
@@ -73,38 +87,6 @@
           type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
           ng-model="report.duration" ng-required="true">
       </div>
-    </div>
-    <!-- Week -->
-    <div class="form-row">
-      	<div class="col-sm form-group">
-	        <label for="week">
-	          {{i18n.forms.report.weekLbl}}
-	        </label>
-	        <select id="week" name="week" class="form-control form-control-lg"
-	                ng-model="report.week" ng-required="true">
-	        	<option ng-repeat="w in allActiveWeeks" value="{{w.$id}}">
-	        		{{w.name}}
-	        	</option>
-	        </select>
-      	</div>
-      	<div class="col-sm form-group">
-      		<label for="status">
-	          {{i18n.forms.report.statusLbl}}
-	        </label>
-	        <div id="status" class="btn-group" data-toggle="buttons">
-	          <label class="btn btn-primary btn-lg active">
-	            <input type="radio" name="options" id="option1" autocomplete="off" checked>
-	            {{i18n.forms.report.okStatusLbl}}
-	          </label>
-	          <label class="btn btn-danger btn-lg">
-	            <input type="radio" name="options" id="option2" autocomplete="off">
-	            {{i18n.forms.report.cancelStatusLbl}}
-	          </label>
-	        </div>
-    	</div>
-    </div>
-
-    <div class="form-row">
       <div class="col-sm form-group">
         <label for="money">
           {{i18n.forms.report.moneyLbl}}
@@ -113,6 +95,24 @@
           <span class="input-group-addon">$</span>
           <input type="number" min="0" step=".01" class="form-control form-control-lg"
             ng-model="report.money" ng-required="true">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="status">
+          {{i18n.forms.report.statusLbl}}
+        </label><br>
+        <div id="status" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary btn-lg active">
+            <input type="radio" name="options" id="option1" autocomplete="off" checked>
+            {{i18n.forms.report.okStatusLbl}}
+          </label>
+          <label class="btn btn-danger btn-lg">
+            <input type="radio" name="options" id="option2" autocomplete="off">
+            {{i18n.forms.report.cancelStatusLbl}}
+          </label>
         </div>
       </div>
     </div>
