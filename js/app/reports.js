@@ -1,9 +1,10 @@
-okulusApp.controller('ReportCntrl', ['$rootScope','$scope', 'GroupsSvc', 'MembersSvc', 'WeeksSvc',
-	function($rootScope, $scope, GroupsSvc, MembersSvc,WeeksSvc){
+okulusApp.controller('ReportCntrl', ['$rootScope','$scope', 'GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
+	function($rootScope, $scope, GroupsSvc, MembersSvc,WeeksSvc, UtilsSvc, AuditSvc,ReportsSvc){
 		
 		GroupsSvc.loadActiveGroups();
 		MembersSvc.loadActiveMembers();
 		WeeksSvc.loadActiveWeeks();
+		ReportsSvc.loadAllReports();
 
 		//To put default Values on Attendance
 		$scope.attendance = {
@@ -19,45 +20,53 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope', 'GroupsSvc', 'Member
 
 
 		$scope.saveReport = function(){
-			//Resolve reunion date
-	    	let birthday = $scope.member.birthday;
-	    	let bday = null;
-	    	if(birthday){
-	    		bday = { day:birthday.getDate(),
-						 month: birthday.getMonth()+1,
-						 year:birthday.getFullYear() };
-			}
-
-	    	if( !$scope.memberId ){
-				console.log("Creating new member");
-				let record = {member: $scope.member, address: $scope.address};
-	    		record.member.bday = bday;
+			console.log($scope.reunion);
+			console.log($scope.attendance);
+	    	if( !$scope.reportId ){
+				console.log("Creating new Report");
+				let record = {reunion: $scope.reunion, attendance: $scope.attendance};
+	    		record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
 
 		    	//Move to Svc
-		    	$rootScope.allMembers.$add( record ).then(function(ref) {
-				    $scope.memberId = ref.key;
-				    $scope.response = { messageOk: "Miembro Creado"};
-				    AuditSvc.recordAudit(ref, "create", "members");
+		    	$rootScope.allReports.$add( record ).then(function(ref) {
+				    $scope.reportId = ref.key;
+				    $scope.response = { messageOk: "Reporte Creado"};
+				    AuditSvc.recordAudit(ref, "create", "reports");
 				}).catch(function(err) {
 					$scope.response = { messageErr: err};
 				});
 	    	}else{
-	    		console.log("Updating member: "+$scope.memberId);
-				let record = MembersSvc.getMember($scope.memberId);
-				record.member = $scope.member;
-				record.address = $scope.address;
-				record.member.bday = bday;
+	    		console.log("Updating report: "+$scope.reportId);
+				let record = RecordsSvc.getRecord($scope.reportId);
+				record.attendance = $scope.attendance;
+				record.reunion = $scope.reunion;
+	    		record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
 
 			    //Move to Svc
-		    	$rootScope.allMembers.$save(record).then(function(ref) {
-				    $scope.response = { messageOk: "Miembro Actualizado"};
-				    AuditSvc.recordAudit(ref, "update", "members");
+		    	$rootScope.allReports.$save(record).then(function(ref) {
+				    $scope.response = { messageOk: "Reporte Actualizado"};
+				    AuditSvc.recordAudit(ref, "update", "reports");
 					}).catch(function(err) {
 						$scope.response = { messageErr: err};
 					});
 	    	}
 		};
 
+	}
+]);
+
+okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
+
+		let reportsRef = firebase.database().ref().child('pibxalapa').child('reports');
+
+		return {
+			loadAllReports: function(){
+				if(!$rootScope.allReports){
+					$rootScope.allReports = $firebaseArray(reportsRef);
+				}
+			}
+		};
 	}
 ]);
 
