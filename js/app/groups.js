@@ -26,32 +26,32 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 		$scope.groupId, $scope.group, $scope.address, $scope.schedule
 	    */
 	    $scope.saveGroup = function() {
+	    	let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+	    	let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+
 	    	if( !$scope.groupId ){
 				console.log("Creating new group");
-	    		let record = {group: $scope.group, address: $scope.address, schedule: $scope.schedule};
-
-		    	//Move to Svc
-		    	$rootScope.allGroups.$add( record ).then(function(ref) {
-				    $scope.groupId = ref.key;
-				    $scope.response = { messageOk: "Grupo Creado"};
-				    AuditSvc.recordAudit(ref, "create", "groups");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
-					});
+	    		var newgroupRef = groupsRef.push();
+				newgroupRef.set(record, function(error) {
+					if(error){
+						$scope.response = { messageErr: error};
+					}else{
+					    $scope.groupId = newgroupRef.key;
+					    $scope.response = { messageOk: "Grupo Creado"};
+					    AuditSvc.recordAudit(newgroupRef, "create", "groups");	
+					}
+				});	
 	    	}else{
 	    		console.log("Updating group: "+$scope.groupId);
-					let record = GroupsSvc.getGroup($scope.groupId);
-					record.group = $scope.group;
-					record.address = $scope.address;
-			    	record.schedule = $scope.schedule;
-
-			    //Move to Svc
-		    	$rootScope.allGroups.$save(record).then(function(ref) {
-				    $scope.response = { messageOk: "Grupo Actualizado"};
-				    AuditSvc.recordAudit(ref, "update", "groups");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
-					});
+	    		let gRef = groupsRef.child($scope.groupId);
+			    gRef.update(record, function(error) {
+					if(error){
+						$scope.response = { messageErr: error};
+					}else{
+						$scope.response = { messageOk: "Grupo Actualizado"};
+				    	AuditSvc.recordAudit(gRef, "update", "groups");
+					}
+				});
 	    	}
 	    };
 
@@ -114,10 +114,10 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				return $rootScope.allGroups.$getRecord(groupId);
 			},
 			loadAllGroupsList: function(){
-				//if(!$rootScope.allGroups){
+				if(!$rootScope.allGroups){
 					console.log("Creating firebaseArray for Groups");
 					$rootScope.allGroups = $firebaseArray(groupsRef);
-				//}
+				}
 			},
 			loadActiveGroups: function(){
 				if(!$rootScope.allActiveGroups){
