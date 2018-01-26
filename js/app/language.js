@@ -63,7 +63,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					attendanceLegend: "Asistencia",
 					membersLbl: "Miembros", guestsLbl: "Invitados",
 					maleLbl: "Hombres", femaleLbl: "Mujeres",
-					maleAbrev: "Hom", femaleAbrev: "Muj",
+					maleAbrev: "H", femaleAbrev: "M",
 					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
 				},

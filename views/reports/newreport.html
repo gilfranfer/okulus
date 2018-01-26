@@ -144,226 +144,206 @@
 	<!-- Attendance -->
   <fieldset class="mb-4">
     <legend>{{i18n.forms.report.attendanceLegend}}</legend>
-	<!-- Members -->
-    <div class="form-row">
+    <div class="form-row mt-3">
+      <!-- Members -->
       <div class="col">
         <button class="btn btn-outline-primary btn-block btn-lg" type="button" data-toggle="collapse" data-target="#collapseMembers" aria-expanded="false" aria-controls="collapseMembers">
           {{i18n.forms.report.membersLbl}}
         </button>
-      </div>
-      <!-- Totals -->
-      <div class="col">
-      	<div class="input-group">
-          <input type="number" min="0" readonly
-          	class="form-control form-control-lg" ng-required="true"
-            value="{{attendance.members.female.adult + attendance.members.female.young + attendance.members.female.kid}}">
-          <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-        </div>
-      </div>
-      <div class="col">
-      	<div class="input-group">
-          <input type="number" min="0" readonly
-          	class="form-control form-control-lg" ng-required="true"
-            value="{{attendance.members.male.adult +
-        			attendance.members.male.young +
-        			attendance.members.male.kid}}">
-          <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-        </div>
-      </div>
-    </div>
-    <!-- Member Attendance details -->
-    <div  class="collapse" id="collapseMembers">
-      <div class="card-body border border-primary border-top-0 rounded-bottom">
-       <!-- Member Adults -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.adultLbl}}
-            </label>
-          </div>
-        </div> 
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.female.adult">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.male.adult">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
-        </div>
-       <!-- Member Young -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.youngLbl}}
-            </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.female.young">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.male.young">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
-        </div>
-       <!-- Member Kids -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.kidLbl}}
-            </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.female.kid">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.members.male.kid">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-	<!-- Guests -->
-    <div class="form-row mt-3">
+        <!-- Member Attendance details -->
+        <div  class="collapse" id="collapseMembers">
+          <div class="card-body border border-primary border-top-0 rounded-bottom">
+           <!-- Member Adults -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.adultLbl}}
+                </label>
+              </div>
+            </div> 
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.female.adult">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.male.adult">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+           <!-- Member Young -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.youngLbl}}
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.female.young">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.male.young">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+           <!-- Member Kids -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.kidLbl}}
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.female.kid">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.members.male.kid">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+	     <!-- Guests -->
       <div class="col">
         <button class="btn btn-outline-primary btn-block btn-lg" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
           {{i18n.forms.report.guestsLbl}}
         </button>
-      </div>
-      <!-- Totals -->
-      <div class="col">
-      	<div class="input-group">
-          <input type="number" min="0" readonly
-          	class="form-control form-control-lg" ng-required="true"
-            value="{{attendance.guests.female.adult +
-        			attendance.guests.female.young +
-        			attendance.guests.female.kid}}">
-          <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-        </div>
-      </div>
-      <div class="col">
-      	<div class="input-group">
-          <input type="number" min="0" readonly
-          	class="form-control form-control-lg" ng-required="true"
-            value="{{attendance.guests.male.adult +
-        			attendance.guests.male.young +
-        			attendance.guests.male.kid}}">
-          <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+      
+        <!-- Guest Attendance details -->
+        <div  class="collapse" id="collapseGuests">
+          <div class="card-body border border-primary border-top-0 rounded-bottom">
+            <!-- Guest Adults -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.adultLbl}}
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.female.adult">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.male.adult">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+            <!-- Guest Young -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.youngLbl}}
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.female.young">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.male.young">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+            <!-- Guest Kids -->
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="">
+                  {{i18n.forms.report.membersLbl}}
+                </label>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.female.kid">
+                  <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
+                </div>
+              </div>
+              <div class="col form-group">
+                <div class="input-group">
+                  <input type="number" value="0" min="0" max="99" value="0"
+                  class="form-control form-control-lg" ng-required="true"
+                    ng-model="attendance.guests.male.kid">
+                  <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <!-- Guest Attendance details -->
-    <div  class="collapse" id="collapseGuests">
-      <div class="card-body border border-primary border-top-0 rounded-bottom">
-        <!-- Guest Adults -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.adultLbl}}
-            </label>
-          </div>
+    <div class="form-row">
+      <!-- Totals -->
+      <div class="col">
+        <div class="input-group">
+          <input type="text" readonly
+            class="form-control form-control-lg" ng-required="true"
+            value="{{attendance.members.male.adult + attendance.members.male.young + attendance.members.male.kid 
+                  + attendance.members.female.adult + attendance.members.female.young  + attendance.members.female.kid}}">
+          <!-- <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span> -->
         </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.female.adult">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.male.adult">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
-        </div>
-        <!-- Guest Young -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.youngLbl}}
-            </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.female.young">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.male.young">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
-        </div>
-        <!-- Guest Kids -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label for="">
-              {{i18n.forms.report.membersLbl}}
-            </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.female.kid">
-              <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span>
-            </div>
-          </div>
-          <div class="col form-group">
-            <div class="input-group">
-              <input type="number" value="0" min="0" max="99" value="0"
-              class="form-control form-control-lg" ng-required="true"
-                ng-model="attendance.guests.male.kid">
-              <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span>
-            </div>
-          </div>
+      </div>
+      <div class="col">
+        <div class="input-group">
+          <input type="text" readonly
+            class="form-control form-control-lg" ng-required="true"
+            value="{{ attendance.guests.male.adult + attendance.guests.male.young + attendance.guests.male.kid 
+                  + attendance.guests.female.adult + attendance.guests.female.young + attendance.guests.female.kid}}">
+          <!-- <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span> -->
         </div>
       </div>
     </div>
