@@ -20,7 +20,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			btns:{
 				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Crear Grupo", newMemberBtn: "Crear Miembro"
+				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
