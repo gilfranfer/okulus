@@ -4,8 +4,8 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'MembersSvc', 'AuditSvc',
-	function($rootScope, $scope, $location,$firebaseArray, MembersSvc, AuditSvc){
+okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'MembersSvc', 'AuditSvc', 'UtilsSvc',
+	function($rootScope, $scope, $location,$firebaseArray, MembersSvc, AuditSvc, UtilsSvc){
 		console.log("on Memeber Form Controller");
 		$rootScope.response = null;
 	   	MembersSvc.loadAllMembersList();
@@ -18,19 +18,10 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 	    };
 
 	    $scope.saveMember = function() {
-	    	//Resolve birthday
-	    	let birthday = $scope.member.birthday;
-	    	let bday = null;
-	    	if(birthday){
-	    		bday = { day:birthday.getDate(),
-						 month: birthday.getMonth()+1,
-						 year:birthday.getFullYear() };
-			}
-
 	    	if( !$scope.memberId ){
 				console.log("Creating new member");
 				let record = {member: $scope.member, address: $scope.address};
-	    		record.member.bday = bday;
+	    		record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
 
 		    	//Move to Svc
 		    	$rootScope.allMembers.$add( record ).then(function(ref) {
@@ -45,7 +36,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				let record = MembersSvc.getMember($scope.memberId);
 				record.member = $scope.member;
 				record.address = $scope.address;
-				record.member.bday = bday;
+				record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
 
 			    //Move to Svc
 		    	$rootScope.allMembers.$save(record).then(function(ref) {
@@ -118,10 +109,10 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				return $rootScope.allMembers.$getRecord(memberId);
 			},
 			loadAllMembersList: function(){
-				//if(!$rootScope.allMembers){
+				if(!$rootScope.allMembers){
 					console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
-				//}
+				}
 			},
 			loadActiveMembers: function(){
 				if(!$rootScope.allActiveMembers){
