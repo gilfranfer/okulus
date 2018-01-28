@@ -17,36 +17,66 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 	    	$scope.response = null;
 	    };
 
-	    $scope.saveMember = function() {
-	    	if( !$scope.memberId ){
-				console.log("Creating new member");
-				let record = {member: $scope.member, address: $scope.address};
-	    		record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
-
-		    	//Move to Svc
-		    	$rootScope.allMembers.$add( record ).then(function(ref) {
-				    $scope.memberId = ref.key;
-				    $scope.response = { messageOk: "Miembro Creado"};
-				    AuditSvc.recordAudit(ref, "create", "members");
-				}).catch(function(err) {
-					$scope.response = { messageErr: err};
-				});
-	    	}else{
-	    		console.log("Updating member: "+$scope.memberId);
-				let record = MembersSvc.getMember($scope.memberId);
-				record.member = $scope.member;
-				record.address = $scope.address;
+			$scope.saveMember = function() {
+				let membersRef = firebase.database().ref().child('pibxalapa').child('members');
+				let record = { member: $scope.member, address: $scope.address };
 				record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
 
-			    //Move to Svc
-		    	$rootScope.allMembers.$save(record).then(function(ref) {
-				    $scope.response = { messageOk: "Miembro Actualizado"};
-				    AuditSvc.recordAudit(ref, "update", "members");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
+				if( !$scope.memberId ){
+					console.log("Creating new member");
+					var newmemberRef = membersRef.push();
+					newmemberRef.set(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+						    $scope.memberId = newmemberRef.key;
+						    $scope.response = { messageOk: "Miembro Creado"};
+						    AuditSvc.recordAudit(newmemberRef, "create", "members");
+						}
 					});
-	    	}
-	    };
+				}else{
+					console.log("Updating member: "+$scope.memberId);
+	    		let mRef = membersRef.child($scope.memberId);
+			    mRef.update(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+							$scope.response = { messageOk: "Miembro Actualizado"};
+					    AuditSvc.recordAudit(mRef, "update", "members");
+						}
+					});
+				}
+			};
+	    // $scope.saveMember = function() {
+	    // 	if( !$scope.memberId ){
+			// 	console.log("Creating new member");
+			// 	let record = {member: $scope.member, address: $scope.address};
+	    // 		record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
+      //
+		  //   	//Move to Svc
+		  //   	$rootScope.allMembers.$add( record ).then(function(ref) {
+			// 	    $scope.memberId = ref.key;
+			// 	    $scope.response = { messageOk: "Miembro Creado"};
+			// 	    AuditSvc.recordAudit(ref, "create", "members");
+			// 	}).catch(function(err) {
+			// 		$scope.response = { messageErr: err};
+			// 	});
+	    // 	}else{
+	    // 		console.log("Updating member: "+$scope.memberId);
+			// 	let record = MembersSvc.getMember($scope.memberId);
+			// 	record.member = $scope.member;
+			// 	record.address = $scope.address;
+			// 	record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
+      //
+			//     //Move to Svc
+		  //   	$rootScope.allMembers.$save(record).then(function(ref) {
+			// 	    $scope.response = { messageOk: "Miembro Actualizado"};
+			// 	    AuditSvc.recordAudit(ref, "update", "members");
+			// 		}).catch(function(err) {
+			// 			$scope.response = { messageErr: err};
+			// 		});
+	    // 	}
+	    // };
 
 	    $scope.deleteMember = function() {
 	    	if( $scope.memberId ){
@@ -70,7 +100,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 
 okulusApp.controller('MemberDetailsCntrl', ['$rootScope', '$scope','$routeParams', '$location','$firebaseArray', '$firebaseObject', 'MembersSvc',
 	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, MembersSvc){
-		
+
 		let whichMember = $routeParams.memberId;
 
 		MembersSvc.loadAllMembersList(); //This is in case of a Refresh in the view
@@ -83,7 +113,7 @@ okulusApp.controller('MemberDetailsCntrl', ['$rootScope', '$scope','$routeParams
 				$scope.address = record.address;
 
 				if(record.member.bday){
-					$scope.member.birthday = new Date(record.member.bday.year, 
+					$scope.member.birthday = new Date(record.member.bday.year,
 												  record.member.bday.month-1,
 												  record.member.bday.day);
 				}
