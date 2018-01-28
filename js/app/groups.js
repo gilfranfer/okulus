@@ -30,7 +30,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 	    	let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
 
 	    	if( !$scope.groupId ){
-					console.log("Creating new group");
+					//console.log("Creating new group");
 	    		var newgroupRef = groupsRef.push();
 					newgroupRef.set(record, function(error) {
 						if(error){
@@ -42,7 +42,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 						}
 					});
 	    	}else{
-	    		console.log("Updating group: "+$scope.groupId);
+	    		//console.log("Updating group: "+$scope.groupId);
 	    		let gRef = groupsRef.child($scope.groupId);
 			    gRef.update(record, function(error) {
 						if(error){
@@ -56,20 +56,30 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 	    };
 
 	    $scope.deleteGroup = function() {
-	    	console.log("deleteGroup");
 	    	if( $scope.groupId ){
-	    		console.log("Deleting group: "+$scope.groupId);
-					let record = GroupsSvc.getGroup($scope.groupId);
+	    		//console.log("Deleting group: "+$scope.groupId);
+					let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
+					let gRef = groupsRef.child($scope.groupId);
+					let record = null;
 
-					//Move to Svc
-					$rootScope.allGroups.$remove(record).then(function(ref) {
-						cleanScope();
+					gRef.set(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+							cleanScope();
 					    $scope.response = { messageOk: "Grupo Eliminado"};
-					    AuditSvc.recordAudit(ref, "delete", "groups");
+					    AuditSvc.recordAudit(gRef, "delete", "groups");
 							$location.path( "/success/deleted");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
+						}
 					});
+					// $rootScope.allGroups.$remove(record).then(function(ref) {
+					// 		cleanScope();
+					//     $scope.response = { messageOk: "Grupo Eliminado"};
+					//     AuditSvc.recordAudit(ref, "delete", "groups");
+					// 		$location.path( "/success/deleted");
+					// }).catch(function(err) {
+					// 	$scope.response = { messageErr: err};
+					// });
 	    	}
 	    };
 
