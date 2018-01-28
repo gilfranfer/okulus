@@ -30,28 +30,28 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 	    	let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
 
 	    	if( !$scope.groupId ){
-				console.log("Creating new group");
+					console.log("Creating new group");
 	    		var newgroupRef = groupsRef.push();
-				newgroupRef.set(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
-					    $scope.groupId = newgroupRef.key;
-					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef, "create", "groups");	
-					}
-				});	
+					newgroupRef.set(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+						    $scope.groupId = newgroupRef.key;
+						    $scope.response = { messageOk: "Grupo Creado"};
+						    AuditSvc.recordAudit(newgroupRef, "create", "groups");
+						}
+					});
 	    	}else{
 	    		console.log("Updating group: "+$scope.groupId);
 	    		let gRef = groupsRef.child($scope.groupId);
 			    gRef.update(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
-						$scope.response = { messageOk: "Grupo Actualizado"};
-				    	AuditSvc.recordAudit(gRef, "update", "groups");
-					}
-				});
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+							$scope.response = { messageOk: "Grupo Actualizado"};
+					    	AuditSvc.recordAudit(gRef, "update", "groups");
+						}
+					});
 	    	}
 	    };
 
