@@ -4,56 +4,52 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'MembersSvc', 'AuditSvc', 'UtilsSvc',
-	function($rootScope, $scope, $location,$firebaseArray, MembersSvc, AuditSvc, UtilsSvc){
-		console.log("on Memeber Form Controller");
+okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc',
+	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc){
 		$rootScope.response = null;
-	   	MembersSvc.loadAllMembersList();
 
-	    cleanScope = function(){
-	    	$scope.memberId = null;
-	    	$scope.member = null;
-	    	$scope.address = null;
-	    	$scope.response = null;
-	    };
+    cleanScope = function(){
+    	$scope.memberId = null;
+    	$scope.member = null;
+    	$scope.address = null;
+    	$scope.response = null;
+			$rootScope.response = null;
+    };
 
-			$scope.saveMember = function() {
-				let membersRef = firebase.database().ref().child('pibxalapa').child('members');
-				let record = { member: $scope.member, address: $scope.address };
-				record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
+		$scope.saveOrUpdateMember = function() {
+			$scope.response = null;
+			let record = { member: $scope.member, address: $scope.address };
+			record.member.birthdate = UtilsSvc.buildDateJson($scope.member.bday);
 
-				if( !$scope.memberId ){
-					console.log("Creating new member");
-					var newmemberRef = membersRef.push();
-					newmemberRef.set(record, function(error) {
-						if(error){
-							$scope.response = { messageErr: error};
-						}else{
-						    $scope.memberId = newmemberRef.key;
-						    $scope.response = { messageOk: "Miembro Creado"};
-						    AuditSvc.recordAudit(newmemberRef, "create", "members");
-						}
-					});
-				}else{
-					console.log("Updating member: "+$scope.memberId);
-	    		let mRef = membersRef.child($scope.memberId);
-			    mRef.update(record, function(error) {
-						if(error){
-							$scope.response = { messageErr: error};
-						}else{
-							$scope.response = { messageOk: "Miembro Actualizado"};
-					    AuditSvc.recordAudit(mRef, "update", "members");
-						}
-					});
-				}
-			};
-	    // $scope.saveMember = function() {
-	    // 	if( !$scope.memberId ){
-			// 	console.log("Creating new member");
-			// 	let record = {member: $scope.member, address: $scope.address};
-	    // 		record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
-      //
-		  //   	//Move to Svc
+			/* When a value for memberId is present in the scope, the user is on Edit
+				mode and we have to perform an UPDATE.*/
+			if( $scope.memberId ){
+    		let mRef = MembersSvc.getMemberReference($scope.memberId);
+		    mRef.update(record, function(error) {
+					if(error){
+						$scope.response = { messageErr: error};
+					}else{
+						$scope.response = { messageOk: "Miembro Actualizado"};
+				    AuditSvc.recordAudit(mRef, "update", "members");
+					}
+				});
+			}
+			/* Otherwise, when groupId is not present in the scope,
+				we perform a SET to create a new record */
+			else{
+				var newmemberRef = MembersSvc.getNewMemberReference();
+				newmemberRef.set(record, function(error) {
+					if(error){
+						$scope.response = { messageErr: error};
+					}else{
+						$scope.memberId = newmemberRef.key;
+						$scope.response = { messageOk: "Miembro Creado"};
+						AuditSvc.recordAudit(newmemberRef, "create", "members");
+					}
+				});
+			}
+		};
+
 		  //   	$rootScope.allMembers.$add( record ).then(function(ref) {
 			// 	    $scope.memberId = ref.key;
 			// 	    $scope.response = { messageOk: "Miembro Creado"};
@@ -61,93 +57,110 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			// 	}).catch(function(err) {
 			// 		$scope.response = { messageErr: err};
 			// 	});
-	    // 	}else{
-	    // 		console.log("Updating member: "+$scope.memberId);
-			// 	let record = MembersSvc.getMember($scope.memberId);
-			// 	record.member = $scope.member;
-			// 	record.address = $scope.address;
-			// 	record.member.bday = UtilsSvc.buildDateJson($scope.member.birthday);
-      //
-			//     //Move to Svc
+
 		  //   	$rootScope.allMembers.$save(record).then(function(ref) {
 			// 	    $scope.response = { messageOk: "Miembro Actualizado"};
 			// 	    AuditSvc.recordAudit(ref, "update", "members");
 			// 		}).catch(function(err) {
 			// 			$scope.response = { messageErr: err};
 			// 		});
-	    // 	}
-	    // };
+
 
 	    $scope.deleteMember = function() {
 	    	if( $scope.memberId ){
-	    		console.log("Deleting member: "+$scope.memberId);
-					let record = MembersSvc.getMember($scope.memberId);
-
-					//Move to Svc
-					$rootScope.allMembers.$remove(record).then(function(ref) {
-						cleanScope();
-					    $scope.response = { messageOk: "Miembro Eliminado"};
-					    AuditSvc.recordAudit(ref, "delete", "members");
-						$location.path( "/success/deleted");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
-					});
+					MembersSvc.loadAllMembersList().$loaded().then(
+						function(list) {
+							let record = MembersSvc.getMemberFromArray($scope.memberId);
+							list.$remove(record).then(function(ref) {
+								cleanScope();
+						    $rootScope.response = { messageOk: "Miembro Eliminado"};
+						    AuditSvc.recordAudit(ref, "delete", "members");
+								$location.path( "/members");
+							}).catch(function(err) {
+								$rootScope.response = { messageErr: err};
+							});
+					  });
 	    	}
 	    };
 
   	}
 ]);
 
-okulusApp.controller('MemberDetailsCntrl', ['$rootScope', '$scope','$routeParams', '$location','$firebaseArray', '$firebaseObject', 'MembersSvc',
-	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, MembersSvc){
-
+okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location', 'MembersSvc',
+	function($scope, $routeParams, $location, MembersSvc){
 		let whichMember = $routeParams.memberId;
 
-		MembersSvc.loadAllMembersList(); //This is in case of a Refresh in the view
-		$rootScope.allMembers.$loaded(function() {
-			//Load Specific Member
-			let record = MembersSvc.getMember(whichMember);
-			if(record){
+		/* When opening "Edit" page from the Members List, we can use the
+		"allMemberss" firebaseArray from rootScope to get the specific Member data */
+		if( MembersSvc.allMembersLoaded() ){
+			let record = MembersSvc.getMemberFromArray(whichMember);
+			putRecordOnScope(record);
+		}
+		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
+		we will not have the "allMemberss" firebaseArray Loaded in the rootScope.
+		Instead of loading all the Members, what could be innecessary,
+		we can use firebaseObject to get only the required member data */
+		else{
+			let obj = MembersSvc.getMember(whichMember);
+			obj.$loaded().then(function() {
+				putRecordOnScope(obj);
+			}).catch(function(error) {
+		    $location.path( "/error/norecord" );
+		  });
+		}
+
+		function putRecordOnScope(record){
+			if(record && record.member){
 				$scope.memberId = record.$id;
 				$scope.member = record.member;
 				$scope.address = record.address;
 
-				if(record.member.bday){
-					$scope.member.birthday = new Date(record.member.bday.year,
-												  record.member.bday.month-1,
-												  record.member.bday.day);
+				if(record.member.birthdate){
+					$scope.member.bday = new Date(record.member.birthdate.year,
+												  record.member.birthdate.month-1,
+												  record.member.birthdate.day);
 				}
 			}else{
-				$rootScope.response = { messageErr: "El Miembro '"+whichMember+ "' no existe"};
-				$location.path( "/error" );
+				$location.path( "/error/norecord" );
 			}
-		});
+		}
 
 	}
 ]);
 
-
 okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let membersRef = firebase.database().ref().child('pibxalapa').child('members');
-		//Get only active members
-		let activeMembersRef = firebase.database().ref().child('pibxalapa').child('members').orderByChild("member/status").equalTo("active");
+		let membersRef = firebase.database().ref().child('pibxalapa/members');
+		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
 
 		return {
-			getMember: function(memberId){
+			allMembersLoaded: function() {
+				return $rootScope.allMembers != null;
+			},
+			getMemberFromArray: function(memberId){
 				return $rootScope.allMembers.$getRecord(memberId);
+			},
+			getMember: function(memberId){
+				return $firebaseObject(membersRef.child(memberId));
 			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
 					console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				}
+				return $rootScope.allMembers;
 			},
 			loadActiveMembers: function(){
 				if(!$rootScope.allActiveMembers){
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
+			},
+			getMemberReference: function(memberId){
+				return membersRef.child(memberId);
+			},
+			getNewMemberReference: function(){
+				return membersRef.push();
 			}
 		};
 	}

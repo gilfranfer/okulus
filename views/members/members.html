@@ -15,6 +15,13 @@
     </div>
   </div>
 
+  <div class="alert alert-success" role="alert" ng-show="response.messageOk">
+    {{response.messageOk}}
+  </div>
+  <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
+    {{response.messageErr}}
+  </div>
+  
   <div class="row">
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="m in allMembers | filter:searchText">

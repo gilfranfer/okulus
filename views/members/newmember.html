@@ -1,25 +1,25 @@
 <section ng-controller="MemberFormCntrl">
 
-<form class="mt-3" name="memberForm" novalidate ng-submit="saveMember()">
+<form class="mt-3" name="memberForm" novalidate ng-submit="saveOrUpdateMember()">
 
   <!-- Basic Member Information -->
   <fieldset class="mb-4">
     <legend>{{i18n.forms.member.legend}}</legend>
-    
+
     <!-- Name row -->
     <div class="form-row">
       <div class="col-sm form-group">
         <label for="fname">
           {{i18n.forms.member.fnameLbl}}
         </label>
-        <input type="text" id="fname" name="fname" class="form-control form-control-lg" 
+        <input type="text" id="fname" name="fname" class="form-control form-control-lg"
           placeholder="{{i18n.forms.member.fnameHint}}" ng-model="member.firstname" ng-required="true">
       </div>
       <div class="col-sm form-group">
         <label for="lname">
           {{i18n.forms.member.lnameLbl}}
         </label>
-        <input type="text" id="lname" name="lname" class="form-control form-control-lg" 
+        <input type="text" id="lname" name="lname" class="form-control form-control-lg"
           placeholder="{{i18n.forms.member.lnameHint}}" ng-model="member.lastname" ng-required="true">
       </div>
     </div>
@@ -30,16 +30,16 @@
         <label for="sname">
           {{i18n.forms.member.snameLbl}}
         </label>
-        <input type="text" id="sname" name="sname" class="form-control form-control-lg" 
+        <input type="text" id="sname" name="sname" class="form-control form-control-lg"
           placeholder="{{i18n.forms.member.snameHint}}" ng-model="member.shortname" ng-required="true">
       </div>
       <div class="col-sm form-group">
         <label for="bday">
           {{i18n.forms.member.bdayLbl}}
-        </label>  
-        <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}" 
-          class="form-control form-control-lg" placeholder="{{i18n.forms.member.bdayHint}}" 
-          ng-model="member.birthday" ng-required="false">
+        </label>
+        <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}"
+          class="form-control form-control-lg" placeholder="{{i18n.forms.member.bdayHint}}"
+          ng-model="member.bday" ng-required="false">
       </div>
     </div>
 
@@ -49,14 +49,14 @@
         <label for="email">
           {{i18n.forms.member.emailLbl}}
         </label>
-        <input type="email" id="email" name="email" class="form-control form-control-lg" 
+        <input type="email" id="email" name="email" class="form-control form-control-lg"
           placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="false">
       </div>
       <div class="col-md form-group">
         <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
-        <input type="tel" id="phone" name="phone" class="form-control form-control-lg" 
+        <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
           placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="false">
       </div>
     </div>
@@ -67,7 +67,7 @@
         <label for="status">
           {{i18n.dropdowns.status.label}}
         </label>
-        <select id="status" name="status" class="form-control form-control-lg" 
+        <select id="status" name="status" class="form-control form-control-lg"
                 ng-model="member.status" ng-required="true">
           <option value="active">{{i18n.dropdowns.status.active}}</option>
           <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
@@ -99,7 +99,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Buttons rows -->
   <div class="form-row">
     <div class="col-sm form-group" >
