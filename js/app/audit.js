@@ -1,7 +1,7 @@
 
 okulusApp.factory('AuditSvc', ['$rootScope',
 	function($rootScope){
-		let baseRef = firebase.database().ref().child('pibxalapa');
+		let baseRef = firebase.database().ref().child('pibxalapa').child("audit");
 
 		return {
 			/**
@@ -21,7 +21,7 @@ okulusApp.factory('AuditSvc', ['$rootScope',
 				}
 			    //app global audit
 			    audit.referenceId = ref.key;
-			    baseRef.child("audit").child(on).push().set(audit);
+			    baseRef.child(on).push().set(audit);
 			}
 		};
 	}

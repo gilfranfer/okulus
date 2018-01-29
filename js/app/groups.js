@@ -4,14 +4,11 @@ okulusApp.controller('GroupListCntrl', ['GroupsSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'GroupsSvc', 'AuditSvc',
-	function($rootScope, $scope, $location,$firebaseArray, GroupsSvc, AuditSvc){
-		//$rootScope.isAdmin = true;
-	   	console.log("on Groups Controller");
-			$rootScope.response = null;
-	   	GroupsSvc.loadAllGroupsList();
+okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc',
+	function($rootScope, $scope, $location, GroupsSvc, AuditSvc){
+	   	$rootScope.response = null;
 
-	    cleanScope = function(){
+			cleanScope = function(){
 	    	$scope.groupId = null;
 	    	$scope.group = null;
 	    	$scope.address = null;
@@ -20,84 +17,106 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 				$rootScope.response = null;
 	    };
 
-	    /*
-	    This method will be used to Create a new Group, or update the changes made to the recently created one.
-	    Note: Schedule Time is not getting persisted now because firebase cannot store Date Objects
-		$scope.groupId, $scope.group, $scope.address, $scope.schedule
-	    */
-	    $scope.saveGroup = function() {
-	    	let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
-	    	let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+	    $scope.saveOrUpdateGroup = function() {
+				$scope.response = null;
+				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
 
-	    	if( !$scope.groupId ){
-				console.log("Creating new group");
-	    		var newgroupRef = groupsRef.push();
-				newgroupRef.set(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
+				/* When a value for groupId is present in the scope, the user is on Edit
+					mode and we have to perform an UPDATE.*/
+	    	if( $scope.groupId ){
+					let gRef = GroupsSvc.getGroupReference($scope.groupId);
+					gRef.update(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
+							$scope.response = { messageOk: "Grupo Actualizado"};
+							AuditSvc.recordAudit(gRef, "update", "groups");
+						}
+					});
+	    	}
+				/* Otherwise, when groupId is not present in the scope,
+					we perform a SET to create a new record */
+				else{
+	    		var newgroupRef = GroupsSvc.getNewGroupReference();
+					newgroupRef.set(record, function(error) {
+						if(error){
+							$scope.response = { messageErr: error};
+						}else{
 					    $scope.groupId = newgroupRef.key;
 					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef, "create", "groups");	
-					}
-				});	
-	    	}else{
-	    		console.log("Updating group: "+$scope.groupId);
-	    		let gRef = groupsRef.child($scope.groupId);
-			    gRef.update(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
-						$scope.response = { messageOk: "Grupo Actualizado"};
-				    	AuditSvc.recordAudit(gRef, "update", "groups");
-					}
-				});
+					    AuditSvc.recordAudit(newgroupRef, "create", "groups");
+						}
+					});
 	    	}
 	    };
 
 	    $scope.deleteGroup = function() {
-	    	console.log("deleteGroup");
 	    	if( $scope.groupId ){
-	    		console.log("Deleting group: "+$scope.groupId);
-					let record = GroupsSvc.getGroup($scope.groupId);
-
-					//Move to Svc
-					$rootScope.allGroups.$remove(record).then(function(ref) {
-						cleanScope();
-					    $scope.response = { messageOk: "Grupo Eliminado"};
-					    AuditSvc.recordAudit(ref, "delete", "groups");
-							$location.path( "/success/deleted");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
-					});
-	    	}
+					GroupsSvc.loadAllGroupsList().$loaded().then(
+						function(list) {
+							let record = GroupsSvc.getGroupFromArray($scope.groupId);
+							list.$remove(record).then(function(ref) {
+								cleanScope();
+						    $rootScope.response = { messageOk: "Grupo Eliminado"};
+						    AuditSvc.recordAudit(ref, "delete", "groups");
+								$location.path( "/groups");
+							}).catch(function(err) {
+								$rootScope.response = { messageErr: err};
+							});
+					  });
+						// The code below doestn work properly. The delete happens,
+						// but the message doestn appears
+						// let gRef = GroupsSvc.getGroupReference($scope.groupId);
+						// let record = null;
+						// $rootScope.response = { messageOk: "Grupo Eliminado"};
+						// gRef.set(record, function(error) {
+						// 	if(error){
+						// 		$scope.response = { messageErr: error};
+						// 	}else{
+						// 		cleanScope();
+						//     AuditSvc.recordAudit(gRef, "delete", "groups");
+						//     $scope.response = { messageOk: "Grupo Eliminado"};
+						// 	}
+						// });
+		    }
 	    };
 
   	}
 ]);
 
-okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams', '$location','$firebaseArray', '$firebaseObject', 'GroupsSvc',
-	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, GroupsSvc){
-		console.log("On GroupDetailsCntrl");
-
-		//$rootScope.isAdmin = true; //Remove this is we are not going to use the form as a view for members
+okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
+	function($scope, $routeParams, $location, GroupsSvc){
 		let whichGroup = $routeParams.groupId;
 
+		/* When opening "Edit" page from the Groups List, we can use the
+		"allGroups" firebaseArray from rootScope to get the specific Group data */
+		if( GroupsSvc.allGroupsLoaded() ){
+			let record = GroupsSvc.getGroupFromArray(whichGroup);
+			putRecordOnScope(record);
+		}
+		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
+		we will not have the "allGroups" firebaseArray Loaded in the rootScope.
+		Instead of loading all the Groups, what could be innecessary,
+		we can use firebaseObject to get only the required group data */
+		else{
+			let obj = GroupsSvc.getGroup(whichGroup);
+			obj.$loaded().then(function() {
+				putRecordOnScope(obj);
+			}).catch(function(error) {
+		    $location.path( "/error/norecord" );
+		  });
+		}
 
-		GroupsSvc.loadAllGroupsList(); //This is in case of a Refresh in the view
-		$rootScope.allGroups.$loaded(function() {
-			//Load Specific Group
-			let record = GroupsSvc.getGroup(whichGroup);
-			if(record){
+		function putRecordOnScope(record){
+			if(record && record.group){
 				$scope.groupId = record.$id;
 				$scope.group = record.group;
-			  $scope.address = record.address;
-			  $scope.schedule = record.schedule;
+				$scope.address = record.address;
+				$scope.schedule = record.schedule;
 			}else{
-				$rootScope.response = { messageErr: "El Grupo '"+whichGroup+ "' no existe"};
-				$location.path( "/error" );
+				$location.path( "/error/norecord" );
 			}
-		});
+		}
 
 	}
 ]);
@@ -105,24 +124,36 @@ okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams'
 okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
-		//Get only Active Status groups
-		let activeGroupsRef = firebase.database().ref().child('pibxalapa').child('groups').orderByChild("group/status").equalTo("active");
+		let groupsRef = firebase.database().ref().child('pibxalapa/groups');
+		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
 		return {
-			getGroup: function(groupId){
+			allGroupsLoaded: function() {
+				return $rootScope.allGroups != null;
+			},
+			getGroupFromArray: function(groupId){
 				return $rootScope.allGroups.$getRecord(groupId);
+			},
+			getGroup: function(groupId){
+				return $firebaseObject(groupsRef.child(groupId));
 			},
 			loadAllGroupsList: function(){
 				if(!$rootScope.allGroups){
-					console.log("Creating firebaseArray for Groups");
+					console.debug("Creating firebaseArray for Groups");
 					$rootScope.allGroups = $firebaseArray(groupsRef);
 				}
+				return $rootScope.allGroups;
 			},
 			loadActiveGroups: function(){
 				if(!$rootScope.allActiveGroups){
 					$rootScope.allActiveGroups = $firebaseArray(activeGroupsRef);
 				}
+			},
+			getGroupReference: function(groupId){
+				return groupsRef.child(groupId);
+			},
+			getNewGroupReference: function(){
+				return groupsRef.push();
 			}
 		};
 	}
