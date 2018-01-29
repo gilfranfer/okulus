@@ -90,11 +90,11 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/reports/newreport.html',
 				controller: 'ReportCntrl'
 			})
-			.when('/success/deleted', {
-				templateUrl: 'views/success/recordDeleted.html'
+			.when('/result/delete', {
+				templateUrl: 'views/responses/delete-result.html'
 			})
-			.when('/error', {
-				templateUrl: 'views/errors/general.html'
+			.when('/error/norecord', {
+				templateUrl: 'views/responses/error-norecord.html'
 			})
 
 			.when('/organization', {

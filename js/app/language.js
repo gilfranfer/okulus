@@ -53,7 +53,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				report:{
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
-					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión", 
+					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
 					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
 					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
@@ -106,8 +106,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			success:{
 				deleted:{
-					title:"Registro Eliminado",
-					message:"El registro ha sido eliminado. Que quiere hacer ahora?"
+					title:"Eliminado el registro ..."
 				}
 			},
 			error:{
