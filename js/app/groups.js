@@ -20,7 +20,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 	    $scope.saveOrUpdateGroup = function() {
 			$scope.response = null;
 			let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
-			record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.time);
+			record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.timestamp);
 
 			/* When a value for groupId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
@@ -115,9 +115,12 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.address = record.address;
 				$scope.schedule = record.schedule;
 				if(record.schedule.time){
-					$scope.schedule.time = new Date();
-					$scope.schedule.time.setHours(record.schedule.time.HH);
-					$scope.schedule.time.setMinutes(record.schedule.time.MM);
+					console.log("Setting Time")
+					$scope.schedule.timestamp = new Date();
+					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
+					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
+					$scope.schedule.timestamp.setSeconds(0);
+					$scope.schedule.timestamp.setMilliseconds(0);
 				}
 			}else{
 				$location.path( "/error/norecord" );

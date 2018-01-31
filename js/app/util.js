@@ -14,8 +14,8 @@ okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject',
 			buildTimeJson: function(dateObject){
 		    	let timeJson = null;
 		    	if(dateObject){
-		    		timeJson = { HH:dateObject.getHours()+1,
-							 	 MM:dateObject.getMinutes()+1 };
+		    		timeJson = { HH:dateObject.getHours(),
+							 	 MM:dateObject.getMinutes() };
 				}
 				return timeJson;
 			}
