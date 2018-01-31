@@ -10,6 +10,14 @@ okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject',
 							 year:dateObject.getFullYear() };
 				}
 				return dateJson;
+			},
+			buildTimeJson: function(dateObject){
+		    	let timeJson = null;
+		    	if(dateObject){
+		    		timeJson = { HH:dateObject.getHours()+1,
+							 	 MM:dateObject.getMinutes()+1 };
+				}
+				return timeJson;
 			}
 		};
 	}

@@ -4,25 +4,26 @@ okulusApp.controller('GroupListCntrl', ['GroupsSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc',
-	function($rootScope, $scope, $location, GroupsSvc, AuditSvc){
+okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc', 'UtilsSvc',
+	function($rootScope, $scope, $location, GroupsSvc, AuditSvc, UtilsSvc){
 	   	$rootScope.response = null;
 
-			cleanScope = function(){
+		cleanScope = function(){
 	    	$scope.groupId = null;
 	    	$scope.group = null;
 	    	$scope.address = null;
 	    	$scope.schedule = null;
 	    	$scope.response = null;
-				$rootScope.response = null;
+			$rootScope.response = null;
 	    };
 
 	    $scope.saveOrUpdateGroup = function() {
-				$scope.response = null;
-				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+			$scope.response = null;
+			let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+			record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.time);
 
-				/* When a value for groupId is present in the scope, the user is on Edit
-					mode and we have to perform an UPDATE.*/
+			/* When a value for groupId is present in the scope, the user is on Edit
+				mode and we have to perform an UPDATE.*/
 	    	if( $scope.groupId ){
 					let gRef = GroupsSvc.getGroupReference($scope.groupId);
 					gRef.update(record, function(error) {
@@ -34,50 +35,50 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 						}
 					});
 	    	}
-				/* Otherwise, when groupId is not present in the scope,
-					we perform a SET to create a new record */
-				else{
-	    		var newgroupRef = GroupsSvc.getNewGroupReference();
-					newgroupRef.set(record, function(error) {
-						if(error){
-							$scope.response = { messageErr: error};
-						}else{
-					    $scope.groupId = newgroupRef.key;
-					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef, "create", "groups");
-						}
-					});
+			/* Otherwise, when groupId is not present in the scope,
+				we perform a SET to create a new record */
+			else{
+    			var newgroupRef = GroupsSvc.getNewGroupReference();
+				newgroupRef.set(record, function(error) {
+					if(error){
+						$scope.response = { messageErr: error};
+					}else{
+				    $scope.groupId = newgroupRef.key;
+				    $scope.response = { messageOk: "Grupo Creado"};
+				    AuditSvc.recordAudit(newgroupRef, "create", "groups");
+					}
+				});
 	    	}
 	    };
 
 	    $scope.deleteGroup = function() {
 	    	if( $scope.groupId ){
-					GroupsSvc.loadAllGroupsList().$loaded().then(
-						function(list) {
-							let record = GroupsSvc.getGroupFromArray($scope.groupId);
-							list.$remove(record).then(function(ref) {
-								cleanScope();
-						    $rootScope.response = { messageOk: "Grupo Eliminado"};
-						    AuditSvc.recordAudit(ref, "delete", "groups");
-								$location.path( "/groups");
-							}).catch(function(err) {
-								$rootScope.response = { messageErr: err};
-							});
-					  });
-						// The code below doestn work properly. The delete happens,
-						// but the message doestn appears
-						// let gRef = GroupsSvc.getGroupReference($scope.groupId);
-						// let record = null;
-						// $rootScope.response = { messageOk: "Grupo Eliminado"};
-						// gRef.set(record, function(error) {
-						// 	if(error){
-						// 		$scope.response = { messageErr: error};
-						// 	}else{
-						// 		cleanScope();
-						//     AuditSvc.recordAudit(gRef, "delete", "groups");
-						//     $scope.response = { messageOk: "Grupo Eliminado"};
-						// 	}
-						// });
+				GroupsSvc.loadAllGroupsList().$loaded().then(
+					function(list) {
+						let record = GroupsSvc.getGroupFromArray($scope.groupId);
+						list.$remove(record).then(function(ref) {
+							cleanScope();
+					    $rootScope.response = { messageOk: "Grupo Eliminado"};
+					    AuditSvc.recordAudit(ref, "delete", "groups");
+							$location.path( "/groups");
+						}).catch(function(err) {
+							$rootScope.response = { messageErr: err};
+						});
+				  });
+					// The code below doestn work properly. The delete happens,
+					// but the message doestn appears
+					// let gRef = GroupsSvc.getGroupReference($scope.groupId);
+					// let record = null;
+					// $rootScope.response = { messageOk: "Grupo Eliminado"};
+					// gRef.set(record, function(error) {
+					// 	if(error){
+					// 		$scope.response = { messageErr: error};
+					// 	}else{
+					// 		cleanScope();
+					//     AuditSvc.recordAudit(gRef, "delete", "groups");
+					//     $scope.response = { messageOk: "Grupo Eliminado"};
+					// 	}
+					// });
 		    }
 	    };
 
@@ -113,6 +114,11 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.group = record.group;
 				$scope.address = record.address;
 				$scope.schedule = record.schedule;
+				if(record.schedule.time){
+					$scope.schedule.time = new Date();
+					$scope.schedule.time.setHours(record.schedule.time.HH);
+					$scope.schedule.time.setMinutes(record.schedule.time.MM);
+				}
 			}else{
 				$location.path( "/error/norecord" );
 			}

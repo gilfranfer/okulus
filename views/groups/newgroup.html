@@ -9,17 +9,17 @@
     <!-- Name row -->
     <div class="form-row">
       <div class="col-2 form-group">
-        <label for="number">
+        <label for="gnumber">
           {{i18n.forms.group.numberLbl}}
         </label>
-        <input type="text" id="gnumber" name="gnumber" class="form-control form-control-lg"
+        <input type="text" id="gnumber" class="form-control form-control-lg"
           placeholder="{{i18n.forms.group.numberHint}}" ng-model="group.number" ng-required="true">
       </div>
       <div class="col-10 form-group">
         <label for="gname">
           {{i18n.forms.group.nameLbl}}
         </label>
-        <input type="text" id="gname" name="gname" class="form-control form-control-lg"
+        <input type="text" id="gname" class="form-control form-control-lg"
           placeholder="{{i18n.forms.group.nameHint}}" ng-model="group.name" ng-required="true">
       </div>
     </div>
@@ -30,7 +30,7 @@
         <label for="gtype">
           {{i18n.forms.group.typeLbl}}
         </label>
-        <select id="gtype" name="gtype" class="form-control form-control-lg"
+        <select id="gtype" class="form-control form-control-lg"
                 ng-model="group.type" ng-required="true">
           <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
           <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
@@ -43,7 +43,7 @@
         <label for="status">
           {{i18n.dropdowns.status.label}}
         </label>
-        <select id="status" name="status" class="form-control form-control-lg"
+        <select id="status" class="form-control form-control-lg"
                 ng-model="group.status" ng-required="true">
           <option value="active">{{i18n.dropdowns.status.active}}</option>
           <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
@@ -56,14 +56,14 @@
         <label for="email">
           {{i18n.forms.group.emailLbl}}
         </label>
-        <input type="email" name="email" id="email" class="form-control form-control-lg"
+        <input type="email" id="email" class="form-control form-control-lg"
             placeholder="{{i18n.forms.group.emailHint}}" ng-model="group.email" ng-required="false">
       </div>
       <div class="col form-group">
-        <label for="email">
+        <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
-        <input type="tel" name="phone" id="phone" class="form-control form-control-lg"
+        <input type="tel" id="phone" class="form-control form-control-lg"
             placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="group.phone" ng-required="false">
       </div>
     </div>
@@ -78,7 +78,7 @@
   <fieldset class="mb-4">
     <legend>{{i18n.forms.group.shcLegend}}</legend>
     <div class="form-row">
-      <div class="col-6 form-group">
+      <div class="col form-group">
          <label for="schdDay">
           {{i18n.forms.group.schdDayLbl}}
         </label>
@@ -93,7 +93,14 @@
           <option value="{{i18n.dropdowns.weekdays.sun}}">{{i18n.dropdowns.weekdays.sun}}</option>
         </select>
       </div>
-      <div class="col-3 form-group">
+      <div class="col form-group">
+        <label for="schdTime">
+          {{i18n.forms.group.schdTimeLbl}}
+        </label>
+        <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.forms.group.schdTimeHint}}"
+          ng-model="schedule.time" ng-required="true">
+      </div>
+      <!-- <div class="col-3 form-group">
         <label for="schdHour">
           {{i18n.forms.group.schdHourLbl}}
         </label>
@@ -106,7 +113,7 @@
         </label>
         <input type="number" name="schdMin" class="form-control form-control-lg" placeholder="30"
           ng-model="schedule.minute" ng-required="true" min="0" max="59" >
-      </div>
+      </div> -->
     </div>
   </fieldset>
 

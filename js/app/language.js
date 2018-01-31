@@ -33,14 +33,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			forms:{
 				group:{
 					legend: "Datos del Grupo",
-					numberLbl:"#", numberHint:"1",
+					numberLbl:"#", numberHint:"1", typeLbl:"Tipo",
 					nameLbl:"Nombre del Grupo", nameHint:"Semillas de Esperanza",
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
-					typeLbl:"Tipo",
 					shcLegend:"Horario de Servicio",
-					schdDayLbl: "Día",
-					schdHourLbl: "Hora",
-					schdMinLbl: "Min"
+					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "07:30 PM"
 				},
 				member:{
 					legend: "Datos del miembro",
