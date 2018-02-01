@@ -6,14 +6,14 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 
 okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc',
 	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc){
-		$rootScope.response = null;
+		//$rootScope.response = null;
 
     cleanScope = function(){
     	$scope.memberId = null;
     	$scope.member = null;
     	$scope.address = null;
     	$scope.response = null;
-			$rootScope.response = null;
+			//$rootScope.response = null;
     };
 
 		$scope.saveOrUpdateMember = function() {
