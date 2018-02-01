@@ -2,22 +2,6 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 	function($rootScope, $scope, $routeParams, GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
 		MembersSvc.loadActiveMembers();
 		WeeksSvc.loadActiveWeeks();
-		let whichGroup = $routeParams.groupId;
-		//When comming from /new we will get the groupId as Param
-		if(whichGroup){
-			console.log("group");
-			initScopeObjects();
-			$scope.reunion.groupId = whichGroup;
-			let groupObj = GroupsSvc.getGroupObj(whichGroup);
-			groupObj.$loaded().then(function() {
-				$scope.reunion.groupname = groupObj.group.name;
-			}).catch(function(error) {
-				$scope.reunion.groupname = "Group Not Available";
-			});
-		}
-		//This is when calling the ReportCntrl from /edit
-		else {
-		}
 
 		cleanScope = function(){
 			$scope.reportId = null;
@@ -39,6 +23,23 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 				}
 			};
 		};
+
+		let whichGroup = $routeParams.groupId;
+		//When comming from /new we will get the groupId as Param
+		if(whichGroup){
+			console.log("group");
+			initScopeObjects();
+			$scope.reunion.groupId = whichGroup;
+			let groupObj = GroupsSvc.getGroupObj(whichGroup);
+			groupObj.$loaded().then(function() {
+				$scope.reunion.groupname = groupObj.group.name;
+			}).catch(function(error) {
+				$scope.reunion.groupname = "Group Not Available";
+			});
+		}
+		//This is when calling the ReportCntrl from /edit
+		else {
+		}
 
 		$scope.saveOrUpdateReport = function(){
 			console.log("on save");
