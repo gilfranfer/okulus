@@ -146,9 +146,11 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			allGroupsLoaded: function() {
 				return $rootScope.allGroups != null;
 			},
+			//Use this when $rootScope.allGroups is already loaded
 			getGroupFromArray: function(groupId){
 				return $rootScope.allGroups.$getRecord(groupId);
 			},
+			//Use this when $rootScope.allGroups is NOT loaded
 			getGroupObj: function(groupId){
 				return $firebaseObject(groupsRef.child(groupId));
 			},
@@ -175,7 +177,29 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
 				let ref = groupsRef.child(report.reunion.groupId).child("reports").push();
 				ref.set(record);
+			},
+			getAccessRulesForGroup: function (groupId) {
+				let reference = groupsRef.child(groupId).child("access");
+				return $firebaseArray(reference);
 			}
+		};
+	}
+]);
+
+okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', '$rootScope', '$scope','$routeParams', '$location',
+	function(GroupsSvc, MembersSvc, $rootScope, $scope,$routeParams, $location){
+		let whichGroup = $routeParams.groupId;
+		MembersSvc.loadActiveMembers();
+		$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
+		GroupsSvc.getGroupObj(whichGroup).$loaded().then(
+			function(obj){
+				$scope.group = obj;
+				console.log(obj);
+			}
+		);
+
+		$scope.granAccess = function(){
+			console.log("Save rule");
 		};
 	}
 ]);

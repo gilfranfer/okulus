@@ -20,7 +20,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			btns:{
 				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo"
+				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+",
+				returnGroupsBtn: "Regresar a Grupos"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -31,6 +32,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				membersList: "Miembros"
 			},
 			forms:{
+				access:{
+					legend: "Miembros con Accceso al Grupo",
+					table:{
+						memberName:"Miembro", memberId:"Id", date:"Desde"
+					}
+				},
 				group:{
 					legend: "Datos del Grupo",
 					numberLbl:"#", numberHint:"1", typeLbl:"Tipo",

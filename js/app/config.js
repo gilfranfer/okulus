@@ -54,6 +54,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
+			.when('/groups/access/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/groups/accessRules.html',
+				controller: 'AccessRulesCntrl'
+			})
 			.when('/members', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){

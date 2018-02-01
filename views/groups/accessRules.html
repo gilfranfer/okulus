@@ -1,0 +1,68 @@
+<section>
+  <div class="card h-100" >
+    <h4 class="card-header">
+      <a ng-href="#!/groups/edit/{{group.$id}}">
+        #{{group.group.number}} {{group.group.name}}
+      </a>
+    </h4>
+    <div class="card-body">
+      <h4 class="card-title">
+        {{i18n.forms.access.legend}}
+      </h4>
+      <p class="card-text"></p>
+      <!-- Active Members List -->
+      <form class="mt-3" novalidate ng-submit="granAccess()">
+        <div class="row mb-3">
+          <div class="col-8">
+            <select class="form-control form-control-lg" ng-model="rule.memberId" ng-required="true">
+              <option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+                {{m.member.shortname}}
+              </option>
+            </select>
+          </div>
+          <div class="col-4">
+            <button type="submit" class="btn btn-lg btn-block btn-success">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+      </form>
+      <!-- Access Table -->
+      <table class="table table-md table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">{{i18n.forms.access.table.memberName}}</th>
+            <th scope="col">{{i18n.forms.access.table.memberId}}</th>
+            <th scope="col">{{i18n.forms.access.table.date}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="!acessList || acessList.length <=0"
+              class="bg-danger text-center text-white">
+            <td colspan="5">{{i18n.admin.audit.norecords}}</td>
+          </tr>
+          <tr ng-repeat="a in acessList | orderBy:'-date'">
+            <th scope="row">{{$index + 1}}</th>
+            <td>{{a.memberName}}</td>
+            <td>
+              <a ng-href="#!/members/edit/{{a.memberId}}">
+                {{a.memberId}}
+              </a>
+            </td>
+            <td>{{a.date | date: "MMM dd yyyy hh:mm:ss"}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Buttons -->
+      <div class="row mb-3">
+        <div class="col">
+          <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
+            {{i18n.btns.returnGroupsBtn}}
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
