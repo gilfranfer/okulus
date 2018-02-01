@@ -169,6 +169,12 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			},
 			getNewGroupReference: function(){
 				return groupsRef.push();
+			},
+			addReportReference: function(reportId, report){
+				//Save the report Id in the Group/reports
+				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
+				let ref = groupsRef.child(report.reunion.groupId).child("reports").push();
+				ref.set(record);
 			}
 		};
 	}

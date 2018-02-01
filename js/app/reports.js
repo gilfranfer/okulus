@@ -1,5 +1,5 @@
-okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
-	function($rootScope, $scope, $routeParams, GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
+okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
+	function($scope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
 		MembersSvc.loadActiveMembers();
 		WeeksSvc.loadActiveWeeks();
 
@@ -27,7 +27,6 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 		let whichGroup = $routeParams.groupId;
 		//When comming from /new we will get the groupId as Param
 		if(whichGroup){
-			console.log("group");
 			initScopeObjects();
 			$scope.reunion.groupId = whichGroup;
 			let groupObj = GroupsSvc.getGroupObj(whichGroup);
@@ -37,12 +36,8 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 				$scope.reunion.groupname = "Group Not Available";
 			});
 		}
-		//This is when calling the ReportCntrl from /edit
-		else {
-		}
 
 		$scope.saveOrUpdateReport = function(){
-			console.log("on save");
 			//$scope.response = null;
 			let record = {reunion: $scope.reunion, attendance: $scope.attendance};
 			record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
@@ -50,7 +45,6 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 			/* When a value for reportId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.reportId ){
-				console.log("here");
 				let repRef = ReportsSvc.getReportReference($scope.reportId);
 				repRef.update(record, function(error) {
 					if(error){
@@ -59,23 +53,31 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 						$scope.response = { messageOk: "Report Actualizado"};
 						AuditSvc.recordAudit(repRef, "update", "reports");
 					}
-				});
+			});
 			/* Otherwise, when reportId is not present in the scope,
 				we perform a SET to create a new record */
 			}else{
-				console.log("else");
+
 				var newreportRef = ReportsSvc.getNewReportReference();
 				newreportRef.set(record, function(error) {
 					if(error){
-						$rootScope.response = { messageError: error};
+						$scope.response = { messageError: error};
 					}else{
-						$scope.reportId = newreportRef.key;
-						$scope.response = { messageOk: "Reporte Creado"};
-						console.log($scope.response);
-						AuditSvc.recordAudit(newreportRef, "create", "reports");
+						//For some reason the message is not displayed until
+						//you interact with any form element
 					}
 				});
+				//adding trick below to ensure message is displayed
+				let obj = ReportsSvc.getReportObj(newreportRef.key);
+				obj.$loaded().then(function() {
+					$scope.reportId = newreportRef.key;
+					$scope.response = {messageOk: "Reporte Creado"};
+					GroupsSvc.addReportReference(newreportRef.key,obj);
+					AuditSvc.recordAudit(newreportRef, "create", "reports");
+				})
+
 	    }
+
 		};
 
 		$scope.delete = function(){
@@ -83,11 +85,11 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 				let obj = ReportsSvc.getReportObj($scope.reportId);
 				obj.$remove().then(function(ref) {
 					cleanScope();
-					$rootScope.response = { messageOk: "Reporte Eliminado"};
+					$scope.response = { messageOk: "Reporte Eliminado"};
 					AuditSvc.recordAudit(ref, "delete", "reports");
 					//$location.path( "/groups");
 				}, function(error) {
-					$rootScope.response = { messageError: err};
+					$scope.response = { messageError: err};
 				  console.log("Error:", error);
 				});
 			}
