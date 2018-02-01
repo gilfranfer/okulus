@@ -19,7 +19,14 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 		else {
 		}
 
-		function initScopeObjects() {
+		cleanScope = function(){
+			$scope.reportId = null;
+			$scope.reunion = null;
+			$scope.attendance = null
+			$scope.response = null;
+		};
+
+		initScopeObjects = function() {
 			$scope.reunion = { dateObj: new Date() };
 			$scope.attendance = {
 				guests:{
@@ -31,7 +38,7 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 					female:{kid:0, young:0, adult:0}
 				}
 			};
-		}
+		};
 
 		$scope.saveOrUpdateReport = function(){
 			console.log("on save");
@@ -70,6 +77,20 @@ okulusApp.controller('ReportCntrl', ['$rootScope','$scope','$routeParams','Group
 	    }
 		};
 
+		$scope.delete = function(){
+			if($scope.reportId){
+				let obj = ReportsSvc.getReportObj($scope.reportId);
+				obj.$remove().then(function(ref) {
+					cleanScope();
+					$rootScope.response = { messageOk: "Reporte Eliminado"};
+					AuditSvc.recordAudit(ref, "delete", "reports");
+					//$location.path( "/groups");
+				}, function(error) {
+					$rootScope.response = { messageError: err};
+				  console.log("Error:", error);
+				});
+			}
+		};
 	}
 ]);
 
