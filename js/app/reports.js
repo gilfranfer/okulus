@@ -45,6 +45,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 			/* When a value for reportId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.reportId ){
+				console.log($scope.reunion.status);
 				let repRef = ReportsSvc.getReportReference($scope.reportId);
 				repRef.update(record, function(error) {
 					if(error){

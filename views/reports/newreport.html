@@ -100,18 +100,28 @@
       <div class="col-sm form-group">
         <label for="status">
           {{i18n.forms.report.statusLbl}}
-        </label><br>
-        <div id="status" class="btn-group" data-toggle="buttons">
-          <label class="btn btn-primary btn-lg active">
-            <input type="radio" name="options" id="option1" autocomplete="off" checked>
+        </label>
+        <select id="status" class="form-control form-control-lg"
+         	ng-model="reunion.status" ng-required="true">
+         	<option value="completed">
+        		{{i18n.forms.report.okStatusLbl}}
+        	</option>
+         	<option value="canceled">
+        		{{i18n.forms.report.cancelStatusLbl}}
+        	</option>
+        </select>
+        <!-- <div id="status" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary btn-lg" ng-click="reunion.status = 'true'">
+            <input type="radio" name="options" autocomplete="off" ng-required="true">
             {{i18n.forms.report.okStatusLbl}}
           </label>
-          <label class="btn btn-danger btn-lg">
-            <input type="radio" name="options" id="option2" autocomplete="off">
+          <label class="btn btn-danger btn-lg" ng-click="reunion.status = 'false'">
+            <input type="radio" name="options"  autocomplete="off" ng-required="true">
             {{i18n.forms.report.cancelStatusLbl}}
           </label>
-        </div>
+        </div> -->
       </div>
+      <div class="col-sm form-group"></div>
     </div>
   </fieldset>
 
