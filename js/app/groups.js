@@ -194,12 +194,15 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', '$rootScope
 		GroupsSvc.getGroupObj(whichGroup).$loaded().then(
 			function(obj){
 				$scope.group = obj;
-				console.log(obj);
 			}
 		);
 
-		$scope.granAccess = function(){
+		$scope.grantAccess = function(){
 			console.log("Save rule");
+			let record = { memberId: $scope.access.memberId, date:firebase.database.ServerValue.TIMESTAMP };
+			$scope.acessList.$add(record);
+			//GroupsSvc.grantAccessToMember($scope.group.$id,$scope.access.memberId);
+			//MembersSvc.saveGrantedAccessToGroup($scope.group.$id);
 		};
 	}
 ]);
