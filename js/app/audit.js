@@ -5,7 +5,7 @@ okulusApp.factory('AuditSvc', ['$rootScope',
 
 		return {
 			/**
-			 * This method will receive the reference of the updated Db record and will
+			 * This method will receive the reference of the created/updated Db record and will
 			 * use its Id to create a couple of Audit records:
 			 * 1. Record in the object itself (actions: creation,update)
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)

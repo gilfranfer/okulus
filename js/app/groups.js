@@ -71,20 +71,6 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 								$rootScope.response = { messageError: err};
 							});
 				  });
-					// The code below doestn work properly. The delete happens,
-					// but the message doestn appears
-					// let gRef = GroupsSvc.getGroupReference($scope.groupId);
-					// let record = null;
-					// $rootScope.response = { messageOk: "Grupo Eliminado"};
-					// gRef.set(record, function(error) {
-					// 	if(error){
-					// 		$scope.response = { messageError: error};
-					// 	}else{
-					// 		cleanScope();
-					//     AuditSvc.recordAudit(gRef, "delete", "groups");
-					//     $scope.response = { messageOk: "Grupo Eliminado"};
-					// 	}
-					// });
 		    }
 	    };
 
@@ -186,10 +172,11 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 	}
 ]);
 
-okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', '$rootScope', '$scope','$routeParams', '$location',
-	function(GroupsSvc, MembersSvc, $rootScope, $scope,$routeParams, $location){
-		let whichGroup = $routeParams.groupId;
+okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc','$rootScope', '$scope','$routeParams', '$location',
+	function(GroupsSvc, MembersSvc, AuditSvc, $rootScope, $scope,$routeParams, $location){
+
 		MembersSvc.loadActiveMembers();
+		let whichGroup = $routeParams.groupId;
 		$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
 		GroupsSvc.getGroupObj(whichGroup).$loaded().then(
 			function(obj){
@@ -197,12 +184,43 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', '$rootScope
 			}
 		);
 
-		$scope.grantAccess = function(){
-			console.log("Save rule");
-			let record = { memberId: $scope.access.memberId, date:firebase.database.ServerValue.TIMESTAMP };
-			$scope.acessList.$add(record);
-			//GroupsSvc.grantAccessToMember($scope.group.$id,$scope.access.memberId);
-			//MembersSvc.saveGrantedAccessToGroup($scope.group.$id);
+		$scope.addRule = function(){
+			let whichMember = $scope.access.memberId;
+			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+			let groupName = $scope.group.group.name;
+			let record = { memberName: memberName, memberId: whichMember, date:firebase.database.ServerValue.TIMESTAMP };
+
+			//Use the Group´s access list to add a new record
+			$scope.acessList.$add(record).then(function(ref) {
+				AuditSvc.recordAudit(GroupsSvc.getGroupReference(whichGroup), "access granted", "groups");
+				//update record. Now to point to the Group
+				var id = ref.key; //use the same push key for the record on member/access folder
+				record = { groupName: groupName, groupId: whichGroup, date:firebase.database.ServerValue.TIMESTAMP };
+				MembersSvc.getMemberReference(whichMember).child("access").child(id).set(record, function(error) {
+					if(error){
+						console.error(error);
+					}else{
+						AuditSvc.recordAudit(MembersSvc.getMemberReference(whichMember), "access granted", "members");
+					}
+				});
+			});
+		};
+
+		$scope.deleteRule = function(ruleId){
+			var rec = $scope.acessList.$getRecord(ruleId);
+			let whichMember = rec.memberId;
+			$scope.acessList.$remove(rec).then(function(ref) {
+				//rule removed from Groups access folder
+				//now removed the same rule from Member access folder
+			  AuditSvc.recordAudit(GroupsSvc.getGroupReference(whichGroup), "access deleted", "groups");
+				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
+					if(error){
+						console.error(error);
+					}else{
+						AuditSvc.recordAudit(MembersSvc.getMemberReference(whichMember), "access deleted", "members");
+					}
+				});
+			});
 		};
 	}
 ]);
