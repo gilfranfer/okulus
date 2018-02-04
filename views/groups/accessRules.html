@@ -40,7 +40,7 @@
         <tbody>
           <tr ng-if="!acessList || acessList.length <=0"
               class="bg-danger text-center text-white">
-            <td colspan="5">{{i18n.admin.audit.norecords}}</td>
+            <td colspan="4">{{i18n.admin.audit.norecords}}</td>
           </tr>
           <tr ng-repeat="a in acessList | orderBy:'-date'">
             <th scope="row">{{$index + 1}}</th>

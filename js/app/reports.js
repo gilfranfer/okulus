@@ -1,3 +1,12 @@
+okulusApp.controller('ReportsListCntrl', ['$scope', 'WeeksSvc','ReportsSvc',
+	function ($scope, WeeksSvc,ReportsSvc) {
+		WeeksSvc.loadAllWeeks();
+
+		$scope.getReportsForSelectedWeek = function () {
+				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
+		};
+}]);
+
 okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
 	function($scope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
 		MembersSvc.loadActiveMembers();
@@ -56,9 +65,9 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 					}
 			});
 			/* Otherwise, when reportId is not present in the scope,
-				we perform a SET to create a new record */
+				we perform a SET to create a NEW record */
 			}else{
-
+				record.createdOn = firebase.database.ServerValue.TIMESTAMP;
 				var newreportRef = ReportsSvc.getNewReportReference();
 				newreportRef.set(record, function(error) {
 					if(error){
@@ -75,7 +84,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 					$scope.response = {messageOk: "Reporte Creado"};
 					GroupsSvc.addReportReference(newreportRef.key,obj);
 					AuditSvc.recordAudit(newreportRef.key, "create", "reports");
-				})
+				});
 
 	    }
 
@@ -167,6 +176,10 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getNewReportReference: function(){
 				return reportsRef.push();
+			},
+			getReportsForWeek: function(weekId){
+				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);
+				return $firebaseArray(ref);
 			}
 		};
 	}

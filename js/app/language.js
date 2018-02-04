@@ -21,7 +21,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			btns:{
 				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+",
+				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
 				returnGroupsBtn: "Regresar a Grupos", openBtn: "Abrir", closeBtn: "Cerrar"
 			},
 			alerts:{
@@ -30,14 +30,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			titles:{
 				groupsList: "Grupos Familiares",
-				membersList: "Miembros"
+				membersList: "Miembros",
+				reportsList: "Reportes de Reunión"
 			},
 			forms:{
 				weeks:{
 					legend: "Semanas",
-					table:{
-						weekId: "Semana"
-					}
+					week: "Semana",weekBtn:"Agregar",
+					weekName: "Nombre", weekNameHint: "Semana 1",
 				},
 				access:{
 					legend: "Miembros con Accceso al Grupo",
