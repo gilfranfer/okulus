@@ -37,7 +37,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 								$scope.response = { messageError: error};
 							}else{
 								$scope.response = { messageOk: "Grupo Actualizado"};
-								AuditSvc.recordAudit(gRef, "update", "groups");
+								AuditSvc.recordAudit(gRef.key, "update", "groups");
 							}
 						});
 		    	}
@@ -51,7 +51,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 						}else{
 					    $scope.groupId = newgroupRef.key;
 					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef, "create", "groups");
+					    AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 						}
 					});
 	    	}
@@ -65,7 +65,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 							list.$remove(record).then(function(ref) {
 								cleanScope();
 						    $rootScope.response = { messageOk: "Grupo Eliminado"};
-						    AuditSvc.recordAudit(ref, "delete", "groups");
+						    AuditSvc.recordAudit(ref.key, "delete", "groups");
 								$location.path( "/groups");
 							}).catch(function(err) {
 								$rootScope.response = { messageError: err};
@@ -192,7 +192,7 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 
 			//Use the Group´s access list to add a new record
 			$scope.acessList.$add(record).then(function(ref) {
-				AuditSvc.recordAudit(GroupsSvc.getGroupReference(whichGroup), "access granted", "groups");
+				AuditSvc.recordAudit(whichGroup, "access granted", "groups");
 				//update record. Now to point to the Group
 				var id = ref.key; //use the same push key for the record on member/access folder
 				record = { groupName: groupName, groupId: whichGroup, date:firebase.database.ServerValue.TIMESTAMP };
@@ -200,7 +200,7 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 					if(error){
 						console.error(error);
 					}else{
-						AuditSvc.recordAudit(MembersSvc.getMemberReference(whichMember), "access granted", "members");
+						AuditSvc.recordAudit(whichMember, "access granted", "members");
 					}
 				});
 			});
@@ -212,12 +212,12 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 			$scope.acessList.$remove(rec).then(function(ref) {
 				//rule removed from Groups access folder
 				//now removed the same rule from Member access folder
-			  AuditSvc.recordAudit(GroupsSvc.getGroupReference(whichGroup), "access deleted", "groups");
+			  AuditSvc.recordAudit(whichGroup, "access deleted", "groups");
 				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
 					if(error){
 						console.error(error);
 					}else{
-						AuditSvc.recordAudit(MembersSvc.getMemberReference(whichMember), "access deleted", "members");
+						AuditSvc.recordAudit(whichMember, "access deleted", "members");
 					}
 				});
 			});

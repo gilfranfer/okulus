@@ -106,13 +106,21 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/reports/newreport.html',
 				controller: 'ReportDetailsCntrl'
 			})
+			.when('/weeks', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/admin/weeks.html',
+				controller: "WeeksCntrl"
+			})
 			.when('/result/delete', {
 				templateUrl: 'views/responses/delete-result.html'
 			})
 			.when('/error/norecord', {
 				templateUrl: 'views/responses/error-norecord.html'
 			})
-
 			.when('/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
 			})

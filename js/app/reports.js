@@ -52,7 +52,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 						$scope.response = { messageError: error};
 					}else{
 						$scope.response = { messageOk: "Report Actualizado"};
-						AuditSvc.recordAudit(repRef, "update", "reports");
+						AuditSvc.recordAudit(repRef.key, "update", "reports");
 					}
 			});
 			/* Otherwise, when reportId is not present in the scope,
@@ -74,7 +74,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 					$scope.reportId = newreportRef.key;
 					$scope.response = {messageOk: "Reporte Creado"};
 					GroupsSvc.addReportReference(newreportRef.key,obj);
-					AuditSvc.recordAudit(newreportRef, "create", "reports");
+					AuditSvc.recordAudit(newreportRef.key, "create", "reports");
 				})
 
 	    }
@@ -87,7 +87,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				obj.$remove().then(function(ref) {
 					cleanScope();
 					$scope.response = { messageOk: "Reporte Eliminado"};
-					AuditSvc.recordAudit(ref, "delete", "reports");
+					AuditSvc.recordAudit(ref.key, "delete", "reports");
 					//$location.path( "/groups");
 				}, function(error) {
 					$scope.response = { messageError: err};
@@ -167,21 +167,6 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getNewReportReference: function(){
 				return reportsRef.push();
-			}
-		};
-	}
-]);
-
-okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
-	function($rootScope, $firebaseArray, $firebaseObject){
-
-		let weeksRef = firebase.database().ref().child('pibxalapa').child('weeks').orderByChild("status").equalTo("open");
-
-		return {
-			loadActiveWeeks: function(){
-				if(!$rootScope.allActiveWeeks){
-					$rootScope.allActiveWeeks = $firebaseArray(weeksRef);
-				}
 			}
 		};
 	}

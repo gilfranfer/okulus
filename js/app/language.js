@@ -2,6 +2,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
+			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
 						maxDate:"2018-12-31",minDate:"2017-01-01",
 						minDuration:"0", maxDuration:"300"
@@ -21,7 +22,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+",
-				returnGroupsBtn: "Regresar a Grupos"
+				returnGroupsBtn: "Regresar a Grupos", openBtn: "Abrir", closeBtn: "Cerrar"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -32,6 +33,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				membersList: "Miembros"
 			},
 			forms:{
+				weeks:{
+					legend: "Semanas",
+					table:{
+						weekId: "Semana"
+					}
+				},
 				access:{
 					legend: "Miembros con Accceso al Grupo",
 					table:{
@@ -94,7 +101,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					orgBtn: "Organizacion",
 					groupsBtn:"Grupos Familiares",
 					membersBtn:"Miembros",
-					reportsBtn:"Reportes"
+					reportsBtn:"Reportes",
+					weeksBtn:"Semanas"
 				},
 				audit:{
 					title: "Auditoria de Movimientos",
@@ -102,6 +110,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					groupsOptn:"Grupos",
 					membersOptn:"Miembros",
 					reportsOptn:"Reportes",
+					weeksOptn:"Semanas",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"

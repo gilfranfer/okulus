@@ -30,7 +30,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 						$scope.response = { messageErr: error};
 					}else{
 						$scope.response = { messageOk: "Miembro Actualizado"};
-				    AuditSvc.recordAudit(mRef, "update", "members");
+				    AuditSvc.recordAudit(mRef.key, "update", "members");
 					}
 				});
 			}
@@ -44,27 +44,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 					}else{
 						$scope.memberId = newmemberRef.key;
 						$scope.response = { messageOk: "Miembro Creado"};
-						AuditSvc.recordAudit(newmemberRef, "create", "members");
+						AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 					}
 				});
 			}
 		};
-
-		  //   	$rootScope.allMembers.$add( record ).then(function(ref) {
-			// 	    $scope.memberId = ref.key;
-			// 	    $scope.response = { messageOk: "Miembro Creado"};
-			// 	    AuditSvc.recordAudit(ref, "create", "members");
-			// 	}).catch(function(err) {
-			// 		$scope.response = { messageErr: err};
-			// 	});
-
-		  //   	$rootScope.allMembers.$save(record).then(function(ref) {
-			// 	    $scope.response = { messageOk: "Miembro Actualizado"};
-			// 	    AuditSvc.recordAudit(ref, "update", "members");
-			// 		}).catch(function(err) {
-			// 			$scope.response = { messageErr: err};
-			// 		});
-
 
 	    $scope.deleteMember = function() {
 	    	if( $scope.memberId ){
@@ -74,7 +58,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 							list.$remove(record).then(function(ref) {
 								cleanScope();
 						    $rootScope.response = { messageOk: "Miembro Eliminado"};
-						    AuditSvc.recordAudit(ref, "delete", "members");
+						    AuditSvc.recordAudit(ref.key, "delete", "members");
 								$location.path( "/members");
 							}).catch(function(err) {
 								$rootScope.response = { messageErr: err};
