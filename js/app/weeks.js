@@ -6,7 +6,11 @@ okulusApp.controller('WeeksCntrl', ['WeeksSvc', '$scope',
 			$scope.response = null;
 			let weekId = document.querySelector("#weekId").value;
 			if(weekId){
-				WeeksSvc.persistWeek(weekId);
+				if(!WeeksSvc.getWeekRecord(weekId)){
+					WeeksSvc.persistWeek(weekId);
+				}else{
+					console.log("Already exist");
+				}
 			}else{
 				$scope.response = {messageError: "Valor incorrecto" };
 			}
@@ -39,10 +43,14 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 					$rootScope.allWeeks = $firebaseArray(weeksRef);
 				}
 			},
+			getWeekRecord: function(weekId){
+				return $rootScope.allWeeks.$getRecord(weekId);
+			},
 			persistWeek: function(weekId){
 				let record = {status:"open"};
 
 				weeksRef.child(weekId).set(record, function(error) {
+					console.log("set donde");
 					if(error){
 						console.error(error);
 					}else{
