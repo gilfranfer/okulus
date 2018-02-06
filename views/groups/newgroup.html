@@ -1,27 +1,26 @@
 <section ng-controller="GroupFormCntrl">
-  
 
-<form class="mt-3" name="groupForm" novalidate ng-submit="saveGroup()">
+<form class="mt-3" name="groupForm" novalidate ng-submit="saveOrUpdateGroup()">
 
   <!-- Basic Group Information -->
   <fieldset class="mb-4">
-    <legend>{{i18n.groupForm.basicInfoFieldset}}</legend>
-    
+    <legend>{{i18n.forms.group.legend}}</legend>
+
     <!-- Name row -->
     <div class="form-row">
       <div class="col-2 form-group">
         <label for="gnumber">
-          {{i18n.groupForm.gnumberLabel}}
+          {{i18n.forms.group.numberLbl}}
         </label>
-        <input type="text" id="gnumber" name="gnumber" class="form-control form-control-lg" 
-          placeholder="{{i18n.groupForm.gnumberPlaceholder}}" ng-model="group.number" ng-required="true">
+        <input type="text" id="gnumber" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.group.numberHint}}" ng-model="group.number" ng-required="true">
       </div>
       <div class="col-10 form-group">
         <label for="gname">
-          {{i18n.groupForm.gnameLabel}}
+          {{i18n.forms.group.nameLbl}}
         </label>
-        <input type="text" id="gname" name="gname" class="form-control form-control-lg" 
-          placeholder="{{i18n.groupForm.gNamePlaceholder}}" ng-model="group.name" ng-required="true">
+        <input type="text" id="gname" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.group.nameHint}}" ng-model="group.name" ng-required="true">
       </div>
     </div>
 
@@ -29,9 +28,9 @@
     <div class="form-row">
       <div class="col form-group">
         <label for="gtype">
-          {{i18n.groupForm.gtypeLabel}}
+          {{i18n.forms.group.typeLbl}}
         </label>
-        <select id="gtype" name="gtype" class="form-control form-control-lg" 
+        <select id="gtype" class="form-control form-control-lg"
                 ng-model="group.type" ng-required="true">
           <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
           <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
@@ -44,7 +43,7 @@
         <label for="status">
           {{i18n.dropdowns.status.label}}
         </label>
-        <select id="status" name="status" class="form-control form-control-lg" 
+        <select id="status" class="form-control form-control-lg"
                 ng-model="group.status" ng-required="true">
           <option value="active">{{i18n.dropdowns.status.active}}</option>
           <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
@@ -55,17 +54,17 @@
     <div class="form-row">
       <div class="col form-group">
         <label for="email">
-          {{i18n.groupForm.emailLbl}}
+          {{i18n.forms.group.emailLbl}}
         </label>
-        <input type="email" name="email" id="email" class="form-control form-control-lg" 
-            placeholder="{{i18n.groupForm.emailHint}}" ng-model="group.email" ng-required="false">
+        <input type="email" id="email" class="form-control form-control-lg"
+            placeholder="{{i18n.forms.group.emailHint}}" ng-model="group.email" ng-required="false">
       </div>
       <div class="col form-group">
-        <label for="email">
-          {{i18n.groupForm.phoneLbl}}
+        <label for="phone">
+          {{i18n.forms.phone.phoneLbl}}
         </label>
-        <input type="tel" name="phone" id="phone" class="form-control form-control-lg" 
-            placeholder="{{i18n.groupForm.phoneHint}}" ng-model="group.phone" ng-required="false">
+        <input type="tel" id="phone" class="form-control form-control-lg"
+            placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="group.phone" ng-required="false">
       </div>
     </div>
 
@@ -73,17 +72,17 @@
   </fieldset>
 
   <!-- Address -->
-  <section ng-include="'views/fragments/addressFieldset.html'"></section>
+  <article ng-include="'views/fragments/addressFieldset.html'"></article>
 
   <!-- Schedule -->
   <fieldset class="mb-4">
-    <legend>{{i18n.groupForm.shcLegend}}</legend>
+    <legend>{{i18n.forms.group.shcLegend}}</legend>
     <div class="form-row">
-      <div class="col-sm-4 form-group">
+      <div class="col form-group">
          <label for="schdDay">
-          {{i18n.groupForm.schdDayLabel}}
+          {{i18n.forms.group.schdDayLbl}}
         </label>
-        <select id="schdDay" name="schdDay" class="form-control form-control-lg" 
+        <select id="schdDay" name="schdDay" class="form-control form-control-lg"
                 ng-model="schedule.weekday" ng-required="true">
           <option value="{{i18n.dropdowns.weekdays.mon}}">{{i18n.dropdowns.weekdays.mon}}</option>
           <option value="{{i18n.dropdowns.weekdays.tue}}">{{i18n.dropdowns.weekdays.tue}}</option>
@@ -95,57 +94,64 @@
         </select>
       </div>
       <div class="col form-group">
-        <label for="schdTimeFrom">
-          {{i18n.groupForm.schdTimeFromLabel}}
+        <label for="schdTime">
+          {{i18n.forms.group.schdTimeLbl}}
         </label>
-        <input type="time" name="schdTimeFrom" id="schdTimeFrom" class="form-control form-control-lg" 
-          ng-model="schedule.timeFrom" ng-required="false" readonly>
+        <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.forms.group.schdTimeHint}}"
+          ng-model="schedule.timestamp" ng-required="true">
       </div>
-      <div class="col form-group">
-        <label for="schdTimeTo">
-          {{i18n.groupForm.schdTimeToLabel}}
+      <!-- <div class="col-3 form-group">
+        <label for="schdHour">
+          {{i18n.forms.group.schdHourLbl}}
         </label>
-        <input type="time" name="schdTimeTo" id="schdTimeTo" class="form-control form-control-lg" 
-           ng-model="schedule.timeTo" ng-required="false" readonly>
+        <input type="number" name="schdHour" class="form-control form-control-lg" placeholder="19"
+          ng-model="schedule.hour" ng-required="true" min="0" max="23" >
       </div>
+      <div class="col-3 form-group">
+        <label for="schdMin">
+          {{i18n.forms.group.schdMinLbl}}
+        </label>
+        <input type="number" name="schdMin" class="form-control form-control-lg" placeholder="30"
+          ng-model="schedule.minute" ng-required="true" min="0" max="59" >
+      </div> -->
     </div>
   </fieldset>
 
   <!-- Alert/Error row -->
   <div class="form-row">
     <div class="col">
-      <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid">
-        {{i18n.alerts.invalidForm}} 
+      <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid && groupForm.$dirty">
+        {{i18n.alerts.invalidForm}}
       </div>
-      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
-        {{response.messageOk}}
+      <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
+        {{response.groupMsgOk}}
       </div>
-      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
-        {{response.messageErr}}
+      <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
+        {{response.groupMsgError}}
       </div>
     </div>
   </div>
-  
+
   <!-- Buttons rows -->
-  <div class="form-row" ng-if="isAdmin">
+  <div class="form-row">
     <div class="col-sm form-group" >
-      <button type="submit" class="btn btn-lg btn-block btn-primary" 
-        ng-disabled="groupForm.$invalid">
+      <button type="submit" class="btn btn-lg btn-block btn-success"
+        ng-disabled="groupForm.$invalid || groupForm.$pristine">
         {{i18n.btns.saveBtn}}
       </button>
     </div>
     <div class="col-sm form-group" ng-if="groupId">
-      <button type="button" class="btn btn-lg btn-block btn-danger" 
+      <button type="button" class="btn btn-lg btn-block btn-danger"
           data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
         {{i18n.btns.deleteBtn}}
       </button>
       <div  class="collapse" id="collapseDelete">
         <div class="alert alert-danger" role="alert">
-          {{i18n.alerts.confirmDelete}} 
+          {{i18n.alerts.confirmDelete}}
           <button type="button" class="btn btn-danger" ng-click="deleteGroup()">
             {{i18n.btns.yesBtn}}
           </button>
-          <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+          <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
             {{i18n.btns.noBtn}}
           </button>
         </div>
@@ -154,12 +160,11 @@
   </div>
   <div class="form-row">
     <div class="col form-group">
-      <a class="btn btn-lg btn-block btn-success" href="#!/groups">
-        Regresar
+      <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
+        {{i18n.btns.returnGroupsBtn}}
       </a>
     </div>
   </div>
-
 
 </form>
 

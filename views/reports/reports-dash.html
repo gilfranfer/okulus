@@ -1,0 +1,156 @@
+<article ng-controller="ReportsListCntrl">
+  <!-- Week Selector -->
+  <div class="card mb-3">
+    <div class="card-header">
+        {{i18n.admin.dashboard.titles.weekSection}}
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text"></p>
+      <!-- Active Members List -->
+      <form name="weekForm" class="mb-3" novalidate>
+        <div class="row mb-3">
+          <div class="col-8">
+            <select id="weekSelect" class="form-control form-control-lg" ng-model="week.id" ng-required="true">
+              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
+                {{w.name}} ({{w.$id}})
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-lg btn-block btn-success"
+              ng-click="getReportsForSelectedWeek()" ng-disabled="weekForm.$invalid">
+              {{i18n.btns.viewBtn}}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Alert/Error row -->
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger" role="alert" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+        {{i18n.admin.dashboard.noReportsError}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Table -->
+  <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
+    <div class="card-header">
+        {{i18n.admin.dashboard.titles.reportsList}}
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text"></p>
+
+      <div class="row">
+        <div class="col-sm mb-3">
+          <div id="progressGauge-container" style="width:100%; height:200px;"></div>
+        </div>
+        <div class="col-sm mb-3">
+          <div id="statusGauge-container" style="width:100%; height:200px;"></div>
+        </div>
+      </div>
+
+      <table class="table table-responsive-sm table-md table-striped">
+        <thead>
+          <tr>
+            <!-- <th scope="col">#</th> -->
+            <th scope="col">{{i18n.admin.dashboard.reportTable.report}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.date}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.group}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.reunionStatus}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.duration}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.money}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.attendance}}</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="!reportsForSelectedWeek || reportsForSelectedWeek.length <=0"
+              class="bg-danger text-center text-white">
+            <td colspan="6">{{i18n.admin.audit.norecords}}</td>
+          </tr>
+          <tr ng-repeat="report in reportsForSelectedWeek | orderBy:'-createdOn'">
+            <!-- <td scope="row">{{$index + 1}}</td> -->
+            <td scope="row">
+              <a ng-href="#!/reports/edit/{{report.$id}}">
+                {{i18n.admin.dashboard.reportTable.view}}
+              </a>
+            </td>
+            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
+            <td scope="row">
+              <a ng-href="#!/groups/edit/{{report.reunion.groupId}}">
+                {{report.reunion.groupname}}
+              </a>
+            </td>
+            <td class="text-danger" ng-if="report.reunion.status == 'canceled'">
+              {{i18n.forms.report.cancelStatusLbl}}
+            </td>
+            <td class="text-success" ng-if="report.reunion.status == 'completed'">
+              {{i18n.forms.report.okStatusLbl}}
+            </td>
+            <td>{{report.reunion.duration}} min</td>
+            <td>${{report.reunion.money}}</td>
+            <td>
+              {{
+                report.attendance.guests.female.adult + report.attendance.guests.female.young +
+                report.attendance.guests.female.kid + report.attendance.guests.male.adult +
+                report.attendance.guests.male.young + report.attendance.guests.male.kid +
+                report.attendance.members.female.adult + report.attendance.members.female.young +
+                report.attendance.members.female.kid + report.attendance.members.male.adult +
+                report.attendance.members.male.young + report.attendance.members.male.kid
+              }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Attendance Charts -->
+  <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
+    <div class="card-header">
+        {{i18n.admin.dashboard.titles.attendance}}
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text"></p>
+      <div class="row">
+        <div class="col-sm mb-3">
+          <div id="genderPie-container" style="width:100%; height:250px;"></div>
+        </div>
+        <div class="col-sm mb-3">
+          <div id="genderDetails-container" style="width:100%; height:250px;"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col mb-3">
+          <div id="attendanceByGroup-container" style="width:100%; height:400px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Money Charts -->
+  <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
+    <div class="card-header">
+        {{i18n.admin.dashboard.titles.money}}
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text"></p>
+
+      <div class="row">
+        <div class="col mb-3">
+          <div id="moneyScatter-container" style="width:100%; height:400px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</article>

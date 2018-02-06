@@ -1,0 +1,61 @@
+<!-- Members List -->
+<section>
+  <div class="row mb-1">
+      <h2>{{i18n.titles.membersList}}</h2>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-8">
+      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+    </div>
+    <div class="col-4">
+      <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
+        {{i18n.btns.newMemberBtn}}
+      </a>
+    </div>
+  </div>
+
+  <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
+    {{response.memberMsgOk}}
+  </div>
+  <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
+    {{response.memberMsgError}}
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="m in allMembers | filter:searchText">
+      <!-- Group card -->
+      <div class="card h-100">
+        <h4 class="card-header">
+          <a ng-href="#!/members/edit/{{m.$id}}">
+            {{m.member.shortname}}
+          </a>
+        </h4>
+        <div class="card-body">
+          <!-- <h4 class="card-title"></h4> -->
+          <p>
+            <span class="font-weight-bold">{{i18n.forms.member.fnameLbl}}:</span>
+            {{m.member.firstname}} {{m.member.lastname}}
+          </p>
+          <p class="card-text" ng-if="m.address">
+            <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
+            {{m.address.street}}
+            #{{m.address.extNumber}}<span ng-if="m.address.intNumber">, Int {{m.address.intNumber}}</span><br>
+            {{m.address.city}} {{m.address.state}}, {{m.address.country}}<br>
+            {{i18n.forms.address.zipLbl}} {{m.address.zip}}
+          </p>
+          <p class="card-text" ng-if="m.member.phone">
+            <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span>
+            <a href="tel:{{m.phone}}">{{m.member.phone}}</a>
+          </p>
+          <p class="card-text" ng-if="m.member.email">
+            <span class="font-weight-bold">{{i18n.forms.group.emailLbl}}:</span>
+            <a href="mailto:{{m.email}}">{{m.member.email}}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>

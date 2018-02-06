@@ -10,14 +10,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/home.html',
 				controller: 'GroupListCntrl'
 			})
-			.when('/admin/launchpad', {
-				// resolve: {
-				// 	currentAuth: function(AuthenticationSvc){
-				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
-				// 	}
-				// },
-				templateUrl: 'views/admin/launchpad.html'
-			})
 			.when('/admin/dashboard', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
@@ -32,7 +24,8 @@ okulusApp.config(['$routeProvider',
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
 				// 	}
 				// },
-				templateUrl: 'views/admin/monitor.html'
+				templateUrl: 'views/admin/monitor.html',
+				controller: 'MonitorCntrl'
 			})
 
 			.when('/groups', {
@@ -42,7 +35,7 @@ okulusApp.config(['$routeProvider',
 				// 	}
 				// },
 				templateUrl: 'views/groups/groups.html',
-				controller: 'GroupListCntrl'
+				controller: 'GroupsAdminListCntrl'
 			})
 			.when('/groups/new', {
 				// resolve: {
@@ -52,7 +45,7 @@ okulusApp.config(['$routeProvider',
 				// },
 				templateUrl: 'views/groups/newgroup.html'
 			})
-			.when('/groups/view/:groupId', {
+			.when('/groups/edit/:groupId', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
@@ -61,15 +54,75 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
-
-			.when('/admin/organization', {
+			.when('/groups/access/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/groups/accessRules.html',
+				controller: 'AccessRulesCntrl'
+			})
+			.when('/members', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn();
+				// 	}
+				// },
+				templateUrl: 'views/members/members.html',
+				controller: 'MembersListCntrl'
+			})
+			.when('/members/new', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/members/newmember.html'
+			})
+			.when('/members/edit/:memberId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/members/newmember.html',
+				controller: 'MemberDetailsCntrl'
+			})
+			.when('/reports/new/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/reports/newreport.html'
+			})
+			.when('/reports/edit/:reportId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/reports/newreport.html',
+				controller: 'ReportDetailsCntrl'
+			})
+			.when('/weeks', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/admin/weeks.html',
+				controller: "WeeksCntrl"
+			})
+			.when('/result/delete', {
+				templateUrl: 'views/responses/delete-result.html'
+			})
+			.when('/error/norecord', {
+				templateUrl: 'views/responses/error-norecord.html'
+			})
+			.when('/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
-			})
-			.when('/admin/newmember', {
-				templateUrl: 'views/admin/newmember.html'
-			})
-			.when('/admin/newreport', {
-				templateUrl: 'views/admin/newreport.html'
 			})
 			.otherwise({
 				redirectTo: '/about'

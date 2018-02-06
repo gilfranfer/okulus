@@ -1,0 +1,139 @@
+<section ng-controller="MemberFormCntrl">
+
+<form class="mt-3" name="memberForm" novalidate ng-submit="saveOrUpdateMember()">
+
+  <!-- Basic Member Information -->
+  <fieldset class="mb-4">
+    <legend>{{i18n.forms.member.legend}}</legend>
+
+    <!-- Name row -->
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="fname">
+          {{i18n.forms.member.fnameLbl}}
+        </label>
+        <input type="text" id="fname" name="fname" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.member.fnameHint}}" ng-model="member.firstname" ng-required="true">
+      </div>
+      <div class="col-sm form-group">
+        <label for="lname">
+          {{i18n.forms.member.lnameLbl}}
+        </label>
+        <input type="text" id="lname" name="lname" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.member.lnameHint}}" ng-model="member.lastname" ng-required="true">
+      </div>
+    </div>
+
+    <!-- Shortname and Bday -->
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="sname">
+          {{i18n.forms.member.snameLbl}}
+        </label>
+        <input type="text" id="sname" name="sname" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.member.snameHint}}" ng-model="member.shortname" ng-required="true">
+      </div>
+      <div class="col-sm form-group">
+        <label for="bday">
+          {{i18n.forms.member.bdayLbl}}
+        </label>
+        <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}"
+          class="form-control form-control-lg" placeholder="{{i18n.forms.member.bdayHint}}"
+          ng-model="member.bday" ng-required="false">
+      </div>
+    </div>
+
+    <!-- Email and Phone Row -->
+    <div class="form-row">
+      <div class="col-md form-group">
+        <label for="email">
+          {{i18n.forms.member.emailLbl}}
+        </label>
+        <input type="email" id="email" name="email" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="false">
+      </div>
+      <div class="col-md form-group">
+        <label for="phone">
+          {{i18n.forms.phone.phoneLbl}}
+        </label>
+        <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
+          placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="false">
+      </div>
+    </div>
+
+    <!-- Status Row -->
+    <div class="form-row">
+      <div class="col-md-6 form-group">
+        <label for="status">
+          {{i18n.dropdowns.status.label}}
+        </label>
+        <select id="status" name="status" class="form-control form-control-lg"
+                ng-model="member.status" ng-required="true">
+          <option value="active">{{i18n.dropdowns.status.active}}</option>
+          <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
+        </select>
+      </div>
+    </div>
+
+  </fieldset>
+
+  <!-- Address -->
+  <article ng-include="'views/fragments/addressFieldset.html'"></article>
+
+ <!-- User Section -->
+ <!-- if Current User = Admin -->
+ <!-- <article ng-include="'views/fragments/userFieldset.html'" ng-if="true"></article> -->
+ <!-- endIf-->
+
+  <!-- Alert/Error row -->
+  <div class="form-row">
+    <div class="col">
+      <div class="alert alert-warning" role="alert" ng-show="memberForm.$invalid && memberForm.$dirty">
+        {{i18n.alerts.invalidForm}}
+      </div>
+      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
+        {{response.messageOk}}
+      </div>
+      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
+        {{response.messageErr}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons rows -->
+  <div class="form-row">
+    <div class="col-sm form-group" >
+      <button type="submit" class="btn btn-lg btn-block btn-success"
+        ng-disabled="memberForm.$invalid || memberForm.$pristine">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+    <div class="col-sm form-group" ng-if="memberId">
+      <button type="button" class="btn btn-lg btn-block btn-danger"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.btns.deleteBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="deleteMember()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col form-group">
+      <a class="btn btn-lg btn-block btn-primary" href="#!/members">
+        {{i18n.btns.returnBtn}}
+      </a>
+    </div>
+  </div>
+
+</form>
+
+</section>
