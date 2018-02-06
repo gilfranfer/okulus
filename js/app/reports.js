@@ -8,8 +8,16 @@ okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 					GroupsSvc.loadActiveGroups();
 					$rootScope.allActiveGroups.$loaded().then(function(){
 						ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
+
+						//Left a Watch on the Reports Array to update the dashboard when data is modified
+						$scope.reportsForSelectedWeek.$watch(function(event) {
+							ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
+						});
+
 					});
 				});
+
+
 		};
 }]);
 
