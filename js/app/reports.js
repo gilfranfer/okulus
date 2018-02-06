@@ -28,15 +28,15 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		initScopeObjects = function() {
 			$scope.reunion = { dateObj: new Date() };
 			$scope.attendance = {
-				guests:{
-					male:{kid:0, young:0, adult:0},
-					female:{kid:0, young:0, adult:0}
-				},
-				members:{
-					male:{kid:0, young:0, adult:0},
-					female:{kid:0, young:0, adult:0}
-				}
-			};
+														guests:{
+															male:{kid:0, young:0, adult:0},
+															female:{kid:0, young:0, adult:0}
+														},
+														members:{
+															male:{kid:0, young:0, adult:0},
+															female:{kid:0, young:0, adult:0}
+														}
+													};
 		};
 
 		let whichGroup = $routeParams.groupId;
@@ -53,10 +53,23 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		}
 
 		$scope.saveOrUpdateReport = function(){
-			//$scope.response = null;
+			if($scope.reunion.status == "canceled"){
+				$scope.reunion.attendance = {
+					guests:{
+						male:{kid:0, young:0, adult:0},
+						female:{kid:0, young:0, adult:0}
+					},
+					members:{
+						male:{kid:0, young:0, adult:0},
+						female:{kid:0, young:0, adult:0}
+					}
+				};
+				$scope.reunion.duration = 0;
+				$scope.reunion.money = 0;
+			}
+			
 			let record = {reunion: $scope.reunion, attendance: $scope.attendance};
 			record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
-
 			/* When a value for reportId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.reportId ){
