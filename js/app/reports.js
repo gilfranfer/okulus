@@ -64,9 +64,9 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				let repRef = ReportsSvc.getReportReference($scope.reportId);
 				repRef.update(record, function(error) {
 					if(error){
-						$scope.response = { messageError: error};
+						$scope.response = { reportMsgError: error};
 					}else{
-						$scope.response = { messageOk: "Report Actualizado"};
+						$scope.response = { reportMsgOk: "Report Actualizado"};
 						AuditSvc.recordAudit(repRef.key, "update", "reports");
 					}
 			});
@@ -77,7 +77,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				var newreportRef = ReportsSvc.getNewReportReference();
 				newreportRef.set(record, function(error) {
 					if(error){
-						$scope.response = { messageError: error};
+						$scope.response = { reportMsgError: error};
 					}else{
 						//For some reason the message is not displayed until
 						//you interact with any form element
@@ -87,7 +87,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				let obj = ReportsSvc.getReportObj(newreportRef.key);
 				obj.$loaded().then(function() {
 					$scope.reportId = newreportRef.key;
-					$scope.response = {messageOk: "Reporte Creado"};
+					$scope.response = {reportMsgOk: "Reporte Creado"};
 					GroupsSvc.addReportReference(newreportRef.key,obj);
 					AuditSvc.recordAudit(newreportRef.key, "create", "reports");
 				});
@@ -101,11 +101,11 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				let obj = ReportsSvc.getReportObj($scope.reportId);
 				obj.$remove().then(function(ref) {
 					cleanScope();
-					$scope.response = { messageOk: "Reporte Eliminado"};
+					$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
 					AuditSvc.recordAudit(ref.key, "delete", "reports");
 					//$location.path( "/groups");
 				}, function(error) {
-					$scope.response = { messageError: err};
+					$scope.response = { reportMsgError: err};
 				  console.log("Error:", error);
 				});
 			}

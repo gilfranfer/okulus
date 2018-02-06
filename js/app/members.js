@@ -6,7 +6,7 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 
 okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc',
 	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc){
-		//$rootScope.response = null;
+		$rootScope.response = null;
 
     cleanScope = function(){
     	$scope.memberId = null;
@@ -27,9 +27,9 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
     		let mRef = MembersSvc.getMemberReference($scope.memberId);
 		    mRef.update(record, function(error) {
 					if(error){
-						$scope.response = { messageErr: error};
+						$scope.response = { memberMsgError: error};
 					}else{
-						$scope.response = { messageOk: "Miembro Actualizado"};
+						$scope.response = { memberMsgOk: "Miembro Actualizado"};
 				    AuditSvc.recordAudit(mRef.key, "update", "members");
 					}
 				});
@@ -40,12 +40,19 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 				var newmemberRef = MembersSvc.getNewMemberReference();
 				newmemberRef.set(record, function(error) {
 					if(error){
-						$scope.response = { messageErr: error};
+						$scope.response = { memberMsgError: error};
 					}else{
-						$scope.memberId = newmemberRef.key;
-						$scope.response = { messageOk: "Miembro Creado"};
-						AuditSvc.recordAudit(newmemberRef.key, "create", "members");
+						//For some reason the message is not displayed until
+						//you interact with any form element
 					}
+				});
+
+				//adding trick below to ensure message is displayed
+				let obj = MembersSvc.getMember(newmemberRef.key);
+				obj.$loaded().then(function() {
+					$scope.memberId = newmemberRef.key;
+					$scope.response = { memberMsgOk: "Miembro Creado"};
+					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 				});
 			}
 		};
@@ -57,11 +64,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 							let record = MembersSvc.getMemberFromArray($scope.memberId);
 							list.$remove(record).then(function(ref) {
 								cleanScope();
-						    $rootScope.response = { messageOk: "Miembro Eliminado"};
+						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
 						    AuditSvc.recordAudit(ref.key, "delete", "members");
 								$location.path( "/members");
 							}).catch(function(err) {
-								$rootScope.response = { messageErr: err};
+								$rootScope.response = { memberMsgError: err};
 							});
 					  });
 	    	}

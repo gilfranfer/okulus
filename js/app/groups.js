@@ -12,7 +12,7 @@ okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
 
 okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc', 'UtilsSvc',
 	function($rootScope, $scope, $location, GroupsSvc, AuditSvc, UtilsSvc){
-	   	//$rootScope.response = null;
+	   	$rootScope.response = null;
 
 			cleanScope = function(){
 	    	$scope.groupId = null;
@@ -34,9 +34,9 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 						let gRef = GroupsSvc.getGroupReference($scope.groupId);
 						gRef.update(record, function(error) {
 							if(error){
-								$scope.response = { messageError: error};
+								$scope.response = { groupMsgError: error};
 							}else{
-								$scope.response = { messageOk: "Grupo Actualizado"};
+								$scope.response = { groupMsgOk: "Grupo Actualizado"};
 								AuditSvc.recordAudit(gRef.key, "update", "groups");
 							}
 						});
@@ -47,12 +47,19 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 	    		var newgroupRef = GroupsSvc.getNewGroupReference();
 					newgroupRef.set(record, function(error) {
 						if(error){
-							$scope.response = { messageError: error};
+							$scope.response = { groupMsgError: error};
 						}else{
-					    $scope.groupId = newgroupRef.key;
-					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
+							//For some reason the message is not displayed until
+							//you interact with any form element
 						}
+					});
+
+					//adding trick below to ensure message is displayed
+					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
+					obj.$loaded().then(function() {
+						$scope.groupId = newgroupRef.key;
+						$scope.response = { groupMsgOk: "Grupo Creado"};
+						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 					});
 	    	}
 	    };
@@ -64,11 +71,11 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 							let record = GroupsSvc.getGroupFromArray($scope.groupId);
 							list.$remove(record).then(function(ref) {
 								cleanScope();
-						    $rootScope.response = { messageOk: "Grupo Eliminado"};
+						    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
 						    AuditSvc.recordAudit(ref.key, "delete", "groups");
 								$location.path( "/groups");
 							}).catch(function(err) {
-								$rootScope.response = { messageError: err};
+								$rootScope.response = { groupMsgError: err};
 							});
 				  });
 		    }
