@@ -122,6 +122,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						money: "Diezmo",
 						attendance: "Asistencia", view: "Ver"
 					},
+					noReportsError: "No hay Reportes para la semana seleccionada",
 					orgBtn: "Organizacion",
 					groupsBtn:"Grupos Familiares",
 					membersBtn:"Miembros",

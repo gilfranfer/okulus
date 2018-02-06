@@ -28,6 +28,15 @@
     </div>
   </div>
 
+  <!-- Alert/Error row -->
+  <div class="row">
+    <div class="col">
+      <div class="alert alert-danger" role="alert" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+        {{i18n.admin.dashboard.noReportsError}}
+      </div>
+    </div>
+  </div>
+
   <!-- Reports Table -->
   <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
     <div class="card-header">
