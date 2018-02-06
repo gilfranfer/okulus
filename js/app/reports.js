@@ -1,11 +1,14 @@
-okulusApp.controller('ReportsListCntrl', ['$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc',
-	function ($scope, WeeksSvc, ReportsSvc, ChartsSvc) {
+okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
+	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
 		WeeksSvc.loadAllWeeks();
 
 		$scope.getReportsForSelectedWeek = function () {
 				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
 				$scope.reportsForSelectedWeek.$loaded().then(function() {
-					ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek);
+					GroupsSvc.loadActiveGroups();
+					$rootScope.allActiveGroups.$loaded().then(function(){
+						ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
+					});
 				});
 		};
 }]);
