@@ -161,7 +161,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                 ],
                 lineWidth: 0,
                 minorTickInterval: null,
-                tickAmount: 2,
+                //tickAmount: 2,
                 title: { y: -70 },
                 labels: { y: 16 }
             },
@@ -171,25 +171,25 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
         };
 
         var gaugeProgress = {
-            yAxis: { min: 0, max: Math.abs(activeGroupsCount), title: { text: 'Reportes Entregados' }
+            yAxis: { min: 0, max: activeGroupsCount, title: { text: 'Reportes Entregados' }
             },
             series: [{
                 data: [reportsList.length],
                 dataLabels: {
                     format: '<div style="text-align:center"><span style="font-size:25px;">{y}</span><br/>' +
-                           '<span style="font-size:12px;color:silver">Reportes</span></div>'
+                           '<span style="font-size:12px;color:silver">de '+activeGroupsCount+'</span></div>'
                 }
             }]
         };
 
         var gaugeStatus = {
-            yAxis: { min: 0, max: Math.abs(activeGroupsCount), title: { text: 'Reuniones Realizadas' }
+            yAxis: { min: 0, max: activeGroupsCount, title: { text: 'Reuniones Realizadas' }
             },
             series: [{
                 data: [totalCompletedStatusReunions],
                 dataLabels: {
                     format: '<div style="text-align:center"><span style="font-size:25px;">{y}</span><br/>' +
-                           '<span style="font-size:12px;color:silver">Reuniones</span></div>'
+                           '<span style="font-size:12px;color:silver">de '+activeGroupsCount+'</span></div>'
                 }
             }]
         };
