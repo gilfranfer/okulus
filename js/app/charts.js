@@ -19,11 +19,16 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
         let youngFemaleByWeek = 0;
         let kidFemaleByWeek = 0;
 
+				let scatterMoneyData = [];
+
         reportsList.forEach(function(report, index) {
-          groupNameAsCategory.push(report.reunion.groupname);
-          if(report.reunion.status == "completed"){
+					//For Gauge Charts
+					if(report.reunion.status == "completed"){
             totalCompletedStatusReunions++;
           }
+
+					//For attendance Charts
+					groupNameAsCategory.push(report.reunion.groupname);
           let guests =
             report.attendance.guests.female.adult +
             report.attendance.guests.female.young +
@@ -42,6 +47,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
           totalMembersByReport.push(members);
           totalAttendanceByReport.push(guests+members);
 
+					//For Detail Attendance Charts
           adultMaleByWeek += (
             report.attendance.members.male.adult +
             report.attendance.guests.male.adult );
@@ -51,7 +57,6 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
           kidMaleByWeek += (
             report.attendance.members.male.kid +
             report.attendance.guests.male.kid);
-
           adultFemaleByWeek += (
             report.attendance.members.female.adult +
             report.attendance.guests.female.adult );
@@ -62,6 +67,8 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             report.attendance.members.female.kid +
             report.attendance.guests.female.kid);
 
+					//For Money Scatter Charts
+					scatterMoneyData.push( [report.reunion.money, guests+members] );
 				});
 
         var attendanceByGroupOptions = {
@@ -76,8 +83,8 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                   },
             legend: { reversed: true },
             plotOptions: { series: { stacking: 'normal' } },
-            series: [ { name: 'Invitados', data: totalGuestsByReport },
-                      { name: 'Miembros', data: totalMembersByReport }
+            series: [ { name: 'Invitados', color: 'rgba(40,167,69,.8)', data: totalGuestsByReport },
+                      { name: 'Miembros', color: 'rgba(0,123,255,.8)', data: totalMembersByReport }
                     ]
         };
 
@@ -109,10 +116,10 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                 }
             },
             series: [{
-                name: 'Hombres',
+                name: 'Hombres', color: 'rgba(0,123,255,.8)',
                 data: [-adultMaleByWeek, -youngMaleByWeek, -kidMaleByWeek]
             }, {
-                name: 'Mujeres',
+                name: 'Mujeres', color: 'rgba(255, 192, 203, .8)',
                 data: [adultFemaleByWeek, youngFemaleByWeek, kidFemaleByWeek]
             }]
         };
@@ -125,7 +132,8 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             plotOptions: {
                 pie: {
                   dataLabels: { enabled: false },
-                  showInLegend: true
+                  showInLegend: true,
+									colors: ['#007BFF','#FFC0CB']
                 }
             },
             series: [{
@@ -155,9 +163,9 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             },
             yAxis: {
                 stops: [
-                    [0.1, '#DF5353'], // red
-                    [0.5, '#DDDF0D'], // yellow
-                    [0.9, '#55BF3B']  // green
+                    [0.1, '#e52c2c'], // red
+                    [0.5, '#f4f600'], // yellow
+                    [0.9, '#37a71c ']  // green
                 ],
                 lineWidth: 0,
                 minorTickInterval: null,
@@ -194,11 +202,51 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             }]
         };
 
+				var scatterOptions = {
+			    chart: { type: 'scatter',  zoomType: 'xy'},
+			    title: { text: 'Relación de Asistencia y Diezmo' },
+			    subtitle: { text: ''},
+					credits: { enabled: false },
+					legend: { enabled: false },
+			    xAxis: {
+			        title: {
+			            enabled: true,
+			            text: 'Diezmo'
+			        },
+			        startOnTick: true, endOnTick: true,
+			        showLastLabel: true
+			    },
+			    yAxis: {
+			        title: { text: 'Asistencia' }
+			    },
+			    plotOptions: {
+			        scatter: {
+			            marker: {
+			                radius: 10,
+			                states: { hover: { enabled: true, lineColor: 'rgb(100,100,100)' } }
+			            },
+			            states: {
+			                hover: { marker: { enabled: false  } }
+			            },
+			            tooltip: {
+			                headerFormat: '{point.y} asistentes, <br>',
+			                pointFormat: '${point.x}'
+			            }
+			        }
+			    },
+			    series: [{
+			        name: '',
+			        color: 'rgba(0,123,255,.8)',
+			        data: scatterMoneyData
+			    }]
+				};
+
         Highcharts.chart('attendanceByGroup-container', attendanceByGroupOptions);
         Highcharts.chart('genderDetails-container', genderDetailsOptions);
         Highcharts.chart('genderPie-container', genderPieOptions);
         Highcharts.chart('progressGauge-container', Highcharts.merge(gaugeOptions, gaugeProgress) );
         Highcharts.chart('statusGauge-container', Highcharts.merge(gaugeOptions, gaugeStatus) );
+				Highcharts.chart('moneyScatter-container', scatterOptions);
       } //function buildAttendanceChart end
     };
 	}
