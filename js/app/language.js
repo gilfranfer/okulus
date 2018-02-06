@@ -119,7 +119,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						reunionStatus:"Reunión",
 						duration: "Duración",
 						money: "Diezmo",
-						attendance: "Asistencia"
+						attendance: "Asistencia", view: "Ver"
 					},
 					orgBtn: "Organizacion",
 					groupsBtn:"Grupos Familiares",
