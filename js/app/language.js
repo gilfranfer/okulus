@@ -111,6 +111,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						membersList: "Miembros",
 						reportsList: "Reportes de la Semana",
 						attendance: "Asistencia Semanal",
+						money: "Diezmo Semanal",
 					},
 					reportTable:{
 						report:"Reporte",
