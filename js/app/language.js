@@ -19,10 +19,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				}
 			},
 			btns:{
-				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
-				returnGroupsBtn: "Regresar a Grupos", openBtn: "Abrir", closeBtn: "Cerrar"
+				openBtn: "Abrir", closeBtn: "Cerrar",
+				returnBtn: "Regresar", returnGroupsBtn: "Regresar a Grupos",
+				returnAdminDashBtn: "Regresar al Dashboard"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -30,8 +32,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			titles:{
 				groupsList: "Grupos Familiares",
-				membersList: "Miembros",
-				reportsList: "Reportes de Reunión"
+				membersList: "Miembros"
 			},
 			forms:{
 				weeks:{
@@ -93,11 +94,33 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					cityLbl: "Ciudad", cityHint: "Xalapa",
 					stateLbl: "Estado", stateHint: "Veracruz",
 					countryLbl: "Pais", countryHint: "Mexico"
+				},
+				orgForm:{
+					basicInfoFieldset: "Datos de la Organizacion",
+					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
+					emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
+					urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 				}
 			},
 			admin:{
-				launchpad:{
-					title: "Recursos",
+				dashboard:{
+					titles:{
+						resources: "Recursos",
+						weekSection: "Semana",
+						groupsList: "Grupos Familiares",
+						membersList: "Miembros",
+						reportsList: "Reportes de la Semana",
+						attendance: "Asistencia Semanal",
+					},
+					reportTable:{
+						report:"Reporte",
+						date:"Fecha",
+						group:"Grupo",
+						reunionStatus:"Reunión",
+						duration: "Duración",
+						money: "Diezmo",
+						attendance: "Asistencia"
+					},
 					orgBtn: "Organizacion",
 					groupsBtn:"Grupos Familiares",
 					membersBtn:"Miembros",
@@ -125,12 +148,6 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			error:{
 				title:"Oooops!!",
 				message:"Houston, We have some problems!"
-			},
-			orgForm:{
-				basicInfoFieldset: "Datos de la Organizacion",
-				orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
-				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
-				urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 			},
 			dropdowns:{
 				status:{
