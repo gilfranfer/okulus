@@ -1,17 +1,20 @@
-okulusApp.controller('GroupListCntrl', ['GroupsSvc', '$rootScope',
+okulusApp.controller('MyGroupsListCntrl', ['GroupsSvc', '$rootScope',
 	function(GroupsSvc, $rootScope){
-		GroupsSvc.loadAllGroupsList();
+		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$firebaseArray', 'GroupsSvc', 'AuditSvc',
-	function($rootScope, $scope, $location,$firebaseArray, GroupsSvc, AuditSvc){
-		//$rootScope.isAdmin = true;
-	   	console.log("on Groups Controller");
-			$rootScope.response = null;
-	   	GroupsSvc.loadAllGroupsList();
+okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
+	function(GroupsSvc, $rootScope){
+		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+	}
+]);
 
-	    cleanScope = function(){
+okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc', 'UtilsSvc',
+	function($rootScope, $scope, $location, GroupsSvc, AuditSvc, UtilsSvc){
+	   	$rootScope.response = null;
+
+			cleanScope = function(){
 	    	$scope.groupId = null;
 	    	$scope.group = null;
 	    	$scope.address = null;
@@ -20,84 +23,108 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location','$fi
 				$rootScope.response = null;
 	    };
 
-	    /*
-	    This method will be used to Create a new Group, or update the changes made to the recently created one.
-	    Note: Schedule Time is not getting persisted now because firebase cannot store Date Objects
-		$scope.groupId, $scope.group, $scope.address, $scope.schedule
-	    */
-	    $scope.saveGroup = function() {
-	    	let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
-	    	let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+	    $scope.saveOrUpdateGroup = function() {
+				//$scope.response = null;
+				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
+				record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.timestamp);
 
-	    	if( !$scope.groupId ){
-				console.log("Creating new group");
-	    		var newgroupRef = groupsRef.push();
-				newgroupRef.set(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
-					    $scope.groupId = newgroupRef.key;
-					    $scope.response = { messageOk: "Grupo Creado"};
-					    AuditSvc.recordAudit(newgroupRef, "create", "groups");	
-					}
-				});	
-	    	}else{
-	    		console.log("Updating group: "+$scope.groupId);
-	    		let gRef = groupsRef.child($scope.groupId);
-			    gRef.update(record, function(error) {
-					if(error){
-						$scope.response = { messageErr: error};
-					}else{
-						$scope.response = { messageOk: "Grupo Actualizado"};
-				    	AuditSvc.recordAudit(gRef, "update", "groups");
-					}
-				});
+				/* When a value for groupId is present in the scope, the user is on Edit
+					mode and we have to perform an UPDATE.*/
+		    	if( $scope.groupId ){
+						let gRef = GroupsSvc.getGroupReference($scope.groupId);
+						gRef.update(record, function(error) {
+							if(error){
+								$scope.response = { groupMsgError: error};
+							}else{
+								$scope.response = { groupMsgOk: "Grupo Actualizado"};
+								AuditSvc.recordAudit(gRef.key, "update", "groups");
+							}
+						});
+		    	}
+				/* Otherwise, when groupId is not present in the scope,
+					we perform a SET to create a new record */
+				else{
+	    		var newgroupRef = GroupsSvc.getNewGroupReference();
+					newgroupRef.set(record, function(error) {
+						if(error){
+							$scope.response = { groupMsgError: error};
+						}else{
+							//For some reason the message is not displayed until
+							//you interact with any form element
+						}
+					});
+
+					//adding trick below to ensure message is displayed
+					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
+					obj.$loaded().then(function() {
+						$scope.groupId = newgroupRef.key;
+						$scope.response = { groupMsgOk: "Grupo Creado"};
+						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
+					});
 	    	}
 	    };
 
 	    $scope.deleteGroup = function() {
-	    	console.log("deleteGroup");
 	    	if( $scope.groupId ){
-	    		console.log("Deleting group: "+$scope.groupId);
-					let record = GroupsSvc.getGroup($scope.groupId);
-
-					//Move to Svc
-					$rootScope.allGroups.$remove(record).then(function(ref) {
-						cleanScope();
-					    $scope.response = { messageOk: "Grupo Eliminado"};
-					    AuditSvc.recordAudit(ref, "delete", "groups");
-							$location.path( "/success/deleted");
-					}).catch(function(err) {
-						$scope.response = { messageErr: err};
-					});
-	    	}
+					GroupsSvc.loadAllGroupsList().$loaded().then(
+						function(list) {
+							let record = GroupsSvc.getGroupFromArray($scope.groupId);
+							list.$remove(record).then(function(ref) {
+								cleanScope();
+						    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
+						    AuditSvc.recordAudit(ref.key, "delete", "groups");
+								$location.path( "/groups");
+							}).catch(function(err) {
+								$rootScope.response = { groupMsgError: err};
+							});
+				  });
+		    }
 	    };
 
   	}
 ]);
 
-okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams', '$location','$firebaseArray', '$firebaseObject', 'GroupsSvc',
-	function($rootScope, $scope, $routeParams, $location, $firebaseArray, $firebaseObject, GroupsSvc){
-		console.log("On GroupDetailsCntrl");
-
-		//$rootScope.isAdmin = true; //Remove this is we are not going to use the form as a view for members
+okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
+	function($scope, $routeParams, $location, GroupsSvc){
 		let whichGroup = $routeParams.groupId;
 
+		/* When opening "Edit" page from the Groups List, we can use the
+		"allGroups" firebaseArray from rootScope to get the specific Group data */
+		if( GroupsSvc.allGroupsLoaded() ){
+			let record = GroupsSvc.getGroupFromArray(whichGroup);
+			putRecordOnScope(record);
+		}
+		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
+		we will not have the "allGroups" firebaseArray Loaded in the rootScope.
+		Instead of loading all the Groups, what could be innecessary,
+		we can use firebaseObject to get only the required group data */
+		else{
+			let obj = GroupsSvc.getGroupObj(whichGroup);
+			obj.$loaded().then(function() {
+				putRecordOnScope(obj);
+			}).catch(function(error) {
+		    $location.path( "/error/norecord" );
+		  });
+		}
 
-		GroupsSvc.loadAllGroupsList(); //This is in case of a Refresh in the view
-		$rootScope.allGroups.$loaded(function() {
-			//Load Specific Group
-			let record = GroupsSvc.getGroup(whichGroup);
-			if(record){
+		function putRecordOnScope(record){
+			if(record && record.group){
 				$scope.groupId = record.$id;
 				$scope.group = record.group;
-			  $scope.address = record.address;
-			  $scope.schedule = record.schedule;
+				$scope.address = record.address;
+				$scope.schedule = record.schedule;
+				if(record.schedule.time){
+					console.log("Setting Time")
+					$scope.schedule.timestamp = new Date();
+					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
+					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
+					$scope.schedule.timestamp.setSeconds(0);
+					$scope.schedule.timestamp.setMilliseconds(0);
+				}
 			}else{
-				$rootScope.response = { messageErr: "El Grupo '"+whichGroup+ "' no existe"};
-				$location.path( "/error" );
+				$location.path( "/error/norecord" );
 			}
-		});
+		}
 
 	}
 ]);
@@ -105,25 +132,102 @@ okulusApp.controller('GroupDetailsCntrl', ['$rootScope', '$scope','$routeParams'
 okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let groupsRef = firebase.database().ref().child('pibxalapa').child('groups');
-		//Get only Active Status groups
-		let activeGroupsRef = firebase.database().ref().child('pibxalapa').child('groups').orderByChild("group/status").equalTo("active");
+		let groupsRef = firebase.database().ref().child('pibxalapa/groups');
+		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
 		return {
-			getGroup: function(groupId){
+			allGroupsLoaded: function() {
+				return $rootScope.allGroups != null;
+			},
+			//Use this when $rootScope.allGroups is already loaded
+			getGroupFromArray: function(groupId){
 				return $rootScope.allGroups.$getRecord(groupId);
+			},
+			//Use this when $rootScope.allGroups is NOT loaded
+			getGroupObj: function(groupId){
+				return $firebaseObject(groupsRef.child(groupId));
 			},
 			loadAllGroupsList: function(){
 				if(!$rootScope.allGroups){
-					console.log("Creating firebaseArray for Groups");
+					console.debug("Creating firebaseArray for Groups");
 					$rootScope.allGroups = $firebaseArray(groupsRef);
 				}
+				return $rootScope.allGroups;
 			},
 			loadActiveGroups: function(){
 				if(!$rootScope.allActiveGroups){
 					$rootScope.allActiveGroups = $firebaseArray(activeGroupsRef);
 				}
+			},
+			getGroupReference: function(groupId){
+				return groupsRef.child(groupId);
+			},
+			getNewGroupReference: function(){
+				return groupsRef.push();
+			},
+			addReportReference: function(reportId, report){
+				//Save the report Id in the Group/reports
+				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
+				let ref = groupsRef.child(report.reunion.groupId).child("reports").push();
+				ref.set(record);
+			},
+			getAccessRulesForGroup: function (groupId) {
+				let reference = groupsRef.child(groupId).child("access");
+				return $firebaseArray(reference);
 			}
+		};
+	}
+]);
+
+okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc','$rootScope', '$scope','$routeParams', '$location',
+	function(GroupsSvc, MembersSvc, AuditSvc, $rootScope, $scope,$routeParams, $location){
+
+		MembersSvc.loadActiveMembers();
+		let whichGroup = $routeParams.groupId;
+		$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
+		GroupsSvc.getGroupObj(whichGroup).$loaded().then(
+			function(obj){
+				$scope.group = obj;
+			}
+		);
+
+		$scope.addRule = function(){
+			let whichMember = $scope.access.memberId;
+			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+			let groupName = $scope.group.group.name;
+			let record = { memberName: memberName, memberId: whichMember, date:firebase.database.ServerValue.TIMESTAMP };
+
+			//Use the Group´s access list to add a new record
+			$scope.acessList.$add(record).then(function(ref) {
+				AuditSvc.recordAudit(whichGroup, "access granted", "groups");
+				//update record. Now to point to the Group
+				var id = ref.key; //use the same push key for the record on member/access folder
+				record = { groupName: groupName, groupId: whichGroup, date:firebase.database.ServerValue.TIMESTAMP };
+				MembersSvc.getMemberReference(whichMember).child("access").child(id).set(record, function(error) {
+					if(error){
+						console.error(error);
+					}else{
+						AuditSvc.recordAudit(whichMember, "access granted", "members");
+					}
+				});
+			});
+		};
+
+		$scope.deleteRule = function(ruleId){
+			var rec = $scope.acessList.$getRecord(ruleId);
+			let whichMember = rec.memberId;
+			$scope.acessList.$remove(rec).then(function(ref) {
+				//rule removed from Groups access folder
+				//now removed the same rule from Member access folder
+			  AuditSvc.recordAudit(whichGroup, "access deleted", "groups");
+				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
+					if(error){
+						console.error(error);
+					}else{
+						AuditSvc.recordAudit(whichMember, "access deleted", "members");
+					}
+				});
+			});
 		};
 	}
 ]);

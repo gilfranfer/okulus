@@ -17,6 +17,7 @@
               <option value="groups">{{i18n.admin.audit.groupsOptn}}</option>
               <option value="members">{{i18n.admin.audit.membersOptn}}</option>
               <option value="reports">{{i18n.admin.audit.reportsOptn}}</option>
+              <option value="weeks">{{i18n.admin.audit.weeksOptn}}</option>
             </select>
           </div>
           <div class="col-3"></div>
@@ -33,7 +34,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-if="!auditRecords || auditRecords.length <=0" 
+            <tr ng-if="!auditRecords || auditRecords.length <=0"
                 class="bg-danger text-center text-white">
               <td colspan="5">{{i18n.admin.audit.norecords}}</td>
             </tr>
@@ -51,7 +52,7 @@
           </tbody>
         </table>
 
-      </div> 
+      </div>
     </div> <!-- Card -->
 
 </section>

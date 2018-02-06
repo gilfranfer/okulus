@@ -35,7 +35,7 @@ okulusApp.config(['$routeProvider',
 				// 	}
 				// },
 				templateUrl: 'views/groups/groups.html',
-				controller: 'GroupListCntrl'
+				controller: 'GroupsAdminListCntrl'
 			})
 			.when('/groups/new', {
 				// resolve: {
@@ -54,7 +54,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
-
+			.when('/groups/access/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/groups/accessRules.html',
+				controller: 'AccessRulesCntrl'
+			})
 			.when('/members', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
@@ -81,22 +89,38 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/newmember.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/reports/new', {
+			.when('/reports/new/:groupId', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/reports/newreport.html'
+			})
+			.when('/reports/edit/:reportId', {
 				// resolve: {
 				// 	currentAuth: function(AuthenticationSvc){
 				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
 				// 	}
 				// },
 				templateUrl: 'views/reports/newreport.html',
-				controller: 'ReportCntrl'
+				controller: 'ReportDetailsCntrl'
 			})
-			.when('/success/deleted', {
-				templateUrl: 'views/success/recordDeleted.html'
+			.when('/weeks', {
+				// resolve: {
+				// 	currentAuth: function(AuthenticationSvc){
+				// 		return AuthenticationSvc.isUserLoggedIn() && isAdmin();
+				// 	}
+				// },
+				templateUrl: 'views/admin/weeks.html',
+				controller: "WeeksCntrl"
 			})
-			.when('/error', {
-				templateUrl: 'views/errors/general.html'
+			.when('/result/delete', {
+				templateUrl: 'views/responses/delete-result.html'
 			})
-
+			.when('/error/norecord', {
+				templateUrl: 'views/responses/error-norecord.html'
+			})
 			.when('/organization', {
 				templateUrl: 'views/admin/orgProfile.html'
 			})

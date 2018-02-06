@@ -2,6 +2,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
+			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
 						maxDate:"2018-12-31",minDate:"2017-01-01",
 						minDuration:"0", maxDuration:"300"
@@ -18,9 +19,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				}
 			},
 			btns:{
-				returnBtn: "Regresar",saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo"
+				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
+				openBtn: "Abrir", closeBtn: "Cerrar",
+				returnBtn: "Regresar", returnGroupsBtn: "Regresar a Grupos",
+				returnAdminDashBtn: "Regresar al Dashboard"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -31,16 +35,24 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				membersList: "Miembros"
 			},
 			forms:{
+				weeks:{
+					legend: "Semanas",
+					week: "Semana",weekBtn:"Agregar",
+					weekName: "Nombre", weekNameHint: "Semana 1",
+				},
+				access:{
+					legend: "Miembros con Accceso al Grupo",
+					table:{
+						memberName:"Miembro", memberId:"Id", date:"Desde"
+					}
+				},
 				group:{
 					legend: "Datos del Grupo",
-					numberLbl:"#", numberHint:"1",
+					numberLbl:"#", numberHint:"1", typeLbl:"Tipo",
 					nameLbl:"Nombre del Grupo", nameHint:"Semillas de Esperanza",
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
-					typeLbl:"Tipo",
 					shcLegend:"Horario de Servicio",
-					schdDayLbl: "Día",
-					schdHourLbl: "Hora",
-					schdMinLbl: "Min"
+					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "07:30 PM"
 				},
 				member:{
 					legend: "Datos del miembro",
@@ -53,7 +65,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				report:{
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
-					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión", 
+					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
 					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
 					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
@@ -82,15 +94,40 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					cityLbl: "Ciudad", cityHint: "Xalapa",
 					stateLbl: "Estado", stateHint: "Veracruz",
 					countryLbl: "Pais", countryHint: "Mexico"
+				},
+				orgForm:{
+					basicInfoFieldset: "Datos de la Organizacion",
+					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
+					emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
+					urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 				}
 			},
 			admin:{
-				launchpad:{
-					title: "Recursos",
+				dashboard:{
+					titles:{
+						resources: "Recursos",
+						weekSection: "Semana",
+						groupsList: "Grupos Familiares",
+						membersList: "Miembros",
+						reportsList: "Reportes de la Semana",
+						attendance: "Asistencia Semanal",
+						money: "Diezmo Semanal",
+					},
+					reportTable:{
+						report:"Reporte",
+						date:"Fecha",
+						group:"Grupo",
+						reunionStatus:"Reunión",
+						duration: "Duración",
+						money: "Diezmo",
+						attendance: "Asistencia", view: "Ver"
+					},
+					noReportsError: "No hay Reportes para la semana seleccionada",
 					orgBtn: "Organizacion",
 					groupsBtn:"Grupos Familiares",
 					membersBtn:"Miembros",
-					reportsBtn:"Reportes"
+					reportsBtn:"Reportes",
+					weeksBtn:"Semanas"
 				},
 				audit:{
 					title: "Auditoria de Movimientos",
@@ -98,6 +135,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					groupsOptn:"Grupos",
 					membersOptn:"Miembros",
 					reportsOptn:"Reportes",
+					weeksOptn:"Semanas",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
@@ -106,19 +144,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			success:{
 				deleted:{
-					title:"Registro Eliminado",
-					message:"El registro ha sido eliminado. Que quiere hacer ahora?"
+					title:"Eliminado el registro ..."
 				}
 			},
 			error:{
 				title:"Oooops!!",
 				message:"Houston, We have some problems!"
-			},
-			orgForm:{
-				basicInfoFieldset: "Datos de la Organizacion",
-				orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
-				emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
-				urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
 			},
 			dropdowns:{
 				status:{

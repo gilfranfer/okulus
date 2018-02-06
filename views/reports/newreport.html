@@ -1,6 +1,6 @@
-<section>
+<section ng-controller="ReportCntrl">
 
-<form class="mt-3" name="reportForm" novalidate ng-submit="saveReport()">
+<form class="mt-3" name="reportForm" novalidate ng-submit="saveOrUpdateReport()">
 
   <!-- Basic Group Information -->
   <fieldset class="mb-4">
@@ -11,12 +11,9 @@
         <label for="groupId">
           {{i18n.forms.report.groupLbl}}
         </label>
-        <select id="groupId" name="groupId" class="form-control form-control-lg"
-        	ng-model="reunion.groupId" ng-required="true">
-        	<option ng-repeat="g in allActiveGroups" value="{{g.$id}}">
-        		#{{g.group.number}} {{g.group.name}}
-        	</option>
-        </select>
+        <input type="text" disabled id="groupId" class="form-control form-control-lg"
+        	ng-model="reunion.groupname" ng-required="true"/>
+        <input type="text" disabled hidden ng-model="reunion.groupId"/>
       </div>
       <div class="col-sm form-group">
         <label for="hostId">
@@ -62,7 +59,7 @@
             {{i18n.forms.report.weekLbl}}
           </label>
           <select id="week" name="week" class="form-control form-control-lg"
-                  ng-model="reunion.week" ng-required="true">
+                  ng-model="reunion.weekId" ng-required="true">
             <option ng-repeat="w in allActiveWeeks" value="{{w.$id}}">
               {{w.name}}
             </option>
@@ -91,9 +88,9 @@
         <label for="money">
           {{i18n.forms.report.moneyLbl}}
         </label>
-        <div class="input-group" id="money">
+        <div class="input-group" >
           <span class="input-group-addon">$</span>
-          <input type="number" min="0" step=".01" class="form-control form-control-lg"
+          <input type="number" id="money" min="0" step=".01" class="form-control form-control-lg"
             ng-model="reunion.money" ng-required="true">
         </div>
       </div>
@@ -103,18 +100,28 @@
       <div class="col-sm form-group">
         <label for="status">
           {{i18n.forms.report.statusLbl}}
-        </label><br>
-        <div id="status" class="btn-group" data-toggle="buttons">
-          <label class="btn btn-primary btn-lg active">
-            <input type="radio" name="options" id="option1" autocomplete="off" checked>
+        </label>
+        <select id="status" class="form-control form-control-lg"
+         	ng-model="reunion.status" ng-required="true">
+         	<option value="completed">
+        		{{i18n.forms.report.okStatusLbl}}
+        	</option>
+         	<option value="canceled">
+        		{{i18n.forms.report.cancelStatusLbl}}
+        	</option>
+        </select>
+        <!-- <div id="status" class="btn-group" data-toggle="buttons">
+          <label class="btn btn-primary btn-lg" ng-click="reunion.status = 'true'">
+            <input type="radio" name="options" autocomplete="off" ng-required="true">
             {{i18n.forms.report.okStatusLbl}}
           </label>
-          <label class="btn btn-danger btn-lg">
-            <input type="radio" name="options" id="option2" autocomplete="off">
+          <label class="btn btn-danger btn-lg" ng-click="reunion.status = 'false'">
+            <input type="radio" name="options"  autocomplete="off" ng-required="true">
             {{i18n.forms.report.cancelStatusLbl}}
           </label>
-        </div>
+        </div> -->
       </div>
+      <div class="col-sm form-group"></div>
     </div>
   </fieldset>
 
@@ -161,7 +168,7 @@
                   {{i18n.forms.report.adultLbl}}
                 </label>
               </div>
-            </div> 
+            </div>
             <div class="form-row">
               <div class="col form-group">
                 <div class="input-group">
@@ -240,7 +247,7 @@
         <button class="btn btn-outline-primary btn-block btn-lg" type="button" data-toggle="collapse" data-target="#collapseGuests" aria-expanded="false" aria-controls="collapseGuests">
           {{i18n.forms.report.guestsLbl}}
         </button>
-      
+
         <!-- Guest Attendance details -->
         <div  class="collapse" id="collapseGuests">
           <div class="card-body border border-primary border-top-0 rounded-bottom">
@@ -300,7 +307,7 @@
             <div class="form-row">
               <div class="col form-group">
                 <label for="">
-                  {{i18n.forms.report.membersLbl}}
+                  {{i18n.forms.report.kidLbl}}
                 </label>
               </div>
             </div>
@@ -332,7 +339,7 @@
         <div class="input-group">
           <input type="text" readonly
             class="form-control form-control-lg" ng-required="true"
-            value="{{attendance.members.male.adult + attendance.members.male.young + attendance.members.male.kid 
+            value="{{attendance.members.male.adult + attendance.members.male.young + attendance.members.male.kid
                   + attendance.members.female.adult + attendance.members.female.young  + attendance.members.female.kid}}">
           <!-- <span class="input-group-addon">{{i18n.forms.report.femaleAbrev}}</span> -->
         </div>
@@ -341,7 +348,7 @@
         <div class="input-group">
           <input type="text" readonly
             class="form-control form-control-lg" ng-required="true"
-            value="{{ attendance.guests.male.adult + attendance.guests.male.young + attendance.guests.male.kid 
+            value="{{ attendance.guests.male.adult + attendance.guests.male.young + attendance.guests.male.kid
                   + attendance.guests.female.adult + attendance.guests.female.young + attendance.guests.female.kid}}">
           <!-- <span class="input-group-addon">{{i18n.forms.report.maleAbrev}}</span> -->
         </div>
@@ -367,11 +374,11 @@
       <div class="alert alert-warning" role="alert" ng-show="reportForm.$invalid && reportForm.$dirty">
         {{i18n.alerts.invalidForm}}
       </div>
-      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
-        {{response.messageOk}}
+      <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
+        {{response.reportMsgOk}}
       </div>
-      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
-        {{response.messageErr}}
+      <div class="alert alert-danger" role="alert" ng-show="response.reportMsgError">
+        {{response.reportMsgError}}
       </div>
     </div>
   </div>
@@ -379,7 +386,7 @@
   <!-- Buttons rows -->
   <div class="form-row">
     <div class="col-sm form-group" >
-      <button type="submit" class="btn btn-lg btn-block btn-primary"
+      <button type="submit" class="btn btn-lg btn-block btn-success"
         ng-disabled="reportForm.$invalid || reportForm.$pristine">
         {{i18n.btns.saveBtn}}
       </button>
@@ -392,10 +399,10 @@
       <div  class="collapse" id="collapseDelete">
         <div class="alert alert-danger" role="alert">
           {{i18n.alerts.confirmDelete}}
-          <button type="button" class="btn btn-danger" ng-click="deleteReport()">
+          <button type="button" class="btn btn-danger" ng-click="delete()">
             {{i18n.btns.yesBtn}}
           </button>
-          <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+          <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
             {{i18n.btns.noBtn}}
           </button>
         </div>
@@ -404,8 +411,13 @@
   </div>
   <div class="form-row">
     <div class="col form-group">
-      <a class="btn btn-lg btn-block btn-success" href="#!/reports">
-        {{i18n.btns.returnBtn}}
+      <a class="btn btn-lg btn-block btn-primary" href="#!/admin/dashboard">
+        {{i18n.btns.returnAdminDashBtn}}
+      </a>
+    </div>
+    <div class="col form-group">
+      <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
+        {{i18n.btns.returnGroupsBtn}}
       </a>
     </div>
   </div>

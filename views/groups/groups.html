@@ -15,9 +15,16 @@
     </div>
   </div>
 
+  <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
+    {{response.groupMsgOk}}
+  </div>
+  <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
+    {{response.groupMsgError}}
+  </div>
+
   <div class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="g in allGroups | filter:searchText">
+      ng-repeat="g in groupsList | filter:searchText">
       <!-- Group card -->
       <div class="card h-100" >
         <h4 class="card-header">
@@ -47,10 +54,18 @@
           <!-- Schedule -->
           <h4 class="card-title">{{i18n.forms.group.shcLegend}}:</h4>
           <p class="card-text">
-            {{g.schedule.weekday}}, {{g.schedule.hour}}:{{g.schedule.minute}} hrs.
+            {{g.schedule.weekday}}, {{g.schedule.time.HH}}:{{g.schedule.time.MM}} hrs.
           </p>
 
-          <!-- <a ng-href="#!/groups/edit/{{g.$id}}" class="btn btn-primary">Ver</a> -->
+          <div class="row">
+            <div class="col">
+              <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">Add Report</a>
+            </div>
+            <div class="col">
+              <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-danger">Access Rules</a>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

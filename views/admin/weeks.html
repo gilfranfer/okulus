@@ -1,0 +1,77 @@
+<section>
+  <div class="card h-100" >
+    <h4 class="card-header">
+        {{i18n.forms.weeks.legend}}
+    </h4>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text"></p>
+      <!-- Active Members List -->
+      <form class="mt-3" name="weekForm" novalidate ng-submit="addWeek()">
+        <div class="row mb-3">
+          <div class="col-5">
+            <label for="weekId">
+              {{i18n.forms.weeks.week}}
+            </label>
+          </div>
+          <div class="col-5">
+            <label for="weekName">
+              {{i18n.forms.weeks.weekName}}
+            </label>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-5">
+            <input type="week" id="weekId" class="form-control form-control-lg"
+              placeholder="" ng-required="true" ng-model="weekid">
+          </div>
+          <div class="col-5">
+            <input type="text" id="weekName" class="form-control form-control-lg"
+              placeholder="{{i18n.forms.weeks.weekNameHint}} " ng-required="true"  ng-model="weekname">
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-lg btn-block btn-success" ng-disabled="weekForm.$invalid">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="alert alert-danger" role="alert" ng-show="response.messageError">
+        {{response.messageError}}
+      </div>
+      <!-- Weeks Table -->
+      <table class="table table-responsive-sm table-md table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">{{i18n.forms.weeks.week}}</th>
+            <th scope="col">{{i18n.forms.weeks.weekName}}</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="!allWeeks || allWeeks.length <=0"
+              class="bg-danger text-center text-white">
+            <td colspan="4">{{i18n.admin.audit.norecords}}</td>
+          </tr>
+          <tr ng-repeat="w in allWeeks | orderBy:'-date'">
+            <td scope="row">{{$index + 1}}</td>
+            <td>{{w.$id}}</td>
+            <td>{{w.name}}</td>
+            <td scope="row">
+              <button type="button" class="btn-sm btn-success" name="button"
+                ng-click="openWeek(w.$id)" ng-if="w.status == 'closed' ">
+                {{i18n.btns.openBtn}}
+              </button>
+              <button type="button" class="btn-sm btn-danger" name="button"
+                ng-click="closeWeek(w.$id)" ng-if="w.status == 'open' ">
+                {{i18n.btns.closeBtn}}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
