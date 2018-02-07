@@ -1,7 +1,10 @@
 <!-- Members List -->
 <section>
   <div class="row mb-1">
-      <h2>{{i18n.titles.membersList}}</h2>
+      <h2>{{i18n.admin.membersList.title}}</h2>
+  </div>
+  <div class="row mb-1">
+      <p>{{i18n.admin.membersList.description}}</p>
   </div>
 
   <div class="row mb-3">
@@ -15,6 +18,7 @@
     </div>
   </div>
 
+    <!-- Alert/Error row -->
   <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
     {{response.memberMsgOk}}
   </div>
@@ -23,6 +27,18 @@
   </div>
 
   <div class="row">
+    <!-- Loading/No Records Alert -->
+    <div class="col"  ng-show="allMembers && allMembers.length == 0">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.admin.membersList.noMembersError}}
+      </div>
+    </div>
+    <div class="col"  ng-show="!allMembers">
+      <div class="alert alert-warning" role="alert">
+        {{i18n.alerts.loading}}
+      </div>
+    </div>
+
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="m in allMembers | filter:searchText">
       <!-- Group card -->
@@ -33,7 +49,10 @@
           </a>
         </h4>
         <div class="card-body">
-          <!-- <h4 class="card-title"></h4> -->
+          <h4 class="card-title">
+            {{i18n.forms.member.legend}}
+          </h4>
+          <span class="badge badge-danger" ng-if="m.member.status == 'inactive'">Miembro Inactivo </span>
           <p>
             <span class="font-weight-bold">{{i18n.forms.member.fnameLbl}}:</span>
             {{m.member.firstname}} {{m.member.lastname}}

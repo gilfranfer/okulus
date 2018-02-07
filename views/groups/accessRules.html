@@ -7,9 +7,11 @@
     </h4>
     <div class="card-body">
       <h4 class="card-title">
-        {{i18n.forms.access.legend}}
+        {{i18n.admin.access.title}}
       </h4>
-      <p class="card-text"></p>
+      <p class="card-text">
+        {{i18n.admin.access.description}}
+      </p>
       <!-- Active Members List -->
       <form class="mt-3" name="accessForm" novalidate ng-submit="addRule()">
         <div class="row mb-3">
@@ -27,14 +29,23 @@
           </div>
         </div>
       </form>
+
+      <!-- Alerts -->
+      <div class="alert alert-danger" role="alert" ng-show="response.accessMsgError">
+        {{response.accessMsgError}}
+      </div>
+      <div class="alert alert-success" role="alert" ng-show="response.accessMsgOk">
+        {{response.accessMsgOk}}
+      </div>
+
       <!-- Access Table -->
       <table class="table table-responsive-sm table-md table-striped">
         <thead>
           <tr>
             <th scope="col">#</th>
             <th scope="col"></th>
-            <th scope="col">{{i18n.forms.access.table.memberName}}</th>
-            <th scope="col">{{i18n.forms.access.table.date}}</th>
+            <th scope="col">{{i18n.admin.access.table.memberName}}</th>
+            <th scope="col">{{i18n.admin.access.table.date}}</th>
           </tr>
         </thead>
         <tbody>
@@ -61,7 +72,7 @@
       <div class="row mb-3">
         <div class="col">
           <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
-            {{i18n.btns.returnGroupsBtn}}
+            {{i18n.btns.returnBtn}}
           </a>
         </div>
       </div>

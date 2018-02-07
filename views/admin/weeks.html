@@ -1,8 +1,8 @@
 <section>
   <div class="card h-100" >
-    <h4 class="card-header">
+    <p class="card-header">
         {{i18n.forms.weeks.legend}}
-    </h4>
+    </p>
     <div class="card-body">
       <h4 class="card-title"></h4>
       <p class="card-text"></p>
@@ -37,11 +37,28 @@
         </div>
       </form>
 
-      <div class="alert alert-danger" role="alert" ng-show="response.messageError">
-        {{response.messageError}}
+      <div class="alert alert-danger" role="alert" ng-show="response.weekMsgError">
+        {{response.weekMsgError}}
       </div>
+      <div class="alert alert-success" role="alert" ng-show="response.weekMsgOk">
+        {{response.weekMsgOk}}
+      </div>
+
+      <!-- Loading/No Records Alert -->
+      <div class="col" ng-show="allWeeks && allWeeks.length == 0">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.admin.weeksList.noWeeksError}}
+        </div>
+      </div>
+      <div class="col"  ng-show="!allWeeks">
+        <div class="alert alert-warning" role="alert">
+          {{i18n.alerts.loading}}
+        </div>
+      </div>
+
+
       <!-- Weeks Table -->
-      <table class="table table-responsive-sm table-md table-striped">
+      <table class="table table-responsive-sm table-md table-striped" ng-show="allWeeks && allWeeks.length > 0">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -51,10 +68,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-if="!allWeeks || allWeeks.length <=0"
-              class="bg-danger text-center text-white">
-            <td colspan="4">{{i18n.admin.audit.norecords}}</td>
-          </tr>
           <tr ng-repeat="w in allWeeks | orderBy:'-date'">
             <td scope="row">{{$index + 1}}</td>
             <td>{{w.$id}}</td>
