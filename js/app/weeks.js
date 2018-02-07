@@ -1,20 +1,18 @@
-okulusApp.controller('WeeksCntrl', ['WeeksSvc', '$scope',
-	function(WeeksSvc, $scope){
+okulusApp.controller('WeeksCntrl', ['WeeksSvc', '$rootScope', '$scope',
+	function(WeeksSvc, $rootScope, $scope){
+		$rootScope.response = null;
 		WeeksSvc.loadAllWeeks();
 
 		$scope.addWeek = function () {
-			$scope.response = null;
+			$rootScope.response = null;
 			let weekId = document.querySelector("#weekId").value;
 			let weekName = document.querySelector("#weekName").value;
 			// if(weekId){
 			if(!WeeksSvc.getWeekRecord(weekId)){
 				WeeksSvc.persistWeek(weekId,weekName);
 			}else{
-				$scope.response = {messageError: "La Semana ya existe" };
+				$rootScope.response = {weekMsgError: "La Semana "+weekId+" ya existe" };
 			}
-			// }else{
-			// 	$scope.response = {messageError: "Valor incorrecto" };
-			// }
 		};
 
 		$scope.openWeek = function (weekId) {
@@ -54,18 +52,21 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 					console.log("set donde");
 					if(error){
 						console.error(error);
+						$rootScope.response = {weekMsgError: error };
 					}else{
 						AuditSvc.recordAudit(weekId, "create", "weeks");
+						$rootScope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
 					}
 				});
 			},
 			updateWeekStatus: function (weekId,status) {
+				$rootScope.response = null;
 				let record = $rootScope.allWeeks.$getRecord(weekId);
 				record.status = status;
 				$rootScope.allWeeks.$save(record).then(function(){
 					AuditSvc.recordAudit(weekId, status, "weeks");
+					$rootScope.response = {weekMsgOk: "Semana "+weekId+" Actualizada" };
 				});
-
 			}
 		};
 	}

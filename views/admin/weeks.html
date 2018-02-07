@@ -37,9 +37,13 @@
         </div>
       </form>
 
-      <div class="alert alert-danger" role="alert" ng-show="response.messageError">
-        {{response.messageError}}
+      <div class="alert alert-danger" role="alert" ng-show="response.weekMsgError">
+        {{response.weekMsgError}}
       </div>
+      <div class="alert alert-success" role="alert" ng-show="response.weekMsgOk">
+        {{response.weekMsgOk}}
+      </div>
+
       <!-- Weeks Table -->
       <table class="table table-responsive-sm table-md table-striped">
         <thead>
