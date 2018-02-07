@@ -6,7 +6,9 @@
     </div>
     <div class="card-body">
       <h4 class="card-title"></h4>
-      <p class="card-text"></p>
+      <p class="card-text">
+        {{i18n.admin.dashboard.descriptions.weekSection}}
+      </p>
       <!-- Active Members List -->
       <form name="weekForm" class="mb-3" novalidate>
         <div class="row mb-3">
@@ -28,19 +30,25 @@
     </div>
   </div>
 
-  <!-- Alert/Error row -->
+  <!-- Loading/No Records Alert -->
   <div class="row">
-    <div class="col">
-      <div class="alert alert-danger" role="alert" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+    <div class="col"  ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+      <div class="alert alert-danger" role="alert">
         {{i18n.admin.dashboard.noReportsError}}
       </div>
     </div>
+    <!-- <div class="col"  ng-show="week.id && !reportsForSelectedWeek">
+      <div class="alert alert-warning" role="alert">
+        {{i18n.alerts.loading}}
+      </div>
+    </div> -->
   </div>
+
 
   <!-- Reports Table -->
   <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
     <div class="card-header">
-        {{i18n.admin.dashboard.titles.reportsList}}
+        {{i18n.admin.dashboard.titles.reportsList}} {{week.id}}
     </div>
     <div class="card-body">
       <h4 class="card-title"></h4>
@@ -70,10 +78,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-if="!reportsForSelectedWeek || reportsForSelectedWeek.length <=0"
-              class="bg-danger text-center text-white">
-            <td colspan="6">{{i18n.admin.audit.norecords}}</td>
-          </tr>
           <tr ng-repeat="report in reportsForSelectedWeek | orderBy:'-createdOn'">
             <!-- <td scope="row">{{$index + 1}}</td> -->
             <td scope="row">
@@ -114,7 +118,7 @@
   <!-- Attendance Charts -->
   <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
     <div class="card-header">
-        {{i18n.admin.dashboard.titles.attendance}}
+        {{i18n.admin.dashboard.titles.attendance}} {{week.id}}
     </div>
     <div class="card-body">
       <h4 class="card-title"></h4>
@@ -139,7 +143,7 @@
   <!-- Money Charts -->
   <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
     <div class="card-header">
-        {{i18n.admin.dashboard.titles.money}}
+        {{i18n.admin.dashboard.titles.money}} {{week.id}}
     </div>
     <div class="card-body">
       <h4 class="card-title"></h4>

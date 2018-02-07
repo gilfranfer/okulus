@@ -1,9 +1,3 @@
-okulusApp.controller('MyGroupsListCntrl', ['GroupsSvc', '$rootScope',
-	function(GroupsSvc, $rootScope){
-		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
-	}
-]);
-
 okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
 	function(GroupsSvc, $rootScope){
 		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
@@ -136,16 +130,20 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
 		return {
-			allGroupsLoaded: function() {
-				return $rootScope.allGroups != null;
+			getGroupReference: function(groupId){
+				return groupsRef.child(groupId);
+			},
+			getNewGroupReference: function(){
+				return groupsRef.push();
+			},
+
+			//Use this when $rootScope.allGroups is NOT loaded
+			getGroupObj: function(groupId){
+				return $firebaseObject(groupsRef.child(groupId));
 			},
 			//Use this when $rootScope.allGroups is already loaded
 			getGroupFromArray: function(groupId){
 				return $rootScope.allGroups.$getRecord(groupId);
-			},
-			//Use this when $rootScope.allGroups is NOT loaded
-			getGroupObj: function(groupId){
-				return $firebaseObject(groupsRef.child(groupId));
 			},
 			loadAllGroupsList: function(){
 				if(!$rootScope.allGroups){
@@ -154,17 +152,19 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				}
 				return $rootScope.allGroups;
 			},
+			allGroupsLoaded: function() {
+				return $rootScope.allGroups != null;
+			},
+
 			loadActiveGroups: function(){
 				if(!$rootScope.allActiveGroups){
 					$rootScope.allActiveGroups = $firebaseArray(activeGroupsRef);
 				}
+				return $rootScope.allActiveGroups;
 			},
-			getGroupReference: function(groupId){
-				return groupsRef.child(groupId);
-			},
-			getNewGroupReference: function(){
-				return groupsRef.push();
-			},
+			// getActiveGroupFromArray: function(groupId){
+			// 	return $rootScope.allGroups.$getRecord(groupId);
+			// },
 			addReportReference: function(reportId, report){
 				//Save the report Id in the Group/reports
 				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
@@ -181,7 +181,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
 okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc','$rootScope', '$scope','$routeParams', '$location',
 	function(GroupsSvc, MembersSvc, AuditSvc, $rootScope, $scope,$routeParams, $location){
-
+		$rootScope.response = null;
 		MembersSvc.loadActiveMembers();
 		let whichGroup = $routeParams.groupId;
 		$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
@@ -200,12 +200,13 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 			//Use the Group´s access list to add a new record
 			$scope.acessList.$add(record).then(function(ref) {
 				AuditSvc.recordAudit(whichGroup, "access granted", "groups");
+				$rootScope.response = { accessMsgOk: "Acceso Concedido a " + memberName };
 				//update record. Now to point to the Group
 				var id = ref.key; //use the same push key for the record on member/access folder
 				record = { groupName: groupName, groupId: whichGroup, date:firebase.database.ServerValue.TIMESTAMP };
 				MembersSvc.getMemberReference(whichMember).child("access").child(id).set(record, function(error) {
 					if(error){
-						console.error(error);
+						$rootScope.response = { accessMsgError: error };
 					}else{
 						AuditSvc.recordAudit(whichMember, "access granted", "members");
 					}
@@ -218,16 +219,25 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 			let whichMember = rec.memberId;
 			$scope.acessList.$remove(rec).then(function(ref) {
 				//rule removed from Groups access folder
+				$rootScope.response = { accessMsgOk: "Acceso Revocado" };
+				console.log($rootScope.response);
 				//now removed the same rule from Member access folder
 			  AuditSvc.recordAudit(whichGroup, "access deleted", "groups");
 				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
 					if(error){
-						console.error(error);
+						$rootScope.response = { accessMsgError: error };
 					}else{
 						AuditSvc.recordAudit(whichMember, "access deleted", "members");
 					}
 				});
 			});
 		};
+	}
+]);
+
+okulusApp.controller('GroupAnalyticsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
+	function($scope, $routeParams, $location, GroupsSvc){
+		let whichGroup = $routeParams.groupId;
+		$scope.groupData = GroupsSvc.getGroupObj(whichGroup);
 	}
 ]);

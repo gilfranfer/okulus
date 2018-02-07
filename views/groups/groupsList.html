@@ -1,30 +1,16 @@
 <!-- Groups List -->
 <section>
-  <div class="row mb-1">
-      <h2>{{i18n.titles.groupsList}}</h2>
-  </div>
-
-  <div class="row mb-3">
-    <div class="col-8">
-      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
-    </div>
-    <div class="col-4">
-      <a class="btn btn-lg btn-block btn-success" href="#!/groups/new">
-        {{i18n.btns.newgroupBtn}}
-      </a>
-    </div>
-  </div>
-
-  <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
-    {{response.groupMsgOk}}
-  </div>
-  <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
-    {{response.groupMsgError}}
-  </div>
 
   <div class="row">
+    <div class="col"  ng-show="!groupsList">
+      <div class="alert alert-warning" role="alert">
+        {{i18n.alerts.loading}}
+      </div>
+    </div>
+
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="g in groupsList | filter:searchText">
+      <!-- <article class="h-100" ng-include="'views/groups/groupInfoCard.html'"></article> -->
       <!-- Group card -->
       <div class="card h-100" >
         <h4 class="card-header">
@@ -36,6 +22,7 @@
           <h4 class="card-title">
             {{i18n.forms.group.legend}}
           </h4>
+          <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">Grupo Inactivo </span>
           <p class="card-text" ng-if="g.address">
             <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
             {{g.address.street}}
@@ -58,16 +45,21 @@
           </p>
 
           <div class="row">
-            <div class="col">
-              <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">Add Report</a>
+            <div class="col mb-3">
+              <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">{{i18n.btns.addReport}}</a>
             </div>
-            <div class="col">
-              <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-danger">Access Rules</a>
+            <div class="col mb-3">
+              <a ng-href="#!/groups/analytics/{{g.$id}}" class="btn btn-block btn-primary">{{i18n.btns.analytics}}</a>
             </div>
           </div>
-
+          <div class="row" ng-if="currentUser.type == 'admin'" >
+            <div class="col mb-3" >
+              <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-danger">{{i18n.btns.accessRules}}</a>
+            </div>
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 

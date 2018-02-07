@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
 
 	</head>
-	<body>
+	<body ng-controller="UserCntrl">
     <section ng-controller="LanguageCntrl">
       <header ng-include="'views/navigation.html'"></header>
       <!-- Main Bootstrap container -->
@@ -43,19 +43,19 @@
       // Initialize Firebase
       var config = {
         //Dev
-        // apiKey: "AIzaSyCz2KewWoKxCmLTakzG0zBcgqfhGilpdsg",
-        // authDomain: "smgroups-dev.firebaseapp.com",
-        // databaseURL: "https://smgroups-dev.firebaseio.com",
-        // projectId: "smgroups-dev",
-        // storageBucket: "smgroups-dev.appspot.com",
-        // messagingSenderId: "449607883750"
-        //Stage
-        apiKey: "AIzaSyBlZ2sGwjx3luHSYztueYphAGeDhrRI1CM",
-        authDomain: "smgroups-pibx.firebaseapp.com",
-        databaseURL: "https://smgroups-pibx.firebaseio.com",
-        projectId: "smgroups-pibx",
-        storageBucket: "smgroups-pibx.appspot.com",
-        messagingSenderId: "531909822908"
+        apiKey: "AIzaSyCz2KewWoKxCmLTakzG0zBcgqfhGilpdsg",
+        authDomain: "smgroups-dev.firebaseapp.com",
+        databaseURL: "https://smgroups-dev.firebaseio.com",
+        projectId: "smgroups-dev",
+        storageBucket: "smgroups-dev.appspot.com",
+        messagingSenderId: "449607883750"
+        //Prod
+        // apiKey: "AIzaSyBlZ2sGwjx3luHSYztueYphAGeDhrRI1CM",
+        // authDomain: "smgroups-pibx.firebaseapp.com",
+        // databaseURL: "https://smgroups-pibx.firebaseio.com",
+        // projectId: "smgroups-pibx",
+        // storageBucket: "smgroups-pibx.appspot.com",
+        // messagingSenderId: "531909822908"
       };
       firebase.initializeApp(config);
     </script>
@@ -71,6 +71,7 @@
     <script src="js/app/weeks.js"></script>
     <script src="js/app/audit.js"></script>
     <script src="js/app/admin.js"></script>
+    <script src="js/app/user.js"></script>
     <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
   </body>

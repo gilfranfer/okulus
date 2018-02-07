@@ -12,39 +12,36 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		$rootScope.i18n = {
 			navigation:{
 				brand:"PIB Xalapa",
-				user:{ groups:"Mis Grupos" },
 				admin:{
-					dashboard:"Admin Dashboard",
+					menu: "Admin",
+					dashboard:"Dashboard",
+					groups: "Grupos",
+					members: "Miembros",
+					weeks: "Semanas",
+					reports: "Reportes",
 					monitor:"Monitor"
+				},
+				user:{
+					dashboard:"Mis Grupos",
 				}
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
-				openBtn: "Abrir", closeBtn: "Cerrar",
-				returnBtn: "Regresar", returnGroupsBtn: "Regresar a Grupos",
-				returnAdminDashBtn: "Regresar al Dashboard"
+				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
+				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
-				confirmDelete: "Seguro que deseas eliminar este registro?"
-			},
-			titles:{
-				groupsList: "Grupos Familiares",
-				membersList: "Miembros"
+				confirmDelete: "Seguro que deseas eliminar este registro?",
+				loading:"Cargando ..."
 			},
 			forms:{
 				weeks:{
 					legend: "Semanas",
 					week: "Semana",weekBtn:"Agregar",
 					weekName: "Nombre", weekNameHint: "Semana 1",
-				},
-				access:{
-					legend: "Miembros con Accceso al Grupo",
-					table:{
-						memberName:"Miembro", memberId:"Id", date:"Desde"
-					}
 				},
 				group:{
 					legend: "Datos del Grupo",
@@ -103,15 +100,35 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				}
 			},
 			admin:{
+				//For Admin Views
+				groupsList:{
+					title:"Administrar Grupos Familiares",
+					description: "A countinuación se muestran todos los Grupos Familiares registrados, incluyendo los inactivos.",
+					noGroupsError: "No se han creado Grupos"
+				},
+				membersList:{
+					title:"Administrar Miembros del Grupo de Siervos",
+					description: "A countinuación se muestran todos los Miembros registrados, incluyendo los inactivos, que forman parte del Grupo de Siervos.",
+					noMembersError: "No se han creado Miembros"
+				},
+				weeksList:{noWeeksError: "No se han creado Semanas"},
+				access:{
+					title: "Miembros con Accceso al Grupo",
+					description: "Seleccionar un Miembro de la lista para otrogarle acceso al Grupo.",
+					table:{
+						memberName:"Miembro", memberId:"Id", date:"Desde"
+					}
+				},
 				dashboard:{
 					titles:{
 						resources: "Recursos",
-						weekSection: "Semana",
-						groupsList: "Grupos Familiares",
-						membersList: "Miembros",
+						weekSection: "Reportes Semanales",
 						reportsList: "Reportes de la Semana",
-						attendance: "Asistencia Semanal",
-						money: "Diezmo Semanal",
+						attendance: "Asistencia de la Semana",
+						money: "Diezmo de la Semana",
+					},
+					descriptions:{
+						weekSection:"Elige una semana de la lista para ver los Reportes y los gráficos de análisis."
 					},
 					reportTable:{
 						report:"Reporte",
@@ -122,12 +139,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						money: "Diezmo",
 						attendance: "Asistencia", view: "Ver"
 					},
-					noReportsError: "No hay Reportes para la semana seleccionada",
-					orgBtn: "Organizacion",
-					groupsBtn:"Grupos Familiares",
-					membersBtn:"Miembros",
-					reportsBtn:"Reportes",
-					weeksBtn:"Semanas"
+					noReportsError: "No hay Reportes para la semana seleccionada"
 				},
 				audit:{
 					title: "Auditoria de Movimientos",
@@ -140,6 +152,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
 					}
+				}
+			},
+			user:{
+				//For User Views
+				groupsList:{
+					title:"Mis Grupos Familiares",
+					description: "Infromación sobre mis Grupos Familiares activos.",
+					noGroupsError: "No tienes Grupos asiganos, o se encuentran Inactivos"
 				}
 			},
 			success:{
