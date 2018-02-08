@@ -1,13 +1,27 @@
-okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope',
-	function(MembersSvc, GroupsSvc, $rootScope){
+okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$scope','$location',
+	function(MembersSvc, GroupsSvc, $rootScope, $scope, $location){
 			$rootScope.currentUser =  { type: 'admin', member:{ id:'-L3aCrod02U-clEuK8g1' }};
 
+			MembersSvc.loadActiveMembers();
 			let whichMember = $rootScope.currentUser.member.id;
 			MembersSvc.getMemberInfo(whichMember).$loaded().then(
 				function(data) {
 					$rootScope.currentUser.member.data = data;
 				}
 			);
+
+			updateWatchAs = function () {
+				let watchAs = document.querySelector("#watchAsSelect").value;
+				if(watchAs == 'admin'){
+					console.log("watchAs admin");
+					$rootScope.currentUser.type = 'admin';
+				}else{
+					console.log("watchAs user: "+watchAs);
+					$rootScope.currentUser.type = 'user';
+					$rootScope.currentUser.member.id = watchAs;
+				}
+				$location.path("/home");
+			};
 	}
 ]);
 

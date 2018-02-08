@@ -14,12 +14,14 @@
   <!--  Collapsable Menu -->
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-
-      <li class="nav-item">
+      <!-- Temporal Select -->
+      <li class="nav-item" ng-controller="UserCntrl">
         <span class="nav-link">Watch as:
-          <select ng-model="currentUser.type">
-            <option value="user">User</option>
+          <select id="watchAsSelect" ng-model="currentUser.type" onchange="updateWatchAs()" >
             <option value="admin">Admin</option>
+           	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+          		{{m.member.shortname}}
+          	</option>
           </select>
         </span>
       </li>
