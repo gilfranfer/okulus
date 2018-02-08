@@ -132,8 +132,8 @@
     </div>
   </div>
 
-  <!-- Buttons rows -->
-  <div class="form-row">
+  <!-- Admin Buttons rows -->
+  <div class="form-row" ng-if="currentUser.type == 'admin'">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-success"
         ng-disabled="groupForm.$invalid || groupForm.$pristine">
@@ -158,13 +158,22 @@
       </div>
     </div>
   </div>
-  <div class="form-row">
+  <!-- <div class="form-row" ng-if="currentUser.type == 'admin'">
     <div class="col form-group">
       <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
         {{i18n.btns.returnGroupsBtn}}
       </a>
     </div>
-  </div>
+  </div> -->
+
+  <!-- Normal User Buttons rows -->
+  <!-- <div class="form-row" ng-if="currentUser.type == 'user'">
+    <div class="col form-group">
+      <a class="btn btn-lg btn-block btn-primary" href="#!/dashboard">
+        {{i18n.btns.returnDashBtn}}
+      </a>
+    </div>
+  </div> -->
 
 </form>
 

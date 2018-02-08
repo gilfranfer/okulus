@@ -91,11 +91,11 @@
       <div class="alert alert-warning" role="alert" ng-show="memberForm.$invalid && memberForm.$dirty">
         {{i18n.alerts.invalidForm}}
       </div>
-      <div class="alert alert-success" role="alert" ng-show="response.messageOk">
-        {{response.messageOk}}
+      <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
+        {{response.memberMsgOk}}
       </div>
-      <div class="alert alert-danger" role="alert" ng-show="response.messageErr">
-        {{response.messageErr}}
+      <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
+        {{response.memberMsgError}}
       </div>
     </div>
   </div>
@@ -126,13 +126,13 @@
       </div>
     </div>
   </div>
-  <div class="form-row">
+  <!-- <div class="form-row">
     <div class="col form-group">
       <a class="btn btn-lg btn-block btn-primary" href="#!/members">
         {{i18n.btns.returnBtn}}
       </a>
     </div>
-  </div>
+  </div> -->
 
 </form>
 

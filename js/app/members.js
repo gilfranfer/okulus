@@ -135,6 +135,12 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));
 			},
+			getMemberInfo: function(memberId){
+				return $firebaseObject(membersRef.child(memberId).child("member"));
+			},
+			getMemberAccessRules: function(whichMember) {
+				return $firebaseArray(membersRef.child(whichMember).child("access"));
+			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
 					console.log("Creating firebaseArray for allMembers");

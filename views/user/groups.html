@@ -1,0 +1,25 @@
+<!-- Groups List -->
+<section>
+  <div class="row mb-1">
+      <h2>{{i18n.user.groupsList.title}}</h2>
+  </div>
+  <div class="row mb-1">
+      <p>{{i18n.user.groupsList.description}}</p>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+    </div>
+  </div>
+
+  <!-- Alert/Error row -->
+  <div class="col"  ng-show="groupsList && groupsList.length == 0">
+    <div class="alert alert-danger" role="alert">
+      {{i18n.user.groupsList.noGroupsError}}
+    </div>
+  </div>
+
+  <article ng-include="'views/groups/groupsList.html'"></article>
+
+</section>
