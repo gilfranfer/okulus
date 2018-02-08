@@ -1,6 +1,7 @@
 okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
+			env: "dev",
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
