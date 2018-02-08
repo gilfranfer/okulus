@@ -16,8 +16,23 @@ okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 					});
 				});
+		};
 
+		updateCharts = function(){
+			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek);
+			//ChartsSvc.buildMoneChart($scope.reportsForSelectedWeek);
+		};
 
+		$scope.getReportsForSelectedWeeks = function () {
+			let fromWeek = $scope.weekfrom;
+			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
+
+			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
+			$scope.reportsForSelectedWeek = reportsArray;
+			reportsArray.$loaded().then( function( report ) { 
+				updateCharts();
+				reportsArray.$watch(function(event) { updateCharts(); });
+			});
 		};
 }]);
 
@@ -207,6 +222,10 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getReportsForWeek: function(weekId){
 				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);
 				return $firebaseArray(ref);
+			},
+			getReportsforWeeksPeriod: function(fromWeek, toWeek){
+				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
+				return $firebaseArray(query);
 			}
 		};
 	}

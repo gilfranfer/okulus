@@ -134,15 +134,19 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						weekSection:"Elige una semana de la lista para ver los Reportes y los gráficos de análisis."
 					},
 					reportTable:{
-						report:"Reporte",
-						date:"Fecha",
+						report:"", week:"Semana",
+						date:"Fecha de Creación",
 						group:"Grupo",
 						reunionStatus:"Reunión",
 						duration: "Duración",
 						money: "Diezmo",
 						attendance: "Asistencia", view: "Ver"
 					},
-					noReportsError: "No hay Reportes para la semana seleccionada"
+					weekSection:{
+						from: "De la Semana:", to:"a la Semana:"
+					},
+					noReportsError: "No hay Reportes para la semana seleccionada",
+					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
 				},
 				audit:{
 					title: "Auditoria de Movimientos",

@@ -3,6 +3,10 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
     //add on change listener to reportsList
     return {
+        buildAttendanceCharts: function(reportsList,activeGroupsCount) {
+
+        },
+
       buildAttendanceChart: function(reportsList,activeGroupsCount) {
         // console.log(activeGroupsCount);
         // let activeGroupsCount = 10;

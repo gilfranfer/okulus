@@ -9,11 +9,27 @@
       <p class="card-text">
         {{i18n.admin.dashboard.descriptions.weekSection}}
       </p>
-      <!-- Active Members List -->
+      <!-- All Weeks List -->
       <form name="weekForm" class="mb-3" novalidate>
+        <div class="row">
+          <div class="col-5">
+            <label for="weekFromSelect">{{i18n.admin.dashboard.weekSection.from}}</label>
+          </div>
+          <div class="col-5">
+            <label for="weekToSelect">{{i18n.admin.dashboard.weekSection.to}}</label>
+          </div>
+        </div>
         <div class="row mb-3">
-          <div class="col-8">
-            <select id="weekSelect" class="form-control form-control-lg" ng-model="week.id" ng-required="true">
+          <div class="col-5">
+            <select id="weekFromSelect" class="form-control form-control-lg" ng-model="weekfrom" ng-required="true">
+              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
+                {{w.name}} ({{w.$id}})
+              </option>
+            </select>
+          </div>
+          <div class="col-5">
+            <select id="weekToSelect" class="form-control form-control-lg" ng-model="weekto" ng-required="false">
+              <option value="0"></option>
               <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
                 {{w.name}} ({{w.$id}})
               </option>
@@ -21,27 +37,31 @@
           </div>
           <div class="col">
             <button type="button" class="btn btn-lg btn-block btn-success"
-              ng-click="getReportsForSelectedWeek()" ng-disabled="weekForm.$invalid">
+              ng-click="getReportsForSelectedWeeks()" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
               {{i18n.btns.viewBtn}}
             </button>
           </div>
         </div>
+        <!-- Error Alert: Week From less than Week To -->
+        <div class="row">
+          <div class="col"  ng-show="(weekto>0 && weekfrom > weekto)">
+            <div class="alert alert-danger" role="alert">
+              {{i18n.admin.dashboard.weeksOrderError}}
+            </div>
+          </div>
+        </div>
+
       </form>
     </div>
   </div>
 
-  <!-- Loading/No Records Alert -->
+  <!-- No Records Alert -->
   <div class="row">
     <div class="col"  ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
       <div class="alert alert-danger" role="alert">
         {{i18n.admin.dashboard.noReportsError}}
       </div>
     </div>
-    <!-- <div class="col"  ng-show="week.id && !reportsForSelectedWeek">
-      <div class="alert alert-warning" role="alert">
-        {{i18n.alerts.loading}}
-      </div>
-    </div> -->
   </div>
 
 
@@ -67,9 +87,10 @@
         <thead>
           <tr>
             <!-- <th scope="col">#</th> -->
-            <th scope="col">{{i18n.admin.dashboard.reportTable.report}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.date}}</th>
+            <th scope="col"></th>
             <th scope="col">{{i18n.admin.dashboard.reportTable.group}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.date}}</th>
+            <th scope="col">{{i18n.admin.dashboard.reportTable.week}}</th>
             <th scope="col">{{i18n.admin.dashboard.reportTable.reunionStatus}}</th>
             <th scope="col">{{i18n.admin.dashboard.reportTable.duration}}</th>
             <th scope="col">{{i18n.admin.dashboard.reportTable.money}}</th>
@@ -85,11 +106,14 @@
                 {{i18n.admin.dashboard.reportTable.view}}
               </a>
             </td>
-            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
             <td scope="row">
               <a ng-href="#!/groups/edit/{{report.reunion.groupId}}">
                 {{report.reunion.groupname}}
               </a>
+            </td>
+            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
+            <td scope="row">
+                {{report.reunion.weekId}}
             </td>
             <td class="text-danger" ng-if="report.reunion.status == 'canceled'">
               {{i18n.forms.report.cancelStatusLbl}}

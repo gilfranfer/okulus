@@ -13,9 +13,9 @@ okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scop
 				let code = (idSplit[0]+idSplit[1]);
 
 				weeksRef = WeeksSvc.getWeeksFolderRef();
-				let record = {status:"open", code: code, name:weekName};
+				let record = {status:"open", name:weekName};
 
-				weeksRef.child(weekId).set(record, function(error) {
+				weeksRef.child(code).set(record, function(error) {
 					if(error){
 						$rootScope.response = {weekMsgError: error };
 					}else{
@@ -111,8 +111,8 @@ okulusApp.controller('WeeksTestCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$
 			data.forEach( function(record){
 				let idSplit = record.id.split("-W");
 				let code = (idSplit[0]+idSplit[1]);
-				let week = {status:record.status, code:code, name:record.name};
-				weeksRef.child(record.id).set(week);
+				let week = {status:record.status, code:code,name:record.name};
+				weeksRef.child(code).set(week);
 			} );
 		};
 
@@ -123,7 +123,7 @@ okulusApp.controller('WeeksTestCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$
 
 		$scope.testSelect = function(){
 			let weeksRef = WeeksSvc.getWeeksFolderRef();
-			weeksRef.orderByChild("code").startAt(201811).on("child_added", function(snapshot) {
+			weeksRef.orderByChild("code").startAt("201810").endAt("201810").on("child_added", function(snapshot) {
 			  console.log(snapshot.key)
 			});
 		};
