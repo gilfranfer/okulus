@@ -26,18 +26,19 @@
     {{response.memberMsgError}}
   </div>
 
+  <!-- Loading/No Records Alert -->
+  <div class="col"  ng-show="allMembers && allMembers.length == 0">
+    <div class="alert alert-danger" role="alert">
+      {{i18n.admin.membersList.noMembersError}}
+    </div>
+  </div>
+  <div class="col"  ng-show="!allMembers">
+    <div class="alert alert-warning" role="alert">
+      {{i18n.alerts.loading}}
+    </div>
+  </div>
+    
   <div class="row">
-    <!-- Loading/No Records Alert -->
-    <div class="col"  ng-show="allMembers && allMembers.length == 0">
-      <div class="alert alert-danger" role="alert">
-        {{i18n.admin.membersList.noMembersError}}
-      </div>
-    </div>
-    <div class="col"  ng-show="!allMembers">
-      <div class="alert alert-warning" role="alert">
-        {{i18n.alerts.loading}}
-      </div>
-    </div>
 
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="m in allMembers | filter:searchText">
