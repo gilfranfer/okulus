@@ -131,7 +131,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						money: "Diezmo de la Semana",
 					},
 					descriptions:{
-						weekSection:"Elige una semana de la lista para ver los Reportes y los gráficos de análisis."
+						weekSection:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico."
 					},
 					reportTable:{
 						report:"", week:"Semana",

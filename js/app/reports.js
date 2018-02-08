@@ -1,6 +1,7 @@
 okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
 		WeeksSvc.loadAllWeeks();
+		GroupsSvc.loadAllGroupsList();
 
 		$scope.getReportsForSelectedWeek = function () {
 				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
@@ -23,15 +24,39 @@ okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			//ChartsSvc.buildMoneChart($scope.reportsForSelectedWeek);
 		};
 
+		filterReportsForGroup = function(groupId){
+				console.log(groupId);
+			if(groupId){
+				let reportsList = [];
+				$scope.reportsArray.forEach( function(report){
+					console.log(report);
+					if(report.reunion.groupId == groupId){
+						reportsList.push(report);
+					}
+				});
+				$scope.reportsForSelectedWeek = reportsList;
+			}else{
+				$scope.reportsForSelectedWeek = $scope.reportsArray;
+			}
+		};
+
 		$scope.getReportsForSelectedWeeks = function () {
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
+			let groupId = $scope.specificGroup;
 
 			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
-			$scope.reportsForSelectedWeek = reportsArray;
-			reportsArray.$loaded().then( function( report ) { 
+			$scope.reportsArray = reportsArray;
+
+			reportsArray.$loaded().then( function( reports ) {
+				filterReportsForGroup(groupId);
 				updateCharts();
-				reportsArray.$watch(function(event) { updateCharts(); });
+				//Add a Watch to rebuild charts when changes on reports
+				reportsArray.$watch(function(event) { 
+					console.log("Watching Reports Array");
+					filterReportsForGroup(groupId)
+					updateCharts( ); 
+				});
 			});
 		};
 }]);
@@ -225,6 +250,12 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getReportsforWeeksPeriod: function(fromWeek, toWeek){
 				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
+				/*if(groupId){
+					Not possible to combien more than one orderByChild
+					console.log("Try second query for group "+groupId)
+					let query2 = query.orderByChild("reunion/groupId").equalTo(groupId);
+					return $firebaseArray(query2);
+				}*/
 				return $firebaseArray(query);
 			}
 		};
