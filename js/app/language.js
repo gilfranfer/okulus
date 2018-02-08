@@ -116,6 +116,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				access:{
 					title: "Miembros con Accceso al Grupo",
 					description: "Seleccionar un Miembro de la lista para otrogarle acceso al Grupo.",
+					noRecordsError: "No hay reglas de acceso en este grupo",
 					table:{
 						memberName:"Miembro", memberId:"Id", date:"Desde"
 					}

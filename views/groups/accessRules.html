@@ -37,9 +37,17 @@
       <div class="alert alert-success" role="alert" ng-show="response.accessMsgOk">
         {{response.accessMsgOk}}
       </div>
+      <!-- Loading/No Records Alert -->
+      <div class="row">
+        <div class="col" ng-show="acessList && acessList.length == 0">
+          <div class="alert alert-danger" role="alert">
+            {{i18n.admin.access.noRecordsError}}
+          </div>
+        </div>
+      </div>
 
       <!-- Access Table -->
-      <table class="table table-responsive-sm table-md table-striped">
+      <table class="table table-responsive-sm table-md table-striped" ng-show="acessList && acessList.length > 0">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -49,16 +57,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-if="!acessList || acessList.length <=0"
-              class="bg-danger text-center text-white">
-            <td colspan="4">{{i18n.admin.audit.norecords}}</td>
-          </tr>
           <tr ng-repeat="a in acessList | orderBy:'-date'">
-            <th scope="row">{{$index + 1}}</th>
-            <th scope="row">
+            <td scope="row">{{$index + 1}}</td>
+            <td scope="row">
               <button type="button" class="btn-sm btn-danger" name="button" ng-click="deleteRule(a.$id)">
                 {{i18n.btns.deleteBtn}}</button>
-            </th>
+            </td>
             <td>
               <a ng-href="#!/members/edit/{{a.memberId}}">
                 {{a.memberName}}
