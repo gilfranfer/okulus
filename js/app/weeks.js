@@ -1,5 +1,5 @@
-okulusApp.controller('WeeksCntrl', ['WeeksSvc', '$rootScope', '$scope',
-	function(WeeksSvc, $rootScope, $scope){
+okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope',
+	function(WeeksSvc, AuditSvc, $rootScope, $scope){
 		$rootScope.response = null;
 		WeeksSvc.loadAllWeeks();
 
@@ -9,7 +9,24 @@ okulusApp.controller('WeeksCntrl', ['WeeksSvc', '$rootScope', '$scope',
 			let weekName = document.querySelector("#weekName").value;
 			// if(weekId){
 			if(!WeeksSvc.getWeekRecord(weekId)){
-				WeeksSvc.persistWeek(weekId,weekName);
+				weeksRef = WeeksSvc.getWeeksFolderRef();
+				let record = {status:"open", name:weekName};
+
+				weeksRef.child(weekId).set(record, function(error) {
+					if(error){
+						$rootScope.response = {weekMsgError: error };
+					}else{
+						//For some reason the message is not displayed until
+						//you interact with any form element
+					}
+				});
+				//adding trick below to ensure message is displayed
+				let obj = WeeksSvc.getWeekObj(weekId);
+				obj.$loaded().then(function() {
+					AuditSvc.recordAudit(weekId, "create", "weeks");
+					$rootScope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
+				});
+
 			}else{
 				$rootScope.response = {weekMsgError: "La Semana "+weekId+" ya existe" };
 			}
@@ -45,19 +62,11 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			getWeekRecord: function(weekId){
 				return $rootScope.allWeeks.$getRecord(weekId);
 			},
-			persistWeek: function(weekId,weekName){
-				let record = {status:"open", name:weekName};
-
-				weeksRef.child(weekId).set(record, function(error) {
-					console.log("set donde");
-					if(error){
-						console.error(error);
-						$rootScope.response = {weekMsgError: error };
-					}else{
-						AuditSvc.recordAudit(weekId, "create", "weeks");
-						$rootScope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
-					}
-				});
+			getWeekObj: function(weekId){
+				return $firebaseObject(weeksRef.child(weekId));
+			},
+			getWeeksFolderRef: function(){
+				return firebase.database().ref().child('pibxalapa').child('weeks');
 			},
 			updateWeekStatus: function (weekId,status) {
 				$rootScope.response = null;
@@ -65,7 +74,11 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				record.status = status;
 				$rootScope.allWeeks.$save(record).then(function(){
 					AuditSvc.recordAudit(weekId, status, "weeks");
-					$rootScope.response = {weekMsgOk: "Semana "+weekId+" Actualizada" };
+					if(status == 'open'){
+						$rootScope.response = {weekMsgOk: "Semana "+weekId+" Abierta" };
+					}else{
+						$rootScope.response = {weekMsgOk: "Semana "+weekId+" Cerrada" };
+					}
 				});
 			}
 		};

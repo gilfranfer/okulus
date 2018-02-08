@@ -5,21 +5,11 @@
     </p>
     <div class="card-body">
       <h4 class="card-title"></h4>
-      <p class="card-text"></p>
+      <p class="card-text">
+          {{i18n.forms.weeks.description}}
+      </p>
       <!-- Active Members List -->
       <form class="mt-3" name="weekForm" novalidate ng-submit="addWeek()">
-        <div class="row mb-3">
-          <div class="col-5">
-            <label for="weekId">
-              {{i18n.forms.weeks.week}}
-            </label>
-          </div>
-          <div class="col-5">
-            <label for="weekName">
-              {{i18n.forms.weeks.weekName}}
-            </label>
-          </div>
-        </div>
         <div class="row mb-3">
           <div class="col-5">
             <input type="week" id="weekId" class="form-control form-control-lg"

@@ -40,6 +40,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			forms:{
 				weeks:{
 					legend: "Semanas",
+					description:"Las Semanas serán los contenedores de los Reportes. Se recomienda cerrar las semanas cuando se hayan recibido todos los reportes. Las semanas cerradas no aparecerán listadas al momento de crear un reporte.",
 					week: "Semana",weekBtn:"Agregar",
 					weekName: "Nombre", weekNameHint: "Semana 1",
 				},
