@@ -85,7 +85,66 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                           { name: 'Miembros', color: 'rgba(0,123,255,.8)', data: totalMembersByReport }
                         ]
             };
+            var genderDetailsOptions = {
+                chart: { type: 'bar' },
+                credits: { enabled: false },
+                title: { text: 'Rangos de Edad' },
+                subtitle: {},
+                xAxis: [{
+                          categories: ['Adultos', 'Jovenes', 'Niños'],
+                          reversed: false,
+                          labels: { step: 1 }
+                        }],
+                yAxis: {
+                    title: { text: null },
+                    labels: {
+                        formatter: function () {
+                            return Math.abs(this.value);
+                        }
+                    }
+                },
+                plotOptions: {
+                    series: { stacking: 'normal' }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + ' ' + this.point.category + '</b><br/>' +
+                            'Asistencia: ' + Highcharts.numberFormat(Math.abs(this.point.y), 0);
+                    }
+                },
+                series: [{
+                    name: 'Hombres', color: 'rgba(0,123,255,.8)',
+                    data: [-adultMaleByWeek, -youngMaleByWeek, -kidMaleByWeek]
+                }, {
+                    name: 'Mujeres', color: 'rgba(255, 192, 203, .8)',
+                    data: [adultFemaleByWeek, youngFemaleByWeek, kidFemaleByWeek]
+                }]
+            };
+
+            var genderPieOptions = {
+                chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+                credits: { enabled: false },
+                title: { text: 'Género'},
+                tooltip: {  pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+                plotOptions: {
+                    pie: {
+                      dataLabels: { enabled: false },
+                      showInLegend: true,
+                                        colors: ['#007BFF','#FFC0CB']
+                    }
+                },
+                series: [{
+                    type: 'pie', name: 'Asistencia',
+                    innerSize: '20%',
+                    data: [
+                        ['Hombres', adultMaleByWeek + youngMaleByWeek + kidMaleByWeek],
+                        ['Mujeres', adultFemaleByWeek + youngFemaleByWeek + kidFemaleByWeek]
+                    ]
+                }]
+            };
             Highcharts.chart('attendanceByGroup-container', attendanceByGroupOptions);
+            Highcharts.chart('genderDetails-container', genderDetailsOptions);
+            Highcharts.chart('genderPie-container', genderPieOptions);
         },
 
       buildAttendanceChart: function(reportsList,activeGroupsCount) {
