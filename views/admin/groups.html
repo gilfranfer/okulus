@@ -1,5 +1,6 @@
-<!-- Groups List -->
-<section>
+<!-- Admin Groups List View -->
+<section id="adminGroupsList" ng-if="currentUser.type == 'admin'">
+  <!-- Title and page description -->
   <div class="row mb-1">
       <h2>{{i18n.admin.groupsList.title}}</h2>
   </div>
@@ -7,6 +8,7 @@
       <p>{{i18n.admin.groupsList.description}}</p>
   </div>
 
+  <!-- Group Search and New Button -->
   <div class="row mb-3">
     <div class="col-8">
       <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
@@ -18,14 +20,14 @@
     </div>
   </div>
 
+  <!-- Alerts to show Response Message (Used after redirect from Group Delete) -->
   <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
     {{response.groupMsgOk}}
   </div>
   <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
     {{response.groupMsgError}}
   </div>
-
-  <!-- Alert/Error row -->
+  <!-- No Records Alert -->
   <div class="col"  ng-show="groupsList && groupsList.length == 0">
     <div class="alert alert-danger" role="alert">
       {{i18n.admin.groupsList.noGroupsError}}

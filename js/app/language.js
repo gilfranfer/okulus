@@ -143,7 +143,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						attendance: "Asistencia", view: "Ver"
 					},
 					weekSection:{
-						from: "De la Semana:", to:"a la Semana:"
+						from: "De la Semana:", to:"a la Semana:", group:"Grupo (Opcional)"
 					},
 					noReportsError: "No hay Reportes para la semana seleccionada",
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"

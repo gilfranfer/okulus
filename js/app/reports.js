@@ -1,4 +1,4 @@
-okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
+okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
 		WeeksSvc.loadAllWeeks();
 		GroupsSvc.loadAllGroupsList();
@@ -25,7 +25,6 @@ okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		};
 
 		filterReportsForGroup = function(groupId){
-				console.log(groupId);
 			if(groupId){
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
