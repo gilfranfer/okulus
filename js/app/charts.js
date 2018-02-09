@@ -70,7 +70,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
             //Build Charts
             var attendanceByGroupOptions = {
-                chart: { type: 'bar' },
+                chart: { type: 'column' },
                 credits: { enabled: false },
                 title: { text: 'Asistencia por Grupo' },
                 xAxis: { categories: groupNameAsCategory },
