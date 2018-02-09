@@ -11,10 +11,18 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             attendance.male.kid;
         return total;
     }
+
+    var totalCompletedReunions = 0;
+    var totalCanceledReunions = 0;
+
     //add on change listener to reportsList
     return {
+        getReunionStatusTotals: function(){
+            return  {completedReunions: totalCompletedReunions, canceledReunions:totalCanceledReunions};
+        },
         buildAttendanceCharts: function(reportsList) {
-            let totalCompletedStatusReunions = 0;
+            totalCompletedReunions = 0;
+            totalCanceledReunions = 0;
             
             let groupNameAsCategory = [];
             let totalAttendanceByReport = [];
@@ -32,7 +40,9 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             reportsList.forEach(function(report, index) {
 
                 if(report.reunion.status == "completed"){
-                    totalCompletedStatusReunions++;
+                    totalCompletedReunions++;
+                }else{
+                    totalCanceledReunions ++;
                 }
 
                 groupNameAsCategory.push(report.reunion.groupname);
@@ -67,7 +77,6 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     //For Money Scatter Charts
                     //scatterMoneyData.push( [report.reunion.money, guests+members] );
                 });
-
             //Build Charts
             var attendanceByGroupOptions = {
                 chart: { type: 'column' },
@@ -120,7 +129,6 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     data: [adultFemaleByWeek, youngFemaleByWeek, kidFemaleByWeek]
                 }]
             };
-
             var genderPieOptions = {
                 chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
                 credits: { enabled: false },

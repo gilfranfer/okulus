@@ -21,6 +21,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 		updateCharts = function(){
 			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek);
+			$scope.reportsSummary = ChartsSvc.getReunionStatusTotals();
 			//ChartsSvc.buildMoneChart($scope.reportsForSelectedWeek);
 		};
 

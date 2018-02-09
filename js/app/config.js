@@ -11,7 +11,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'UserGroupsListCntrl'
 			})
 			.when('/admin/dashboard', {
-				//controller: 'ReportsListCntrl',
+				controller: 'AdminDashCntrl',
 				templateUrl: 'views/admin/dashboard.html'
 			})
 			.when('/admin/monitor', {
