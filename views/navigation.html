@@ -1,5 +1,8 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
 
+  <span class="navbar-brand bg-danger" ng-if="config.env !='prod'" >
+    {{config.env}}
+  </span>
   <a class="navbar-brand" href="#!/about">
     {{i18n.navigation.brand}}
   </a>

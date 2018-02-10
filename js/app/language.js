@@ -1,6 +1,7 @@
 okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
+			env: "dev",
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
@@ -130,18 +131,22 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						money: "Diezmo de la Semana",
 					},
 					descriptions:{
-						weekSection:"Elige una semana de la lista para ver los Reportes y los gráficos de análisis."
+						weekSection:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico."
 					},
 					reportTable:{
-						report:"Reporte",
-						date:"Fecha",
+						report:"", week:"Semana",
+						date:"Fecha de Creación",
 						group:"Grupo",
 						reunionStatus:"Reunión",
 						duration: "Duración",
 						money: "Diezmo",
 						attendance: "Asistencia", view: "Ver"
 					},
-					noReportsError: "No hay Reportes para la semana seleccionada"
+					weekSection:{
+						from: "De la Semana:", to:"a la Semana:", group:"Grupo (Opcional)"
+					},
+					noReportsError: "No hay Reportes para la semana seleccionada",
+					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
 				},
 				audit:{
 					title: "Auditoria de Movimientos",

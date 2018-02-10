@@ -15,3 +15,10 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray',
 
 	}
 ]);
+
+okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
+	function($rootScope, $scope, $firebaseObject){
+		let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
+		$rootScope.globalCounter = $firebaseObject(countersRef);
+	}
+]);

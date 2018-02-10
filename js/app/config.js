@@ -11,6 +11,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'UserGroupsListCntrl'
 			})
 			.when('/admin/dashboard', {
+				controller: 'AdminDashCntrl',
 				templateUrl: 'views/admin/dashboard.html'
 			})
 			.when('/admin/monitor', {
@@ -55,7 +56,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'ReportDetailsCntrl'
 			})
 			.when('/weeks', {
-				templateUrl: 'views/admin/weeks.html',
+				templateUrl: 'views/weeks/weeks.html',
 				controller: "WeeksCntrl"
 			})
 			.when('/error/norecord', {
