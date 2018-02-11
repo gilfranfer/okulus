@@ -24,13 +24,23 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 			/* When a value for memberId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.memberId ){
-    		let mRef = MembersSvc.getMemberReference($scope.memberId);
-		    mRef.update(record, function(error) {
+	    		let mRef = MembersSvc.getMemberReference($scope.memberId);
+				let orgiStatus = undefined;
+				mRef.child("member/status").once('value').then(
+					function(snapshot) {
+						orgiStatus = snapshot.val();
+					});
+
+			    mRef.update(record, function(error) {
 					if(error){
 						$scope.response = { memberMsgError: error};
 					}else{
 						$scope.response = { memberMsgOk: "Miembro Actualizado"};
-				    AuditSvc.recordAudit(mRef.key, "update", "members");
+					    AuditSvc.recordAudit(mRef.key, "update", "members");
+					    console.log(orgiStatus);
+					    if(orgiStatus != record.member.status){
+							MembersSvc.updateMembersStatusCounter(record.member.status);
+						}
 					}
 				});
 			}
@@ -163,7 +173,6 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				return membersRef.push();
 			},
 			updateMembersStatusCounter(status){
-				console.log(status)
 				$firebaseObject(counterRef).$loaded().then(
 					function( memberStatusCounter ){
 						if(status == 'active'){

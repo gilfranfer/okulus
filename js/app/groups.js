@@ -26,7 +26,11 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					mode and we have to perform an UPDATE.*/
 		    	if( $scope.groupId ){
 						let gRef = GroupsSvc.getGroupReference($scope.groupId);
-						//Get original Status to check if it was updated
+						let orgiStatus = undefined;
+						gRef.child("group/status").once('value').then(
+							function(snapshot) {
+								orgiStatus = snapshot.val();
+							});
 
 						gRef.update(record, function(error) {
 							if(error){
@@ -34,7 +38,10 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 							}else{
 								$scope.response = { groupMsgOk: "Grupo Actualizado"};
 								AuditSvc.recordAudit(gRef.key, "update", "groups");
-								//GroupsSvc.updateGroupsStatusCounter(record.group.status);
+
+								if(orgiStatus != record.group.status){
+									GroupsSvc.updateGroupsStatusCounter(record.group.status);
+								}
 							}
 						});
 		    	}
