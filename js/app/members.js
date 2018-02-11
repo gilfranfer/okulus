@@ -49,10 +49,12 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 
 				//adding trick below to ensure message is displayed
 				let obj = MembersSvc.getMember(newmemberRef.key);
-				obj.$loaded().then(function() {
+				obj.$loaded().then(function(data) {
 					$scope.memberId = newmemberRef.key;
 					$scope.response = { memberMsgOk: "Miembro Creado"};
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
+					console.log("update counter")
+					MembersSvc.updateMembersStatusCounter(data.member.status);
 				});
 			}
 		};
@@ -124,6 +126,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 
 		let membersRef = firebase.database().ref().child('pibxalapa/members');
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
+		let counterRef = firebase.database().ref().child('pibxalapa/counters/members');
 
 		return {
 			allMembersLoaded: function() {
@@ -158,6 +161,19 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getNewMemberReference: function(){
 				return membersRef.push();
+			},
+			updateMembersStatusCounter(status){
+				console.log(status)
+				$firebaseObject(counterRef).$loaded().then(
+					function( memberStatusCounter ){
+						if(status == 'active'){
+							memberStatusCounter.active = memberStatusCounter.active+1;
+						}else{
+							memberStatusCounter.inactive = memberStatusCounter.inactive+1;
+						}
+						memberStatusCounter.$save();
+					}
+				);
 			}
 		};
 	}

@@ -26,12 +26,15 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					mode and we have to perform an UPDATE.*/
 		    	if( $scope.groupId ){
 						let gRef = GroupsSvc.getGroupReference($scope.groupId);
+						//Get original Status to check if it was updated
+
 						gRef.update(record, function(error) {
 							if(error){
 								$scope.response = { groupMsgError: error};
 							}else{
 								$scope.response = { groupMsgOk: "Grupo Actualizado"};
 								AuditSvc.recordAudit(gRef.key, "update", "groups");
+								//GroupsSvc.updateGroupsStatusCounter(record.group.status);
 							}
 						});
 		    	}
@@ -50,10 +53,11 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 
 					//adding trick below to ensure message is displayed
 					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
-					obj.$loaded().then(function() {
+					obj.$loaded().then(function(data) {
 						$scope.groupId = newgroupRef.key;
 						$scope.response = { groupMsgOk: "Grupo Creado"};
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
+						GroupsSvc.updateGroupsStatusCounter(data.group.status);
 					});
 	    	}
 	    };
@@ -74,7 +78,6 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 				  });
 		    }
 	    };
-
   	}
 ]);
 
@@ -129,6 +132,8 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 		let groupsRef = firebase.database().ref().child('pibxalapa/groups');
 		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
+		let counterRef = firebase.database().ref().child('pibxalapa/counters/groups');
+		
 		return {
 			getGroupReference: function(groupId){
 				return groupsRef.child(groupId);
@@ -174,6 +179,18 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			getAccessRulesForGroup: function (groupId) {
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
+			},
+			updateGroupsStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( groupStatusCounter ){
+						if(status == 'active'){
+							groupStatusCounter.active = groupStatusCounter.active+1;
+						}else{
+							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
+						}
+						groupStatusCounter.$save();
+					}
+				);
 			}
 		};
 	}
