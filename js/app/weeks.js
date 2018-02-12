@@ -61,6 +61,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				if(!$rootScope.allWeeks){
 					$rootScope.allWeeks = $firebaseArray(weeksRef);
 				}
+				return $rootScope.allWeeks;
 			},
 			getWeekRecord: function(weekId){
 				return $rootScope.allWeeks.$getRecord(weekId);
@@ -90,7 +91,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 
 okulusApp.controller('WeeksTestCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope',
 	function(WeeksSvc, AuditSvc, $rootScope, $scope){
-		
+
 		$scope.testData = function () {
 			let weeksRef = WeeksSvc.getWeeksFolderRef();
 			var data = [

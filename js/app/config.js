@@ -7,8 +7,12 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/about.html'
 			})
 			.when('/mygroups', {
-				templateUrl: 'views/user/groups.html',
-				controller: 'UserGroupsListCntrl'
+				templateUrl: 'views/user/myGroups.html',
+				controller: 'UserMyGroupsCntrl'
+			})
+			.when('/myreports', {
+				templateUrl: 'views/user/myReports.html',
+				controller: 'UserMyReportsCntrl'
 			})
 			.when('/admin/dashboard', {
 				controller: 'AdminDashCntrl',

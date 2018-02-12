@@ -1,8 +1,29 @@
+/* Controller linked to /myreports
+ * It will load the lists (weeks, groups, member rules) required for the view to work */
+okulusApp.controller('UserMyReportsCntrl', ['MembersSvc','GroupsSvc', 'WeeksSvc', '$rootScope',
+	function(MembersSvc, GroupsSvc, WeeksSvc, $rootScope){
+		let whichMember = $rootScope.currentUser.member.id;
+		$rootScope.weeksList = WeeksSvc.loadAllWeeks();
+		$rootScope.groupsList = MembersSvc.getMemberGroups(whichMember);
+	}
+]);
+
+/* Controller linked to /mygroups
+ * It will load the Groups the Current Member has Access to */
+okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope',
+	function(MembersSvc, WeeksSvc, $rootScope){
+		let whichMember = $rootScope.currentUser.member.id;
+		$rootScope.groupsList = MembersSvc.getMemberGroups(whichMember);
+	}
+]);
+
+
 okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$scope','$location',
 	function(MembersSvc, GroupsSvc, $rootScope, $scope, $location){
 			$rootScope.currentUser =  { type: 'admin', member:{ id:'-L3aCrod02U-clEuK8g1' }};
-
 			MembersSvc.loadActiveMembers();
+
+			//Get logged Member Info
 			let whichMember = $rootScope.currentUser.member.id;
 			MembersSvc.getMemberInfo(whichMember).$loaded().then(
 				function(data) {
@@ -22,44 +43,5 @@ okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$sco
 				}
 				$location.path("/home");
 			};
-	}
-]);
-
-okulusApp.controller('UserGroupsListCntrl', ['MembersSvc','GroupsSvc', '$rootScope','WeeksSvc',
-	function(MembersSvc, GroupsSvc, $rootScope,WeeksSvc){
-		$rootScope.groupsList = null;
-		WeeksSvc.loadAllWeeks();
-		//When admin is logged, he can see all the groups,
-		//even when there is no rule for him on the access folder
-		if( $rootScope.currentUser.type === 'admin'){
-			console.log("As Admin");
-			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
-		}
-		//But, if a user is logged, we only show the groups that are
-		//present in his access rules folder
-		else{
-			console.log("As User");
-			let whichMember = $rootScope.currentUser.member.id;
-			let myGroups = [];
-
-			//Filter from the Active Groups, the ones the User has access to
-			GroupsSvc.loadAllGroupsList().$loaded().then(
-				function(activeGroups) {
-					MembersSvc.getMemberAccessRules(whichMember).$loaded().then(
-						function(memberRules) {
-							memberRules.forEach(function(rule) {
-								console.log("On a Rule");
-								let group = activeGroups.$getRecord(rule.groupId);
-								if( group != null){
-									myGroups.push( group );
-								}
-							});
-							$rootScope.groupsList = myGroups;
-						}
-					);
-				}
-			);
-		}
-
 	}
 ]);
