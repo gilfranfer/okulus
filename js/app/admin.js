@@ -27,7 +27,6 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 					counter.groups = {active:0,inactive:0};
 					$rootScope.globalCounter.$save();
 				}
-				console.log(counter);
 			}
 		);
 	}
