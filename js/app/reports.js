@@ -1,35 +1,15 @@
-okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
-	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
-		WeeksSvc.loadAllWeeks();
-		GroupsSvc.loadAllGroupsList();
-
-		$scope.getReportsForSelectedWeek = function () {
-				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
-				$scope.reportsForSelectedWeek.$loaded().then(function() {
-					GroupsSvc.loadActiveGroups();
-					$rootScope.allActiveGroups.$loaded().then(function(){
-						ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-
-						//Left a Watch on the Reports Array to update the dashboard when data is modified
-						$scope.reportsForSelectedWeek.$watch(function(event) {
-							ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-						});
-
-					});
-				});
-		};
-
-		updateCharts = function(){
-			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek);
-			$scope.reportsSummary = ChartsSvc.getReunionStatusTotals();
-			//ChartsSvc.buildMoneChart($scope.reportsForSelectedWeek);
+okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
+	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
+		updateCharts = function(groupId){
+			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek, groupId);
+			$scope.reunionStatusSummary = ChartsSvc.getReunionStatusTotals();
 		};
 
 		filterReportsForGroup = function(groupId){
 			if(groupId){
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
-					console.log(report);
+					//console.log(report);
 					if(report.reunion.groupId == groupId){
 						reportsList.push(report);
 					}
@@ -38,6 +18,32 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			}else{
 				$scope.reportsForSelectedWeek = $scope.reportsArray;
 			}
+		};
+
+		filterReportsForUser = function(accessGroups){
+			let reportsList = [];
+			$scope.reportsForSelectedWeek.forEach( function(report){
+				//console.log(report);
+				if(accessGroups.has(report.reunion.groupId)){
+					reportsList.push(report);
+				}
+			});
+			return reportsList;
+		};
+
+		filterReportsAndUpdateCharts = function (groupId) {
+			filterReportsForGroup(groupId);
+			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentUser.member.id);
+			let accessGroups = new Map();
+			accessRules.$loaded().then(function(rules) {
+				rules.forEach( function(rule){
+					accessGroups.set(rule.groupId,rule);
+				});
+				if($rootScope.currentUser.type != 'admin'){
+					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
+				}
+				updateCharts(groupId);
+			});
 		};
 
 		$scope.getReportsForSelectedWeeks = function () {
@@ -49,13 +55,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			$scope.reportsArray = reportsArray;
 
 			reportsArray.$loaded().then( function( reports ) {
-				filterReportsForGroup(groupId);
-				updateCharts();
+				filterReportsAndUpdateCharts(groupId);
 				//Add a Watch to rebuild charts when changes on reports
-				reportsArray.$watch(function(event) { 
-					console.log("Watching Reports Array");
-					filterReportsForGroup(groupId)
-					updateCharts( ); 
+				reportsArray.$watch(function(event){
+					filterReportsAndUpdateCharts(groupId);
 				});
 			});
 		};

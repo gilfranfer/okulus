@@ -25,14 +25,15 @@ okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$sco
 	}
 ]);
 
-okulusApp.controller('UserGroupsListCntrl', ['MembersSvc','GroupsSvc', '$rootScope',
-	function(MembersSvc, GroupsSvc, $rootScope){
+okulusApp.controller('UserGroupsListCntrl', ['MembersSvc','GroupsSvc', '$rootScope','WeeksSvc',
+	function(MembersSvc, GroupsSvc, $rootScope,WeeksSvc){
 		$rootScope.groupsList = null;
+		WeeksSvc.loadAllWeeks();
 		//When admin is logged, he can see all the groups,
 		//even when there is no rule for him on the access folder
 		if( $rootScope.currentUser.type === 'admin'){
 			console.log("As Admin");
-			$rootScope.groupsList = GroupsSvc.loadActiveGroups();
+			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
 		}
 		//But, if a user is logged, we only show the groups that are
 		//present in his access rules folder
@@ -42,7 +43,7 @@ okulusApp.controller('UserGroupsListCntrl', ['MembersSvc','GroupsSvc', '$rootSco
 			let myGroups = [];
 
 			//Filter from the Active Groups, the ones the User has access to
-			GroupsSvc.loadActiveGroups().$loaded().then(
+			GroupsSvc.loadAllGroupsList().$loaded().then(
 				function(activeGroups) {
 					MembersSvc.getMemberAccessRules(whichMember).$loaded().then(
 						function(memberRules) {

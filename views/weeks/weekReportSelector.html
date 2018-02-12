@@ -45,7 +45,8 @@
         <div class="row mb-3">
           <div class="col">
             <select id="specificGroupSelect" class="form-control form-control-lg" ng-model="$parent.specificGroup" ng-required="false">
-              <option ng-repeat="g in allGroups" value="{{g.$id}}" >
+              <option value=""></option>
+              <option ng-repeat="g in groupsList" value="{{g.$id}}" >
                 {{g.group.name}}
               </option>
             </select>

@@ -140,7 +140,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
 		let counterRef = firebase.database().ref().child('pibxalapa/counters/groups');
-		
+
 		return {
 			getGroupReference: function(groupId){
 				return groupsRef.child(groupId);
@@ -256,12 +256,5 @@ okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc',
 				});
 			});
 		};
-	}
-]);
-
-okulusApp.controller('GroupAnalyticsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
-	function($scope, $routeParams, $location, GroupsSvc){
-		let whichGroup = $routeParams.groupId;
-		$scope.groupData = GroupsSvc.getGroupObj(whichGroup);
 	}
 ]);
