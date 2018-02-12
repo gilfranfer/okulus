@@ -5,10 +5,10 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray',
 		let auditRef = firebase.database().ref().child('pibxalapa').child('audit');
 
 		getAuditRecords = function(selectObj){
-			// get the index of the selected option 
-			var idx = selectObj.selectedIndex; 
-			// get the value of the selected option 
-			var auditOn = selectObj.options[idx].value; 
+			// get the index of the selected option
+			var idx = selectObj.selectedIndex;
+			// get the value of the selected option
+			var auditOn = selectObj.options[idx].value;
 			$scope.auditOn = auditOn;
 			$rootScope.auditRecords = $firebaseArray( auditRef.child(auditOn) );
 	    };
@@ -20,5 +20,15 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 	function($rootScope, $scope, $firebaseObject){
 		let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
 		$rootScope.globalCounter = $firebaseObject(countersRef);
+		$rootScope.globalCounter.$loaded().then(
+			function (counter) {
+				if(!counter.$value){
+					counter.members = {active:0,inactive:0};
+					counter.groups = {active:0,inactive:0};
+					$rootScope.globalCounter.$save();
+				}
+				console.log(counter);
+			}
+		);
 	}
 ]);
