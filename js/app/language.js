@@ -22,8 +22,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reports: "Reportes",
 					monitor:"Monitor"
 				},
-				user:{
-					dashboard:"Mis Grupos",
+				user:{groups;"Mis Grupos", reports:"Mis reportes"
 				}
 			},
 			btns:{
