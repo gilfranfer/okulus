@@ -143,9 +143,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						attendance: "Asistencia", view: "Ver"
 					},
 					weekSection:{
-						from: "De la Semana:", to:"a la Semana:", group:"Grupo (Opcional)"
+						from: "De la Semana:", to:"a la Semana:", group:"Grupo"
 					},
-					noReportsError: "No hay Reportes para la semana seleccionada",
+					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
 				},
 				audit:{
@@ -166,7 +166,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				groupsList:{
 					title:"Mis Grupos Familiares",
 					description: "Infromación sobre mis Grupos Familiares activos.",
-					noGroupsError: "No tienes Grupos asiganos, o se encuentran Inactivos"
+					noGroupsError: "No tienes Grupos asiganos."
 				}
 			},
 			success:{
