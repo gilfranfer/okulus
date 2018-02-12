@@ -3,33 +3,16 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		WeeksSvc.loadAllWeeks();
 		GroupsSvc.loadAllGroupsList();
 
-		$scope.getReportsForSelectedWeek = function () {
-				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
-				$scope.reportsForSelectedWeek.$loaded().then(function() {
-					GroupsSvc.loadActiveGroups();
-					$rootScope.allActiveGroups.$loaded().then(function(){
-						ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-
-						//Left a Watch on the Reports Array to update the dashboard when data is modified
-						$scope.reportsForSelectedWeek.$watch(function(event) {
-							ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-						});
-
-					});
-				});
-		};
-
-		updateCharts = function(){
-			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek);
-			$scope.reportsSummary = ChartsSvc.getReunionStatusTotals();
-			//ChartsSvc.buildMoneChart($scope.reportsForSelectedWeek);
+		updateCharts = function(groupId){
+			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek, groupId);
+			$scope.reunionStatusSummary = ChartsSvc.getReunionStatusTotals();
 		};
 
 		filterReportsForGroup = function(groupId){
 			if(groupId){
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
-					console.log(report);
+					//console.log(report);
 					if(report.reunion.groupId == groupId){
 						reportsList.push(report);
 					}
@@ -50,12 +33,11 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 			reportsArray.$loaded().then( function( reports ) {
 				filterReportsForGroup(groupId);
-				updateCharts();
+				updateCharts(groupId);
 				//Add a Watch to rebuild charts when changes on reports
-				reportsArray.$watch(function(event) { 
-					console.log("Watching Reports Array");
+				reportsArray.$watch(function(event){
 					filterReportsForGroup(groupId)
-					updateCharts( ); 
+					updateCharts(groupId);
 				});
 			});
 		};
