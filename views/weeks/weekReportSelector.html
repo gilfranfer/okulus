@@ -1,0 +1,82 @@
+<article>
+  <!-- Week Selector -->
+  <div class="card mb-3">
+    <div class="card-header">
+        {{i18n.admin.dashboard.titles.weekSection}}
+    </div>
+    <div class="card-body">
+      <h4 class="card-title"></h4>
+      <p class="card-text">
+        {{i18n.admin.dashboard.descriptions.weekSection}}
+      </p>
+      <!-- All Weeks List -->
+      <form name="weekForm" class="mb-3" novalidate>
+        <div class="row">
+          <div class="col">
+            <label for="weekFromSelect">{{i18n.admin.dashboard.weekSection.from}}</label>
+          </div>
+          <div class="col">
+            <label for="weekToSelect">{{i18n.admin.dashboard.weekSection.to}}</label>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <select id="weekFromSelect" class="form-control form-control-lg" ng-model="$parent.weekfrom" ng-required="true">
+              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
+                {{w.name}} ({{w.$id}})
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <select id="weekToSelect" class="form-control form-control-lg" ng-model="$parent.weekto" ng-required="false">
+              <option value="0"></option>
+              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
+                {{w.name}} ({{w.$id}})
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="specificGroupSelect">{{i18n.admin.dashboard.weekSection.group}}</label>
+          </div>
+          <div class="col"></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
+            <select id="specificGroupSelect" class="form-control form-control-lg" ng-model="$parent.specificGroup" ng-required="false">
+              <option value=""></option>
+              <option ng-repeat="g in groupsList" value="{{g.$id}}" >
+                {{g.group.name}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-lg btn-block btn-success"
+              ng-click="getReportsForSelectedWeeks()" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
+              {{i18n.btns.viewBtn}}
+            </button>
+          </div>
+        </div>
+        <!-- Error Alert: Week From less than Week To -->
+        <div class="row">
+          <div class="col"  ng-show="(weekto>0 && weekfrom > weekto)">
+            <div class="alert alert-danger" role="alert">
+              {{i18n.admin.dashboard.weeksOrderError}}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- No Records Alert -->
+  <div class="row">
+    <div class="col"  ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.admin.dashboard.noReportsError}}
+      </div>
+    </div>
+  </div>
+
+</article>

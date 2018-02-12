@@ -11,15 +11,12 @@ okulusApp.config(['$routeProvider',
 				controller: 'UserGroupsListCntrl'
 			})
 			.when('/admin/dashboard', {
+				controller: 'AdminDashCntrl',
 				templateUrl: 'views/admin/dashboard.html'
 			})
 			.when('/admin/monitor', {
 				templateUrl: 'views/admin/monitor.html',
 				controller: 'MonitorCntrl'
-			})
-			.when('/groups/analytics/:groupId', {
-				templateUrl: 'views/groups/groupAnalytics.html',
-				controller: 'GroupAnalyticsCntrl'
 			})
 			.when('/groups', {
 				templateUrl: 'views/admin/groups.html',
@@ -55,7 +52,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'ReportDetailsCntrl'
 			})
 			.when('/weeks', {
-				templateUrl: 'views/admin/weeks.html',
+				templateUrl: 'views/weeks/weeks.html',
 				controller: "WeeksCntrl"
 			})
 			.when('/error/norecord', {

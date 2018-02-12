@@ -1,17 +1,15 @@
 <!-- Groups List -->
-<section>
-
+<section id="groupsList">
   <div class="row">
+    <!-- Loading Alert -->
     <div class="col"  ng-show="!groupsList">
       <div class="alert alert-warning" role="alert">
         {{i18n.alerts.loading}}
       </div>
     </div>
 
-    <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="g in groupsList | filter:searchText">
-      <!-- <article class="h-100" ng-include="'views/groups/groupInfoCard.html'"></article> -->
-      <!-- Group card -->
+    <!-- Group card -->
+    <div ng-repeat="g in groupsList | filter:searchText" class="col-md-6 col-lg-4 mb-3" >
       <div class="card h-100" >
         <h4 class="card-header">
           <a ng-href="#!/groups/edit/{{g.$id}}">
@@ -48,9 +46,6 @@
             <div class="col mb-3">
               <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">{{i18n.btns.addReport}}</a>
             </div>
-            <!-- <div class="col mb-3">
-              <a ng-href="#!/groups/analytics/{{g.$id}}" class="btn btn-block btn-primary">{{i18n.btns.analytics}}</a>
-            </div> -->
           </div>
           <div class="row" ng-if="currentUser.type == 'admin'" >
             <div class="col mb-3" >
@@ -59,8 +54,8 @@
           </div>
         </div>
       </div>
-
     </div>
+
   </div>
 
 </section>

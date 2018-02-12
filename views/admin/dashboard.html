@@ -1,30 +1,43 @@
-<section>
-    <div class="card mb-3">
+<!-- Groups and Members Summaires -->
+<section name="summaries" class="row" ng-if="currentUser.type == 'admin'">
+  <article id="groupSummary" class="col-sm mb-3">
+    <div class="card">
       <div class="card-header">
-        {{i18n.admin.dashboard.titles.resources}}
+        {{i18n.navigation.admin.groups}}
       </div>
       <div class="card-body">
-        <div class="row">
-          <div class="col mb-2">
-            <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
-              {{i18n.navigation.admin.groups}}
-            </a>
-          </div>
-          <div class="col mb-2">
-            <a href="#!/members" class="btn btn-primary btn-lg btn-block">
-              {{i18n.navigation.admin.members}}
-            </a>
-          </div>
-          <div class="col mb-2">
-            <a href="#!/weeks" class="btn btn-primary btn-lg btn-block">
-              {{i18n.navigation.admin.weeks}}
-            </a>
-          </div>
+        <div ng-if="globalCounter.groups">
+          <h3><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span> Groups</h3>
+          <h3><span class="badge badge-success">{{globalCounter.groups.active}}</span> Active Groups</h3>
+          <h3><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span> Inactive Groups</h3>
         </div>
-        <h4 class="card-title"></h4>
-        <p class="card-text"></p>
+        <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
+          {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
+        </a>
       </div>
     </div>
+  </article>
+  <article id="memberSummary" class="col-sm mb-3">
+    <div class="card">
+      <div class="card-header">
+        {{i18n.navigation.admin.members}}
+      </div>
+      <div class="card-body">
+        <div ng-if="globalCounter.members">
+          <h3><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span> Members</h3>
+          <h3><span class="badge badge-success">{{globalCounter.members.active}}</span> Active Members</h3>
+          <h3><span class="badge badge-danger">{{globalCounter.members.inactive}}</span> Inactive Members</h3>
+        </div>
+        <a href="#!/members" class="btn btn-primary btn-lg btn-block">
+          {{i18n.btns.viewBtn}} {{i18n.navigation.admin.members}}
+        </a>
+      </div>
+    </div>
+  </article>
 </section>
 
-<section ng-include="'views/reports/reports-dash.html'"></section>
+<section ng-controller="ReportsDashCntrl">
+  <article ng-include="'views/weeks/weekReportSelector.html'"></article>
+  <article ng-include="'views/reports/reportsTable.html'"></article>
+  <article ng-include="'views/reports/reportCharts.html'"></article>
+</section>

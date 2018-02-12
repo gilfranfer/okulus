@@ -1,25 +1,28 @@
 <!-- Groups List -->
-<section>
-  <div class="row mb-1">
-      <h2>{{i18n.user.groupsList.title}}</h2>
+<section class="card mb-3">
+  <div class="card-header">
+    {{i18n.user.groupsList.title}}
   </div>
-  <div class="row mb-1">
-      <p>{{i18n.user.groupsList.description}}</p>
-  </div>
-
-  <div class="row mb-3">
-    <div class="col">
+  <div class="card-body">
+    <div class="card-text">
+        <!-- <p>{{i18n.user.groupsList.description}}</p> -->
+    </div>
+    <!-- <div class="mb-3">
       <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+    </div> -->
+    <!-- Alert/Error row -->
+    <div class="col"  ng-show="groupsList && groupsList.length == 0">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.user.groupsList.noGroupsError}}
+      </div>
     </div>
+
+    <article ng-include="'views/groups/groupsList.html'"></article>
   </div>
+</section>
 
-  <!-- Alert/Error row -->
-  <div class="col"  ng-show="groupsList && groupsList.length == 0">
-    <div class="alert alert-danger" role="alert">
-      {{i18n.user.groupsList.noGroupsError}}
-    </div>
-  </div>
-
-  <article ng-include="'views/groups/groupsList.html'"></article>
-
+<section ng-controller="ReportsDashCntrl">
+  <article ng-include="'views/weeks/weekReportSelector.html'"></article>
+  <article ng-include="'views/reports/reportsTable.html'"></article>
+  <article ng-include="'views/reports/reportCharts.html'"></article>
 </section>

@@ -1,23 +1,66 @@
-okulusApp.controller('ReportsListCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
-	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
-		WeeksSvc.loadAllWeeks();
+okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
+	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
+		updateCharts = function(groupId){
+			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek, groupId);
+			$scope.reunionStatusSummary = ChartsSvc.getReunionStatusTotals();
+		};
 
-		$scope.getReportsForSelectedWeek = function () {
-				$scope.reportsForSelectedWeek = ReportsSvc.getReportsForWeek($scope.week.id);
-				$scope.reportsForSelectedWeek.$loaded().then(function() {
-					GroupsSvc.loadActiveGroups();
-					$rootScope.allActiveGroups.$loaded().then(function(){
-						ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-
-						//Left a Watch on the Reports Array to update the dashboard when data is modified
-						$scope.reportsForSelectedWeek.$watch(function(event) {
-							ChartsSvc.buildAttendanceChart($scope.reportsForSelectedWeek, $rootScope.allActiveGroups.length);
-						});
-
-					});
+		filterReportsForGroup = function(groupId){
+			if(groupId){
+				let reportsList = [];
+				$scope.reportsArray.forEach( function(report){
+					//console.log(report);
+					if(report.reunion.groupId == groupId){
+						reportsList.push(report);
+					}
 				});
+				$scope.reportsForSelectedWeek = reportsList;
+			}else{
+				$scope.reportsForSelectedWeek = $scope.reportsArray;
+			}
+		};
 
+		filterReportsForUser = function(accessGroups){
+			let reportsList = [];
+			$scope.reportsForSelectedWeek.forEach( function(report){
+				//console.log(report);
+				if(accessGroups.has(report.reunion.groupId)){
+					reportsList.push(report);
+				}
+			});
+			return reportsList;
+		};
 
+		filterReportsAndUpdateCharts = function (groupId) {
+			filterReportsForGroup(groupId);
+			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentUser.member.id);
+			let accessGroups = new Map();
+			accessRules.$loaded().then(function(rules) {
+				rules.forEach( function(rule){
+					accessGroups.set(rule.groupId,rule);
+				});
+				if($rootScope.currentUser.type != 'admin'){
+					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
+				}
+				updateCharts(groupId);
+			});
+		};
+
+		$scope.getReportsForSelectedWeeks = function () {
+			let fromWeek = $scope.weekfrom;
+			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
+			let groupId = $scope.specificGroup;
+
+			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
+			$scope.reportsArray = reportsArray;
+
+			reportsArray.$loaded().then( function( reports ) {
+				filterReportsAndUpdateCharts(groupId);
+				//Add a Watch to rebuild charts when changes on reports
+				reportsArray.$watch(function(event){
+					filterReportsAndUpdateCharts(groupId);
+				});
+			});
 		};
 }]);
 
@@ -207,6 +250,16 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getReportsForWeek: function(weekId){
 				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);
 				return $firebaseArray(ref);
+			},
+			getReportsforWeeksPeriod: function(fromWeek, toWeek){
+				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
+				/*if(groupId){
+					Not possible to combien more than one orderByChild
+					console.log("Try second query for group "+groupId)
+					let query2 = query.orderByChild("reunion/groupId").equalTo(groupId);
+					return $firebaseArray(query2);
+				}*/
+				return $firebaseArray(query);
 			}
 		};
 	}
