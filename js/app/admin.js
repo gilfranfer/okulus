@@ -18,6 +18,7 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray',
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc){
+		$scope.adminViewActive = true;
 		WeeksSvc.loadAllWeeks();
 		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
 
@@ -25,7 +26,8 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 		$scope.globalCounter = $firebaseObject(countersRef);
 		$scope.globalCounter.$loaded().then(
 			function (counter) {
-				if(!counter || !counter.member){
+				console.log(counter);
+				if(!counter || !counter.members){
 					counter.members = {active:0,inactive:0};
 					counter.groups = {active:0,inactive:0};
 					$scope.globalCounter.$save();
