@@ -18,10 +18,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/monitor.html',
 				controller: 'MonitorCntrl'
 			})
-			.when('/groups/analytics/:groupId', {
-				templateUrl: 'views/groups/groupAnalytics.html',
-				controller: 'GroupAnalyticsCntrl'
-			})
 			.when('/groups', {
 				templateUrl: 'views/admin/groups.html',
 				controller: 'GroupsAdminListCntrl'

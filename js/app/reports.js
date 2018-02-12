@@ -1,8 +1,5 @@
-okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc',
-	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc) {
-		WeeksSvc.loadAllWeeks();
-		GroupsSvc.loadAllGroupsList();
-
+okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
+	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
 		updateCharts = function(groupId){
 			ChartsSvc.buildAttendanceCharts($scope.reportsForSelectedWeek, groupId);
 			$scope.reunionStatusSummary = ChartsSvc.getReunionStatusTotals();
@@ -23,6 +20,32 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			}
 		};
 
+		filterReportsForUser = function(accessGroups){
+			let reportsList = [];
+			$scope.reportsForSelectedWeek.forEach( function(report){
+				//console.log(report);
+				if(accessGroups.has(report.reunion.groupId)){
+					reportsList.push(report);
+				}
+			});
+			return reportsList;
+		};
+
+		filterReportsAndUpdateCharts = function (groupId) {
+			filterReportsForGroup(groupId);
+			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentUser.member.id);
+			let accessGroups = new Map();
+			accessRules.$loaded().then(function(rules) {
+				rules.forEach( function(rule){
+					accessGroups.set(rule.groupId,rule);
+				});
+				if($rootScope.currentUser.type != 'admin'){
+					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
+				}
+				updateCharts(groupId);
+			});
+		};
+
 		$scope.getReportsForSelectedWeeks = function () {
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
@@ -32,12 +55,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			$scope.reportsArray = reportsArray;
 
 			reportsArray.$loaded().then( function( reports ) {
-				filterReportsForGroup(groupId);
-				updateCharts(groupId);
+				filterReportsAndUpdateCharts(groupId);
 				//Add a Watch to rebuild charts when changes on reports
 				reportsArray.$watch(function(event){
-					filterReportsForGroup(groupId)
-					updateCharts(groupId);
+					filterReportsAndUpdateCharts(groupId);
 				});
 			});
 		};

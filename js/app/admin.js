@@ -16,16 +16,19 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray',
 	}
 ]);
 
-okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
-	function($rootScope, $scope, $firebaseObject){
+okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc',
+	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc){
+		WeeksSvc.loadAllWeeks();
+		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+
 		let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
-		$rootScope.globalCounter = $firebaseObject(countersRef);
-		$rootScope.globalCounter.$loaded().then(
+		$scope.globalCounter = $firebaseObject(countersRef);
+		$scope.globalCounter.$loaded().then(
 			function (counter) {
-				if(!counter.$value){
+				if(!counter || counter.member){
 					counter.members = {active:0,inactive:0};
 					counter.groups = {active:0,inactive:0};
-					$rootScope.globalCounter.$save();
+					$scope.globalCounter.$save();
 				}
 			}
 		);
