@@ -19,17 +19,20 @@
       <div class="row">
         <div class="col text-center">
           <h3><span class="badge badge-primary">
-            {{reunionStatusSummary.completedReunions + reunionStatusSummary.canceledReunions}}</span> Reunions 
+            {{reunionStatusSummary.completedReunions + reunionStatusSummary.canceledReunions}}</span>
+            {{i18n.admin.dashboard.counters.totalReports}}
           </h3>
         </div>
         <div class="col text-center">
           <h3><span class="badge badge-success">
-            {{reunionStatusSummary.completedReunions}}</span> Success
+            {{reunionStatusSummary.completedReunions}}</span>
+            {{i18n.admin.dashboard.counters.successReports}}
           </h3>
         </div>
         <div class="col text-center">
           <h3><span class="badge badge-danger">
-            {{reunionStatusSummary.canceledReunions}}</span> Canceled
+            {{reunionStatusSummary.canceledReunions}}</span>
+            {{i18n.admin.dashboard.counters.canceledReports}}
           </h3>
         </div>
       </div>

@@ -7,9 +7,12 @@
       </div>
       <div class="card-body">
         <div ng-if="globalCounter.groups">
-          <h3><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span> Groups</h3>
-          <h3><span class="badge badge-success">{{globalCounter.groups.active}}</span> Active Groups</h3>
-          <h3><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span> Inactive Groups</h3>
+          <h3><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span>
+            {{i18n.admin.dashboard.counters.groups}} </h3>
+          <h3><span class="badge badge-success">{{globalCounter.groups.active}}</span>
+            {{i18n.admin.dashboard.counters.activeGroups}} </h3>
+          <h3><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span>
+            {{i18n.admin.dashboard.counters.inactiveGroups}} </h3>
         </div>
         <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
           {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
@@ -24,9 +27,12 @@
       </div>
       <div class="card-body">
         <div ng-if="globalCounter.members">
-          <h3><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span> Members</h3>
-          <h3><span class="badge badge-success">{{globalCounter.members.active}}</span> Active Members</h3>
-          <h3><span class="badge badge-danger">{{globalCounter.members.inactive}}</span> Inactive Members</h3>
+          <h3><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span>
+          {{i18n.admin.dashboard.counters.members}} </h3>
+          <h3><span class="badge badge-success">{{globalCounter.members.active}}</span>
+          {{i18n.admin.dashboard.counters.activeMembers}} </h3>
+          <h3><span class="badge badge-danger">{{globalCounter.members.inactive}}</span>
+          {{i18n.admin.dashboard.counters.inactiveMembers}} </h3>
         </div>
         <a href="#!/members" class="btn btn-primary btn-lg btn-block">
           {{i18n.btns.viewBtn}} {{i18n.navigation.admin.members}}

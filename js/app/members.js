@@ -131,8 +131,8 @@ okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location'
 	}
 ]);
 
-okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
-	function($rootScope, $firebaseArray, $firebaseObject){
+okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
 		let membersRef = firebase.database().ref().child('pibxalapa/members');
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
@@ -171,6 +171,27 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getNewMemberReference: function(){
 				return membersRef.push();
+			},
+			/* Returns a list of Group records (from $firebaseArray) that are
+			 * present in the Member's acess rules folder. */
+			getMemberGroups: function(whichMember) {
+				GroupsSvc.loadAllGroupsList().$loaded().then(
+					function(allGroups){
+						$firebaseArray(membersRef.child(whichMember).child("access")).$loaded().then(
+							function(memberRules) {
+								let myGroups = [];
+								memberRules.forEach(function(rule) {
+									let group = allGroups.$getRecord(rule.groupId);
+									if( group != null){
+										myGroups.push( group );
+									}
+								});
+								$rootScope.groupsList = myGroups;
+							}
+						);
+					}
+				);
+				return $rootScope.groupsList;
 			},
 			updateMembersStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(

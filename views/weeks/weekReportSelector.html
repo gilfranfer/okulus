@@ -7,7 +7,7 @@
     <div class="card-body">
       <h4 class="card-title"></h4>
       <p class="card-text">
-        {{i18n.admin.dashboard.descriptions.weekSection}}
+        {{i18n.admin.dashboard.weekSection.description}}
       </p>
       <!-- All Weeks List -->
       <form name="weekForm" class="mb-3" novalidate>
@@ -52,31 +52,37 @@
             </select>
           </div>
           <div class="col">
-            <button type="button" class="btn btn-lg btn-block btn-success"
+            <button type="button" class="btn btn-lg btn-block btn-success" ng-if="!adminViewActive"
               ng-click="getReportsForSelectedWeeks()" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
+              {{i18n.btns.viewBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-success" ng-if="adminViewActive"
+              ng-click="getReportsForSelectedWeeks(adminViewActive)" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
               {{i18n.btns.viewBtn}}
             </button>
           </div>
         </div>
         <!-- Error Alert: Week From less than Week To -->
         <div class="row">
-          <div class="col"  ng-show="(weekto>0 && weekfrom > weekto)">
+          <div class="col" ng-show="(weekto>0 && weekfrom > weekto)">
             <div class="alert alert-danger" role="alert">
               {{i18n.admin.dashboard.weeksOrderError}}
             </div>
           </div>
+          <div class="col" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+            <div class="alert alert-danger" role="alert">
+              {{i18n.admin.dashboard.noReportsError}}
+            </div>
+          </div>
+          <div class="col" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
+            <div class="alert alert-success" role="alert">
+              {{reportsForSelectedWeek.length}} {{i18n.admin.dashboard.weekSection.resultsLoaded}}
+            </div>
+          </div>
         </div>
+
+
       </form>
     </div>
   </div>
-
-  <!-- No Records Alert -->
-  <div class="row">
-    <div class="col"  ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
-      <div class="alert alert-danger" role="alert">
-        {{i18n.admin.dashboard.noReportsError}}
-      </div>
-    </div>
-  </div>
-
 </article>

@@ -31,7 +31,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			return reportsList;
 		};
 
-		filterReportsAndUpdateCharts = function (groupId) {
+		filterReportsAndUpdateCharts = function (groupId, adminViewActive) {
 			filterReportsForGroup(groupId);
 			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentUser.member.id);
 			let accessGroups = new Map();
@@ -39,14 +39,17 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				rules.forEach( function(rule){
 					accessGroups.set(rule.groupId,rule);
 				});
-				if($rootScope.currentUser.type != 'admin'){
+				if($rootScope.currentUser.type == 'admin' && adminViewActive){
+					//Even an Admin user can get his Reports Filetered when using My GRoups view
+					//Reports should not be filtered for the Admin, only when comming from Admin Dashboard
+				}else{
 					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
 				}
 				updateCharts(groupId);
 			});
 		};
 
-		$scope.getReportsForSelectedWeeks = function () {
+		$scope.getReportsForSelectedWeeks = function (adminViewActive) {
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
 			let groupId = $scope.specificGroup;
@@ -55,10 +58,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			$scope.reportsArray = reportsArray;
 
 			reportsArray.$loaded().then( function( reports ) {
-				filterReportsAndUpdateCharts(groupId);
+				filterReportsAndUpdateCharts(groupId,adminViewActive);
 				//Add a Watch to rebuild charts when changes on reports
 				reportsArray.$watch(function(event){
-					filterReportsAndUpdateCharts(groupId);
+					filterReportsAndUpdateCharts(groupId,adminViewActive);
 				});
 			});
 		};
