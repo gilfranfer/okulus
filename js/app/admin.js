@@ -18,6 +18,7 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray',
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc){
+		$scope.adminViewActive = true;
 		WeeksSvc.loadAllWeeks();
 		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
 
