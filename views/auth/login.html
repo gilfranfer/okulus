@@ -1,0 +1,39 @@
+<section id="login-section" class="card">
+	<div class="card-header">Log-in to access the awesomeness!</div>
+	<div class="card-body">
+		<form class="mt3" name="loginForm" novalidate ng-submit="login()">
+			<div class="form-group">
+		    <label for="loginemail">Email address</label>
+		    <input id="loginemail" type="email" name="email"
+		    	class="form-control form-control-lg" placeholder="ex: luke.sky@jedis.com"
+		    	ng-model="user.email" ng-required="true">
+				<div class="alert alert-danger" role="alert" ng-show="loginForm.email.$invalid && loginForm.email.$dirty">
+					That's not a valid email
+				</div>
+	  	</div>
+	  	<div class="form-group">
+	    	<label for="loginpwd">Password</label>
+	    	<input type="password" name="password" id="loginpwd" placeholder="Your secret words"
+	    		class="form-control form-control-lg" ng-model="user.pwd" ng-required="true">
+
+	    	<div class="alert alert-danger" role="alert" ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
+					Password is required
+				</div>
+	  	</div>
+	  	<div class="alert alert-danger" role="alert" ng-show="appMessages.loginErrorMsg">
+				{{appMessages.loginErrorMsg}}
+			</div>
+
+			<div class="form-row">
+	    	<div class="form-group col-md">
+	    		<button type="submit" class="btn btn-success btn-lg btn-block" ng-disabled="loginForm.$invalid">
+						Log in now!
+					</button>
+	    	</div>
+	    	<div class="form-group col-md">
+	    		<a role="button" class="btn btn-lg btn-block btn-primary" href="#!/register" > or Register</a>
+	    	</div>
+			</div>
+		</form>
+	</div>
+</section>

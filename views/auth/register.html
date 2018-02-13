@@ -1,0 +1,62 @@
+<section id="register-section" class="card">
+  <div class="card-header">Register here!</div>
+  <div class="card-body">
+    <form class="mt-3" name="registerForm" novalidate ng-submit="register()">
+      <!-- Email row -->
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label for="email">Email address</label>
+          <input id="email" type="email" name="email" aria-describedby="emailHelp"
+            class="form-control form-control-lg" placeholder="ex: luke.sky@jedis.com"
+            ng-model="regUser.email" ng-required="true"/>
+          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          <div class="alert alert-danger" role="alert" ng-show="registerForm.email.$invalid && registerForm.email.$dirty">
+            That's not a valid email
+          </div>
+        </div>
+      </div>
+      <!-- Password row -->
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label for="pwd">Set a Password</label>
+          <input type="password" name="password" id="pwd" aria-describedby="pwdHelp" class="form-control form-control-lg" placeholder="Shhh" ng-model="regUser.pwd" ng-required="true" ng-minlength="8"/>
+          <small id="pwdHelp" class="form-text text-muted">More than 8 charactes</small>
+          <div class="alert alert-danger" role="alert"
+            ng-show="registerForm.password.$invalid && registerForm.password.$dirty">
+            Password must be 8 chars or more
+          </div>
+        </div>
+        <div class="col-md form-group">
+          <label for="cpwd">Confirm Password</label>
+          <input type="password" name="passwordConfirm" id="cpwd"
+            class="form-control form-control-lg" placeholder="Say it again"
+            ng-model="regUser.pwdconf" ng-required="true" ng-pattern="regUser.pwd"/>
+          <div class="alert alert-danger" role="alert"
+            ng-show="registerForm.passwordConfirm.$invalid && registerForm.passwordConfirm.$dirty">
+            Password must match
+          </div>
+        </div>
+      </div>
+      <!-- Error row -->
+      <div class="form-row">
+        <div class="col-md form-group alert alert-danger" role="alert" ng-show="appMessages.registerErrorMsg">
+          {{appMessages.registerErrorMsg}}
+        </div>
+      </div>
+      <!-- Buttons row -->
+      <div class="form-row">
+          <div class="form-group col-md-6">
+            <button type="submit" class="btn btn-lg btn-block btn-success"
+                role="button" ng-disabled="registerForm.$invalid">
+              Register!
+            </button>
+          </div>
+          <div class="form-group col-md-6">
+            <a class="btn btn-primary btn-lg btn-block" role="button" href="#!/login" >
+              or Log in
+            </a>
+          </div>
+      </div>
+    </form>
+  </div>
+</section>

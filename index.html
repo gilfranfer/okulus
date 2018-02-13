@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
 
 	</head>
-	<body ng-controller="UserCntrl">
+	<body ng-controller="AuthenticationCntrl">
     <section ng-controller="LanguageCntrl">
       <header ng-include="'views/navigation.html'"></header>
       <!-- Main Bootstrap container -->
@@ -48,7 +48,7 @@
         databaseURL: "https://smgroups-dev.firebaseio.com",
         projectId: "smgroups-dev",
         storageBucket: "smgroups-dev.appspot.com",
-        messagingSenderId: "449607883750"*/
+        messagingSenderId: "449607883750"
         /*Stage
         apiKey: "AIzaSyBlZ2sGwjx3luHSYztueYphAGeDhrRI1CM",
         authDomain: "smgroups-pibx.firebaseapp.com",
@@ -75,5 +75,6 @@
     <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
     <script src="js/app/accessRules.js"></script>
+    <script src="js/app/authentication.js"></script>
   </body>
 </html>
