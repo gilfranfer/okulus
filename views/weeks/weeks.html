@@ -11,16 +11,16 @@
       </p>
 
       <form class="mt-3" name="weekForm" novalidate ng-submit="addWeek()">
-        <div class="row mb-3">
-          <div class="col-5">
+        <div class="row">
+          <div class="col-sm-5 mb-3">
             <input type="week" id="weekId" class="form-control form-control-lg"
               placeholder="" ng-required="true" ng-model="weekid">
           </div>
-          <div class="col-5">
+          <div class="col-sm-5 mb-3">
             <input type="text" id="weekName" class="form-control form-control-lg"
               placeholder="{{i18n.forms.weeks.weekNameHint}} " ng-required="true"  ng-model="weekname">
           </div>
-          <div class="col">
+          <div class="col-sm-2 mb-3">
             <button type="submit" class="btn btn-lg btn-block btn-success" ng-disabled="weekForm.$invalid">
               {{i18n.btns.addBtn}}
             </button>
@@ -80,14 +80,14 @@
     </div>
   </div>
 
-  <!-- Test Section 
+  <!-- Test Section
   <div class="card mt-3" ng-controller="WeeksTestCntrl" ng-if="config.env !='prod'">
     <p class="card-header">Generate Test Area</p>
-    <div class="card-body"> 
+    <div class="card-body">
       <button type="button" class="btn btn-lg btn-block btn-success" ng-click="testData()"> Test Data </button>
       <button type="button" class="btn btn-lg btn-block btn-primary" ng-click="testSelect()"> Test Select </button>
       <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="deleteTestData()"> Delete Data </button>
     </div>
-    
+
   </div>-->
 </section>
