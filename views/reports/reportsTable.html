@@ -5,67 +5,81 @@
         {{i18n.admin.dashboard.titles.reportsList}} {{week.id}}
     </div>
     <div class="card-body">
-      <!-- <h4 class="card-title"></h4>
-      <p class="card-text"></p>
-
-      <div class="row">
-        <div class="col-sm mb-3">
-          <div id="progressGauge-container" style="width:100%; height:200px;"></div>
-        </div>
-        <div class="col-sm mb-3">
-          <div id="statusGauge-container" style="width:100%; height:200px;"></div>
-        </div>
-      </div> -->
-      <div class="row">
+      <!--  Summary Badges -->
+      <div class="row mt-4 mb-4">
         <div class="col text-center">
-          <h3><span class="badge badge-primary">
+          <h2><span class="badge badge-primary">
             {{reunionStatusSummary.completedReunions + reunionStatusSummary.canceledReunions}}</span>
             {{i18n.admin.dashboard.counters.totalReports}}
-          </h3>
+          </h2>
         </div>
         <div class="col text-center">
-          <h3><span class="badge badge-success">
+          <h2><span class="badge badge-success">
             {{reunionStatusSummary.completedReunions}}</span>
             {{i18n.admin.dashboard.counters.successReports}}
-          </h3>
+          </h2>
         </div>
         <div class="col text-center">
-          <h3><span class="badge badge-danger">
+          <h2><span class="badge badge-danger">
             {{reunionStatusSummary.canceledReunions}}</span>
             {{i18n.admin.dashboard.counters.canceledReports}}
-          </h3>
+          </h2>
         </div>
       </div>
-
+      <!-- Search -->
+      <div class="row mb-3">
+        <div class="col">
+          <input type="text" placeholder="{{i18n.forms.search.hint}}"
+                  class="form-control form-control-lg" ng-model="filterText">
+        </div>
+      </div>
+      <!-- Reports Table -->
+      <div class="pre-scrollable">
       <table class="table table-responsive-s table-md table-striped">
-        <thead>
+        <thead class="">
           <tr>
             <!-- <th scope="col">#</th> -->
-            <th scope="col"></th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.group}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.date}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.week}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.reunionStatus}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.duration}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.money}}</th>
-            <th scope="col">{{i18n.admin.dashboard.reportTable.attendance}}</th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.groupname')">{{i18n.admin.dashboard.reportTable.group}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.groupname'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.weekId')">{{i18n.admin.dashboard.reportTable.week}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.weekId'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.status')">{{i18n.admin.dashboard.reportTable.reunionStatus}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.status'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.duration')">{{i18n.admin.dashboard.reportTable.duration}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.duration'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.money')">{{i18n.admin.dashboard.reportTable.money}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.money'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('reunion.attendance.total')">{{i18n.admin.dashboard.reportTable.attendance}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reunion.attendance.total'" ng-class="{reverse: reverse}"></span>
+            </th>
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('createdOn')">{{i18n.admin.dashboard.reportTable.date}}</span>
+              <span class="sortorder" ng-show="propertyName === 'createdOn'" ng-class="{reverse: reverse}"></span>
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="report in reportsForSelectedWeek | orderBy:'-createdOn'">
+          <tr ng-repeat="report in reportsForSelectedWeek | filter:filterText | orderBy:propertyName:reverse ">
             <!-- <td scope="row">{{$index + 1}}</td> -->
             <td scope="row">
               <a ng-href="#!/reports/edit/{{report.$id}}">
-                {{i18n.admin.dashboard.reportTable.view}}
-              </a>
-            </td>
-            <td scope="row">
-              <a ng-href="#!/groups/edit/{{report.reunion.groupId}}">
                 {{report.reunion.groupname}}
               </a>
             </td>
-            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
-            <td scope="row">{{report.reunion.weekId}}</td>
+            <td scope="row">
+              {{report.reunion.weekId}}
+            </td>
             <td class="text-danger" ng-if="report.reunion.status == 'canceled'">
               {{i18n.forms.report.cancelStatusLbl}}
             </td>
@@ -74,19 +88,12 @@
             </td>
             <td>{{report.reunion.duration}} min</td>
             <td>${{report.reunion.money}}</td>
-            <td>
-              {{
-                report.attendance.guests.female.adult + report.attendance.guests.female.young +
-                report.attendance.guests.female.kid + report.attendance.guests.male.adult +
-                report.attendance.guests.male.young + report.attendance.guests.male.kid +
-                report.attendance.members.female.adult + report.attendance.members.female.young +
-                report.attendance.members.female.kid + report.attendance.members.male.adult +
-                report.attendance.members.male.young + report.attendance.members.male.kid
-              }}
-            </td>
+            <td>{{report.attendance.total}}</td>
+            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   </div>
 </article>
