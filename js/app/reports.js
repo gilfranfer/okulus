@@ -49,7 +49,15 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			});
 		};
 
+		$scope.sortBy = function(propertyName) {
+			$scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+			$scope.propertyName = propertyName;
+		};
+
 		$scope.getReportsForSelectedWeeks = function (adminViewActive) {
+			$scope.propertyName = 'reunion.groupname';
+			$scope.reverse = true;
+
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
 			let groupId = $scope.specificGroup;
@@ -82,6 +90,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		initScopeObjects = function() {
 			$scope.reunion = { dateObj: new Date() };
 			$scope.attendance = {
+														total:0,
 														guests:{
 															male:{kid:0, young:0, adult:0},
 															female:{kid:0, young:0, adult:0}
@@ -109,6 +118,7 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		$scope.saveOrUpdateReport = function(){
 			if($scope.reunion.status == "canceled"){
 				$scope.attendance = {
+					total: 0,
 					guests:{
 						male:{kid:0, young:0, adult:0},
 						female:{kid:0, young:0, adult:0}
@@ -122,8 +132,17 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 				$scope.reunion.money = 0;
 			}
 
+
 			let record = {reunion: $scope.reunion, attendance: $scope.attendance};
 			record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
+			record.attendance.total =
+				record.attendance.guests.female.adult + record.attendance.guests.female.young +
+				record.attendance.guests.female.kid + record.attendance.guests.male.adult +
+				record.attendance.guests.male.young + record.attendance.guests.male.kid +
+				record.attendance.members.female.adult + record.attendance.members.female.young +
+				record.attendance.members.female.kid + record.attendance.members.male.adult +
+				record.attendance.members.male.young + record.attendance.members.male.kid;
+
 			/* When a value for reportId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.reportId ){
