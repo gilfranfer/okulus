@@ -30,7 +30,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
 				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
-				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar"
+				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
+				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -90,6 +91,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					intNumberLbl: "Num int", intNumberHint: "1",
 					zipLbl: "Codigo Postal", zipHint: "77777",
 					cityLbl: "Ciudad", cityHint: "Xalapa",
+					neighborhoodLbl: "Colonia", neighborhoodHint: "Centro",
 					stateLbl: "Estado", stateHint: "Veracruz",
 					countryLbl: "Pais", countryHint: "Mexico"
 				},

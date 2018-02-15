@@ -77,8 +77,20 @@
 
   </fieldset>
 
+  <div class="form-row">
+    <div class="col-sm form-group" >
+      <button type="button" class="btn btn-lg btn-primary"
+        ng-show="!provideAddress" ng-click="provideAddress = !provideAddress">
+        {{i18n.btns.provideAddress}}
+      </button>
+      <button type="button" class="btn btn-lg btn-danger"
+        ng-show="provideAddress" ng-click="provideAddress = !provideAddress">
+        {{i18n.btns.notProvideAddress}}
+      </button>
+    </div>
+  </div>
   <!-- Address -->
-  <article ng-include="'views/fragments/addressFieldset.html'"></article>
+  <article ng-show="provideAddress" ng-include="'views/fragments/addressFieldset.html'"></article>
 
  <!-- User Section -->
  <!-- if Current User = Admin -->
