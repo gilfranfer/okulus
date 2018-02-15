@@ -51,6 +51,10 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 					// 		$rootScope.currentUser.member.data = data;
 					// 	}
 					// );
+					let memberData = undefined;
+					if(memberData){
+						$rootScope.currentSession.meber = memberData;
+					}
 					console.log("AuthSvc - User is Logged");
 					$rootScope.currentUser = $firebaseObject(usersFolder.child(authUser.uid));
 					usersFolder.child(authUser.uid).update({lastlogin: firebase.database.ServerValue.TIMESTAMP});
