@@ -50,14 +50,14 @@
           {{i18n.forms.member.emailLbl}}
         </label>
         <input type="email" id="email" name="email" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="false">
+          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="!(member.phone)">
       </div>
       <div class="col-md form-group">
         <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
         <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="false">
+          placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="!(member.email)">
       </div>
     </div>
 
