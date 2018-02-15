@@ -50,19 +50,29 @@
           {{i18n.forms.member.emailLbl}}
         </label>
         <input type="email" id="email" name="email" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="false">
+          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="!(member.phone)">
       </div>
       <div class="col-md form-group">
         <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
         <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="false">
+          placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="!(member.email)">
       </div>
     </div>
 
-    <!-- Status Row -->
+    <!-- Group and Status Row -->
     <div class="form-row">
+      <div class="col-md-6 form-group">
+        <label for="baseGroup">
+          {{i18n.forms.member.baseGroupLbl}}
+        </label>
+        <select id="baseGroup" class="form-control form-control-lg" ng-model="member.baseGroup" ng-required="true">
+          <option ng-repeat="g in groupsList" value="{{g.$id}}" >
+            {{g.group.name}}
+          </option>
+        </select>
+      </div>
       <div class="col-md-6 form-group">
         <label for="status">
           {{i18n.dropdowns.status.label}}
@@ -77,8 +87,20 @@
 
   </fieldset>
 
+  <div class="form-row">
+    <div class="col-sm form-group" >
+      <button type="button" class="btn btn-lg btn-primary"
+        ng-show="!provideAddress" ng-click="provideAddress = !provideAddress">
+        {{i18n.btns.provideAddress}}
+      </button>
+      <button type="button" class="btn btn-lg btn-danger"
+        ng-show="provideAddress" ng-click="provideAddress = !provideAddress">
+        {{i18n.btns.notProvideAddress}}
+      </button>
+    </div>
+  </div>
   <!-- Address -->
-  <article ng-include="'views/fragments/addressFieldset.html'"></article>
+  <article ng-show="provideAddress" ng-include="'views/fragments/addressFieldset.html'"></article>
 
  <!-- User Section -->
  <!-- if Current User = Admin -->

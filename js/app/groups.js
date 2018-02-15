@@ -7,6 +7,7 @@ okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
 okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc', 'UtilsSvc',
 	function($rootScope, $scope, $location, GroupsSvc, AuditSvc, UtilsSvc){
 	   	$rootScope.response = null;
+			$scope.provideAddress = true;
 
 			cleanScope = function(){
 	    	$scope.groupId = null;
@@ -91,6 +92,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
 	function($scope, $routeParams, $location, GroupsSvc){
 		let whichGroup = $routeParams.groupId;
+		$scope.provideAddress = true;
 
 		/* When opening "Edit" page from the Groups List, we can use the
 		"allGroups" firebaseArray from rootScope to get the specific Group data */
