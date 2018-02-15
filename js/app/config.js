@@ -27,9 +27,11 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/about.html'
 			})
 			.when('/login',{
+				controller: 'AuthenticationCntrl',
 				templateUrl: 'views/auth/login.html'
 			}).
 			when('/register',{
+				controller: 'RegistrationCntrl',
 				templateUrl: 'views/auth/register.html'
 			})
 			.when('/mygroups', {

@@ -1,3 +1,16 @@
+okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc',
+	function($scope, $rootScope, AuthenticationSvc){
+
+		$scope.response = null;
+
+		$scope.register = function(){
+			console.log("Register");
+			AuthenticationSvc.register($scope.newUser);
+		};
+
+	}]
+);
+
 okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc',
 	function($scope, $rootScope, AuthenticationSvc){
 		console.log("ON AuthenticationCntrl");
@@ -9,9 +22,9 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 			AuthenticationSvc.logout();
 		};
 
-		$scope.register = function(){
-			AuthenticationSvc.register($scope.regUser);
-		};
+		// $scope.register = function(){
+		// 	AuthenticationSvc.register($scope.regUser);
+		// };
 
 		$scope.clearErrors = function () {
 			$rootScope.appMessages = { };
@@ -26,20 +39,24 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 	function($rootScope, $location,$firebaseObject,$firebaseAuth){
 
 		var auth = $firebaseAuth();
-		var usersFolder = firebase.database().ref().child('users');
+		var usersFolder = firebase.database().ref().child('pibxalapa/users');
 		var loginSuccessPage = '/mygroups';
 
 		auth.$onAuthStateChanged( function(authUser){
     		if(authUser){
-				console.log("AuthSvc - Initialization");
-				$rootScope.currentUser = $firebaseObject(usersFolder.child(authUser.uid));
-				$rootScope.userTasksRef = usersFolder.child(authUser.uid).child('tasks');
-    			$rootScope.userListsRef = usersFolder.child(authUser.uid).child('lists');
-				usersFolder.child(authUser.uid).update({lastlogin: firebase.database.ServerValue.TIMESTAMP});
-				//ConfigurationSvc.upgradeUserConfig( currentUser );
+					//load Member Data associated to this user
+					// let whichMember = $rootScope.currentUser.memberId;
+					// MembersSvc.getMemberInfo(whichMember).$loaded().then(
+					// 	function(data) {
+					// 		$rootScope.currentUser.member.data = data;
+					// 	}
+					// );
+					console.log("AuthSvc - User is Logged");
+					$rootScope.currentUser = $firebaseObject(usersFolder.child(authUser.uid));
+					usersFolder.child(authUser.uid).update({lastlogin: firebase.database.ServerValue.TIMESTAMP});
 			}else{
 				console.log("AuthSvc - No User Authenticated");
-
+				$rootScope.currentUser =  { type: 'admin', member:{ id:'-L3aCrod02U-clEuK8g1' }};
 				//$rootScopeappMessages.errorMessage = "Reload page to refresh session";
 				//$location.path( "/error" );
 				//cleanRootScope();
@@ -77,21 +94,20 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 				return $firebaseObject(usersFolder.child(uid));
 			},
 			register: function(user){
+				console.log(user.email, user.pwd);
 				auth.$createUserWithEmailAndPassword(user.email, user.pwd)
 					.then(
 						function(regUser){
 							usersFolder.child(regUser.uid).set({
-								firstname: user.firstname,
-								lastname: user.lastname,
 								email: user.email,
-								userid: regUser.uid,
-								date: firebase.database.ServerValue.TIMESTAMP,
-								lastlogin: firebase.database.ServerValue.TIMESTAMP
+								//userId: regUser.uid,
+								createdOn: firebase.database.ServerValue.TIMESTAMP,
+								lastLogin: firebase.database.ServerValue.TIMESTAMP
 							});
 							$location.path( loginSuccessPage );
 						}
 					).catch( function(error){
-						$rootScope.appMessages.registerErrorMsg = error.message;
+						$rootScope.response.registerMsgError = error.message;
 					});
 			}
 		};//return

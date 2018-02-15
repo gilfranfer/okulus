@@ -8,7 +8,7 @@
           <label for="email">Email address</label>
           <input id="email" type="email" name="email" aria-describedby="emailHelp"
             class="form-control form-control-lg" placeholder="ex: luke.sky@jedis.com"
-            ng-model="regUser.email" ng-required="true"/>
+            ng-model="newUser.email" ng-required="true"/>
           <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
           <div class="alert alert-danger" role="alert" ng-show="registerForm.email.$invalid && registerForm.email.$dirty">
             That's not a valid email
@@ -19,7 +19,7 @@
       <div class="form-row">
         <div class="col-md form-group">
           <label for="pwd">Set a Password</label>
-          <input type="password" name="password" id="pwd" aria-describedby="pwdHelp" class="form-control form-control-lg" placeholder="Shhh" ng-model="regUser.pwd" ng-required="true" ng-minlength="8"/>
+          <input type="password" name="password" id="pwd" aria-describedby="pwdHelp" class="form-control form-control-lg" placeholder="Shhh" ng-model="newUser.pwd" ng-required="true" ng-minlength="8"/>
           <small id="pwdHelp" class="form-text text-muted">More than 8 charactes</small>
           <div class="alert alert-danger" role="alert"
             ng-show="registerForm.password.$invalid && registerForm.password.$dirty">
@@ -30,7 +30,7 @@
           <label for="cpwd">Confirm Password</label>
           <input type="password" name="passwordConfirm" id="cpwd"
             class="form-control form-control-lg" placeholder="Say it again"
-            ng-model="regUser.pwdconf" ng-required="true" ng-pattern="regUser.pwd"/>
+            ng-model="newUser.pwdconf" ng-required="true" ng-pattern="newUser.pwd"/>
           <div class="alert alert-danger" role="alert"
             ng-show="registerForm.passwordConfirm.$invalid && registerForm.passwordConfirm.$dirty">
             Password must match
@@ -47,7 +47,8 @@
       <div class="form-row">
           <div class="form-group col-md-6">
             <button type="submit" class="btn btn-lg btn-block btn-success"
-                role="button" ng-disabled="registerForm.$invalid">
+                role="button" >
+                <!-- ng-disabled="registerForm.$invalid" -->
               Register!
             </button>
           </div>

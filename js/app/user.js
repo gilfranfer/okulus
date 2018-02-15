@@ -12,7 +12,8 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc','GroupsSvc', 'WeeksSvc'
  * It will load the Groups the Current Member has Access to */
 okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope',
 	function(MembersSvc, WeeksSvc, $rootScope){
-		let whichMember = $rootScope.currentUser.member.id;
+		let whichMember = $rootScope.currentUser.memberId;
+		if()
 		$rootScope.groupsList = MembersSvc.getMemberGroups(whichMember);
 	}
 ]);
@@ -20,16 +21,7 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope
 
 okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$scope','$location',
 	function(MembersSvc, GroupsSvc, $rootScope, $scope, $location){
-			$rootScope.currentUser =  { type: 'admin', member:{ id:'-L3aCrod02U-clEuK8g1' }};
 			MembersSvc.loadActiveMembers();
-
-			//Get logged Member Info
-			let whichMember = $rootScope.currentUser.member.id;
-			MembersSvc.getMemberInfo(whichMember).$loaded().then(
-				function(data) {
-					$rootScope.currentUser.member.data = data;
-				}
-			);
 
 			updateWatchAs = function () {
 				let watchAs = document.querySelector("#watchAsSelect").value;
@@ -39,7 +31,7 @@ okulusApp.controller('UserCntrl', ['MembersSvc','GroupsSvc', '$rootScope', '$sco
 				}else{
 					console.log("watchAs user: "+watchAs);
 					$rootScope.currentUser.type = 'user';
-					$rootScope.currentUser.member.id = watchAs;
+					$rootScope.currentUser.memberId = watchAs;
 				}
 				$location.path("/home");
 			};
