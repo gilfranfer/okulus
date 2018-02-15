@@ -59,7 +59,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
 					snameLbl:"Alias", snameHint:"Fernando Gil",
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
-					bdayLbl:"Fecha de nacimiento"
+					bdayLbl:"Fecha de nacimiento",
+					baseGroupLbl: "Grupo Base"
 				},
 				report:{
 					title:"Datos generales de la Reunión",

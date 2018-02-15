@@ -4,10 +4,11 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc',
-	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc){
+okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc',
+	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc){
 		$rootScope.response = null;
 		$scope.provideAddress = true;
+		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
     cleanScope = function(){
     	$scope.memberId = null;
