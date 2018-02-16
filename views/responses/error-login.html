@@ -1,18 +1,21 @@
 <section>
 
 	<div class="jumbotron">
-		<h1 class="display-3">We are Sorry!!</h1>
+		<h1 class="display-3">{{i18n.error.title}}</h1>
 		<hr class="my-4">
 		<p class="lead">
-		</p>
-		<div class="alert alert-danger" role="alert">
-		 	You need to be logged in to check out this content!
-		</div>
-		<p>
-	      <!-- Show Login and Register buttons only if no user is logged -->
-	      <a role="button" class="btn btnj btn-success btn-lg" href="#!/login">Log in now</a>
-	      <a role="button" class="btn btnj btn-primary btn-lg" href="#!/register">or Register today</a>
-	    </p>
+			<div class="alert alert-danger" role="alert">
+				{{i18n.error.nologin}}
+			</div>
+			<div class="row">
+				<!-- Show Login and Register buttons only if no user is logged -->
+				<div class="col">
+					<a role="button" class="btn btn-block btn-success btn-lg" href="#!/login">{{i18n.btns.login}}</a>
+				</div>
+				<div class="col">
+					<a role="button" class="btn btn-block btn-primary btn-lg" href="#!/register">{{i18n.btns.register}}</a>
+				</div>
+			</div>
 	</div>
 
 </section>

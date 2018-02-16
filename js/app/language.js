@@ -201,6 +201,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			error:{
 				title:"Oooops!!",
 				recordDoesntExist: "Información no Disponible",
+				nologin: "Necesitas iniciar sesión para ver este contenido",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{

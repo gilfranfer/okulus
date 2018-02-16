@@ -138,14 +138,9 @@ okulusApp.config(['$routeProvider',
 				controller: "WeeksCntrl"
 			})
 			.when('/error/norecord', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
 				templateUrl: 'views/responses/error-norecord.html'
 			})
-			.when('/error-login', {
+			.when('/error/login', {
 				templateUrl: 'views/responses/error-login.html'
 			})
 			.otherwise({

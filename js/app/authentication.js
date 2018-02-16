@@ -2,7 +2,7 @@
 okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 	$rootScope.$on('$routeChangeError', function( event, next, previous, error){
 		if(error == 'AUTH_REQUIRED'){
-			$location.path('/error-login');
+			$location.path('/error/login');
 		}else{
 			console.error();(error);
 			//$rootScope.appMessages.errorMessage = error;
