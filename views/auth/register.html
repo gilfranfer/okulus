@@ -1,60 +1,58 @@
 <section id="register-section" class="card">
-  <div class="card-header">Register here!</div>
+  <div class="card-header">{{i18n.forms.register.title}}</div>
   <div class="card-body">
     <form class="mt-3" name="registerForm" novalidate ng-submit="register()">
       <!-- Email row -->
       <div class="form-row">
         <div class="col-md form-group">
-          <label for="email">Email address</label>
+          <label for="email">{{i18n.forms.register.email}}</label>
           <input id="email" type="email" name="email" aria-describedby="emailHelp"
-            class="form-control form-control-lg" placeholder="ex: luke.sky@jedis.com"
+            class="form-control form-control-lg" placeholder="{{i18n.forms.register.emailHint}}"
             ng-model="newUser.email" ng-required="true"/>
-          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+          <small id="emailHelp" class="form-text text-muted">{{i18n.forms.register.emailDisclosure}}</small>
           <div class="alert alert-danger" role="alert" ng-show="registerForm.email.$invalid && registerForm.email.$dirty">
-            That's not a valid email
+            {{i18n.forms.register.alert.invalidEmail}}
           </div>
         </div>
       </div>
       <!-- Password row -->
       <div class="form-row">
         <div class="col-md form-group">
-          <label for="pwd">Set a Password</label>
+          <label for="pwd">{{i18n.forms.register.password}}</label>
           <input type="password" name="password" id="pwd" aria-describedby="pwdHelp" class="form-control form-control-lg" placeholder="Shhh" ng-model="newUser.pwd" ng-required="true" ng-minlength="8"/>
-          <small id="pwdHelp" class="form-text text-muted">More than 8 charactes</small>
+          <small id="pwdHelp" class="form-text text-muted">{{i18n.forms.register.pwdSize}}</small>
           <div class="alert alert-danger" role="alert"
             ng-show="registerForm.password.$invalid && registerForm.password.$dirty">
-            Password must be 8 chars or more
+            {{i18n.forms.register.alert.pwdSize}}
           </div>
         </div>
         <div class="col-md form-group">
-          <label for="cpwd">Confirm Password</label>
+          <label for="cpwd">{{i18n.forms.register.confirmPassword}}</label>
           <input type="password" name="passwordConfirm" id="cpwd"
             class="form-control form-control-lg" placeholder="Say it again"
             ng-model="newUser.pwdconf" ng-required="true" ng-pattern="newUser.pwd"/>
           <div class="alert alert-danger" role="alert"
             ng-show="registerForm.passwordConfirm.$invalid && registerForm.passwordConfirm.$dirty">
-            Password must match
+            {{i18n.forms.register.alert.pwdMatch}}
           </div>
         </div>
       </div>
       <!-- Error row -->
-      <div class="form-row">
-        <div class="col-md form-group alert alert-danger" role="alert" ng-show="appMessages.registerErrorMsg">
-          {{appMessages.registerErrorMsg}}
-        </div>
+      <div class="row">
+        <div class="alert alert-danger" role="alert" ng-show="response.loginErrorMsg" >
+  				{{response.loginErrorMsg}}
+  			</div>
       </div>
       <!-- Buttons row -->
       <div class="form-row">
           <div class="form-group col-md-6">
-            <button type="submit" class="btn btn-lg btn-block btn-success"
-                role="button" >
-                <!-- ng-disabled="registerForm.$invalid" -->
-              Register!
+            <button type="submit" class="btn btn-lg btn-block btn-success" role="button" ng-disabled="registerForm.$invalid">
+              {{i18n.btns.register}}
             </button>
           </div>
           <div class="form-group col-md-6">
             <a class="btn btn-primary btn-lg btn-block" role="button" href="#!/login" >
-              or Log in
+              {{i18n.btns.login}}
             </a>
           </div>
       </div>

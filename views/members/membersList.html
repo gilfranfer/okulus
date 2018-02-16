@@ -1,5 +1,5 @@
 <!-- Members List -->
-<section>
+<section ng-if="currentSession.user.type == 'admin'">
   <div class="row mb-1">
       <h2>{{i18n.admin.membersList.title}}</h2>
   </div>
@@ -37,7 +37,7 @@
       {{i18n.alerts.loading}}
     </div>
   </div>
-    
+
   <div class="row">
 
     <div class="col-md-6 col-lg-4 mb-3"
@@ -79,3 +79,5 @@
   </div>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

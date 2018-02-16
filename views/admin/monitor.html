@@ -1,4 +1,4 @@
-  <section  ng-if="currentUser.type == 'admin'">
+<section  ng-if="currentSession.user.type == 'admin'">
   <article class="">
 
     <div class="card mb-3">
@@ -62,3 +62,5 @@
     </div> <!-- Card -->
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

@@ -1,4 +1,4 @@
-<section ng-controller="GroupFormCntrl">
+<section ng-controller="GroupFormCntrl" ng-if="currentSession.user.type == 'admin'">
 
 <form class="mt-3" name="groupForm" novalidate ng-submit="saveOrUpdateGroup()">
 
@@ -133,7 +133,7 @@
   </div>
 
   <!-- Admin Buttons rows -->
-  <div class="form-row" ng-if="currentUser.type == 'admin'">
+  <div class="form-row" ng-if="currentSession.user.type == 'admin'">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-success"
         ng-disabled="groupForm.$invalid || groupForm.$pristine">
@@ -158,7 +158,7 @@
       </div>
     </div>
   </div>
-  <!-- <div class="form-row" ng-if="currentUser.type == 'admin'">
+  <!-- <div class="form-row" ng-if="currentSession.user.type == 'admin'">
     <div class="col form-group">
       <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
         {{i18n.btns.returnGroupsBtn}}
@@ -167,7 +167,7 @@
   </div> -->
 
   <!-- Normal User Buttons rows -->
-  <!-- <div class="form-row" ng-if="currentUser.type == 'user'">
+  <!-- <div class="form-row" ng-if="currentSession.user.type == 'user'">
     <div class="col form-group">
       <a class="btn btn-lg btn-block btn-primary" href="#!/dashboard">
         {{i18n.btns.returnDashBtn}}
@@ -178,3 +178,5 @@
 </form>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

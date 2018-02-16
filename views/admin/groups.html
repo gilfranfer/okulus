@@ -1,5 +1,5 @@
 <!-- Admin Groups List View -->
-<section id="adminGroupsList" ng-if="currentUser.type == 'admin'">
+<section id="adminGroupsList" ng-if="currentSession.user.type == 'admin'">
   <!-- Title and page description -->
   <div class="row mb-1">
       <h2>{{i18n.admin.groupsList.title}}</h2>
@@ -37,3 +37,5 @@
   <article ng-include="'views/groups/groupsList.html'"></article>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

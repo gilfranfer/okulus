@@ -1,5 +1,5 @@
 <!-- Groups and Members Summaires -->
-<section name="summaries" class="row" ng-if="currentUser.type == 'admin'">
+<section name="summaries" class="row" ng-if="currentSession.user.type == 'admin'">
   <article id="groupSummary" class="col-sm mb-3">
     <div class="card">
       <div class="card-header">
@@ -42,8 +42,10 @@
   </article>
 </section>
 
-<section ng-controller="ReportsDashCntrl">
+<section ng-controller="ReportsDashCntrl" ng-if="currentSession.user.type == 'admin'">
   <article ng-include="'views/weeks/weekReportSelector.html'"></article>
   <article ng-include="'views/reports/reportsTable.html'"></article>
   <article ng-include="'views/reports/reportCharts.html'"></article>
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

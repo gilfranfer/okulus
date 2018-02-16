@@ -33,13 +33,13 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 		filterReportsAndUpdateCharts = function (groupId, adminViewActive) {
 			filterReportsForGroup(groupId);
-			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentUser.member.id);
+			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
 			let accessGroups = new Map();
 			accessRules.$loaded().then(function(rules) {
 				rules.forEach( function(rule){
 					accessGroups.set(rule.groupId,rule);
 				});
-				if($rootScope.currentUser.type == 'admin' && adminViewActive){
+				if($rootScope.currentSession.user.type == 'admin' && adminViewActive){
 					//Even an Admin user can get his Reports Filetered when using My GRoups view
 					//Reports should not be filtered for the Admin, only when comming from Admin Dashboard
 				}else{
