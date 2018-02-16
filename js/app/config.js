@@ -14,6 +14,14 @@ okulusApp.config(['$routeProvider',
 				controller: 'RegistrationCntrl',
 				templateUrl: 'views/auth/register.html'
 			})
+			.when('/home', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/home.html'
+			})
 			.when('/mygroups', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){

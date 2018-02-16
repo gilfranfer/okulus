@@ -14,6 +14,8 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 
 okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc',
 	function($scope, $location, $rootScope, AuthenticationSvc){
+		let usersFolder = firebase.database().ref().child('pibxalapa/users')
+
 		//If user is logged, reidrect to home
 		if($rootScope.currentSession){
 			$location.path("/home");
@@ -24,12 +26,13 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 			AuthenticationSvc.register($scope.newUser).then(
 				function(regUser){
 					usersFolder.child(regUser.uid).set({
-						email: user.email,
+						email: $scope.newUser.email,
+						memberId: "temporal",
 						//userId: regUser.uid,
 						createdOn: firebase.database.ServerValue.TIMESTAMP,
 						lastLogin: firebase.database.ServerValue.TIMESTAMP
 					});
-					$location.path( "/mygroups" );
+					$location.path( "/home" );
 				}
 			).catch( function(error){
 				$scope.response = { loginErrorMsg: error.message};
@@ -55,7 +58,7 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 				// console.log( "Sucessful Login!");
 				// console.log(user);
 				usersFolder.child(user.uid).update({lastlogin: firebase.database.ServerValue.TIMESTAMP});
-				$location.path( "/mygroups" );
+				$location.path( "/home" );
 			}).catch( function(error){
 				$scope.response = { loginErrorMsg: error.message};
 				// console.error( $rootScope.response.loginErrorMsg) ;
@@ -74,13 +77,25 @@ okulusApp.controller('LogoutCntrl', ['$scope', 'AuthenticationSvc',
 	}]
 );
 
-okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location',
-	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location){
+okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location', 'MembersSvc',
+	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location,MembersSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
 					console.log("AuthSvc - User is Logged");
-					AuthenticationSvc.loadSessionData(authUser.uid);
+					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+						//Try to find a member Reference for this user
+						MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
+							data = dataArray[0];
+							if(data && data.member.status == 'active' && data.member.userAllowed){
+								$rootScope.currentSession.member = data;
+								user.memberId = data.$id
+								user.$save();
+								//save memberId on User
+
+							}
+						});
+					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
 					console.log("AuthSvc - No User Authenticated");

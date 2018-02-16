@@ -213,6 +213,10 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 						memberStatusCounter.$save();
 					}
 				);
+			},
+			findMemberByEmail: function(email){
+				let ref = membersRef.orderByChild("member/email").equalTo(email).limitToFirst(1);
+				return $firebaseArray(ref);
 			}
 		};
 	}

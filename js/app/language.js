@@ -15,6 +15,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				brand:"PIB Xalapa",
 				register:"Registrarse",
 				login:"Iniciar Sesión",
+				logout:"Salir",
+				home:"Inicio",
 				admin:{
 					menu: "Admin",
 					dashboard:"Dashboard",
@@ -193,6 +195,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					noGroupsError: "No tienes Grupos asiganos."
 				}
 			},
+			home:{
+				title:"Inicio",
+				welcome:"Hola"
+			},
 			success:{
 				deleted:{
 					title:"Eliminado el registro ..."
@@ -202,7 +208,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				title:"Oooops!!",
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido",
-				message:"Houston, Tenemos Problemas!"
+				message:"Houston, Tenemos Problemas!",
+				nomemberAssociated:"Tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
 			},
 			dropdowns:{
 				status:{

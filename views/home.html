@@ -1,0 +1,46 @@
+<section>
+  <article ng-include="'views/responses/error-nomember.html'" ng-if="!currentSession.member"></article>
+  <article ng-show="currentSession.member" >
+    <div class="row mb-3 mt-5">
+      <div class="col">
+        <h1>{{i18n.home.welcome}}
+          {{currentSession.member.member.shortname}}</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            Basic Info
+          </div>
+          <div class="card-body">
+            <h4 class="card-title"></h4>
+            <p class="card-text">
+              {{currentSession.member.member.firstname}}
+              {{currentSession.member.member.lastname}} <br>
+              {{currentSession.member.member.email}} <br>
+              {{currentSession.member.member.phone}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            Address
+          </div>
+          <div class="card-body">
+            <h4 class="card-title"></h4>
+            <p class="card-text">
+              {{currentSession.member.address.street}}
+              #{{currentSession.member.address.extNumber}}<span ng-if="currentSession.member.address.intNumber">, Int {{currentSession.member.address.intNumber}}</span><br>
+              {{currentSession.member.address.city}} {{currentSession.member.address.state}}, {{currentSession.member.address.country}}<br>
+              {{i18n.forms.address.zipLbl}} {{m.address.zip}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </article>
+</section>
