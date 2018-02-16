@@ -4,9 +4,11 @@ okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc',
-	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc){
+okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc',
+	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc){
 		$rootScope.response = null;
+		$scope.provideAddress = true;
+		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
     cleanScope = function(){
     	$scope.memberId = null;
@@ -18,8 +20,14 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
-			let record = { member: $scope.member, address: $scope.address };
+			let record = undefined;
+			if($scope.provideAddress){
+				record = { member: $scope.member, address: $scope.address };
+			}else{
+				record = { member: $scope.member };
+			}
 			record.member.birthdate = UtilsSvc.buildDateJson($scope.member.bday);
+
 
 			/* When a value for memberId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
@@ -92,6 +100,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location', 'MembersSvc',
 	function($scope, $routeParams, $location, MembersSvc){
 		let whichMember = $routeParams.memberId;
+		$scope.provideAddress = true;
 
 		/* When opening "Edit" page from the Members List, we can use the
 		"allMemberss" firebaseArray from rootScope to get the specific Member data */
