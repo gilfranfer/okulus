@@ -46,18 +46,28 @@
     <!-- Email and Phone Row -->
     <div class="form-row">
       <div class="col-md form-group">
-        <label for="email">
-          {{i18n.forms.member.emailLbl}}
-        </label>
-        <input type="email" id="email" name="email" class="form-control form-control-lg"
-          placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="!(member.phone)">
-      </div>
-      <div class="col-md form-group">
         <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
         <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
           placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="!(member.email)">
+      </div>
+      <div class="col-md form-group">
+        <label for="email">
+          {{i18n.forms.member.emailLbl}}
+        </label>
+        <input type="email" id="email" name="email" class="form-control form-control-lg"
+        placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="!(member.phone)">
+      </div>
+      <div class="col-md form-group" ng-if="currentSession.user.type == 'admin'">
+        <label><br></label>
+        <input type="hidden" name="canBeUser" ng-model="member.canBeUser">
+        <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.canBeUser" ng-click="member.canBeUser = false">
+          {{i18n.forms.member.canBeUserLbl}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.canBeUser" ng-click="member.canBeUser = true">
+          {{i18n.forms.member.cantBeUserLbl}}
+        </button>
       </div>
     </div>
 
@@ -87,6 +97,8 @@
 
   </fieldset>
 
+  <!-- Address -->
+  <article ng-include="'views/fragments/addressFieldset.html'"></article>
   <div class="form-row">
     <div class="col-sm form-group" >
       <button type="button" class="btn btn-lg btn-primary"
@@ -99,13 +111,6 @@
       </button>
     </div>
   </div>
-  <!-- Address -->
-  <article ng-show="provideAddress" ng-include="'views/fragments/addressFieldset.html'"></article>
-
- <!-- User Section -->
- <!-- if Current User = Admin -->
- <!-- <article ng-include="'views/fragments/userFieldset.html'" ng-if="true"></article> -->
- <!-- endIf-->
 
   <!-- Alert/Error row -->
   <div class="form-row">
@@ -126,7 +131,7 @@
   <div class="form-row">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-success"
-        ng-disabled="memberForm.$invalid || memberForm.$pristine">
+        ng-disabled="memberForm.$invalid">
         {{i18n.btns.saveBtn}}
       </button>
     </div>

@@ -6,28 +6,28 @@
       <label for="street">
         {{i18n.forms.address.streetLbl}}
       </label>
-      <input type="text" name="street" id="street" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="text" name="street" id="street" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.streetHint}}" ng-model="$parent.address.street" ng-required="provideAddress">
     </div>
     <div class="col-4 col-md-2 form-group">
       <label for="extNumber">
         {{i18n.forms.address.extNumberLbl}}
       </label>
-      <input type="number" min="0" name="extNumber" id="extNumber" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="number" min="0" name="extNumber" id="extNumber" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.extNumberHint}}" ng-model="$parent.address.extNumber" ng-required="provideAddress">
     </div>
     <div class="col-4 col-md-2 form-group">
       <label for="intNumber">
         {{i18n.forms.address.intNumberLbl}}
       </label>
-      <input type="number" min="0" name="intNumber" id="intNumber" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="number" min="0" name="intNumber" id="intNumber" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.intNumberHint}}" ng-model="$parent.address.intNumber" ng-required="false">
     </div>
     <div class="col-4 col-md-2 form-group">
       <label for="zip">
         {{i18n.forms.address.zipLbl}}
       </label>
-      <input type="number" min="0" name="zip" id="zip" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="number" min="0" name="zip" id="zip" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.zipHint}}" ng-model="$parent.address.zip" ng-required="false">
     </div>
   </div>
@@ -38,28 +38,28 @@
         <label for="neighborhood">
           {{i18n.forms.address.neighborhoodLbl}}
         </label>
-        <input type="text" name="neighborhood" id="neighborhood" class="form-control form-control-lg"
+        <input ng-disabled="!provideAddress" type="text" name="neighborhood" id="neighborhood" class="form-control form-control-lg"
           placeholder="{{i18n.forms.address.neighborhoodHint}}" ng-model="$parent.address.neighborhood" ng-required="provideAddress">
       </div>
     <div class="col-md-3 col-sm-6 form-group">
       <label for="city">
         {{i18n.forms.address.cityLbl}}
       </label>
-      <input type="text" name="city" id="city" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="text" name="city" id="city" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.cityHint}}" ng-model="$parent.address.city" ng-required="provideAddress">
     </div>
     <div class="col-md-3 col-sm-6 form-group">
       <label for="state">
         {{i18n.forms.address.stateLbl}}
       </label>
-      <input type="text" name="state" id="state" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="text" name="state" id="state" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.stateHint}}" ng-model="$parent.address.state" ng-required="provideAddress">
     </div>
     <div class="col-md-3 col-sm-6 form-group">
       <label for="country">
         {{i18n.forms.address.countryLbl}}
       </label>
-      <input type="text" name="country" id="country" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="text" name="country" id="country" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.countryHint}}" ng-model="$parent.address.country" ng-required="provideAddress">
     </div>
   </div>

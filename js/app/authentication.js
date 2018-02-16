@@ -87,7 +87,8 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 						//Try to find a member Reference for this user
 						MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
 							data = dataArray[0];
-							if(data && data.member.status == 'active' && data.member.userAllowed){
+							// console.log(data);
+							if(data && data.member.status == 'active' && data.member.canBeUser){
 								$rootScope.currentSession.member = data;
 								user.memberId = data.$id
 								user.$save();
