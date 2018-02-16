@@ -2,7 +2,7 @@
   <article ng-include="'views/responses/error-nomember.html'" ng-if="!currentSession.member"></article>
   <article ng-show="currentSession.member" >
     <div class="row mb-3 mt-5">
-      <div class="col">
+      <div class="col alert alert-info" role="alert">
         <h1>{{i18n.home.welcome}}
           {{currentSession.member.member.shortname}}</h1>
       </div>
@@ -11,7 +11,7 @@
       <div class="col-md-6 mb-3">
         <div class="card h-100">
           <div class="card-header">
-            Basic Info
+            {{i18n.home.basicInfo}}
           </div>
           <div class="card-body">
             <h4 class="card-title"></h4>
@@ -27,7 +27,7 @@
       <div class="col-md-6 mb-3">
         <div class="card h-100">
           <div class="card-header">
-            Address
+            {{i18n.home.address}}
           </div>
           <div class="card-body">
             <h4 class="card-title"></h4>
@@ -41,6 +41,21 @@
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            {{i18n.home.messageCenter}}
+          </div>
+          <div class="card-body">
+            <h4 class="card-title"></h4>
+            <p class="card-text">
+            </p>
+          </div>
+        </div>
+      </div>
+    </div
 
   </article>
 </section>
