@@ -28,3 +28,14 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope
 		});
 	}
 ]);
+
+okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$location','$firebaseObject',
+	function($rootScope,$routeParams,$location,$firebaseObject){
+		let usersFolder = firebase.database().ref().child('pibxalapa/users');
+		console.log("here");
+		$firebaseObject(usersFolder.child($routeParams.userId)).$loaded().then(function (data) {
+			console.log("/members/edit/"+data.memberId);
+			$location.path("/members/edit/"+data.memberId);
+		});
+	}
+]);

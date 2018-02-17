@@ -11,7 +11,11 @@ okulusApp.factory('AuditSvc', ['$rootScope',
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)
 			 */
 			recordAudit: function( id, action, on){
-				let audit = {action: action, by: "admin", date: firebase.database.ServerValue.TIMESTAMP,referenceId:id };
+				let member = "";
+				if ($rootScope.currentSession && $rootScope.currentSession.member){
+					member = $rootScope.currentSession.member.$id;
+				}
+				let audit = {action: action, by: member, date: firebase.database.ServerValue.TIMESTAMP,referenceId:id };
 
 				// if(action === 'delete'){
 				// 	//On delete there is no need to create an Audit in the object, because it will be removed

@@ -1,5 +1,5 @@
-okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject',
-	function($rootScope, $scope, $firebaseArray, $firebaseObject){
+okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject','AuditSvc',
+	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc){
 		$scope.auditRecords = null;
 		let auditRef = firebase.database().ref().child('pibxalapa/audit');
 
@@ -24,6 +24,7 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 					obj.type = type;
 					return obj.$save();
 				}).then(function (ref) {
+					AuditSvc.recordAudit(userId, "type update", "users");
 					$scope.response = { userOkMsg: "Usuario "+obj.email+" Actualizado"};
 				}, function(error) {
 					$scope.response = { userErrorMsg: error};

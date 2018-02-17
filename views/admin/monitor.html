@@ -35,7 +35,7 @@
             <tr ng-repeat="user in userRecords | filter:filterUsers">
               <!-- <th scope="row">{{$index + 1}}</th> -->
               <td ng-if="user.memberId != 'NA'">
-                <a ng-href="#!/members/edit/{{user.memberId}}">
+                <a target="_blank" ng-href="#!/members/edit/{{user.memberId}}">
                   {{user.email}}
                 </a>
               </td>
@@ -80,6 +80,7 @@
               <option value="groups">{{i18n.admin.audit.groupsOptn}}</option>
               <option value="members">{{i18n.admin.audit.membersOptn}}</option>
               <option value="reports">{{i18n.admin.audit.reportsOptn}}</option>
+              <option value="users">{{i18n.admin.audit.usersOptn}}</option>
               <option value="weeks">{{i18n.admin.audit.weeksOptn}}</option>
             </select>
           </div>
@@ -104,11 +105,15 @@
               <!-- <th scope="row">{{$index + 1}}</th> -->
               <td>{{a.action}}</td>
               <td>
-                <a ng-href="#!/{{auditOn}}/edit/{{a.referenceId}}">
+                <a target="_blank" ng-href="#!/{{auditOn}}/edit/{{a.referenceId}}">
                   {{a.referenceId}}
                 </a>
               </td>
-              <td>{{a.by}}</td>
+              <td>
+                <a target="_blank" ng-href="#!/members/edit/{{a.by}}">
+                  {{a.by}}
+                </a>
+              </td>
               <td>{{a.date | date: "MMM dd yyyy hh:mm:ss"}}</td>
             </tr>
           </tbody>

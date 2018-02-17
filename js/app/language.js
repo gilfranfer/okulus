@@ -182,6 +182,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					membersOptn:"Miembros",
 					reportsOptn:"Reportes",
 					weeksOptn:"Semanas",
+					usersOptn:"Usuarios",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
@@ -219,7 +220,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido",
 				message:"Houston, Tenemos Problemas!",
-				nomemberAssociated:"Tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
+				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
 			},
 			dropdowns:{
 				status:{

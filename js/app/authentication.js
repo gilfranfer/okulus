@@ -12,8 +12,8 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 
 }]);
 
-okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc',
-	function($scope, $location, $rootScope, AuthenticationSvc){
+okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc','AuditSvc',
+	function($scope, $location, $rootScope, AuthenticationSvc,AuditSvc){
 		let usersFolder = firebase.database().ref().child('pibxalapa/users')
 
 		//If user is logged, reidrect to home
@@ -33,9 +33,11 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 						lastLogin: firebase.database.ServerValue.TIMESTAMP,
 						sessionStatus: "online"
 					});
+					AuditSvc.recordAudit(regUser.uid, "create", "users");
 					$location.path( "/home" );
 				}
 			).catch( function(error){
+				console.log(error);
 				$scope.response = { loginErrorMsg: error.message};
 			});
 		};

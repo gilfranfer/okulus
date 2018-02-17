@@ -119,6 +119,10 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/newmember.html',
 				controller: 'MemberDetailsCntrl'
 			})
+			.when('/users/edit/:userId', {
+				templateUrl: 'views/members/newmember.html',
+				controller: 'UserEditCntrl'
+			})
 			.when('/reports/new/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
