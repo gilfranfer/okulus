@@ -27,10 +27,11 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 				function(regUser){
 					usersFolder.child(regUser.uid).set({
 						email: $scope.newUser.email,
-						memberId: "temporal",
+						memberId: "NA", type:"user",
 						//userId: regUser.uid,
 						createdOn: firebase.database.ServerValue.TIMESTAMP,
-						lastLogin: firebase.database.ServerValue.TIMESTAMP
+						lastLogin: firebase.database.ServerValue.TIMESTAMP,
+						sessionStatus: "online"
 					});
 					$location.path( "/home" );
 				}
@@ -57,7 +58,7 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 			AuthenticationSvc.loginUser($scope.user).then( function (user){
 				// console.log( "Sucessful Login!");
 				// console.log(user);
-				usersFolder.child(user.uid).update({lastlogin: firebase.database.ServerValue.TIMESTAMP});
+				usersFolder.child(user.uid).update({lastLogin: firebase.database.ServerValue.TIMESTAMP, sessionStatus:"online"});
 				$location.path( "/home" );
 			}).catch( function(error){
 				$scope.response = { loginErrorMsg: error.message};
@@ -68,11 +69,10 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 	}]
 );
 
-okulusApp.controller('LogoutCntrl', ['$scope', 'AuthenticationSvc',
-	function($scope, AuthenticationSvc){
+okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
+	function($rootScope,$scope, AuthenticationSvc){
 		$scope.logout = function(){
-			AuthenticationSvc.logout();
-
+			AuthenticationSvc.logout($rootScope.currentSession.user.$id);
 		};
 	}]
 );
@@ -128,8 +128,9 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 				return auth.$signInWithEmailAndPassword( user.email,user.pwd)
 
 			},
-			logout: function(){
+			logout: function(userId){
 				return auth.$signOut().then(function() {
+					usersFolder.child(userId).update({sessionStatus:"offline"});
 					// console.log("logout done");
 					// $location.path( "/login" );
 				});

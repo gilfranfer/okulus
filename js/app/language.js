@@ -186,6 +186,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
 					}
+				},
+				users:{
+					title:"Usuarios Registrados",
+					table:{
+						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
+						sessionStatus:"Estado"
+					}
 				}
 			},
 			user:{
