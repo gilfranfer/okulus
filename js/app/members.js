@@ -215,7 +215,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				);
 			},
 			findMemberByEmail: function(email){
-				let ref = membersRef.orderByChild("member/email").equalTo(email).limitToFirst(1);
+				let ref = membersRef.orderByChild("member/email").equalTo(email);
 				return $firebaseArray(ref);
 			}
 		};

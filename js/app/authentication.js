@@ -86,18 +86,34 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 				if(authUser){
 					console.log("AuthSvc - User is Logged");
 					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-						//Try to find a member Reference for this user
-						MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
-							data = dataArray[0];
-							// console.log(data);
-							if(data && data.member.status == 'active' && data.member.canBeUser){
-								$rootScope.currentSession.member = data;
-								user.memberId = data.$id
-								user.$save();
-								//save memberId on User
-
-							}
-						});
+						//if User already has a Member mapped:
+						// 1. Verify The member still active,
+						// 2. Confirm the member still canBeUser
+						if(user.memberId){
+							MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
+								if(memberObj && memberObj.member.status == 'active' && memberObj.member.canBeUser){
+									$rootScope.currentSession.member = memberObj;
+								}
+							});
+						}
+						//if User doesnt have a Member mapped:
+						else{
+							//Try to find a member Reference for this user
+							MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
+								//if there more than one members with same email, notify admin
+								if(dataArray.length > 1){
+									$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
+									
+								}else{
+									data = dataArray[0];
+									if(data && data.member.status == 'active' && data.member.canBeUser){
+										$rootScope.currentSession.member = data;
+										user.memberId = data.$id
+										user.$save();
+									}
+								}
+							});
+						}
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
