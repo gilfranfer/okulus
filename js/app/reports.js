@@ -80,6 +80,12 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		MembersSvc.loadActiveMembers();
 		WeeksSvc.loadActiveWeeks();
 
+		MembersSvc.loadActiveMembers().$loaded().then(function(activeMembers){
+			$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+			$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+			$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
+		});
+
 		//When comming from /new we will get the groupId as Param
 		let whichGroup = $routeParams.groupId;
 		if(whichGroup){

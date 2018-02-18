@@ -45,35 +45,35 @@
 
     <!-- Email and Phone Row -->
     <div class="form-row">
-      <div class="col-md form-group">
+      <div class="col-sm form-group">
         <label for="phone">
           {{i18n.forms.phone.phoneLbl}}
         </label>
         <input type="tel" id="phone" name="phone" class="form-control form-control-lg"
           placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="member.phone" ng-required="!(member.email)">
       </div>
-      <div class="col-md form-group">
+      <div class="col-sm form-group">
         <label for="email">
           {{i18n.forms.member.emailLbl}}
         </label>
         <input type="email" id="email" name="email" class="form-control form-control-lg"
         placeholder="{{i18n.forms.member.emailHint}}" ng-model="member.email" ng-required="!(member.phone)">
       </div>
-      <div class="col-md form-group" ng-if="currentSession.user.type == 'admin'">
-        <label><br></label>
+      <div class="col-sm form-group" ng-if="currentSession.user.type == 'admin' && member.email">
+        <label>{{i18n.forms.member.canBeUserLbl}}</label>
         <input type="hidden" name="canBeUser" ng-model="member.canBeUser">
         <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.canBeUser" ng-click="member.canBeUser = false">
-          {{i18n.forms.member.canBeUserLbl}}
+          {{i18n.btns.yesBtn}}
         </button>
         <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.canBeUser" ng-click="member.canBeUser = true">
-          {{i18n.forms.member.cantBeUserLbl}}
+          {{i18n.btns.noBtn}}
         </button>
       </div>
     </div>
 
     <!-- Group and Status Row -->
-    <div class="form-row">
-      <div class="col-md-6 form-group">
+    <div class="form-row" ng-if="currentSession.user.type == 'admin'">
+      <div class="col-sm form-group">
         <label for="baseGroup">
           {{i18n.forms.member.baseGroupLbl}}
         </label>
@@ -83,7 +83,7 @@
           </option>
         </select>
       </div>
-      <div class="col-md-6 form-group">
+      <div class="col-sm form-group">
         <label for="status">
           {{i18n.dropdowns.status.label}}
         </label>
@@ -95,6 +95,38 @@
       </div>
     </div>
 
+    <div class="form-row" ng-if="currentSession.user.type == 'admin'">
+      <div class="col-sm form-group">
+        <label>{{i18n.forms.member.isHostLbl}}</label>
+        <input type="hidden" ng-model="member.isHost">
+        <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isHost" ng-click="member.isHost = false">
+          {{i18n.btns.yesBtn}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isHost" ng-click="member.isHost = true">
+          {{i18n.btns.noBtn}}
+        </button>
+      </div>
+      <div class="col-sm form-group">
+        <label>{{i18n.forms.member.isLeadLbl}}</label>
+        <input type="hidden" ng-model="member.isLeader">
+        <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isLeader" ng-click="member.isLeader = false">
+          {{i18n.btns.yesBtn}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isLeader" ng-click="member.isLeader = true">
+          {{i18n.btns.noBtn}}
+        </button>
+      </div>
+      <div class="col-sm form-group">
+        <label>{{i18n.forms.member.isTraineeLbl}}</label>
+        <input type="hidden" ng-model="member.isTrainee">
+        <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isTrainee" ng-click="member.isTrainee = false">
+          {{i18n.btns.yesBtn}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isTrainee" ng-click="member.isTrainee = true">
+          {{i18n.btns.noBtn}}
+        </button>
+      </div>
+    </div>
   </fieldset>
 
   <!-- Address -->
@@ -105,7 +137,7 @@
         ng-show="!provideAddress" ng-click="provideAddress = !provideAddress">
         {{i18n.btns.provideAddress}}
       </button>
-      <button type="button" class="btn btn-lg btn-danger"
+      <button type="button" class="btn btn-lg btn-warning"
         ng-show="provideAddress" ng-click="provideAddress = !provideAddress">
         {{i18n.btns.notProvideAddress}}
       </button>

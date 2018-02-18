@@ -75,7 +75,7 @@
         </label>
         <select id="hostId" name="hostId" class="form-control form-control-lg"
          	ng-model="group.hostId" ng-required="false">
-         	<option ng-repeat="m in membersList" value="{{m.$id}}">
+         	<option ng-repeat="m in hostsList" value="{{m.$id}}">
         		{{m.member.shortname}}
         	</option>
         </select>
@@ -86,7 +86,7 @@
         </label>
         <select id="leadId" name="leadId" class="form-control form-control-lg"
          	ng-model="group.leadId" ng-required="false">
-         	<option ng-repeat="m in membersList" value="{{m.$id}}">
+         	<option ng-repeat="m in leadsList" value="{{m.$id}}">
         		{{m.member.shortname}}
         	</option>
         </select>

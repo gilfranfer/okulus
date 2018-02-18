@@ -9,6 +9,11 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 	   	$rootScope.response = null;
 			$scope.provideAddress = true;
 			$scope.membersList = MembersSvc.loadActiveMembers();
+			$scope.membersList.$loaded().then(function(activeMembers){
+				$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+				$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+			});
+
 
 			cleanScope = function(){
 	    	$scope.groupId = null;
@@ -90,8 +95,8 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
   	}
 ]);
 
-okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
-	function($scope, $routeParams, $location, GroupsSvc){
+okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc','MembersSvc',
+	function($scope, $routeParams, $location, GroupsSvc,MembersSvc){
 		let whichGroup = $routeParams.groupId;
 		$scope.provideAddress = true;
 		$scope.membersList = MembersSvc.loadActiveMembers();

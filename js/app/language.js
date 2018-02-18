@@ -66,7 +66,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
 					bdayLbl:"Fecha de nacimiento",
 					baseGroupLbl: "Grupo Base",
-					canBeUserLbl: "Puede ser Usuario", cantBeUserLbl:"No Puede ser Usuario"
+					canBeUserLbl: "Puede ser Usuario?",
+					typeLbl:"Tipo de Miembro", isHostLbl:"Es Anfitrión?",
+					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?"
 				},
 				report:{
 					title:"Datos generales de la Reunión",

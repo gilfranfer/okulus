@@ -89,15 +89,28 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 						//if User already has a Member mapped:
 						// 1. Verify The member still active,
 						// 2. Confirm the member still canBeUser
+						// 3. Validate the email form the user and the member.
+						// 		In case they differ (the member emial was updated), remove the member reference from the user
 						if(user.memberId){
+							console.log("With Member Id");
 							MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
 								if(memberObj && memberObj.member.status == 'active' && memberObj.member.canBeUser){
 									$rootScope.currentSession.member = memberObj;
+									// console.log(user.email);
+									// console.log(memberObj.member.email);
+									if(user.email !=  memberObj.member.email){
+										user.memberId = null;
+										user.$save();
+										$scope.response = {authErrorMsg:"Inteta nuevamente"};
+										ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
+											+ memberObj.$id + ", porque el correos electrónicos no coindía con: " + memberObj.member.email );
+									}
 								}
 							});
 						}
 						//if User doesnt have a Member mapped:
 						else{
+							console.log("No Member Id");
 							//Try to find a member Reference for this user
 							MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
 								//if there more than one members with same email, notify admin
@@ -105,6 +118,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 									$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
 									ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
 								}else{
+									//map the member Id to the user
 									data = dataArray[0];
 									if(data && data.member.status == 'active' && data.member.canBeUser){
 										$rootScope.currentSession.member = data;

@@ -10,6 +10,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 		$scope.provideAddress = true;
 		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
+		//When creating a new member
+		// if(!$scope.memberId){
+		// 	$scope.member = {canBeUser: false, status:'active'};
+		// }
+
     cleanScope = function(){
     	$scope.memberId = null;
     	$scope.member = null;
@@ -175,6 +180,33 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
 				return $rootScope.allActiveMembers;
+			},
+			filterActiveHosts: function(activeMembers){
+				let activeHosts = [];
+				activeMembers.forEach(function(host) {
+						if(host.member.isHost){
+							activeHosts.push( host );
+						}
+				});
+				return activeHosts;
+			},
+			filterActiveLeads: function(activeMembers){
+				let activeLeads = [];
+				activeMembers.forEach(function(lead) {
+						if(lead.member.isLeader){
+							activeLeads.push( lead );
+						}
+				});
+				return activeLeads;
+			},
+			filterActiveTrainees: function(activeMembers){
+				let activeTrainees = [];
+				activeMembers.forEach(function(lead) {
+						if(lead.member.isTrainee){
+							activeTrainees.push( lead );
+						}
+				});
+				return activeTrainees;
 			},
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);
