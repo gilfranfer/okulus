@@ -50,7 +50,7 @@
         </select>
       </div>
     </div>
-
+    <!-- Email and Phone -->
     <div class="form-row">
       <div class="col form-group">
         <label for="email">
@@ -68,6 +68,30 @@
       </div>
     </div>
 
+    <div class="form-row">
+      <div class="col-sm form-group">
+        <label for="hostId">
+          {{i18n.forms.report.hostLbl}}
+        </label>
+        <select id="hostId" name="hostId" class="form-control form-control-lg"
+         	ng-model="group.hostId" ng-required="false">
+         	<option ng-repeat="m in membersList" value="{{m.$id}}">
+        		{{m.member.shortname}}
+        	</option>
+        </select>
+      </div>
+      <div class="col-sm form-group">
+        <label for="leadId">
+          {{i18n.forms.report.leadLbl}}
+        </label>
+        <select id="leadId" name="leadId" class="form-control form-control-lg"
+         	ng-model="group.leadId" ng-required="false">
+         	<option ng-repeat="m in membersList" value="{{m.$id}}">
+        		{{m.member.shortname}}
+        	</option>
+        </select>
+      </div>
+    </div>
 
   </fieldset>
 

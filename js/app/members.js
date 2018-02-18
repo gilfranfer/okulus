@@ -174,6 +174,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				if(!$rootScope.allActiveMembers){
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
+				return $rootScope.allActiveMembers;
 			},
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);

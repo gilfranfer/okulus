@@ -80,15 +80,10 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 		MembersSvc.loadActiveMembers();
 		WeeksSvc.loadActiveWeeks();
 
-		cleanScope = function(){
-			$scope.reportId = null;
-			$scope.reunion = null;
-			$scope.attendance = null
-			$scope.response = null;
-		};
-
-		initScopeObjects = function() {
-			$scope.reunion = { dateObj: new Date() };
+		//When comming from /new we will get the groupId as Param
+		let whichGroup = $routeParams.groupId;
+		if(whichGroup){
+			$scope.reunion = { dateObj: new Date(), groupId: whichGroup };
 			$scope.attendance = {
 														total:0,
 														guests:{
@@ -100,20 +95,22 @@ okulusApp.controller('ReportCntrl', ['$scope','$routeParams','$location','Groups
 															female:{kid:0, young:0, adult:0}
 														}
 													};
-		};
-
-		let whichGroup = $routeParams.groupId;
-		//When comming from /new we will get the groupId as Param
-		if(whichGroup){
-			initScopeObjects();
-			$scope.reunion.groupId = whichGroup;
 			let groupObj = GroupsSvc.getGroupObj(whichGroup);
 			groupObj.$loaded().then(function() {
 				$scope.reunion.groupname = groupObj.group.name;
+				$scope.reunion.hostId = groupObj.group.hostId;
+				$scope.reunion.leadId = groupObj.group.leadId;
 			}).catch(function(error) {
 				$scope.reunion.groupname = "Group Not Available";
 			});
 		}
+
+		cleanScope = function(){
+			$scope.reportId = null;
+			$scope.reunion = null;
+			$scope.attendance = null
+			$scope.response = null;
+		};
 
 		$scope.saveOrUpdateReport = function(){
 			if($scope.reunion.status == "canceled"){
