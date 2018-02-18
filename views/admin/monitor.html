@@ -1,6 +1,6 @@
 <section >
 <!-- <section  ng-if="currentSession.user.type == 'admin'"> -->
-  <article class="">
+  <article class="users">
     <div class="card mb-3">
       <div class="card-header">
         {{i18n.admin.users.title}}
@@ -67,7 +67,7 @@
     </div> <!-- Card -->
   </article>
 
-  <article class="">
+  <article class="audit">
     <div class="card mb-3">
       <div class="card-header">
         {{i18n.admin.audit.title}}
@@ -126,6 +126,23 @@
         </div>
       </div>
     </div> <!-- Card -->
+  </article>
+
+  <article class="errors">
+    <div class="row">
+      <div class="col mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            {{i18n.home.errorCenter}}
+          </div>
+          <div class="card-body">
+            <h4 class="card-title"></h4>
+            <p class="card-text">
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </article>
 
 </section>

@@ -79,8 +79,8 @@ okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 	}]
 );
 
-okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location', 'MembersSvc',
-	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location,MembersSvc){
+okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location', 'MembersSvc','ErrorsSvc',
+	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location,MembersSvc,ErrorsSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
@@ -103,7 +103,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 								//if there more than one members with same email, notify admin
 								if(dataArray.length > 1){
 									$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
-									
+									ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
 								}else{
 									data = dataArray[0];
 									if(data && data.member.status == 'active' && data.member.canBeUser){
