@@ -46,7 +46,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 							message = "Inte nuevamente";
 				}
 				$scope.response = { loginErrorMsg: message};
-				console.log(error);
+				// console.log(error);
 			});
 		};
 
@@ -81,7 +81,7 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 							message = "Inte nuevamente";
 				}
 				$scope.response = { loginErrorMsg: message};
-				console.error( error ) ;
+				// console.error( error ) ;
 			});
 		};
 
@@ -109,13 +109,13 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 						// 3. Validate the email form the user and the member.
 						// 		In case they differ (the member emial was updated), remove the member reference from the user
 						if(user.isRoot){
-							console.log("Welcome Root");
+							// console.log("Welcome Root");
 						}else{
 							if(user.memberId){
-								console.log("With Member Id");
+								// console.log("With Member Id");
 								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
 									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
-										console.log("Assign Member");
+										// console.log("Assign Member");
 										$rootScope.currentSession.member = memberObj;
 
 										if(user.email !=  memberObj.member.email){
@@ -133,7 +133,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 							}
 							//if User doesnt have a Member mapped:
 							else{
-								console.log("No Member Id");
+								// console.log("No Member Id");
 								//Try to find a member Reference for this user
 								MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
 									//if there more than one members with same email, notify admin
@@ -164,7 +164,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 		var cleanRootScope = function(){
 			for (var prop in $rootScope) {
 			    if (prop.substring(0,1) !== '$') {
-						console.log("Rootscope Prop: "+prop);
+						// console.log("Rootscope Prop: "+prop);
 						if( prop!="config" && prop!="i18n")
 			      delete $rootScope[prop];
 			    }

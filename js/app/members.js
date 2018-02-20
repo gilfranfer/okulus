@@ -10,11 +10,6 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 		$scope.provideAddress = true;
 		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
-		//When creating a new member
-		if(!$scope.memberId){
-			$scope.member = {bday:new Date(1990,0,23), status:'active'};
-		}
-
     cleanScope = function(){
     	$scope.memberId = null;
     	$scope.member = null;
