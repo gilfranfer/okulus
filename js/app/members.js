@@ -11,9 +11,9 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
 		//When creating a new member
-		// if(!$scope.memberId){
-		// 	$scope.member = {canBeUser: false, status:'active'};
-		// }
+		if(!$scope.memberId){
+			$scope.member = {bday:new Date(1990,0,1), status:'active'};
+		}
 
     cleanScope = function(){
     	$scope.memberId = null;
@@ -49,10 +49,10 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 						$scope.response = { memberMsgError: error};
 					}else{
 						$scope.response = { memberMsgOk: "Miembro Actualizado"};
-					    AuditSvc.recordAudit(mRef.key, "update", "members");
-					    console.log(orgiStatus);
-					    if(orgiStatus != record.member.status){
-							MembersSvc.updateMembersStatusCounter(record.member.status);
+					  AuditSvc.recordAudit(mRef.key, "update", "members");
+
+					  if(orgiStatus != record.member.status){
+							MembersSvc.updateStatusCounter(record.member.status);
 						}
 					}
 				});
@@ -74,10 +74,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 				let obj = MembersSvc.getMember(newmemberRef.key);
 				obj.$loaded().then(function(data) {
 					$scope.memberId = newmemberRef.key;
-					$scope.response = { memberMsgOk: "Miembro Creado"};
+					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 					console.log("update counter")
-					MembersSvc.updateMembersStatusCounter(data.member.status);
+					MembersSvc.increaseStatusCounter(data.member.status);
+					$location.path( "/members");
 				});
 			}
 		};
@@ -87,10 +88,12 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 					MembersSvc.loadAllMembersList().$loaded().then(
 						function(list) {
 							let record = MembersSvc.getMemberFromArray($scope.memberId);
+							let status = record.member.status;
 							list.$remove(record).then(function(ref) {
 								cleanScope();
 						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
 						    AuditSvc.recordAudit(ref.key, "delete", "members");
+								MembersSvc.decreaseStatusCounter(status);
 								$location.path( "/members");
 							}).catch(function(err) {
 								$rootScope.response = { memberMsgError: err};
@@ -235,21 +238,44 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 
 				});
 			},
-			updateMembersStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( memberStatusCounter ){
-						if(status == 'active'){
-							memberStatusCounter.active = memberStatusCounter.active+1;
-						}else{
-							memberStatusCounter.inactive = memberStatusCounter.inactive+1;
-						}
-						memberStatusCounter.$save();
-					}
-				);
-			},
 			findMemberByEmail: function(email){
 				let ref = membersRef.orderByChild("member/email").equalTo(email);
 				return $firebaseArray(ref);
+			},
+			increaseStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( statusCounter ){
+						if(status == 'active'){
+							statusCounter.active = statusCounter.active+1;
+						}else{
+							statusCounter.inactive = statusCounter.inactive+1;
+						}
+						statusCounter.$save();
+					});
+			},
+			decreaseStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( statusCounter ){
+						if(status == 'active'){
+							statusCounter.active = statusCounter.active-1;
+						}else{
+							statusCounter.inactive = statusCounter.inactive-1;
+						}
+						statusCounter.$save();
+					});
+			},
+			updateStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( statusCounter ){
+						if(status == 'active'){
+							statusCounter.active = statusCounter.active+1;
+							statusCounter.inactive = statusCounter.inactive-1;
+						}else{
+							statusCounter.inactive = statusCounter.inactive+1;
+							statusCounter.active = statusCounter.active-1;
+						}
+						statusCounter.$save();
+					});
 			}
 		};
 	}
