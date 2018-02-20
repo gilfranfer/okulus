@@ -71,7 +71,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 						$scope.groupId = newgroupRef.key;
 						$rootScope.response = { groupMsgOk: "Grupo Creado"};
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
-						GroupsSvc.updateGroupsStatusCounter(data.group.status);
+						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
 						$location.path( "/groups");
 					});
 	    	}
@@ -82,10 +82,12 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					GroupsSvc.loadAllGroupsList().$loaded().then(
 						function(list) {
 							let record = GroupsSvc.getGroupFromArray($scope.groupId);
+							let status = record.group.status;
 							list.$remove(record).then(function(ref) {
 								cleanScope();
 						    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
 						    AuditSvc.recordAudit(ref.key, "delete", "groups");
+								GroupsSvc.decreaseGroupsStatusCounter(status);
 								$location.path( "/groups");
 							}).catch(function(err) {
 								$rootScope.response = { groupMsgError: err};
@@ -197,7 +199,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
 			},
-			updateGroupsStatusCounter(status){
+			increaseGroupsStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(
 					function( groupStatusCounter ){
 						if(status == 'active'){
@@ -206,8 +208,31 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
 						}
 						groupStatusCounter.$save();
-					}
-				);
+					});
+			},
+			decreaseGroupsStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( groupStatusCounter ){
+						if(status == 'active'){
+							groupStatusCounter.active = groupStatusCounter.active-1;
+						}else{
+							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
+						}
+						groupStatusCounter.$save();
+					});
+			},
+			updateGroupsStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( groupStatusCounter ){
+						if(status == 'active'){
+							groupStatusCounter.active = groupStatusCounter.active+1;
+							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
+						}else{
+							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
+							groupStatusCounter.active = groupStatusCounter.active-1;
+						}
+						groupStatusCounter.$save();
+					});
 			}
 		};
 	}
