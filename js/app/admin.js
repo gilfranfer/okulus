@@ -22,6 +22,10 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 
 		$scope.updateUserType = function (userId, type) {
 			$scope.response = undefined;
+			if($rootScope.currentSession.user.isRoot){
+				$scope.response = { userErrorMsg: "Root no puede ser modificado"};
+				return;
+			}
 			if(userId == $rootScope.currentSession.user.$id){
 				$scope.response = { userErrorMsg: "No puedes modificar a tu usuario"};
 			}else{
