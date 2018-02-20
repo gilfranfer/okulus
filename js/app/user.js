@@ -29,6 +29,7 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope
 	}
 ]);
 
+//To redirect from Audit Table
 okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$location','$firebaseObject',
 	function($rootScope,$routeParams,$location,$firebaseObject){
 		let usersFolder = firebase.database().ref().child('pibxalapa/users');

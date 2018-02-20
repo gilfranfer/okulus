@@ -35,7 +35,7 @@
             <tr ng-repeat="user in userRecords | filter:filterUsers">
               <!-- <th scope="row">{{$index + 1}}</th> -->
               <td ng-if="user.memberId != 'NA'">
-                <a target="_blank" ng-href="#!/members/edit/{{user.memberId}}">
+                <a target="_blank" ng-href="#!/users/edit/{{user.$id}}">
                   {{user.email}}
                 </a>
               </td>

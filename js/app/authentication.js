@@ -27,7 +27,6 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 				function(regUser){
 					usersFolder.child(regUser.uid).set({
 						email: $scope.newUser.email,
-						//memberId: "NA",
 						type:"user",
 						//userId: regUser.uid,
 						createdOn: firebase.database.ServerValue.TIMESTAMP,
@@ -38,8 +37,16 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 					$location.path( "/home" );
 				}
 			).catch( function(error){
+				let message = undefined;
+				switch(error.code) {
+						case "auth/email-already-in-use":
+								message = "El correo electrónico ya está en uso";
+								break;
+						default:
+							message = "Inte nuevamente";
+				}
+				$scope.response = { loginErrorMsg: message};
 				console.log(error);
-				$scope.response = { loginErrorMsg: error.message};
 			});
 		};
 
@@ -64,8 +71,17 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 				usersFolder.child(user.uid).update({lastLogin: firebase.database.ServerValue.TIMESTAMP, sessionStatus:"online"});
 				$location.path( "/home" );
 			}).catch( function(error){
-				$scope.response = { loginErrorMsg: error.message};
-				// console.error( $rootScope.response.loginErrorMsg) ;
+				let message = undefined;
+				switch(error.code) {
+						case "auth/wrong-password":
+						case "auth/user-not-found":
+								message = "Usuario o Contraseña Incorrectos";
+								break;
+						default:
+							message = "Inte nuevamente";
+				}
+				$scope.response = { loginErrorMsg: message};
+				console.error( error ) ;
 			});
 		};
 

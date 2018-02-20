@@ -11,11 +11,14 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)
 			 */
 			recordAudit: function( id, action, on){
+				let session = $rootScope.currentSession;
 				let member = undefined;
-				if($rootScope.currentSession.user.isRoot){
-					member = "root";
-				}else if($rootScope.currentSession.member){
-					meber = $rootScope.currentSession.member.member.email;
+				if(!session || !session.user){
+					member = "System";
+				} else if(session.user.isRoot){
+					member = "Root";
+				} else if(session.member){
+					meber = session.member.member.email;
 				}
 
 				if (!member){
