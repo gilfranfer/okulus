@@ -1,42 +1,98 @@
-  <section  ng-if="currentUser.type == 'admin'">
-  <article class="">
+<section ng-if="currentSession.user.type == 'admin'">
+  <article class="users">
+    <div class="card mb-3">
+      <div class="card-header">
+        {{i18n.admin.users.title}}
+      </div>
+      <div class="card-body">
+        <div class="form-group row">
+          <div class="col"></div>
+          <div class="col">
+            <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="filterUsers">
+          </div>
+        </div>
+        <div class="alert alert-danger" role="alert" ng-if="response.userErrorMsg">
+          {{response.userErrorMsg}}
+        </div>
+        <div class="alert alert-success" role="alert" ng-if="response.userOkMsg">
+          {{response.userOkMsg}}
+        </div>
 
+        <div class="pre-scrollable">
+        <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <!-- <th scope="col">#</th> -->
+              <th scope="col">{{i18n.admin.users.table.user}}</th>
+              <th scope="col">{{i18n.admin.users.table.type}}</th>
+              <th scope="col">{{i18n.admin.users.table.created}}</th>
+              <th scope="col">{{i18n.admin.users.table.lastLogin}}</th>
+              <th scope="col">{{i18n.admin.users.table.sessionStatus}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in userRecords | filter:filterUsers">
+              <!-- <th scope="row">{{$index + 1}}</th> -->
+              <td ng-if="user.memberId != 'NA'">
+                <a target="_blank" ng-href="#!/users/edit/{{user.$id}}">
+                  {{user.email}}
+                </a>
+              </td>
+              <td ng-if="user.memberId == 'NA'">
+                {{user.email}}
+              </td>
+
+              <td>
+                <button type="button" ng-if="user.type == 'admin'" ng-click="updateUserType(user.$id,'user')" class="btn btn-block btn-warning">
+                  {{user.type}}
+                </button>
+                <button type="button" ng-if="user.type == 'user'" ng-click="updateUserType(user.$id,'admin')" class="btn btn-block btn-info">
+                  {{user.type}}
+                </button>
+              </td>
+              <td>{{user.createdOn | date: "MMM dd yyyy"}}</td>
+              <td>{{user.lastLogin | date: "MMM dd yyyy HH:mm:ss"}}</td>
+              <td ng-class="user.sessionStatus">{{user.sessionStatus}}</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="col" ng-show="!userRecords || userRecords.length == 0">
+          <div class="alert alert-danger" role="alert">
+            {{i18n.admin.audit.norecords}}
+          </div>
+        </div>
+      </div>
+    </div> <!-- Card -->
+  </article>
+
+  <article class="audit">
     <div class="card mb-3">
       <div class="card-header">
         {{i18n.admin.audit.title}}
       </div>
       <div class="card-body">
-        <h4 class="card-title"></h4>
-        <p class="card-text"></p>
-
         <div class="form-group row">
-          <div class="col-3"></div>
-          <div class="col-6">
-            <select class="form-control" onchange="getAuditRecords(this)">
+          <div class="col">
+            <select class="form-control form-control-lg" onchange="getAuditRecords(this)">
               <option value="none" selected>{{i18n.admin.audit.select}}</option>
               <option value="groups">{{i18n.admin.audit.groupsOptn}}</option>
               <option value="members">{{i18n.admin.audit.membersOptn}}</option>
               <option value="reports">{{i18n.admin.audit.reportsOptn}}</option>
+              <option value="users">{{i18n.admin.audit.usersOptn}}</option>
               <option value="weeks">{{i18n.admin.audit.weeksOptn}}</option>
             </select>
           </div>
-          <div class="col-3"></div>
-        </div>
-
-        <!-- Loading/No Records Alert -->
-        <div class="row">
-          <div class="col" ng-show="auditRecords && auditRecords.length == 0">
-            <div class="alert alert-danger" role="alert">
-              {{i18n.admin.audit.norecords}}
-            </div>
+          <div class="col">
+            <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
           </div>
         </div>
 
         <div class="pre-scrollable">
-        <table class="table table-sm table-striped" ng-if="auditRecords && auditRecords.length > 0">
+        <table class="table table-sm table-striped">
           <thead class="thead-dark">
             <tr>
-              <th scope="col">#</th>
+              <!-- <th scope="col">#</th> -->
               <th scope="col">{{i18n.admin.audit.table.action}}</th>
               <th scope="col">{{i18n.admin.audit.table.on}}</th>
               <th scope="col">{{i18n.admin.audit.table.by}}</th>
@@ -44,21 +100,76 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="a in auditRecords | orderBy:'-date'">
-              <th scope="row">{{$index + 1}}</th>
+            <tr ng-repeat="a in auditRecords | filter:searchText | orderBy:'-date'">
+              <!-- <th scope="row">{{$index + 1}}</th> -->
               <td>{{a.action}}</td>
               <td>
-                <a ng-href="#!/{{auditOn}}/edit/{{a.referenceId}}">
+                <a target="_blank" ng-href="#!/{{auditOn}}/edit/{{a.referenceId}}">
                   {{a.referenceId}}
                 </a>
               </td>
-              <td>{{a.by}}</td>
+              <td>
+                  {{a.by}}
+              </td>
               <td>{{a.date | date: "MMM dd yyyy hh:mm:ss"}}</td>
             </tr>
           </tbody>
         </table>
         </div>
+        <div class="col" ng-show="!auditRecords || auditRecords.length == 0">
+          <div class="alert alert-danger" role="alert">
+            {{i18n.admin.audit.norecords}}
+          </div>
+        </div>
       </div>
     </div> <!-- Card -->
+  </article>
+
+  <article class="errors">
+    <div class="row">
+      <div class="col mb-3">
+        <div class="card h-100">
+          <div class="card-header">
+            {{i18n.home.errorCenter}}
+          </div>
+          <div class="card-body">
+            <div class="form-group row">
+              <div class="col"></div>
+              <div class="col">
+                <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="filterErrors">
+              </div>
+            </div>
+
+            <div class="pre-scrollable">
+            <table class="table table-sm table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <!-- <th scope="col">#</th> -->
+                  <th scope="col">{{i18n.admin.errors.table.user}}</th>
+                  <th scope="col">{{i18n.admin.errors.table.error}}</th>
+                  <th scope="col">{{i18n.admin.errors.table.date}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="error in errorsRecords | filter:filterErrors | orderBy:'-date'">
+                  <td>{{error.userImpacted}}</td>
+                  <td>{{error.error}}</td>
+                  <td>{{error.date | date: "MMM dd yyyy HH:mm:ss"}}</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="col" ng-show="!errorsRecords || errorsRecords.length == 0">
+              <div class="alert alert-danger" role="alert">
+                {{i18n.admin.audit.norecords}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

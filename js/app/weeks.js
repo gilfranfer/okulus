@@ -1,6 +1,7 @@
 okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope',
 	function(WeeksSvc, AuditSvc, $rootScope, $scope){
 		$rootScope.response = null;
+		$scope.weekid = new Date();
 		WeeksSvc.loadAllWeeks();
 
 		$scope.addWeek = function () {

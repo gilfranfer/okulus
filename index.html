@@ -10,14 +10,14 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
 
 	</head>
-	<body ng-controller="UserCntrl">
+	<body ng-controller="AuthenticationCntrl">
     <section ng-controller="LanguageCntrl">
       <header ng-include="'views/navigation.html'"></header>
       <!-- Main Bootstrap container -->
   		<div class="container mt-4">
   			<main id="main" ng-view></main>
         <footer class="footer mt-4">
-  				<p>&copy; GilLab 2017</p>
+  				<p>&copy; GilLab 2018</p>
   			</footer>
   		</div>
       <!-- Main Bootstrap container  -->
@@ -38,7 +38,7 @@
   	<script src="js/lib/angular-route.min.js"></script>
 
     <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
     <script>
       // Initialize Firebase
       var config = {
@@ -69,11 +69,11 @@
     <script src="js/app/members.js"></script>
     <script src="js/app/reports.js"></script>
     <script src="js/app/weeks.js"></script>
-    <script src="js/app/audit.js"></script>
     <script src="js/app/admin.js"></script>
     <script src="js/app/user.js"></script>
     <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
     <script src="js/app/accessRules.js"></script>
+    <script src="js/app/authentication.js"></script>
   </body>
 </html>

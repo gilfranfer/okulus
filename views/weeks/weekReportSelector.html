@@ -52,11 +52,7 @@
             </select>
           </div>
           <div class="col">
-            <button type="button" class="btn btn-lg btn-block btn-success" ng-if="!adminViewActive"
-              ng-click="getReportsForSelectedWeeks()" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
-              {{i18n.btns.viewBtn}}
-            </button>
-            <button type="button" class="btn btn-lg btn-block btn-success" ng-if="adminViewActive"
+            <button type="button" class="btn btn-lg btn-block btn-success"
               ng-click="getReportsForSelectedWeeks(adminViewActive)" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
               {{i18n.btns.viewBtn}}
             </button>

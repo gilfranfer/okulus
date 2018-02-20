@@ -13,6 +13,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		$rootScope.i18n = {
 			navigation:{
 				brand:"PIB Xalapa",
+				register:"Registrarse",
+				login:"Iniciar Sesión",
+				logout:"Salir",
+				home:"Inicio",
 				admin:{
 					menu: "Admin",
 					dashboard:"Dashboard",
@@ -31,7 +35,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
 				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
 				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
-				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción"
+				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
+				login:"Iniciar Sesión", register:"Registrarse"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -60,7 +65,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					snameLbl:"Alias", snameHint:"Fernando Gil",
 					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
 					bdayLbl:"Fecha de nacimiento",
-					baseGroupLbl: "Grupo Base"
+					baseGroupLbl: "Grupo Base",
+					canBeUserLbl: "Puede ser Usuario?",
+					typeLbl:"Tipo de Miembro", isHostLbl:"Es Anfitrión?",
+					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?"
 				},
 				report:{
 					title:"Datos generales de la Reunión",
@@ -101,6 +109,23 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
 					emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
 					urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
+				},
+				login:{
+					title:"Inicia sesión",
+					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
+					password: "Contraseña", passwordHint: "Tus palabras secretas",
+					alert:{ invalidEmail:"Ese no es un correo válido", pwdRequired:"La contraseña es requerida" }
+				},
+				register:{
+					title:"Regístrate",
+					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
+					password: "Contraseña", passwordHint: "Tus palabras secretas",
+					pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
+					alert:{ invalidEmail:"Ese no es un correo válido",
+								pwdSize:"La contraseña debe contener al menos 8 caracteres",
+								pwdMatch:"Las contraseñas deben coincidir"
+
+					}
 				}
 			},
 			admin:{
@@ -159,9 +184,22 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					membersOptn:"Miembros",
 					reportsOptn:"Reportes",
 					weeksOptn:"Semanas",
+					usersOptn:"Usuarios",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
+					}
+				},
+				users:{
+					title:"Usuarios Registrados",
+					table:{
+						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
+						sessionStatus:"Estado"
+					}
+				},
+				errors:{
+					table:{
+						user: "Usuario Impactado", error:"Error", date:"Fecha"
 					}
 				}
 			},
@@ -173,6 +211,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					noGroupsError: "No tienes Grupos asiganos."
 				}
 			},
+			home:{
+				title:"Inicio", welcome:"Hola",
+				basicInfo: "Información Básica",
+				address: "Dirección",
+				messageCenter: "Centro de Mensajes",
+				errorCenter: "Errores Recientes"
+			},
 			success:{
 				deleted:{
 					title:"Eliminado el registro ..."
@@ -180,7 +225,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			error:{
 				title:"Oooops!!",
-				message:"Houston, We have some problems!"
+				recordDoesntExist: "Información no Disponible",
+				nologin: "Necesitas iniciar sesión para ver este contenido",
+				message:"Houston, Tenemos Problemas!",
+				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
 			},
 			dropdowns:{
 				status:{

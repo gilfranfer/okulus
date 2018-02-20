@@ -9,7 +9,7 @@
     </div>
 
     <!-- Group card -->
-    <div ng-repeat="g in groupsList | filter:searchText" class="col-md-6 col-lg-4 mb-3" >
+    <div ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number'" class="col-md-6 col-lg-4 mb-3" >
       <div class="card h-100" >
         <h4 class="card-header">
           <a ng-href="#!/groups/edit/{{g.$id}}">
@@ -47,7 +47,7 @@
               <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">{{i18n.btns.addReport}}</a>
             </div>
           </div>
-          <div class="row" ng-if="currentUser.type == 'admin'" >
+          <div class="row" ng-if="currentSession.user.type == 'admin'" >
             <div class="col mb-3" >
               <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-danger">{{i18n.btns.accessRules}}</a>
             </div>

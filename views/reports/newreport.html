@@ -21,7 +21,7 @@
         </label>
         <select id="hostId" name="hostId" class="form-control form-control-lg"
          	ng-model="reunion.hostId" ng-required="true">
-         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+         	<option ng-repeat="m in hostsList" value="{{m.$id}}">
         		{{m.member.shortname}}
         	</option>
         </select>
@@ -35,7 +35,7 @@
         </label>
         <select id="leadId" name="leadId" class="form-control form-control-lg"
          	ng-model="reunion.leadId" ng-required="true">
-         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+         	<option ng-repeat="m in leadsList" value="{{m.$id}}">
         		{{m.member.shortname}}
         	</option>
         </select>
@@ -46,7 +46,7 @@
         </label>
         <select id="coleadId" name="coleadId" class="form-control form-control-lg"
          	ng-model="reunion.coLeadId" ng-required="false">
-         	<option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+         	<option ng-repeat="m in traineesList" value="{{m.$id}}">
         		{{m.member.shortname}}
         	</option>
         </select>
@@ -110,16 +110,6 @@
         		{{i18n.forms.report.cancelStatusLbl}}
         	</option>
         </select>
-        <!-- <div id="status" class="btn-group" data-toggle="buttons">
-          <label class="btn btn-primary btn-lg" ng-click="reunion.status = 'true'">
-            <input type="radio" name="options" autocomplete="off" ng-required="true">
-            {{i18n.forms.report.okStatusLbl}}
-          </label>
-          <label class="btn btn-danger btn-lg" ng-click="reunion.status = 'false'">
-            <input type="radio" name="options"  autocomplete="off" ng-required="true">
-            {{i18n.forms.report.cancelStatusLbl}}
-          </label>
-        </div> -->
       </div>
       <div class="col-sm form-group"></div>
     </div>
