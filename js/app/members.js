@@ -78,26 +78,52 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 			}
 		};
 
-	    $scope.deleteMember = function() {
-	    	if( $scope.memberId ){
-					MembersSvc.loadAllMembersList().$loaded().then(
-						function(list) {
-							let record = MembersSvc.getMemberFromArray($scope.memberId);
-							let status = record.member.status;
-							list.$remove(record).then(function(ref) {
-								cleanScope();
-						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
-						    AuditSvc.recordAudit(ref.key, "delete", "members");
-								MembersSvc.decreaseStatusCounter(status);
-								$location.path( "/members");
-							}).catch(function(err) {
-								$rootScope.response = { memberMsgError: err};
-							});
-					  });
-	    	}
-	    };
+	  $scope.deleteMember = function() {
+			if( $scope.memberId ){
+				MembersSvc.loadAllMembersList().$loaded().then(
+					function(list) {
+						let record = MembersSvc.getMemberFromArray($scope.memberId);
+						let status = record.member.status;
+						list.$remove(record).then(function(ref) {
+							cleanScope();
+					    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
+					    AuditSvc.recordAudit(ref.key, "delete", "members");
+							MembersSvc.decreaseStatusCounter(status);
+							$location.path( "/members");
+						}).catch(function(err) {
+							$rootScope.response = { memberMsgError: err};
+						});
+				  });
+			}
+		};
 
-  	}
+		$scope.isHost = function(value){
+			validateMemberObj();
+			$scope.member.isHost = value;
+			//console.log($scope.member);
+		};
+		$scope.isLeader = function(value){
+			validateMemberObj();
+			$scope.member.isLeader = value;
+			//console.log($scope.member);
+		};
+		$scope.isTrainee = function(value){
+			validateMemberObj();
+			$scope.member.isTrainee = value;
+			//console.log($scope.member);
+		};
+		$scope.canBeUser = function(value){
+			validateMemberObj();
+			$scope.member.canBeUser = value;
+			//console.log($scope.member);
+		};
+
+		validateMemberObj = function () {
+			if(!$scope.member){
+				$scope.member = {}
+			}
+		}
+  }
 ]);
 
 okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location', 'MembersSvc',

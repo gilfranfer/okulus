@@ -59,7 +59,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "07:30 PM"
 				},
 				member:{
-					legend: "Datos del miembro",
+					legend: "Información básica", membership:"Membresía",
 					fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
 					lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
 					snameLbl:"Alias", snameHint:"Fernando Gil",

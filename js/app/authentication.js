@@ -43,7 +43,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 								message = "El correo electrónico ya está en uso";
 								break;
 						default:
-							message = "Inte nuevamente";
+							message = "Intente nuevamente";
 				}
 				$scope.response = { loginErrorMsg: message};
 				// console.log(error);
@@ -78,7 +78,7 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 								message = "Usuario o Contraseña Incorrectos";
 								break;
 						default:
-							message = "Inte nuevamente";
+							message = "Intente nuevamente";
 				}
 				$scope.response = { loginErrorMsg: message};
 				// console.error( error ) ;
@@ -116,14 +116,14 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
 									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
 										// console.log("Assign Member");
-										$rootScope.currentSession.member = memberObj;
-
 										if(user.email !=  memberObj.member.email){
 											user.memberId = null;
 											user.$save();
 											$scope.response = {authErrorMsg:"Inteta nuevamente"};
 											ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
 												+ memberObj.$id + ", porque el correo electrónico no coindía con: " + memberObj.member.email );
+										}else{
+											$rootScope.currentSession.member = memberObj;
 										}
 									}else{
 										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta."};

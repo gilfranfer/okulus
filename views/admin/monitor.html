@@ -33,16 +33,18 @@
           <tbody>
             <tr ng-repeat="user in userRecords | filter:filterUsers">
               <!-- <th scope="row">{{$index + 1}}</th> -->
-              <td ng-if="user.memberId != 'NA'">
+              <td ng-if="user.memberId">
                 <a target="_blank" ng-href="#!/users/edit/{{user.$id}}">
                   {{user.email}}
                 </a>
               </td>
-              <td ng-if="user.memberId == 'NA'">
+              <td ng-if="!user.memberId">
                 {{user.email}}
               </td>
-
-              <td>
+              <td ng-if="!user.memberId">
+                {{user.type}}
+              </td>
+              <td ng-if="user.memberId">
                 <button type="button" ng-if="user.type == 'admin'" ng-click="updateUserType(user.$id,'user')" class="btn btn-block btn-warning">
                   {{user.type}}
                 </button>
