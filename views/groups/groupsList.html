@@ -9,7 +9,7 @@
     </div>
 
     <!-- Group card -->
-    <div ng-repeat="g in groupsList | filter:searchText" class="col-md-6 col-lg-4 mb-3" >
+    <div ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number'" class="col-md-6 col-lg-4 mb-3" >
       <div class="card h-100" >
         <h4 class="card-header">
           <a ng-href="#!/groups/edit/{{g.$id}}">

@@ -69,9 +69,10 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
 					obj.$loaded().then(function(data) {
 						$scope.groupId = newgroupRef.key;
-						$scope.response = { groupMsgOk: "Grupo Creado"};
+						$rootScope.response = { groupMsgOk: "Grupo Creado"};
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 						GroupsSvc.updateGroupsStatusCounter(data.group.status);
+						$location.path( "/groups");
 					});
 	    	}
 	    };

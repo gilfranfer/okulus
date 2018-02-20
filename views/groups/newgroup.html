@@ -12,7 +12,7 @@
         <label for="gnumber">
           {{i18n.forms.group.numberLbl}}
         </label>
-        <input type="text" id="gnumber" class="form-control form-control-lg"
+        <input type="number" min="0" id="gnumber" class="form-control form-control-lg"
           placeholder="{{i18n.forms.group.numberHint}}" ng-model="group.number" ng-required="true">
       </div>
       <div class="col-10 form-group">
@@ -124,20 +124,6 @@
         <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.forms.group.schdTimeHint}}"
           ng-model="schedule.timestamp" ng-required="true">
       </div>
-      <!-- <div class="col-3 form-group">
-        <label for="schdHour">
-          {{i18n.forms.group.schdHourLbl}}
-        </label>
-        <input type="number" name="schdHour" class="form-control form-control-lg" placeholder="19"
-          ng-model="schedule.hour" ng-required="true" min="0" max="23" >
-      </div>
-      <div class="col-3 form-group">
-        <label for="schdMin">
-          {{i18n.forms.group.schdMinLbl}}
-        </label>
-        <input type="number" name="schdMin" class="form-control form-control-lg" placeholder="30"
-          ng-model="schedule.minute" ng-required="true" min="0" max="59" >
-      </div> -->
     </div>
   </fieldset>
 
