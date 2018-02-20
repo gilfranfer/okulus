@@ -27,7 +27,8 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 				function(regUser){
 					usersFolder.child(regUser.uid).set({
 						email: $scope.newUser.email,
-						memberId: "NA", type:"user",
+						//memberId: "NA",
+						type:"user",
 						//userId: regUser.uid,
 						createdOn: firebase.database.ServerValue.TIMESTAMP,
 						lastLogin: firebase.database.ServerValue.TIMESTAMP,
@@ -91,42 +92,49 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 						// 2. Confirm the member still canBeUser
 						// 3. Validate the email form the user and the member.
 						// 		In case they differ (the member emial was updated), remove the member reference from the user
-						if(user.memberId){
-							console.log("With Member Id");
-							MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
-								if(memberObj && memberObj.member.status == 'active' && memberObj.member.canBeUser){
-									$rootScope.currentSession.member = memberObj;
-									// console.log(user.email);
-									// console.log(memberObj.member.email);
-									if(user.email !=  memberObj.member.email){
-										user.memberId = null;
-										user.$save();
-										$scope.response = {authErrorMsg:"Inteta nuevamente"};
-										ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
-											+ memberObj.$id + ", porque el correos electrónicos no coindía con: " + memberObj.member.email );
+						if(user.isRoot){
+							console.log("Welcome Root");
+						}else{
+							if(user.memberId){
+								console.log("With Member Id");
+								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
+									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
+										console.log("Assign Member");
+										$rootScope.currentSession.member = memberObj;
+
+										if(user.email !=  memberObj.member.email){
+											user.memberId = null;
+											user.$save();
+											$scope.response = {authErrorMsg:"Inteta nuevamente"};
+											ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
+												+ memberObj.$id + ", porque el correo electrónico no coindía con: " + memberObj.member.email );
+										}
+									}else{
+										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta."};
+										ErrorsSvc.logError("El usuario "+ user.email +" esta asignado a un Miembro que no existe: "+ user.memberId);
 									}
-								}
-							});
-						}
-						//if User doesnt have a Member mapped:
-						else{
-							console.log("No Member Id");
-							//Try to find a member Reference for this user
-							MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
-								//if there more than one members with same email, notify admin
-								if(dataArray.length > 1){
-									$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
-									ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
-								}else{
-									//map the member Id to the user
-									data = dataArray[0];
-									if(data && data.member.status == 'active' && data.member.canBeUser){
-										$rootScope.currentSession.member = data;
-										user.memberId = data.$id
-										user.$save();
+								});
+							}
+							//if User doesnt have a Member mapped:
+							else{
+								console.log("No Member Id");
+								//Try to find a member Reference for this user
+								MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
+									//if there more than one members with same email, notify admin
+									if(dataArray.length > 1){
+										$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
+										ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
+									}else{
+										//map the member Id to the user
+										data = dataArray[0];
+										if(data && data.member.status == 'active' && data.member.canBeUser){
+											$rootScope.currentSession.member = data;
+											user.memberId = data.$id
+											user.$save();
+										}
 									}
-								}
-							});
+								});
+							}
 						}
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});

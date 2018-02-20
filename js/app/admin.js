@@ -39,7 +39,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc){
 		$scope.adminViewActive = true;
 		WeeksSvc.loadAllWeeks();
-		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+		$scope.groupsList = GroupsSvc.loadAllGroupsList();
 
 		let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
 		$scope.globalCounter = $firebaseObject(countersRef);

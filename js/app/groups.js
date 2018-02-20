@@ -1,6 +1,6 @@
-okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
-	function(GroupsSvc, $rootScope){
-		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$scope',
+	function(GroupsSvc, $scope){
+		$scope.groupsList = GroupsSvc.loadAllGroupsList();
 	}
 ]);
 

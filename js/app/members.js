@@ -217,23 +217,23 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			/* Returns a list of Group records (from $firebaseArray) that are
 			 * present in the Member's acess rules folder. */
 			getMemberGroups: function(whichMember) {
-				GroupsSvc.loadAllGroupsList().$loaded().then(
-					function(allGroups){
-						$firebaseArray(membersRef.child(whichMember).child("access")).$loaded().then(
-							function(memberRules) {
-								let myGroups = [];
-								memberRules.forEach(function(rule) {
-									let group = allGroups.$getRecord(rule.groupId);
-									if( group != null){
-										myGroups.push( group );
-									}
-								});
-								$rootScope.groupsList = myGroups;
+				return new Promise((resolve, reject) => {
+
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
+					}).then( function(memberRules) {
+						let myGroups = [];
+						memberRules.forEach(function(rule) {
+							let group = $rootScope.allGroups.$getRecord(rule.groupId);
+							if( group != null){
+								myGroups.push( group );
 							}
-						);
-					}
-				);
-				return $rootScope.groupsList;
+						});
+						$rootScope.groupsList = myGroups;
+						resolve(myGroups);
+					});
+
+				});
 			},
 			updateMembersStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(
