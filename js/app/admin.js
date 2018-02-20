@@ -29,8 +29,8 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 					obj.type = type;
 					return obj.$save();
 				}).then(function (ref) {
-					AuditSvc.recordAudit(userId, "type update", "users");
 					$scope.response = { userOkMsg: "Usuario "+obj.email+" Actualizado"};
+					AuditSvc.recordAudit(userId, "type update", "users");
 				}, function(error) {
 					$scope.response = { userErrorMsg: error};
 				});

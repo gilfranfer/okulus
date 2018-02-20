@@ -196,6 +196,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
 						sessionStatus:"Estado"
 					}
+				},
+				errors:{
+					table:{
+						user: "Usuario Impactado", error:"Error", date:"Fecha"
+					}
 				}
 			},
 			user:{

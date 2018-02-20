@@ -1,6 +1,6 @@
 
-okulusApp.factory('AuditSvc', ['$rootScope',
-	function($rootScope){
+okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
+	function($rootScope,ErrorsSvc){
 		let baseRef = firebase.database().ref().child('pibxalapa').child("audit");
 
 		return {
@@ -11,19 +11,18 @@ okulusApp.factory('AuditSvc', ['$rootScope',
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)
 			 */
 			recordAudit: function( id, action, on){
-				let member = "";
-				if ($rootScope.currentSession && $rootScope.currentSession.member){
-					member = $rootScope.currentSession.member.$id;
+				let member = undefined;
+				if($rootScope.currentSession.user.isRoot){
+					member = "root";
+				}else if($rootScope.currentSession.member){
+					meber = $rootScope.currentSession.member.member.email;
 				}
-				let audit = {action: action, by: member, date: firebase.database.ServerValue.TIMESTAMP,referenceId:id };
 
-				// if(action === 'delete'){
-				// 	//On delete there is no need to create an Audit in the object, because it will be removed
-				// }else{
-				//     //Audit in the object itself
-				//     ref.child("audit").push().set(audit);
-				// }
-		    //app global audit
+				if (!member){
+					member = "?"
+					ErrorsSvc.logError("Audit generado sin información del creador");
+				}
+				let audit = {action: action, by: member, date: firebase.database.ServerValue.TIMESTAMP, referenceId:id };
 		    baseRef.child(on).push().set(audit);
 			}
 		};
