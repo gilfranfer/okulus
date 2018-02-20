@@ -77,7 +77,8 @@
         <label for="baseGroup">
           {{i18n.forms.member.baseGroupLbl}}
         </label>
-        <select id="baseGroup" class="form-control form-control-lg" ng-model="member.baseGroup" ng-required="true">
+        <select id="baseGroup" class="form-control form-control-lg" ng-model="member.baseGroup" ng-required="false">
+          <option value=""></option>
           <option ng-repeat="g in groupsList" value="{{g.$id}}" >
             {{g.group.name}}
           </option>
