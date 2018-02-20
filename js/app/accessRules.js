@@ -1,14 +1,16 @@
 okulusApp.controller('AccessRulesCntrl', ['GroupsSvc', 'MembersSvc', 'AuditSvc','$rootScope', '$scope','$routeParams', '$location',
 	function(GroupsSvc, MembersSvc, AuditSvc, $rootScope, $scope,$routeParams, $location){
-		$rootScope.response = null;
-		MembersSvc.loadActiveMembers();
 		let whichGroup = $routeParams.groupId;
-		$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
-		GroupsSvc.getGroupObj(whichGroup).$loaded().then(
-			function(obj){
-				$scope.group = obj;
-			}
-		);
+		$rootScope.response = null;
+		if($rootScope.currentSession.user.type == 'admin'){
+			MembersSvc.loadActiveMembers();
+			$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
+			GroupsSvc.getGroupObj(whichGroup).$loaded().then(
+				function(obj){
+					$scope.group = obj;
+				}
+			);
+		}
 
 		$scope.addRule = function(){
 			let whichMember = $scope.access.memberId;

@@ -17,8 +17,11 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 					member = "System";
 				} else if(session.user.isRoot){
 					member = "Root";
-				} else if(session.member){
-					meber = session.member.member.email;
+				} else {
+					member = "Admin";
+				}
+				if(session && session.member){
+					member = session.member.member.email;
 				}
 
 				if (!member){

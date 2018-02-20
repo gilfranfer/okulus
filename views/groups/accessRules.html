@@ -1,4 +1,4 @@
-<section  ng-if="currentSession.user.type == 'admin'">
+<section  ng-show="currentSession.user.type == 'admin'">
   <div class="card h-100" >
     <h4 class="card-header">
       <a ng-href="#!/groups/edit/{{group.$id}}">
