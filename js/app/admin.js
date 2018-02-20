@@ -6,6 +6,11 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 		let usersRef = firebase.database().ref().child('pibxalapa/users');
 		$scope.userRecords = $firebaseArray( usersRef );
 
+		let errorsRef = firebase.database().ref().child('pibxalapa/errors');
+		$scope.errorsRecords = $firebaseArray( errorsRef );
+
+
+
 		getAuditRecords = function(selectObj){
 			// get the index of the selected option
 			var idx = selectObj.selectedIndex;

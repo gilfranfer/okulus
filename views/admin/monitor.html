@@ -136,9 +136,37 @@
             {{i18n.home.errorCenter}}
           </div>
           <div class="card-body">
-            <h4 class="card-title"></h4>
-            <p class="card-text">
-            </p>
+            <div class="form-group row">
+              <div class="col"></div>
+              <div class="col">
+                <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="filterErrors">
+              </div>
+            </div>
+
+            <div class="pre-scrollable">
+            <table class="table table-sm table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <!-- <th scope="col">#</th> -->
+                  <th scope="col">{{i18n.admin.errors.table.user}}</th>
+                  <th scope="col">{{i18n.admin.errors.table.error}}</th>
+                  <th scope="col">{{i18n.admin.errors.table.date}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="error in errorsRecords | filter:filterErrors | orderBy:'-date'">
+                  <td>{{error.userImpacted}}</td>
+                  <td>{{error.error}}</td>
+                  <td>{{error.date | date: "MMM dd yyyy HH:mm:ss"}}</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="col" ng-show="!errorsRecords || errorsRecords.length == 0">
+              <div class="alert alert-danger" role="alert">
+                {{i18n.admin.audit.norecords}}
+              </div>
+            </div>
           </div>
         </div>
       </div>
