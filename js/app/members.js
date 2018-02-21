@@ -79,21 +79,25 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 		};
 
 	  $scope.deleteMember = function() {
-			if( $scope.memberId ){
-				MembersSvc.loadAllMembersList().$loaded().then(
-					function(list) {
-						let record = MembersSvc.getMemberFromArray($scope.memberId);
-						let status = record.member.status;
-						list.$remove(record).then(function(ref) {
-							cleanScope();
-					    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
-					    AuditSvc.recordAudit(ref.key, "delete", "members");
-							MembersSvc.decreaseStatusCounter(status);
-							$location.path( "/members");
-						}).catch(function(err) {
-							$rootScope.response = { memberMsgError: err};
-						});
-				  });
+			if($rootScope.currentSession.user.type == 'user'){
+				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
+			}else{
+				if( $scope.memberId ){
+					MembersSvc.loadAllMembersList().$loaded().then(
+						function(list) {
+							let record = MembersSvc.getMemberFromArray($scope.memberId);
+							let status = record.member.status;
+							list.$remove(record).then(function(ref) {
+								cleanScope();
+						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
+						    AuditSvc.recordAudit(ref.key, "delete", "members");
+								MembersSvc.decreaseStatusCounter(status);
+								$location.path( "/members");
+							}).catch(function(err) {
+								$rootScope.response = { memberMsgError: err};
+							});
+					  });
+				}
 			}
 		};
 
@@ -237,6 +241,10 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getNewMemberReference: function(){
 				return membersRef.push();
+			},
+			getMembersForBaseGroup: function(gropId){
+				let ref = membersRef.orderByChild("member/baseGroup").equalTo(gropId);
+				return $firebaseArray(ref);
 			},
 			/* Returns a list of Group records (from $firebaseArray) that are
 			 * present in the Member's acess rules folder. */
