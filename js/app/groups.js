@@ -78,22 +78,26 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 	    };
 
 	    $scope.deleteGroup = function() {
-	    	if( $scope.groupId ){
-					GroupsSvc.loadAllGroupsList().$loaded().then(
-						function(list) {
-							let record = GroupsSvc.getGroupFromArray($scope.groupId);
-							let status = record.group.status;
-							list.$remove(record).then(function(ref) {
-								cleanScope();
-						    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
-						    AuditSvc.recordAudit(ref.key, "delete", "groups");
-								GroupsSvc.decreaseGroupsStatusCounter(status);
-								$location.path( "/groups");
-							}).catch(function(err) {
-								$rootScope.response = { groupMsgError: err};
-							});
-				  });
-		    }
+				if($rootScope.currentSession.user.type == 'user'){
+					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
+				}else{
+		    	if( $scope.groupId ){
+						GroupsSvc.loadAllGroupsList().$loaded().then(
+							function(list) {
+								let record = GroupsSvc.getGroupFromArray($scope.groupId);
+								let status = record.group.status;
+								list.$remove(record).then(function(ref) {
+									cleanScope();
+							    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
+							    AuditSvc.recordAudit(ref.key, "delete", "groups");
+									GroupsSvc.decreaseGroupsStatusCounter(status);
+									$location.path( "/groups");
+								}).catch(function(err) {
+									$rootScope.response = { groupMsgError: err};
+								});
+					  });
+			    }
+				}
 	    };
   	}
 ]);
@@ -189,11 +193,14 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			// getActiveGroupFromArray: function(groupId){
 			// 	return $rootScope.allGroups.$getRecord(groupId);
 			// },
-			addReportReference: function(reportId, report){
+			addReportReference: function(report){
 				//Save the report Id in the Group/reports
-				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
-				let ref = groupsRef.child(report.reunion.groupId).child("reports").push();
-				ref.set(record);
+				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
+				ref.set({date:firebase.database.ServerValue.TIMESTAMP});
+			},
+			removeReportReference: function(reportId,groupId){
+				let ref = groupsRef.child(groupId).child("reports").child(reportId);
+				ref.set(null);
 			},
 			getAccessRulesForGroup: function (groupId) {
 				let reference = groupsRef.child(groupId).child("access");

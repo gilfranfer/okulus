@@ -129,6 +129,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
+				controller: 'NewReportCntrl',
 				templateUrl: 'views/reports/newreport.html'
 			})
 			.when('/reports/edit/:reportId', {

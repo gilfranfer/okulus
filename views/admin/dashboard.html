@@ -43,6 +43,9 @@
 </section>
 
 <section ng-controller="ReportsDashCntrl" ng-if="currentSession.user.type == 'admin'">
+  <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
+    {{response.reportMsgOk}}
+  </div>
   <article ng-include="'views/weeks/weekReportSelector.html'"></article>
   <article ng-include="'views/reports/reportsTable.html'"></article>
   <article ng-include="'views/reports/reportCharts.html'"></article>

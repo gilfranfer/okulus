@@ -80,12 +80,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					statusLbl:"Estado de la Reunión",
 					cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
 					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
-					attendanceLegend: "Asistencia",
-					membersLbl: "Miembros", guestsLbl: "Invitados",
+					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
+					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados",
 					maleLbl: "Hombres", femaleLbl: "Mujeres",
 					maleAbrev: "H", femaleAbrev: "M",
 					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
-					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie"
+					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie",
+					noMembersList:"No se ha registrado la asistencia de Miembros",
+					noGuestsList:"No se ha registrado la asistencia de Invitados"
 				},
 				phone:{
 					phoneLbl:"Teléfono", phoneHint:"228 8112233"
