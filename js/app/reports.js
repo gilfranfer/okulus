@@ -9,7 +9,6 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			if(groupId){
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
-					//console.log(report);
 					if(report.reunion.groupId == groupId){
 						reportsList.push(report);
 					}
@@ -23,7 +22,6 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		filterReportsForUser = function(accessGroups){
 			let reportsList = [];
 			$scope.reportsForSelectedWeek.forEach( function(report){
-				//console.log(report);
 				if(accessGroups.has(report.reunion.groupId)){
 					reportsList.push(report);
 				}
@@ -102,10 +100,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			return total;
 		};
 
-		cleanAttendance = function() {
-			let attendance = {
-				total: 0, guests:{total:0}, members:{total:0}
-			};
+		// cleanAttendance = function() {
 			// let attendance = {
 			// 	total: 0,
 			// 	guests:{
@@ -117,12 +112,12 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			// 		female:{kid:0, young:0, adult:0}
 			// 	}
 			// };
-			return attendance;
-		}
+		// 	return attendance;
+		// }
 
 		$scope.saveOrUpdateReport = function(){
 			if($scope.reunion.status == "canceled"){
-				$scope.attendance = cleanAttendance();
+				$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 				$scope.reunion.duration = 0;
 				$scope.reunion.money = 0;
 			}
@@ -131,9 +126,12 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			let guestsAttendanceList = $scope.attendance.guests.list;
 			let record = {reunion: $scope.reunion, attendance: $scope.attendance};
 			record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
-			record.attendance.total = getTotalAttendance(record.attendance);
+
 			record.attendance.members.list = null;
 			record.attendance.guests.list = null;
+			record.attendance.members.total = membersAttendanceList?membersAttendanceList.length:0;
+			record.attendance.guests.total = guestsAttendanceList?guestsAttendanceList.length:0;
+			record.attendance.total = record.attendance.guests.total + 	record.attendance.members.total ;
 
 			let reportRef = undefined;
 			let successMessage = undefined;
@@ -154,12 +152,16 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				if(error){
 					$scope.response = { reportMsgError: error};
 				}else{
-					membersAttendanceList.forEach(function(element) {
-						repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
-					});
-					guestsAttendanceList.forEach(function(element) {
-						repRef.child("attendance/guests/list").push({guestName:element.guestName});
-					});
+					if(membersAttendanceList){
+						membersAttendanceList.forEach(function(element) {
+							repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
+						});
+					}
+					if(guestsAttendanceList){
+						guestsAttendanceList.forEach(function(element) {
+							repRef.child("attendance/guests/list").push({guestName:element.guestName});
+						});
+					}
 					/*For some reason the message is not displayed until you interact with any form element*/
 				}
 			});
@@ -168,11 +170,9 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			let obj = ReportsSvc.getReportObj(repRef.key);
 			obj.$loaded().then(function() {
 				if(membersAttendanceList){
-					// console.log("HAS MEMBERS LIST");
 					$scope.attendance.members.list = Object.values(membersAttendanceList);
 				}
 				if(guestsAttendanceList){
-					// console.log("HAS GUESTS LIST");
 					$scope.attendance.guests.list = Object.values(guestsAttendanceList);
 				}
 
@@ -198,14 +198,12 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
 							reportId = reportObj.$id;
 							groupId = reportObj.reunion.groupId;
-							console.log(reportId,groupId);
 
 							reportObj.$remove().then(function(ref) {
 								cleanScope();
 								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
 								AuditSvc.recordAudit(ref.key, "delete", "reports");
 								//remove the report reference from the group
-								console.log(reportId,groupId);
 								GroupsSvc.removeReportReference(reportId,groupId);
 							}, function(error) {
 								$rootScope.response = { reportMsgError: err};
@@ -271,7 +269,6 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		$scope.removeGuestAttendance = function (whichMember) {
 			let guestName = whichMember.guestName;
 			$scope.attendance.guests.list.forEach(function(member,idx) {
-				console.log(member);
 					if(member.guestName == guestName){
     				$scope.attendance.guests.list.splice(idx, 1);
 						$scope.response = { guestsListOk: guestName + " fue removido de la lista"};
@@ -286,9 +283,7 @@ okulusApp.controller('NewReportCntrl', ['$rootScope', '$scope','$routeParams', '
 		$rootScope.response = null;
 		let whichGroup = $routeParams.groupId;
 		$scope.reunion = { dateObj: new Date(), groupId: whichGroup, status:"completed"};
-		$scope.attendance = { total:0,
-													guests:{ male:{kid:0, young:0, adult:0}, female:{kid:0, young:0, adult:0} },
-													members:{ male:{kid:0, young:0, adult:0}, female:{kid:0, young:0, adult:0} } };
+		$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 
 		$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(whichGroup);
 		GroupsSvc.getGroupObj(whichGroup).$loaded().then(function(groupObj) {
@@ -329,16 +324,15 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 			if(record && record.reunion){
 				$scope.reportId = record.$id;
 				$scope.reunion = record.reunion;
+				if(record.reunion.date){
+					$scope.reunion.dateObj = new Date(record.reunion.date.year, record.reunion.date.month-1, record.reunion.date.day);
+				}
+
 				$scope.attendance = record.attendance;
 				if($scope.attendance.members.list){
 					$scope.attendance.members.list = Object.values(record.attendance.members.list);}
 				if($scope.attendance.guests.list){
 					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);}
-				if(record.reunion.date){
-					$scope.reunion.dateObj = new Date(record.reunion.date.year,
-												  record.reunion.date.month-1,
-												  record.reunion.date.day);
-				}
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
 			}else{
 				$location.path( "/error/norecord" );
