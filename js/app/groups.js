@@ -82,25 +82,29 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
 				}else{
 		    	if( $scope.groupId ){
-						GroupsSvc.loadAllGroupsList().$loaded().then(
-							function(list) {
-								let record = GroupsSvc.getGroupFromArray($scope.groupId);
-								let status = record.group.status;
-								list.$remove(record).then(function(ref) {
-									cleanScope();
-							    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
-							    AuditSvc.recordAudit(ref.key, "delete", "groups");
+						GroupsSvc.getGroupObj($scope.groupId).$loaded().then( function (groupObj) {
+							let status = groupObj.group.status;
+							let accessList = groupObj.access;
+							if( !groupObj.reports ){
+								groupObj.$remove().then(function(ref) {
+									$rootScope.response = { groupMsgOk: "Grupo Eliminado"};
+									AuditSvc.recordAudit(ref.key, "delete", "groups");
 									GroupsSvc.decreaseGroupsStatusCounter(status);
+									MembersSvc.deleteMembersAccess(accessList);
 									$location.path( "/groups");
-								}).catch(function(err) {
+								}, function(error) {
 									$rootScope.response = { groupMsgError: err};
+									// console.log("Error:", error);
 								});
-					  });
+							}else{
+								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
+							}
+						});
 			    }
 				}
 	    };
-  	}
-]);
+
+}]);
 
 okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc','MembersSvc',
 	function($scope, $routeParams, $location, GroupsSvc,MembersSvc){

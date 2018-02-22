@@ -246,6 +246,17 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				let ref = membersRef.orderByChild("member/baseGroup").equalTo(gropId);
 				return $firebaseArray(ref);
 			},
+			//Receives the access list from a Group = { accessRuleId: {memberId,mamberName,date} , ...}
+			//The accessRuleId is the same on groups/:gropuId/access and members/:memberId/access
+			//Use accessRuleId.memberId and accessRuleId tu delete the reference from each member to the group
+			deleteMembersAccess: function(accessObj){
+				if(accessObj){
+					for (const accessRuleId in accessObj) {
+						let memberId = accessObj[accessRuleId].memberId;
+						membersRef.child(memberId).child("access").child(accessRuleId).set(null);
+					}
+				}
+			},
 			/* Returns a list of Group records (from $firebaseArray) that are
 			 * present in the Member's acess rules folder. */
 			getMemberGroups: function(whichMember) {
