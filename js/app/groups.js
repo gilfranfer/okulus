@@ -196,7 +196,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			addReportReference: function(report){
 				//Save the report Id in the Group/reports
 				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
-				ref.set({date:firebase.database.ServerValue.TIMESTAMP});
+				ref.set({weekId:report.reunion.weekId,date:firebase.database.ServerValue.TIMESTAMP});
 			},
 			removeReportReference: function(reportId,groupId){
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);
