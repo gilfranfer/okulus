@@ -157,12 +157,6 @@
                 {{m.member.shortname}}
               </option>
             </select>
-            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
-              {{response.membersListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
-              {{response.membersListOk}}
-            </div>
           </div>
           <div class="col-4">
             <button type="button" ng-click="addMemberAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addmemberId">
@@ -194,6 +188,12 @@
           </table>
         </div>
         <!-- Alerts -->
+        <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+          {{response.membersListError}}
+        </div>
+        <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+          {{response.membersListOk}}
+        </div>
         <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
           {{i18n.forms.report.noMembersList}}
         </div>
@@ -208,12 +208,6 @@
         <div class="row">
           <div class="col-8">
             <input type="text" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/>
-            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
-              {{response.guestsListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
-              {{response.guestsListOk}}
-            </div>
           </div>
           <div class="col-4">
             <button type="button" ng-click="addGuestAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addGuestName">
@@ -248,6 +242,12 @@
         <!-- Alerts -->
         <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
           {{i18n.forms.report.noGuestsList}}
+        </div>
+        <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+          {{response.guestsListError}}
+        </div>
+        <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+          {{response.guestsListOk}}
         </div>
       </div>
     </div>
