@@ -160,7 +160,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					titles:{
 						weekSection: "Buscador de Reportes",
 						reportsList: "Reportes",
-						attendance: "Asistencia",
+						attendance: "Reuniones y Asistencia",
 						money: "Diezmo",
 					},
 					reportTable:{
