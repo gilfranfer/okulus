@@ -1,9 +1,9 @@
-<section ng-controller="ReportCntrl">
+<section ng-controller="ReportFormCntrl">
 
-<form class="mt-3" name="reportForm" novalidate ng-submit="saveOrUpdateReport()">
+<form name="reportForm" novalidate ng-submit="saveOrUpdateReport()">
 
   <!-- Basic Group Information -->
-  <fieldset class="mb-4">
+  <fieldset class="mt-5">
     <legend>{{i18n.forms.report.title}}</legend>
     <!-- Group and Host -->
     <div class="form-row">
@@ -115,8 +115,8 @@
     </div>
   </fieldset>
 
-<!-- Study Details -->
-  <fieldset class="mb-4">
+  <!-- Study Details -->
+  <fieldset class="mt-3">
     <legend>{{i18n.forms.report.studyLegend}}</legend>
 
     <div class="form-row">
@@ -139,8 +139,119 @@
   </fieldset>
 
 	<!-- Attendance -->
-  <fieldset class="mb-4">
+  <fieldset class="mt-3">
     <legend>{{i18n.forms.report.attendanceLegend}}</legend>
+    <div class="row">
+      <!-- Members -->
+      <div class="col-md">
+        <div class="row mt-3">
+          <div class="col-8">
+            <label for="memberSelect">{{i18n.forms.report.membersLbl}}</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <select id="memberSelect" class="form-control form-control-lg"
+                ng-model="addmemberId" ng-required="false">
+              <option ng-repeat="m in groupMembersList" value="{{m.$id}}">
+                {{m.member.shortname}}
+              </option>
+            </select>
+            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+              {{response.membersListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+              {{response.membersListOk}}
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="button" ng-click="addMemberAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addmemberId">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+        <!-- Members Table -->
+        <div class="pre-scrollable mt-3" ng-if="attendance.members.list && attendance.members.list.length > 0">
+          <table class="table table-md table-striped">
+            <thead>
+              <tr>
+                <th scope="col">{{i18n.forms.report.attendanceList}}</th>
+                <th scope="col">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="element in attendance.members.list">
+                <td scope="row">
+                  {{element.memberName}}
+                </td>
+                <td scope="row">
+                  <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
+                    {{i18n.btns.deleteBtn}}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Alerts -->
+        <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
+          {{i18n.forms.report.noMembersList}}
+        </div>
+      </div>
+      <!-- Guests -->
+      <div class="col-md">
+        <div class="row mt-3">
+          <div class="col-8">
+            <label>{{i18n.forms.report.guestsLbl}}</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <input type="text" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/>
+            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+              {{response.guestsListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+              {{response.guestsListOk}}
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="button" ng-click="addGuestAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addGuestName">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+        <!-- Guests Table -->
+        <div class="pre-scrollable mt-3" ng-if="attendance.guests.list && attendance.guests.list.length > 0">
+          <table class="table table-md table-striped">
+            <thead>
+              <tr>
+                <th scope="col">{{i18n.forms.report.attendanceList}}</th>
+                <th scope="col">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="element in attendance.guests.list">
+                <td scope="row">
+                  {{element.guestName}}
+                </td>
+                <td scope="row">
+                  <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
+                    {{i18n.btns.deleteBtn}}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
+          {{i18n.forms.report.noGuestsList}}
+        </div>
+      </div>
+    </div>
+
     <div class="form-row mt-3">
       <!-- Members -->
       <div class="col">
@@ -344,10 +455,11 @@
         </div>
       </div>
     </div>
+
   </fieldset>
 
   <!-- Notes and Comments -->
-  <fieldset class="mb-4">
+  <fieldset class="mt-3">
     <legend>{{i18n.forms.report.notesLegend}}</legend>
     <div class="form-row">
       <div class="col-md form-group">
@@ -374,10 +486,10 @@
   </div>
 
   <!-- Buttons rows -->
-  <div class="form-row">
+  <div class="form-row mt-3">
     <div class="col-sm form-group" >
-      <button type="submit" class="btn btn-lg btn-block btn-success"
-        ng-disabled="reportForm.$invalid || reportForm.$pristine">
+      <button type="submit" class="btn btn-lg btn-block btn-success">
+        <!-- ng-disabled="reportForm.$invalid || reportForm.$pristine"> -->
         {{i18n.btns.saveBtn}}
       </button>
     </div>
@@ -399,18 +511,6 @@
       </div>
     </div>
   </div>
-  <!-- <div class="form-row">
-    <div class="col form-group">
-      <a class="btn btn-lg btn-block btn-primary" href="#!/admin/dashboard">
-        {{i18n.btns.returnAdminDashBtn}}
-      </a>
-    </div>
-    <div class="col form-group">
-      <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
-        {{i18n.btns.returnGroupsBtn}}
-      </a>
-    </div>
-  </div> -->
 
 </form>
 
