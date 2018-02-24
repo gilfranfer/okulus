@@ -73,7 +73,7 @@
           <tr ng-repeat="report in reportsForSelectedWeek | filter:filterText | orderBy:propertyName:reverse ">
             <!-- <td scope="row">{{$index + 1}}</td> -->
             <td scope="row">
-              <a ng-href="#!/reports/edit/{{report.$id}}">
+              <a target="_blank" ng-href="#!/reports/edit/{{report.$id}}">
                 {{report.reunion.groupname}}
               </a>
             </td>

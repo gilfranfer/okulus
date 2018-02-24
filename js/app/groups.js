@@ -1,13 +1,19 @@
-okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope',
-	function(GroupsSvc, $rootScope){
-		$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$scope',
+	function(GroupsSvc, $scope){
+		$scope.groupsList = GroupsSvc.loadAllGroupsList();
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'AuditSvc', 'UtilsSvc',
-	function($rootScope, $scope, $location, GroupsSvc, AuditSvc, UtilsSvc){
+okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'MembersSvc', 'AuditSvc', 'UtilsSvc',
+	function($rootScope, $scope, $location, GroupsSvc, MembersSvc, AuditSvc, UtilsSvc){
 	   	$rootScope.response = null;
 			$scope.provideAddress = true;
+			$scope.membersList = MembersSvc.loadActiveMembers();
+			$scope.membersList.$loaded().then(function(activeMembers){
+				$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+				$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+			});
+
 
 			cleanScope = function(){
 	    	$scope.groupId = null;
@@ -63,36 +69,48 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
 					obj.$loaded().then(function(data) {
 						$scope.groupId = newgroupRef.key;
-						$scope.response = { groupMsgOk: "Grupo Creado"};
+						$rootScope.response = { groupMsgOk: "Grupo Creado"};
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
-						GroupsSvc.updateGroupsStatusCounter(data.group.status);
+						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
+						$location.path( "/groups");
 					});
 	    	}
 	    };
 
 	    $scope.deleteGroup = function() {
-	    	if( $scope.groupId ){
-					GroupsSvc.loadAllGroupsList().$loaded().then(
-						function(list) {
-							let record = GroupsSvc.getGroupFromArray($scope.groupId);
-							list.$remove(record).then(function(ref) {
-								cleanScope();
-						    $rootScope.response = { groupMsgOk: "Grupo Eliminado"};
-						    AuditSvc.recordAudit(ref.key, "delete", "groups");
-								$location.path( "/groups");
-							}).catch(function(err) {
-								$rootScope.response = { groupMsgError: err};
-							});
-				  });
-		    }
+				if($rootScope.currentSession.user.type == 'user'){
+					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
+				}else{
+		    	if( $scope.groupId ){
+						GroupsSvc.getGroupObj($scope.groupId).$loaded().then( function (groupObj) {
+							let status = groupObj.group.status;
+							let accessList = groupObj.access;
+							if( !groupObj.reports ){
+								groupObj.$remove().then(function(ref) {
+									$rootScope.response = { groupMsgOk: "Grupo Eliminado"};
+									AuditSvc.recordAudit(ref.key, "delete", "groups");
+									GroupsSvc.decreaseGroupsStatusCounter(status);
+									MembersSvc.deleteMembersAccess(accessList);
+									$location.path( "/groups");
+								}, function(error) {
+									$rootScope.response = { groupMsgError: err};
+									// console.log("Error:", error);
+								});
+							}else{
+								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
+							}
+						});
+			    }
+				}
 	    };
-  	}
-]);
 
-okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc',
-	function($scope, $routeParams, $location, GroupsSvc){
+}]);
+
+okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc','MembersSvc',
+	function($scope, $routeParams, $location, GroupsSvc,MembersSvc){
 		let whichGroup = $routeParams.groupId;
 		$scope.provideAddress = true;
+		$scope.membersList = MembersSvc.loadActiveMembers();
 
 		/* When opening "Edit" page from the Groups List, we can use the
 		"allGroups" firebaseArray from rootScope to get the specific Group data */
@@ -179,17 +197,20 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			// getActiveGroupFromArray: function(groupId){
 			// 	return $rootScope.allGroups.$getRecord(groupId);
 			// },
-			addReportReference: function(reportId, report){
+			addReportReference: function(report){
 				//Save the report Id in the Group/reports
-				let record = { report:reportId, date:firebase.database.ServerValue.TIMESTAMP };
-				let ref = groupsRef.child(report.reunion.groupId).child("reports").push();
-				ref.set(record);
+				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
+				ref.set({weekId:report.reunion.weekId,date:firebase.database.ServerValue.TIMESTAMP});
+			},
+			removeReportReference: function(reportId,groupId){
+				let ref = groupsRef.child(groupId).child("reports").child(reportId);
+				ref.set(null);
 			},
 			getAccessRulesForGroup: function (groupId) {
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
 			},
-			updateGroupsStatusCounter(status){
+			increaseGroupsStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(
 					function( groupStatusCounter ){
 						if(status == 'active'){
@@ -198,8 +219,31 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
 						}
 						groupStatusCounter.$save();
-					}
-				);
+					});
+			},
+			decreaseGroupsStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( groupStatusCounter ){
+						if(status == 'active'){
+							groupStatusCounter.active = groupStatusCounter.active-1;
+						}else{
+							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
+						}
+						groupStatusCounter.$save();
+					});
+			},
+			updateGroupsStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( groupStatusCounter ){
+						if(status == 'active'){
+							groupStatusCounter.active = groupStatusCounter.active+1;
+							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
+						}else{
+							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
+							groupStatusCounter.active = groupStatusCounter.active-1;
+						}
+						groupStatusCounter.$save();
+					});
 			}
 		};
 	}

@@ -25,3 +25,12 @@
 .sortorder.reverse:after {
   content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
 }
+
+.offline {
+  color: #ff0000;
+	font-weight: bold;
+}
+.online {
+  color: #28a745;
+	font-weight: bold;
+}

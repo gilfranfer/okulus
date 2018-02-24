@@ -1,22 +1,26 @@
 <!-- Members List -->
-<section>
-  <div class="row mb-1">
-      <h2>{{i18n.admin.membersList.title}}</h2>
-  </div>
-  <div class="row mb-1">
-      <p>{{i18n.admin.membersList.description}}</p>
-  </div>
-
-  <div class="row mb-3">
-    <div class="col-8">
-      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+<section ng-if="currentSession.user.type == 'admin'">
+  <article class="card mb-3">
+    <div class="card-header">
+      {{i18n.admin.membersList.title}}
     </div>
-    <div class="col-4">
-      <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
-        {{i18n.btns.newMemberBtn}}
-      </a>
+    <div class="card-body">
+      <div class="card-text">
+          <p>{{i18n.admin.membersList.description}}</p>
+      </div>
+      <!-- Group Search and New Button -->
+      <div class="row mb-3">
+        <div class="col-8">
+          <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+        </div>
+        <div class="col-4">
+          <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
+            {{i18n.btns.newMemberBtn}}
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
+  </article>
 
     <!-- Alert/Error row -->
   <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
@@ -37,7 +41,7 @@
       {{i18n.alerts.loading}}
     </div>
   </div>
-    
+
   <div class="row">
 
     <div class="col-md-6 col-lg-4 mb-3"
@@ -79,3 +83,5 @@
   </div>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

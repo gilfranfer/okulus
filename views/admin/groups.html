@@ -1,24 +1,27 @@
 <!-- Admin Groups List View -->
-<section id="adminGroupsList" ng-if="currentUser.type == 'admin'">
-  <!-- Title and page description -->
-  <div class="row mb-1">
-      <h2>{{i18n.admin.groupsList.title}}</h2>
-  </div>
-  <div class="row mb-1">
-      <p>{{i18n.admin.groupsList.description}}</p>
-  </div>
+<section id="adminGroupsList" ng-if="currentSession.user.type == 'admin'">
 
-  <!-- Group Search and New Button -->
-  <div class="row mb-3">
-    <div class="col-8">
-      <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+  <article class="card mb-3">
+    <div class="card-header">
+      {{i18n.admin.groupsList.title}}
     </div>
-    <div class="col-4">
-      <a class="btn btn-lg btn-block btn-success" href="#!/groups/new">
-        {{i18n.btns.newgroupBtn}}
-      </a>
+    <div class="card-body">
+      <div class="card-text">
+          <p>{{i18n.admin.groupsList.description}}</p>
+      </div>
+      <!-- Group Search and New Button -->
+      <div class="row mb-3">
+        <div class="col-8">
+          <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
+        </div>
+        <div class="col-4">
+          <a class="btn btn-lg btn-block btn-success" href="#!/groups/new">
+            {{i18n.btns.newgroupBtn}}
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
+  </article>
 
   <!-- Alerts to show Response Message (Used after redirect from Group Delete) -->
   <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
@@ -33,7 +36,14 @@
       {{i18n.admin.groupsList.noGroupsError}}
     </div>
   </div>
+  <div class="col"  ng-show="!groupsList">
+    <div class="alert alert-warning" role="alert">
+      {{i18n.alerts.loading}}
+    </div>
+  </div>
 
   <article ng-include="'views/groups/groupsList.html'"></article>
 
 </section>
+
+<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

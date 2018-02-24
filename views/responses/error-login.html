@@ -1,0 +1,21 @@
+<section>
+
+	<div class="jumbotron">
+		<h1 class="display-3">{{i18n.error.title}}</h1>
+		<hr class="my-4"/>
+		<p class="lead"/>
+			<div class="alert alert-danger" role="alert">
+				{{i18n.error.nologin}}
+			</div>
+			<div class="row">
+				<!-- Show Login and Register buttons only if no user is logged -->
+				<div class="col">
+					<a role="button" class="btn btn-block btn-success btn-lg" href="#!/login">{{i18n.btns.login}}</a>
+				</div>
+				<div class="col">
+					<a role="button" class="btn btn-block btn-primary btn-lg" href="#!/register">{{i18n.btns.register}}</a>
+				</div>
+			</div>
+	</div>
+
+</section>

@@ -44,10 +44,10 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 						$scope.response = { memberMsgError: error};
 					}else{
 						$scope.response = { memberMsgOk: "Miembro Actualizado"};
-					    AuditSvc.recordAudit(mRef.key, "update", "members");
-					    console.log(orgiStatus);
-					    if(orgiStatus != record.member.status){
-							MembersSvc.updateMembersStatusCounter(record.member.status);
+					  AuditSvc.recordAudit(mRef.key, "update", "members");
+
+					  if(orgiStatus != record.member.status){
+							MembersSvc.updateStatusCounter(record.member.status);
 						}
 					}
 				});
@@ -69,32 +69,65 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 				let obj = MembersSvc.getMember(newmemberRef.key);
 				obj.$loaded().then(function(data) {
 					$scope.memberId = newmemberRef.key;
-					$scope.response = { memberMsgOk: "Miembro Creado"};
+					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 					console.log("update counter")
-					MembersSvc.updateMembersStatusCounter(data.member.status);
+					MembersSvc.increaseStatusCounter(data.member.status);
+					$location.path( "/members");
 				});
 			}
 		};
 
-	    $scope.deleteMember = function() {
-	    	if( $scope.memberId ){
+	  $scope.deleteMember = function() {
+			if($rootScope.currentSession.user.type == 'user'){
+				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
+			}else{
+				if( $scope.memberId ){
 					MembersSvc.loadAllMembersList().$loaded().then(
 						function(list) {
 							let record = MembersSvc.getMemberFromArray($scope.memberId);
+							let status = record.member.status;
 							list.$remove(record).then(function(ref) {
 								cleanScope();
 						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
 						    AuditSvc.recordAudit(ref.key, "delete", "members");
+								MembersSvc.decreaseStatusCounter(status);
 								$location.path( "/members");
 							}).catch(function(err) {
 								$rootScope.response = { memberMsgError: err};
 							});
 					  });
-	    	}
-	    };
+				}
+			}
+		};
 
-  	}
+		$scope.isHost = function(value){
+			validateMemberObj();
+			$scope.member.isHost = value;
+			//console.log($scope.member);
+		};
+		$scope.isLeader = function(value){
+			validateMemberObj();
+			$scope.member.isLeader = value;
+			//console.log($scope.member);
+		};
+		$scope.isTrainee = function(value){
+			validateMemberObj();
+			$scope.member.isTrainee = value;
+			//console.log($scope.member);
+		};
+		$scope.canBeUser = function(value){
+			validateMemberObj();
+			$scope.member.canBeUser = value;
+			//console.log($scope.member);
+		};
+
+		validateMemberObj = function () {
+			if(!$scope.member){
+				$scope.member = {}
+			}
+		}
+  }
 ]);
 
 okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location', 'MembersSvc',
@@ -174,6 +207,34 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				if(!$rootScope.allActiveMembers){
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
+				return $rootScope.allActiveMembers;
+			},
+			filterActiveHosts: function(activeMembers){
+				let activeHosts = [];
+				activeMembers.forEach(function(host) {
+						if(host.member.isHost){
+							activeHosts.push( host );
+						}
+				});
+				return activeHosts;
+			},
+			filterActiveLeads: function(activeMembers){
+				let activeLeads = [];
+				activeMembers.forEach(function(lead) {
+						if(lead.member.isLeader){
+							activeLeads.push( lead );
+						}
+				});
+				return activeLeads;
+			},
+			filterActiveTrainees: function(activeMembers){
+				let activeTrainees = [];
+				activeMembers.forEach(function(lead) {
+						if(lead.member.isTrainee){
+							activeTrainees.push( lead );
+						}
+				});
+				return activeTrainees;
 			},
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);
@@ -181,38 +242,80 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getNewMemberReference: function(){
 				return membersRef.push();
 			},
+			getMembersForBaseGroup: function(gropId){
+				let ref = membersRef.orderByChild("member/baseGroup").equalTo(gropId);
+				return $firebaseArray(ref);
+			},
+			//Receives the access list from a Group = { accessRuleId: {memberId,mamberName,date} , ...}
+			//The accessRuleId is the same on groups/:gropuId/access and members/:memberId/access
+			//Use accessRuleId.memberId and accessRuleId tu delete the reference from each member to the group
+			deleteMembersAccess: function(accessObj){
+				if(accessObj){
+					for (const accessRuleId in accessObj) {
+						let memberId = accessObj[accessRuleId].memberId;
+						membersRef.child(memberId).child("access").child(accessRuleId).set(null);
+					}
+				}
+			},
 			/* Returns a list of Group records (from $firebaseArray) that are
 			 * present in the Member's acess rules folder. */
 			getMemberGroups: function(whichMember) {
-				GroupsSvc.loadAllGroupsList().$loaded().then(
-					function(allGroups){
-						$firebaseArray(membersRef.child(whichMember).child("access")).$loaded().then(
-							function(memberRules) {
-								let myGroups = [];
-								memberRules.forEach(function(rule) {
-									let group = allGroups.$getRecord(rule.groupId);
-									if( group != null){
-										myGroups.push( group );
-									}
-								});
-								$rootScope.groupsList = myGroups;
+				return new Promise((resolve, reject) => {
+
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
+					}).then( function(memberRules) {
+						let myGroups = [];
+						memberRules.forEach(function(rule) {
+							let group = $rootScope.allGroups.$getRecord(rule.groupId);
+							if( group != null){
+								myGroups.push( group );
 							}
-						);
-					}
-				);
-				return $rootScope.groupsList;
+						});
+						$rootScope.groupsList = myGroups;
+						resolve(myGroups);
+					});
+
+				});
 			},
-			updateMembersStatusCounter(status){
+			findMemberByEmail: function(email){
+				let ref = membersRef.orderByChild("member/email").equalTo(email);
+				return $firebaseArray(ref);
+			},
+			increaseStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(
-					function( memberStatusCounter ){
+					function( statusCounter ){
 						if(status == 'active'){
-							memberStatusCounter.active = memberStatusCounter.active+1;
+							statusCounter.active = statusCounter.active+1;
 						}else{
-							memberStatusCounter.inactive = memberStatusCounter.inactive+1;
+							statusCounter.inactive = statusCounter.inactive+1;
 						}
-						memberStatusCounter.$save();
-					}
-				);
+						statusCounter.$save();
+					});
+			},
+			decreaseStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( statusCounter ){
+						if(status == 'active'){
+							statusCounter.active = statusCounter.active-1;
+						}else{
+							statusCounter.inactive = statusCounter.inactive-1;
+						}
+						statusCounter.$save();
+					});
+			},
+			updateStatusCounter(status){
+				$firebaseObject(counterRef).$loaded().then(
+					function( statusCounter ){
+						if(status == 'active'){
+							statusCounter.active = statusCounter.active+1;
+							statusCounter.inactive = statusCounter.inactive-1;
+						}else{
+							statusCounter.inactive = statusCounter.inactive+1;
+							statusCounter.active = statusCounter.active-1;
+						}
+						statusCounter.$save();
+					});
 			}
 		};
 	}
