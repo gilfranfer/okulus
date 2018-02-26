@@ -1,6 +1,5 @@
 <section>
-  <article ng-include="'views/responses/error-nomember.html'" ng-if="!currentSession.member"></article>
-  <article ng-show="currentSession.member" >
+  <article>
     <div class="row mb-3 mt-5">
       <div class="col alert alert-info" role="alert">
         <h1>{{i18n.home.welcome}}
@@ -42,7 +41,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <!-- <div class="row">
       <div class="col mb-3">
         <div class="card h-100">
           <div class="card-header">
@@ -55,7 +54,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
   </article>
 </section>

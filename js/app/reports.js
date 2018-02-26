@@ -37,20 +37,25 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			filterReportsForGroup(groupId);
 			/*Now filter reports according to member access list, so he can only see
 			reports linked to the groups he has access to */
-			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
-			let accessGroups = new Map();
-			accessRules.$loaded().then(function(rules) {
-				rules.forEach( function(rule){
-					accessGroups.set(rule.groupId,rule);
-				});
-				if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
-					//Even an Admin user will get his Reports Filtered when using My Groups view (isAdminDashView = false)
-					//Reports should not be filtered for the Admi only when comming from Admin Dashboard
-				}else{
-					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
-				}
+			let memberId = $rootScope.currentSession.user.memberId;
+			if(!memberId && $rootScope.currentSession.user.isRoot){
 				updateCharts(groupId);
-			});
+			}else{
+				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
+				let accessGroups = new Map();
+				accessRules.$loaded().then(function(rules) {
+					rules.forEach( function(rule){
+						accessGroups.set(rule.groupId,rule);
+					});
+					if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
+						//Even an Admin user will get his Reports Filtered when using My Groups view (isAdminDashView = false)
+						//Reports should not be filtered for the Admi only when comming from Admin Dashboard
+					}else{
+						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
+					}
+					updateCharts(groupId);
+				});
+			}
 		};
 
 		$scope.sortBy = function(propertyName) {
@@ -66,6 +71,12 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
 			let groupId = $scope.specificGroup;
 
+			/* If user didnt select a group, but only has access to 1 groups
+			   then we better select that group for him*/
+			if(!groupId && $scope.groupsList.length == 1){
+				groupId = ($scope.groupsList[0].$id);
+			}
+
 			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
 			$scope.reportsArray = reportsArray;
 
@@ -79,6 +90,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 			$rootScope.weekfrom = fromWeek;
 			$rootScope.weekto = toWeek;
+			$rootScope.specificGroup = groupId;
 			//$rootScope.specificGroup = groupId;
 		};
 }]);
@@ -191,6 +203,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				AuditSvc.recordAudit(repRef.key, action, "reports");
 				if(action == "create"){
 					GroupsSvc.addReportReference(obj);
+					ReportsSvc.increasePendingReportCounter();
 					$rootScope.response = $scope.response
 					$location.path("reports/edit/"+repRef.key);
 				}
@@ -263,6 +276,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.attendance.guests.list.push({guestName:guestName});
 				$scope.response = { guestsListOk: guestName + " agregado a la lista"};
 			}
+			 $scope.addGuestName = "";
 		};
 
 		$scope.removeMemberAttendance = function (whichMember) {
@@ -356,6 +370,7 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let reportsRef = firebase.database().ref().child('pibxalapa/reports');
+		let counterRef = firebase.database().ref().child('pibxalapa/counters/reports');
 
 		return {
 			allReportsLoaded: function() {
@@ -395,6 +410,13 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getMembersAttendaceListForReport: function (whichReport) {
 				let attendanceListRef = reportsRef.child(whichReport).child("attendance/memberss/list");
 				return $firebaseArray(attendanceListRef);
+			},
+			increasePendingReportCounter: function() {
+				$firebaseObject(counterRef).$loaded().then(
+					function( counter ){
+						counter.pending = counter.pending+1;
+						counter.$save();
+					});
 			}
 		};
 	}

@@ -8,11 +8,11 @@
       <div class="card-body">
         <div ng-if="globalCounter.groups">
           <h3><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span>
-            {{i18n.admin.dashboard.counters.groups}} </h3>
+            {{i18n.admin.dashboard.counters.total}} </h3>
           <h3><span class="badge badge-success">{{globalCounter.groups.active}}</span>
-            {{i18n.admin.dashboard.counters.activeGroups}} </h3>
+            {{i18n.admin.dashboard.counters.active}} </h3>
           <h3><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span>
-            {{i18n.admin.dashboard.counters.inactiveGroups}} </h3>
+            {{i18n.admin.dashboard.counters.inactive}} </h3>
         </div>
         <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
           {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
@@ -20,6 +20,7 @@
       </div>
     </div>
   </article>
+
   <article id="memberSummary" class="col-sm mb-3">
     <div class="card h-100">
       <div class="card-header">
@@ -28,15 +29,39 @@
       <div class="card-body">
         <div ng-if="globalCounter.members">
           <h3><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span>
-          {{i18n.admin.dashboard.counters.members}} </h3>
+          {{i18n.admin.dashboard.counters.total}} </h3>
           <h3><span class="badge badge-success">{{globalCounter.members.active}}</span>
-          {{i18n.admin.dashboard.counters.activeMembers}} </h3>
+          {{i18n.admin.dashboard.counters.active}} </h3>
           <h3><span class="badge badge-danger">{{globalCounter.members.inactive}}</span>
-          {{i18n.admin.dashboard.counters.inactiveMembers}} </h3>
+          {{i18n.admin.dashboard.counters.inactive}} </h3>
         </div>
         <a href="#!/members" class="btn btn-primary btn-lg btn-block">
           {{i18n.btns.viewBtn}} {{i18n.navigation.admin.members}}
         </a>
+      </div>
+    </div>
+  </article>
+
+  <article id="reportsSummary" class="col-sm mb-3">
+    <div class="card h-100">
+      <div class="card-header">
+        {{i18n.navigation.admin.reports}}
+      </div>
+      <div class="card-body">
+        <div ng-if="globalCounter.groups">
+          <h3><span class="badge badge-primary">
+            {{globalCounter.reports.approved + globalCounter.reports.rejected + globalCounter.reports.pending}}</span>
+            {{i18n.admin.dashboard.counters.total}} </h3>
+          <h3><span class="badge badge-dark ">{{globalCounter.reports.pending}}</span>
+            {{i18n.admin.dashboard.counters.unapproved}} </h3>
+          <h3><span class="badge badge-success">{{globalCounter.reports.approved}}</span>
+            {{i18n.admin.dashboard.counters.approved}} </h3>
+          <h3><span class="badge badge-danger">{{globalCounter.reports.rejected}}</span>
+            {{i18n.admin.dashboard.counters.rejected}} </h3>
+        </div>
+        <!-- <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
+          {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
+        </a> -->
       </div>
     </div>
   </article>
