@@ -71,6 +71,12 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
 			let groupId = $scope.specificGroup;
 
+			/* If user didnt select a group, but only has access to 1 groups
+			   then we better select that group for him*/
+			if(!groupId && $scope.groupsList.length == 1){
+				groupId = ($scope.groupsList[0].$id);
+			}
+
 			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
 			$scope.reportsArray = reportsArray;
 
@@ -84,6 +90,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 			$rootScope.weekfrom = fromWeek;
 			$rootScope.weekto = toWeek;
+			$rootScope.specificGroup = groupId;
 			//$rootScope.specificGroup = groupId;
 		};
 }]);
