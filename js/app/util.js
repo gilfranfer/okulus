@@ -35,7 +35,8 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 				//update Audit on the object
 				if(action == 'create'){
 					baseRef.child(on).child(id).update({createdOn:firebase.database.ServerValue.TIMESTAMP,createdBy:member});
-				}else if(action == 'update'){
+				}else if(action != 'delete'){
+					//important to keep the if-else
 					baseRef.child(on).child(id).update({lastUpdateOn:firebase.database.ServerValue.TIMESTAMP,lastUpdateBy:member});
 				}
 			}

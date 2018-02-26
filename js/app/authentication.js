@@ -210,3 +210,21 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 		};//return
 	}
 ]);
+
+okulusApp.controller('HomeCntrl', ['$rootScope','$location', 'AuthenticationSvc','$firebaseAuth',
+	function($rootScope,$location, AuthenticationSvc,$firebaseAuth){
+
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+				if(user.isRoot){
+					$location.path("/admin/monitor");
+				}else if(!user.memberId){
+					$location.path("/error/nomember");
+				}else{
+					//continue to Home
+				}
+			});
+		});
+
+	}]
+);

@@ -71,7 +71,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 					$scope.memberId = newmemberRef.key;
 					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
-					console.log("update counter")
+					//console.log("update counter")
 					MembersSvc.increaseStatusCounter(data.member.status);
 					$location.path( "/members");
 				});

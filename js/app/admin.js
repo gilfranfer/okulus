@@ -59,6 +59,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 				if(!counter || !counter.members){
 					counter.members = {active:0,inactive:0};
 					counter.groups = {active:0,inactive:0};
+					counter.reports = {approved:0,pending:0,rejected:0};
 					$scope.globalCounter.$save();
 				}
 			}
