@@ -218,7 +218,7 @@ okulusApp.controller('HomeCntrl', ['$rootScope','$location', 'AuthenticationSvc'
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(user.isRoot){
 					$location.path("/admin/monitor");
-				}else if(!user.member){
+				}else if(!user.memberId){
 					$location.path("/error/nomember");
 				}else{
 					//continue to Home
