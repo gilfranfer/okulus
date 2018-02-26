@@ -191,6 +191,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				AuditSvc.recordAudit(repRef.key, action, "reports");
 				if(action == "create"){
 					GroupsSvc.addReportReference(obj);
+					ReportsSvc.increasePendingReportCounter();
 					$rootScope.response = $scope.response
 					$location.path("reports/edit/"+repRef.key);
 				}
@@ -356,6 +357,7 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let reportsRef = firebase.database().ref().child('pibxalapa/reports');
+		let counterRef = firebase.database().ref().child('pibxalapa/counters/reports');
 
 		return {
 			allReportsLoaded: function() {
@@ -395,6 +397,13 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getMembersAttendaceListForReport: function (whichReport) {
 				let attendanceListRef = reportsRef.child(whichReport).child("attendance/memberss/list");
 				return $firebaseArray(attendanceListRef);
+			},
+			increasePendingReportCounter: function() {
+				$firebaseObject(counterRef).$loaded().then(
+					function( counter ){
+						counter.pending = counter.pending+1;
+						counter.$save();
+					});
 			}
 		};
 	}

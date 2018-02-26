@@ -154,8 +154,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				dashboard:{
 					counters:{
-						groups: "Grupos Existentes", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
-						members: "Miembros Existentes", activeMembers:"Miembros Activos", inactiveMembers:"Miembros Inactivos",
+						total: "Existentes", active:"Activos", inactive:"Inactivos",
+						approved:"Aprobados", unapproved:"Sin Revisar", rejected: "Rechazados",
 						totalReports: "Reuniones", successReports: "Realizadas", canceledReports: "Canceladas"
 					},
 					titles:{
