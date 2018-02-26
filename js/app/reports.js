@@ -276,6 +276,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.attendance.guests.list.push({guestName:guestName});
 				$scope.response = { guestsListOk: guestName + " agregado a la lista"};
 			}
+			 $scope.addGuestName = "";
 		};
 
 		$scope.removeMemberAttendance = function (whichMember) {
