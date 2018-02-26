@@ -80,7 +80,7 @@
   <fieldset class="mb-4">
     <legend>{{i18n.forms.member.membership}}</legend>
     <!-- Group and Status Row -->
-    <div class="form-row" ng-if="currentSession.user.type == 'admin'">
+    <div class="form-row">
       <div class="col-sm form-group">
         <label for="baseGroup">
           {{i18n.forms.member.baseGroupLbl}}
@@ -166,7 +166,7 @@
   </div>
 
   <!-- Buttons rows -->
-  <div class="form-row">
+  <div class="form-row" ng-if="currentSession.user.type == 'admin'">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-success"
         ng-disabled="memberForm.$invalid">
@@ -191,14 +191,18 @@
       </div>
     </div>
   </div>
-  <!-- <div class="form-row">
-    <div class="col form-group">
-      <a class="btn btn-lg btn-block btn-primary" href="#!/members">
-        {{i18n.btns.returnBtn}}
-      </a>
+  <div class="form-row" ng-if="currentSession.user.type == 'user'">
+    <div class="col-sm form-group" >
+      <button type="button" class="btn btn-lg btn-block btn-success" ng-if="!memberId"
+        ng-disabled="memberForm.$invalid" ng-click="requestCreation()">
+        {{i18n.btns.requestCreationBtn}}
+      </button>
+      <button type="button" class="btn btn-lg btn-block btn-success" ng-if="memberId"
+        ng-disabled="memberForm.$invalid" ng-click="requestUpdate()">
+        {{i18n.btns.requestUpdateSaveBtn}}
+      </button>
     </div>
-  </div> -->
-
+  </div>
 </form>
 
 </section>

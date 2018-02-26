@@ -1,7 +1,7 @@
 okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 	function($routeParams, $rootScope){
 		$rootScope.config ={
-			env: "dev",
+			env: "prod",
 			bday:{maxDate:"2017-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
@@ -36,7 +36,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
 				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
 				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
-				login:"Iniciar Sesión", register:"Registrarse"
+				login:"Iniciar Sesión", register:"Registrarse",
+				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
