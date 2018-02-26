@@ -10,14 +10,6 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 		$scope.provideAddress = true;
 		$scope.groupsList = GroupsSvc.loadActiveGroups();
 
-    cleanScope = function(){
-    	$scope.memberId = null;
-    	$scope.member = null;
-    	$scope.address = null;
-    	$scope.response = null;
-			//$rootScope.response = null;
-    };
-
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
 			let record = undefined;
@@ -83,20 +75,26 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
 			}else{
 				if( $scope.memberId ){
-					MembersSvc.loadAllMembersList().$loaded().then(
-						function(list) {
-							let record = MembersSvc.getMemberFromArray($scope.memberId);
-							let status = record.member.status;
-							list.$remove(record).then(function(ref) {
-								cleanScope();
-						    $rootScope.response = { memberMsgOk: "Miembro Eliminado"};
-						    AuditSvc.recordAudit(ref.key, "delete", "members");
+					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
+						if( memberObj.access ){
+							$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Accesos asociados"};
+						}else if( memberObj.reports ){
+							$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
+						}else{
+							let status = memberObj.member.status;
+							//let accessList = memberObj.access;
+							memberObj.$remove().then(function(ref) {
+								$rootScope.response = { memberMsgOk: "Miembro Eliminado"};
+						    	AuditSvc.recordAudit(ref.key, "delete", "members");
 								MembersSvc.decreaseStatusCounter(status);
 								$location.path( "/members");
-							}).catch(function(err) {
+								//GroupSvc.deleteAccessToGroups(accessList);
+							}, function(error) {
 								$rootScope.response = { memberMsgError: err};
+								// console.log("Error:", error);
 							});
-					  });
+						}
+					});
 				}
 			}
 		};

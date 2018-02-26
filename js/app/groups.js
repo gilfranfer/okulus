@@ -210,6 +210,17 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
 			},
+			//Receives the access list from a Member = { accessRuleId: {groupId,groupName,date} , ...}
+			//The accessRuleId is the same on groups/:gropuId/access and groups/:groupId/access
+			//Use accessRuleId.groupId and accessRuleId to delete the reference from each member to the group
+			/*deleteAccessToGroups: function(accessList){
+				if(accessObj){
+					for (const accessRuleId in accessObj) {
+						let groupId = accessObj[accessRuleId].groupId;
+						groupsRef.child(groupId).child("access").child(accessRuleId).set(null);
+					}
+				}
+			},*/
 			increaseGroupsStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(
 					function( groupStatusCounter ){
