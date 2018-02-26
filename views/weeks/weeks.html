@@ -79,17 +79,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Test Section
-  <div class="card mt-3" ng-controller="WeeksTestCntrl" ng-if="config.env !='prod'">
-    <p class="card-header">Generate Test Area</p>
-    <div class="card-body">
-      <button type="button" class="btn btn-lg btn-block btn-success" ng-click="testData()"> Test Data </button>
-      <button type="button" class="btn btn-lg btn-block btn-primary" ng-click="testSelect()"> Test Select </button>
-      <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="deleteTestData()"> Delete Data </button>
-    </div>
-
-  </div>-->
 </section>
 
 <article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

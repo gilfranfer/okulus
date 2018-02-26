@@ -3,9 +3,6 @@ var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
-			.when('/about', {
-				templateUrl: 'views/about.html'
-			})
 			.when('/login',{
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
@@ -20,6 +17,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
+				controller: 'HomeCntrl',
 				templateUrl: 'views/home.html'
 			})
 			.when('/mygroups', {
@@ -153,11 +151,14 @@ okulusApp.config(['$routeProvider',
 			.when('/error/norecord', {
 				templateUrl: 'views/responses/error-norecord.html'
 			})
+			.when('/error/nomember', {
+				templateUrl: 'views/responses/error-nomember.html'
+			})
 			.when('/error/login', {
 				templateUrl: 'views/responses/error-login.html'
 			})
 			.otherwise({
-				redirectTo: '/about'
+				redirectTo: '/home'
 			});
 	}
 ]);

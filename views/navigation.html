@@ -51,6 +51,9 @@
       </li>
       <!-- User Menu: if user is logged in -->
       <li class="nav-item" ng-if="currentSession.user">
+        <a class="nav-link" ng-href="#!/members/edit/{{currentSession.user.memberId}}">{{currentSession.user.email}}</a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.user">
         <a class="nav-link" ng-href="#!/login" ng-click="logout()">{{i18n.navigation.logout}}</a>
       </li>
     </ul>

@@ -41,8 +41,10 @@
               <td ng-if="!user.memberId">
                 {{user.email}}
               </td>
+              <!-- type -->
               <td ng-if="!user.memberId">
-                {{user.type}}
+                <span ng-if="user.isRoot">Root</span>
+                <span ng-if="!user.isRoot">{{user.type}}</span>
               </td>
               <td ng-if="user.memberId">
                 <button type="button" ng-if="user.type == 'admin'" ng-click="updateUserType(user.$id,'user')" class="btn btn-block btn-warning">
@@ -52,6 +54,7 @@
                   {{user.type}}
                 </button>
               </td>
+
               <td>{{user.createdOn | date: "MMM dd yyyy"}}</td>
               <td>{{user.lastLogin | date: "MMM dd yyyy HH:mm:ss"}}</td>
               <td ng-class="user.sessionStatus">{{user.sessionStatus}}</td>
