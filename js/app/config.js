@@ -3,9 +3,6 @@ var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
-			.when('/about', {
-				templateUrl: 'views/about.html'
-			})
 			.when('/login',{
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
@@ -161,7 +158,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/responses/error-login.html'
 			})
 			.otherwise({
-				redirectTo: '/about'
+				redirectTo: '/home'
 			});
 	}
 ]);
