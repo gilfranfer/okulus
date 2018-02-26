@@ -20,6 +20,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
+				controller: 'HomeCntrl',
 				templateUrl: 'views/home.html'
 			})
 			.when('/mygroups', {
@@ -152,6 +153,9 @@ okulusApp.config(['$routeProvider',
 			})
 			.when('/error/norecord', {
 				templateUrl: 'views/responses/error-norecord.html'
+			})
+			.when('/error/nomember', {
+				templateUrl: 'views/responses/error-nomember.html'
 			})
 			.when('/error/login', {
 				templateUrl: 'views/responses/error-login.html'
