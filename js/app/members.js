@@ -76,19 +76,17 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 			}else{
 				if( $scope.memberId ){
 					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
-						if( memberObj.access ){
-							$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Accesos asociados"};
-						}else if( memberObj.reports ){
+						if( memberObj.reports ){
 							$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
 						}else{
 							let status = memberObj.member.status;
-							//let accessList = memberObj.access;
+							let accessList = memberObj.access;
 							memberObj.$remove().then(function(ref) {
 								$rootScope.response = { memberMsgOk: "Miembro Eliminado"};
 						    	AuditSvc.recordAudit(ref.key, "delete", "members");
 								MembersSvc.decreaseStatusCounter(status);
+								GroupsSvc.deleteAccessToGroups(accessList);
 								$location.path( "/members");
-								//GroupSvc.deleteAccessToGroups(accessList);
 							}, function(error) {
 								$rootScope.response = { memberMsgError: err};
 								// console.log("Error:", error);
