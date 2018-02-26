@@ -37,20 +37,25 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			filterReportsForGroup(groupId);
 			/*Now filter reports according to member access list, so he can only see
 			reports linked to the groups he has access to */
-			let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
-			let accessGroups = new Map();
-			accessRules.$loaded().then(function(rules) {
-				rules.forEach( function(rule){
-					accessGroups.set(rule.groupId,rule);
-				});
-				if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
-					//Even an Admin user will get his Reports Filtered when using My Groups view (isAdminDashView = false)
-					//Reports should not be filtered for the Admi only when comming from Admin Dashboard
-				}else{
-					$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
-				}
+			let memberId = $rootScope.currentSession.user.memberId;
+			if(!memberId && $rootScope.currentSession.user.isRoot){
 				updateCharts(groupId);
-			});
+			}else{
+				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
+				let accessGroups = new Map();
+				accessRules.$loaded().then(function(rules) {
+					rules.forEach( function(rule){
+						accessGroups.set(rule.groupId,rule);
+					});
+					if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
+						//Even an Admin user will get his Reports Filtered when using My Groups view (isAdminDashView = false)
+						//Reports should not be filtered for the Admi only when comming from Admin Dashboard
+					}else{
+						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
+					}
+					updateCharts(groupId);
+				});
+			}
 		};
 
 		$scope.sortBy = function(propertyName) {
