@@ -23,10 +23,11 @@
           <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">Grupo Inactivo </span>
           <p class="card-text" ng-if="g.address">
             <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
-            {{g.address.street}}
-            #{{g.address.extNumber}}<span ng-if="g.address.intNumber">, Int {{g.address.intNumber}}</span><br>
-            {{g.address.city}} {{g.address.state}}, {{g.address.country}}<br>
-            {{i18n.forms.address.zipLbl}} {{g.address.zip}}
+            {{g.address.street}} #{{g.address.extNumber}}
+            <span ng-if="g.address.intNumber">Int {{g.address.intNumber}}</span>
+            {{i18n.forms.address.neighborhoodLbl}}  {{g.address.neighborhood}}.<br>
+            <span ng-if="g.address.zip">{{i18n.forms.address.zipLbl}} {{g.address.zip}}</span><br>
+            {{g.address.city}} {{g.address.state}}, {{g.address.country}}
           </p>
           <p class="card-text" ng-if="g.group.phone">
             <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span>
