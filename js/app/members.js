@@ -70,28 +70,33 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','Me
 			}
 		};
 
+		/* A membe can be deleted by Admin
+			When deleting a Member:
+			1. Decrease the Member Status counter
+			2. Delete all references to this member from group/access
+		*/
 	  $scope.deleteMember = function() {
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
 			}else{
 				if( $scope.memberId ){
 					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
-						if( memberObj.reports ){
-							$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
-						}else{
-							let status = memberObj.member.status;
-							let accessList = memberObj.access;
-							memberObj.$remove().then(function(ref) {
-								$rootScope.response = { memberMsgOk: "Miembro Eliminado"};
-						    	AuditSvc.recordAudit(ref.key, "delete", "members");
-								MembersSvc.decreaseStatusCounter(status);
-								GroupsSvc.deleteAccessToGroups(accessList);
-								$location.path( "/members");
-							}, function(error) {
-								$rootScope.response = { memberMsgError: err};
-								// console.log("Error:", error);
-							});
-						}
+						// if( memberObj.reports ){
+						// 	$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
+						// }else{
+						let status = memberObj.member.status;
+						let accessList = memberObj.access;
+						memberObj.$remove().then(function(ref) {
+							$rootScope.response = { memberMsgOk: "Miembro Eliminado"};
+					    AuditSvc.recordAudit(ref.key, "delete", "members");
+							MembersSvc.decreaseStatusCounter(status);
+							GroupsSvc.deleteAccessToGroups(accessList);
+							$location.path( "/members");
+						}, function(error) {
+							$rootScope.response = { memberMsgError: err};
+							// console.log("Error:", error);
+						});
+						// }
 					});
 				}
 			}
@@ -253,6 +258,15 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					}
 				}
 			},
+			removeReferenceToReport: function(reportId,membersAttendanceList){
+				if(membersAttendanceList){
+					for (const attKey in membersAttendanceList) {
+						// console.log(attKey);
+						let memberId = membersAttendanceList[attKey].memberId;
+						membersRef.child(memberId).child("attendance").child(reportId).set(null);
+					}
+				}
+			},
 			/* Returns a list of Group records (from $firebaseArray) that are
 			 * present in the Member's acess rules folder. */
 			getMemberGroups: function(whichMember) {
@@ -312,6 +326,18 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 						}
 						statusCounter.$save();
 					});
+			},
+			addReportReference: function(memberId,reportId, report){
+				// console.log(memberId,reportId, report);
+				//Save the report Id in the Group/reports
+				let ref = membersRef.child(memberId).child("attendance").child(reportId);
+				ref.set({
+					reportId: reportId,
+					weekId:report.reunion.weekId,
+					date:report.reunion.dateObj,
+					groupId:report.reunion.groupId,
+					groupName:report.reunion.groupname
+				});
 			}
 		};
 	}

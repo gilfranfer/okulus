@@ -177,6 +177,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					if(membersAttendanceList){
 						membersAttendanceList.forEach(function(element) {
 							repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
+							//console.log(repRef.key);
+							MembersSvc.addReportReference(element.memberId,repRef.key,record);
 						});
 					}
 					if(guestsAttendanceList){
@@ -211,29 +213,35 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			});
 		};
 
+		/* A Report can be deleted by Admin
+		 When deleting a Report:
+			1. Decrease the Report Status counter
+			2. Remove report reference from group/reports
+			3. Remove report reference from member/reports
+		*/
 		$scope.delete = function(){
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
 			}else{
 				if($scope.reportId){
-					let reportId;
-					let groupId;
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
-							reportId = reportObj.$id;
-							groupId = reportObj.reunion.groupId;
-
+							let reportId = reportObj.$id;
+							let groupId = reportObj.reunion.groupId;
+							let membersAttendanceList = reportObj.attendance.members.list;
+							//if report is not approved
 							reportObj.$remove().then(function(ref) {
-								cleanScope();
 								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
 								AuditSvc.recordAudit(ref.key, "delete", "reports");
+								ReportsSvc.decreasePendingReportCounter();
 								//remove the report reference from the group
 								GroupsSvc.removeReportReference(reportId,groupId);
+								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+								$location.path( "/admin/dashboard");
 							}, function(error) {
 								$rootScope.response = { reportMsgError: err};
-								console.log("Error:", error);
+								// console.log("Error:", error);
 							});
-							$location.path( "/admin/dashboard");
-						} );
+					});
 				}
 			}
 		};
@@ -415,6 +423,13 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				$firebaseObject(counterRef).$loaded().then(
 					function( counter ){
 						counter.pending = counter.pending+1;
+						counter.$save();
+					});
+			},
+			decreasePendingReportCounter: function() {
+				$firebaseObject(counterRef).$loaded().then(
+					function( counter ){
+						counter.pending = counter.pending-1;
 						counter.$save();
 					});
 			}

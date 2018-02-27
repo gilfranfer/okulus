@@ -77,6 +77,11 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'Gr
 	    	}
 	    };
 
+			/* A group can be deleted by Admin if there are no reports associated to it.
+			 When deleting a Group:
+				1. Decrease the Group Status counter
+				2. Delete all references to this group from member/access
+			*/
 	    $scope.deleteGroup = function() {
 				if($rootScope.currentSession.user.type == 'user'){
 					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
@@ -200,7 +205,11 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 			addReportReference: function(report){
 				//Save the report Id in the Group/reports
 				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
-				ref.set({weekId:report.reunion.weekId,date:firebase.database.ServerValue.TIMESTAMP});
+				ref.set({
+					reportId:report.$id,
+					weekId:report.reunion.weekId,
+					date:report.reunion.dateObj
+				});
 			},
 			removeReportReference: function(reportId,groupId){
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);
