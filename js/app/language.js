@@ -26,7 +26,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reports: "Reportes",
 					monitor:"Monitor"
 				},
-				user:{groups:"Mis Grupos", reports:"Reportes"
+				user:{groups:"Mis Grupos", reports:"Ver Reportes"
 				}
 			},
 			btns:{
@@ -155,7 +155,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				dashboard:{
 					counters:{
 						total: "Existentes", active:"Activos", inactive:"Inactivos",
-						approved:"Aprobados", unapproved:"Sin Revisar", rejected: "Rechazados",
+						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
 						totalReports: "Reuniones", successReports: "Realizadas", canceledReports: "Canceladas"
 					},
 					titles:{

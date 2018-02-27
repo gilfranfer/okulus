@@ -105,38 +105,6 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
 		});
 
-		cleanScope = function(){
-			$scope.reportId = null;
-			$scope.reunion = null;
-			$scope.attendance = null
-			$scope.response = null;
-		};
-
-		getTotalAttendance = function (att) {
-			let total = att.guests.female.adult + att.guests.female.young +
-				att.guests.female.kid + att.guests.male.adult +
-				att.guests.male.young + att.guests.male.kid +
-				att.members.female.adult + att.members.female.young +
-				att.members.female.kid + att.members.male.adult +
-				att.members.male.young + att.members.male.kid;
-			return total;
-		};
-
-		// cleanAttendance = function() {
-			// let attendance = {
-			// 	total: 0,
-			// 	guests:{
-			// 		male:{kid:0, young:0, adult:0},
-			// 		female:{kid:0, young:0, adult:0}
-			// 	},
-			// 	members:{
-			// 		male:{kid:0, young:0, adult:0},
-			// 		female:{kid:0, young:0, adult:0}
-			// 	}
-			// };
-		// 	return attendance;
-		// }
-
 		$scope.saveOrUpdateReport = function(){
 			if($scope.reunion.status == "canceled"){
 				$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
@@ -177,11 +145,18 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					if(membersAttendanceList){
 						membersAttendanceList.forEach(function(element) {
 							repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
+							//console.log(repRef.key);
+							MembersSvc.addReportReference(element.memberId,repRef.key,record);
 						});
 					}
 					if(guestsAttendanceList){
 						guestsAttendanceList.forEach(function(element) {
 							repRef.child("attendance/guests/list").push({guestName:element.guestName});
+						});
+					}
+					if($scope.removedMembersMap){
+						$scope.removedMembersMap.forEach(function(value, key) {
+							MembersSvc.removeMemberReferenceToReport(value,repRef.key);
 						});
 					}
 					/*For some reason the message is not displayed until you interact with any form element*/
@@ -211,29 +186,35 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			});
 		};
 
+		/* A Report can be deleted by Admin
+		 When deleting a Report:
+			1. Decrease the Report Status counter
+			2. Remove report reference from group/reports
+			3. Remove report reference from member/reports
+		*/
 		$scope.delete = function(){
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
 			}else{
 				if($scope.reportId){
-					let reportId;
-					let groupId;
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
-							reportId = reportObj.$id;
-							groupId = reportObj.reunion.groupId;
-
+							let reportId = reportObj.$id;
+							let groupId = reportObj.reunion.groupId;
+							let membersAttendanceList = reportObj.attendance.members.list;
+							//if report is not approved
 							reportObj.$remove().then(function(ref) {
-								cleanScope();
 								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
 								AuditSvc.recordAudit(ref.key, "delete", "reports");
+								ReportsSvc.decreasePendingReportCounter();
 								//remove the report reference from the group
 								GroupsSvc.removeReportReference(reportId,groupId);
+								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+								$location.path( "/admin/dashboard");
 							}, function(error) {
 								$rootScope.response = { reportMsgError: err};
-								console.log("Error:", error);
+								// console.log("Error:", error);
 							});
-							$location.path( "/admin/dashboard");
-						} );
+					});
 				}
 			}
 		};
@@ -256,6 +237,10 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			}else{
 				$scope.attendance.members.list.push({memberId:whichMember,memberName:memberName});
 				$scope.response = { membersListOk: memberName + " agregado a la lista"};
+
+				if($scope.removedMembersMap){
+					$scope.removedMembersMap.delete(whichMember);
+				}
 			}
 		};
 
@@ -286,6 +271,13 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					if(member.memberId == memberId){
     				$scope.attendance.members.list.splice(idx, 1);
 						$scope.response = { membersListOk: memberName + " fue removido de la lista"};
+
+						if(!$scope.removedMembersMap){
+							$scope.removedMembersMap = new Map();
+						}
+						if( !$scope.removedMembersMap.get(memberId) ){
+							$scope.removedMembersMap.set(memberId,memberId);
+						}
 					}
 			});
 		}
@@ -299,6 +291,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					}
 			});
 		}
+
 	}
 ]);
 
@@ -415,6 +408,13 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				$firebaseObject(counterRef).$loaded().then(
 					function( counter ){
 						counter.pending = counter.pending+1;
+						counter.$save();
+					});
+			},
+			decreasePendingReportCounter: function() {
+				$firebaseObject(counterRef).$loaded().then(
+					function( counter ){
+						counter.pending = counter.pending-1;
 						counter.$save();
 					});
 			}
