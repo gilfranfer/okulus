@@ -30,7 +30,7 @@
           </div>
           <div class="card-body">
             <h4 class="card-title"></h4>
-            <p class="card-text">
+            <p class="card-text" ng-if="currentSession.member.address">
               {{currentSession.member.address.street}}
               #{{currentSession.member.address.extNumber}}<span ng-if="currentSession.member.address.intNumber">, Int {{currentSession.member.address.intNumber}}</span><br>
               {{currentSession.member.address.city}} {{currentSession.member.address.state}}, {{currentSession.member.address.country}}<br>
