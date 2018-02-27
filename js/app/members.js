@@ -258,6 +258,9 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					}
 				}
 			},
+			removeMemberReferenceToReport: function(memberId,reportId){
+				membersRef.child(memberId).child("attendance").child(reportId).set(null);
+			},
 			removeReferenceToReport: function(reportId,membersAttendanceList){
 				if(membersAttendanceList){
 					for (const attKey in membersAttendanceList) {
