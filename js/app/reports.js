@@ -66,6 +66,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		$scope.getReportsForSelectedWeeks = function (isAdminDashView) {
 			$scope.propertyName = 'reunion.groupname';
 			$scope.reverse = true;
+			$scope.loadingReports = true;
 
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
@@ -86,6 +87,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				reportsArray.$watch(function(event){
 					filterReportsAndUpdateCharts(groupId,isAdminDashView);
 				});
+				$scope.loadingReports = false;
 			});
 
 			$rootScope.weekfrom = fromWeek;
