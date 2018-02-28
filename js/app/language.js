@@ -26,7 +26,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reports: "Reportes",
 					monitor:"Monitor"
 				},
-				user:{groups:"Mis Grupos", reports:"Ver Reportes"
+				user:{groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos"
 				}
 			},
 			btns:{
@@ -212,6 +212,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					title:"Mis Grupos Familiares",
 					description: "Infromación sobre mis Grupos Familiares activos.",
 					noGroupsError: "No tienes Grupos asiganos."
+				},
+				contactsList:{
+					title:"Miembros de mis Grupos Familiares",
+					noContactsError: "No encontramos ningun contacto."
 				}
 			},
 			home:{

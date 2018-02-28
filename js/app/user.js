@@ -29,6 +29,19 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', 'WeeksSvc', '$rootScope
 	}
 ]);
 
+okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','AuthenticationSvc',
+	function(MembersSvc, $rootScope,$scope,$firebaseAuth,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					let whichMember = $rootScope.currentSession.user.memberId;
+					MembersSvc.getMemberContacts(whichMember);
+				});
+			}
+		});
+	}
+]);
+
 //To redirect from Audit Table
 okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$location','$firebaseObject',
 	function($rootScope,$routeParams,$location,$firebaseObject){

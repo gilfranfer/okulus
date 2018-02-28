@@ -1,6 +1,16 @@
-okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
-	function(MembersSvc, $rootScope){
-		MembersSvc.loadAllMembersList();
+okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
+	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.membersList = MembersSvc.loadAllMembersList();
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 	}
 ]);
 
@@ -275,6 +285,25 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getMemberGroups: function(whichMember) {
 				return new Promise((resolve, reject) => {
 
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
+					}).then( function(memberRules) {
+						let myGroups = [];
+						memberRules.forEach(function(rule) {
+							let group = $rootScope.allGroups.$getRecord(rule.groupId);
+							if( group != null){
+								myGroups.push( group );
+							}
+						});
+						$rootScope.groupsList = myGroups;
+						resolve(myGroups);
+					});
+
+				});
+			},
+			getMemberContacts: function(whichMember) {
+				return new Promise((resolve, reject) => {
+					
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
 					}).then( function(memberRules) {

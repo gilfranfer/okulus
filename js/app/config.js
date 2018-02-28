@@ -29,6 +29,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myGroups.html',
 				controller: 'UserMyGroupsCntrl'
 			})
+			.when('/mycontacts', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/myContacts.html',
+				controller: 'UserMyContactsCntrl'
+			})
 			.when('/myreports', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){

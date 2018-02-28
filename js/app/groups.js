@@ -1,6 +1,16 @@
-okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$scope',
-	function(GroupsSvc, $scope){
-		$scope.groupsList = GroupsSvc.loadAllGroupsList();
+okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
+	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 	}
 ]);
 
