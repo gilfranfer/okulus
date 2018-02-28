@@ -91,7 +91,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var durationByGroupOptions = {
-                chart: { type: 'line', inverted: true },
+                chart: { type: 'line', inverted: false },
                 credits: { enabled: false },
                 title: { text: 'Duración' },
                 xAxis: { categories: groupNameAsCategory },
@@ -105,7 +105,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var moneyByGroupOptions = {
-                chart: { type: 'line', inverted: true },
+                chart: { type: 'line', inverted: false },
                 credits: { enabled: false },
                 title: { text: 'Diezmo' },
                 xAxis: { categories: groupNameAsCategory },
