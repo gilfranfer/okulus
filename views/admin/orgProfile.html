@@ -1,4 +1,4 @@
-<section ng-if="currentSession.user.type == 'admin'">
+<section>
 
 <form class="mt-3" name="profileForm" novalidate ng-submit="updateOrgProfile()">
 
@@ -81,4 +81,3 @@
 
 </section>
 
-<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

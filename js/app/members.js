@@ -1,4 +1,4 @@
-okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
+okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){

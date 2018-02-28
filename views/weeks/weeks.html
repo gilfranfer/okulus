@@ -1,5 +1,5 @@
 <!-- Week Creation -->
-<section ng-if="currentSession.user.type == 'admin'">
+<section>
   <div class="card h-100" >
     <p class="card-header">
         {{i18n.forms.weeks.legend}}
@@ -80,5 +80,3 @@
     </div>
   </div>
 </section>
-
-<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

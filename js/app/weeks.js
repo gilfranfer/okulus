@@ -1,14 +1,26 @@
-okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope',
-	function(WeeksSvc, AuditSvc, $rootScope, $scope){
-		$scope.weekid = new Date();
-		WeeksSvc.loadAllWeeks();
+okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope','$firebaseAuth','$location','AuthenticationSvc',
+	function(WeeksSvc, AuditSvc, $rootScope, $scope,$firebaseAuth,$location,AuthenticationSvc){
+
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    		if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.weekid = new Date();
+						WeeksSvc.loadAllWeeks();
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
+
+		
 
 		$scope.addWeek = function () {
 			$scope.response = null;
 			let weekId = document.querySelector("#weekId").value;
 			let weekName = document.querySelector("#weekName").value;
-			// if(weekId){
-			if(!WeeksSvc.getWeekRecord(weekId)){
+			//if(!WeeksSvc.getWeekRecord(weekId)){
 				let idSplit = weekId.split("-W");
 				let code = (idSplit[0]+idSplit[1]);
 
@@ -30,9 +42,9 @@ okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scop
 					$scope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
 				});
 
-			}else{
+			/*}else{
 				$scope.response = {weekMsgError: "La Semana "+weekId+" ya existe" };
-			}
+			}*/
 		};
 
 		$scope.openWeek = function (weekId) {

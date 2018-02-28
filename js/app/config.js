@@ -107,7 +107,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/members/membersList.html',
-				controller: 'MembersListCntrl'
+				controller: 'AdminMembersListCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
