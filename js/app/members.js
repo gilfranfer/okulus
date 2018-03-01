@@ -301,23 +301,20 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 
 				});
 			},
-			getMemberContacts: function(whichMember) {
+			/*Use the passed Groups List to get all members with those groups as BaseGroup*/
+			getMembersInGroups: function(groups) {
 				return new Promise((resolve, reject) => {
-					
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
-						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
-					}).then( function(memberRules) {
-						let myGroups = [];
-						memberRules.forEach(function(rule) {
-							let group = $rootScope.allGroups.$getRecord(rule.groupId);
-							if( group != null){
-								myGroups.push( group );
-							}
+					let contacts = [];
+					groups.forEach(function(group) {
+						//get from members folder order by member.baseGroup equals to group.$id
+						let ref = membersRef.orderByChild("member/baseGroup").equalTo(group.$id);
+						$firebaseArray(ref).$loaded().then(function(members){
+							members.forEach(function(member) {
+								contacts.push( member );
+							});
 						});
-						$rootScope.groupsList = myGroups;
-						resolve(myGroups);
 					});
-
+					resolve(contacts);
 				});
 			},
 			findMemberByEmail: function(email){

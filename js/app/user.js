@@ -35,7 +35,12 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', '$rootScope','$scope'
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					let whichMember = $rootScope.currentSession.user.memberId;
-					MembersSvc.getMemberContacts(whichMember);
+					MembersSvc.getMemberGroups(whichMember).then(function(groups){
+						// console.log(groups)
+						MembersSvc.getMembersInGroups(groups).then(function(contacts){
+							$scope.membersList = contacts;
+						});
+					});
 				});
 			}
 		});
