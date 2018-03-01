@@ -43,7 +43,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 								message = "El correo electrónico ya está en uso";
 								break;
 						default:
-							message = "Intente nuevamente";
+							message = "Intente nuevamente." + error.coindíae;
 				}
 				$scope.response = { loginErrorMsg: message};
 				// console.log(error);
