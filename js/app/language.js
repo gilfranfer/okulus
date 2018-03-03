@@ -145,8 +145,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
-					title: "Miembros con Accceso al Grupo",
-					description: "Seleccionar un Miembro de la lista para otrogarle acceso al Grupo.",
+					title: "Accceso al Grupo",
+					description: "Otorgar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros que tiene permiso para ser Usuarios del sistema.",
 					noRecordsError: "No hay reglas de acceso en este grupo",
 					table:{
 						memberName:"Miembro", memberId:"Id", date:"Desde"

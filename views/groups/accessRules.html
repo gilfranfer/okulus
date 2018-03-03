@@ -17,7 +17,7 @@
         <div class="row mb-3">
           <div class="col-8">
             <select id="memberSelect" class="form-control form-control-lg" ng-model="access.memberId" ng-required="true">
-              <option ng-repeat="m in allActiveMembers" value="{{m.$id}}">
+              <option ng-repeat="m in membersAccess" value="{{m.$id}}">
                 {{m.member.shortname}}
               </option>
             </select>

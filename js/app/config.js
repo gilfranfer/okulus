@@ -98,7 +98,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/groups/accessRules.html',
-				controller: 'AccessRulesCntrl'
+				controller: 'GroupAccessRulesCntrl'
 			})
 			.when('/members', {
 				resolve: {

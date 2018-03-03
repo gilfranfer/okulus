@@ -209,7 +209,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
-					console.log("Creating firebaseArray for allMembers");
+					// console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				}
 				return $rootScope.allMembers;
@@ -219,6 +219,9 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
 				return $rootScope.allActiveMembers;
+			},
+			getMembersThatCanBeUser: function(){
+				return  $firebaseArray(membersRef.orderByChild("member/canBeUser").equalTo(true));
 			},
 			filterActiveHosts: function(activeMembers){
 				let activeHosts = [];
