@@ -79,7 +79,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
 					statusLbl:"Estado de la Reunión",
-					cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
+					cancelStatusLbl:"Cancelada", okStatusLbl:"Completada",
+					pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
 					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
 					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados",
@@ -156,7 +157,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					counters:{
 						total: "Existentes", active:"Activos", inactive:"Inactivos",
 						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
-						totalReports: "Reuniones", successReports: "Realizadas", canceledReports: "Canceladas"
+						totalReports: "Reportes", approvedReports:"Aprobados", rejectedReports:"Rechazados", pendingReports:"Pendientes",
+						totalReunions: "Reuniones", successReports: "Completadas", canceledReports: "Canceladas"
 					},
 					titles:{
 						weekSection: "Buscador de Reportes",
@@ -169,6 +171,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						date:"Fecha de Creación",
 						group:"Grupo",
 						reunionStatus:"Reunión",
+						reportStatus:"Reporte",
 						duration: "Duración",
 						money: "Diezmo",
 						attendance: "Asistencia", view: "Ver"

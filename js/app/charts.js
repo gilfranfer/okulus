@@ -3,16 +3,23 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
     var totalCompletedReunions = 0;
     var totalCanceledReunions = 0;
+    var totalApprovedReports = 0;
+    var totalRejectedReports = 0;
+    var totalPendingReports = 0;
 
     return {
         getReunionStatusTotals: function(){
-            return  {completedReunions: totalCompletedReunions, canceledReunions:totalCanceledReunions};
+            return  {completedReunions: totalCompletedReunions, canceledReunions:totalCanceledReunions,
+                     approvedReports: totalApprovedReports, rejectedReports: totalRejectedReports, pendingReports: totalPendingReports};
         },
         buildCharts: function(reportsList, groupId) {
             totalCompletedReunions = 0;
             totalCanceledReunions = 0;
+            totalApprovedReports = 0;
+            totalRejectedReports = 0;
+            totalPendingReports = 0;
 
-						let groupDetailsMap = new Map();
+			let groupDetailsMap = new Map();
             let groupNameAsCategory = [];
             let totalMembersByReport = [];
             let totalGuestsByReport = [];
@@ -27,6 +34,13 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     totalCompletedReunions++;
                 }else{
                     totalCanceledReunions ++;
+                }
+                if(report.audit && report.audit.reportStatus == "approved"){
+                    totalApprovedReports ++;
+                }else if(report.audit && report.audit.reportStatus == "rejected"){
+                    totalRejectedReports ++;
+                }else{
+                    totalPendingReports ++;
                 }
 
                 let guests = report.attendance.guests.total;
