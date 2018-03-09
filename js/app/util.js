@@ -34,10 +34,10 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 		    auditRef.child(on).push().set(audit);
 				//update Audit on the object
 				if(action == 'create'){
-					baseRef.child(on).child(id).update({createdOn:firebase.database.ServerValue.TIMESTAMP,createdBy:member});
+					baseRef.child(on).child(id).child("audit").update({createdOn:firebase.database.ServerValue.TIMESTAMP,createdBy:member});
 				}else if(action != 'delete'){
 					//important to keep the if-else
-					baseRef.child(on).child(id).update({lastUpdateOn:firebase.database.ServerValue.TIMESTAMP,lastUpdateBy:member});
+					baseRef.child(on).child(id).child("audit").update({lastUpdateOn:firebase.database.ServerValue.TIMESTAMP,lastUpdateBy:member});
 				}
 			}
 		};
