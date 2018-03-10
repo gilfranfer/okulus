@@ -37,7 +37,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
 				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
 				login:"Iniciar Sesión", register:"Registrarse",
-				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización"
+				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización",
+				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",

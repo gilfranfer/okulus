@@ -107,6 +107,34 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
 		});
 
+		$scope.approveReport = function (approved){
+			if ($scope.reportId){
+				repRef = ReportsSvc.getReportReference($scope.reportId);
+				let response = undefined;
+				let action = undefined;
+
+				if(approved){
+					response = { reportMsgOk: "Reporte Aprovado"};
+					action = "approved";
+				}else{
+					response = { reportMsgError: "Reporte Rechazado"};
+					action = "rejected";
+				}
+
+				repRef.child("audit").update({reportStatus:action}, function(error) {
+					if(error){
+						$scope.response = { reportMsgError: error};
+					}else{
+						$scope.response = response;
+						AuditSvc.recordAudit(repRef.key, action, "reports");
+						$scope.audit.reportStatus = action;
+						/*For some reason the message is not displayed until you interact with any form element*/
+					}
+				});
+
+			}
+		};
+
 		$scope.saveOrUpdateReport = function(){
 			if($scope.audit && $scope.audit.reportStatus == "approved"){
 				$scope.response = { reportMsgError: "No se puede modificar el reporte porque ya ha sido aprobado"};

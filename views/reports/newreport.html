@@ -305,6 +305,19 @@
       </div>
     </div>
   </div>
+  <div class="form-row" ng-if="reportId && currentSession.user.type == 'admin'">
+    <div class="col-sm-6 form-group">
+      <button type="button" class="btn btn-lg btn-block btn-success" ng-click="approveReport(true)">
+        {{i18n.btns.approveBtn}}
+      </button>
+    </div>
+    <div class="col-sm-6 form-group">
+      <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="approveReport(false)">
+        {{i18n.btns.rejectBtn}}
+      </button>
+    </div>
+  </div>
+
 
 </form>
 

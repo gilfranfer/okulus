@@ -31,7 +31,8 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 				}
 				//Proceed to log the Global Audit Record
 				let audit = {action: action, by: member, date: firebase.database.ServerValue.TIMESTAMP, referenceId:id };
-		    auditRef.child(on).push().set(audit);
+		    	auditRef.child(on).push().set(audit);
+				
 				//update Audit on the object
 				if(action == 'create'){
 					baseRef.child(on).child(id).child("audit").update({createdOn:firebase.database.ServerValue.TIMESTAMP,createdBy:member});
@@ -39,6 +40,14 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc',
 					//important to keep the if-else
 					baseRef.child(on).child(id).child("audit").update({lastUpdateOn:firebase.database.ServerValue.TIMESTAMP,lastUpdateBy:member});
 				}
+				//For Reports
+				if(on=="reports" && action == 'approved'){
+					baseRef.child(on).child(id).child("audit").update({approvedOn:firebase.database.ServerValue.TIMESTAMP,approvedBy:member});
+				}else if(on=="reports" && action == 'rejected'){
+					baseRef.child(on).child(id).child("audit").update({rejectedOn:firebase.database.ServerValue.TIMESTAMP,rejectedBy:member});
+				}
+
+				return baseRef.child(on).child(id).child("audit");
 			}
 		};
 	}
