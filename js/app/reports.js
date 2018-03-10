@@ -170,6 +170,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					repRef = ReportsSvc.getNewReportReference();
 					successMessage = "Reporte Creado";
 					action = "create";
+					record.audit = {reportStatus:"pending"};
 		    	}
 
 				repRef.update(record, function(error) {
