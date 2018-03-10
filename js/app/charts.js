@@ -30,11 +30,6 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 						//Collect Data from each report
             reportsList.forEach(function(report, index) {
 
-                if(report.reunion.status == "completed"){
-                    totalCompletedReunions++;
-                }else{
-                    totalCanceledReunions ++;
-                }
                 if(report.audit && report.audit.reportStatus == "approved"){
                     totalApprovedReports ++;
                 }else if(report.audit && report.audit.reportStatus == "rejected"){
@@ -43,35 +38,44 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     totalPendingReports ++;
                 }
 
-                let guests = report.attendance.guests.total;
-                let members = report.attendance.members.total;
-                let duration = report.reunion.duration;
-                let money = report.reunion.money;
+                if(report.audit && report.audit.reportStatus == "rejected"){
 
-								if(groupId){
-									//When a group was selected, we will be displayign reports and charts
-									//only for that group, so we better change the Category name to the weekID.
-									//transform weekID from 201801 to 2018-01
-									let str = report.reunion.weekId;
-									let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
-									groupDetailsMap.set(formattedWeekId,{guests:guests, members:members, duration:duration , money:money });
-								}else{
-									//When selecting only a week range and no group, we might end up having many reports
-									//for the same group, so we better put same group data together
-									// groupname (key), {guests:0, members:0}
-									if(groupDetailsMap.has(report.reunion.groupname)){
-										let groupsTotals = groupDetailsMap.get(report.reunion.groupname);
-										groupsTotals.guests += guests;
-										groupsTotals.members += members;
-										groupsTotals.duration += duration;
-										groupsTotals.money += money;
-										groupDetailsMap.set(report.reunion.groupname,groupsTotals);
-									}else{
-										groupDetailsMap.set(report.reunion.groupname,{guests:guests, members:members, duration:duration , money:money });
-									}
-								}
-                //For Money Scatter Charts
-                moneyData.push( [report.reunion.money, guests+members] );
+                }else{
+                    if(report.reunion.status == "completed"){
+                        totalCompletedReunions++;
+                    }else{
+                        totalCanceledReunions ++;
+                    }
+                    let guests = report.attendance.guests.total;
+                    let members = report.attendance.members.total;
+                    let duration = report.reunion.duration;
+                    let money = report.reunion.money;
+
+					if(groupId){
+						//When a group was selected, we will be displayign reports and charts
+						//only for that group, so we better change the Category name to the weekID.
+						//transform weekID from 201801 to 2018-01
+						let str = report.reunion.weekId;
+						let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
+						groupDetailsMap.set(formattedWeekId,{guests:guests, members:members, duration:duration , money:money });
+					}else{
+						//When selecting only a week range and no group, we might end up having many reports
+						//for the same group, so we better put same group data together
+						// groupname (key), {guests:0, members:0}
+						if(groupDetailsMap.has(report.reunion.groupname)){
+							let groupsTotals = groupDetailsMap.get(report.reunion.groupname);
+							groupsTotals.guests += guests;
+							groupsTotals.members += members;
+							groupsTotals.duration += duration;
+							groupsTotals.money += money;
+							groupDetailsMap.set(report.reunion.groupname,groupsTotals);
+						}else{
+							groupDetailsMap.set(report.reunion.groupname,{guests:guests, members:members, duration:duration , money:money });
+						}
+					}
+                    //For Money Scatter Charts
+                    moneyData.push( [report.reunion.money, guests+members] );
+                }
             });
 
 						let totalMembers = 0
@@ -105,7 +109,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var durationByGroupOptions = {
-                chart: { type: 'line', inverted: false },
+                chart: { type: 'area', inverted: false },
                 credits: { enabled: false },
                 title: { text: 'Duración' },
                 xAxis: { categories: groupNameAsCategory },
@@ -119,7 +123,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var moneyByGroupOptions = {
-                chart: { type: 'line', inverted: false },
+                chart: { type: 'area', inverted: false },
                 credits: { enabled: false },
                 title: { text: 'Diezmo' },
                 xAxis: { categories: groupNameAsCategory },
