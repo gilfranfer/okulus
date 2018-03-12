@@ -125,7 +125,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 						var moneyByGroupOptions = {
                 chart: { type: 'area', inverted: false },
                 credits: { enabled: false },
-                title: { text: 'Diezmo' },
+                title: { text: 'Ofrenda' },
                 xAxis: { categories: groupNameAsCategory },
                 yAxis: { min:0, title: { text: '' },
                         stackLabels: { enabled: true,
@@ -133,7 +133,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                         }
                       },
                 legend: { reversed: true },
-                series: [ { name: 'Diezmo', data: totalMoneyByReport } ]
+                series: [ { name: 'Ofrenda', data: totalMoneyByReport } ]
             };
 
 						var reunionsPieOptions = {
