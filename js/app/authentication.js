@@ -43,7 +43,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 								message = "El correo electrónico ya está en uso";
 								break;
 						default:
-							message = "Intente nuevamente";
+							message = "Intente nuevamente." + error.coindíae;
 				}
 				$scope.response = { loginErrorMsg: message};
 				// console.log(error);
@@ -185,11 +185,8 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 
 			},
 			logout: function(userId){
-				return auth.$signOut().then(function() {
-					usersFolder.child(userId).update({sessionStatus:"offline"});
-					// console.log("logout done");
-					// $location.path( "/login" );
-				});
+				usersFolder.child(userId).update({sessionStatus:"offline"});
+				return auth.$signOut().then(function(){});
 			},
 			isUserLoggedIn: function(){
 				return auth.$requireSignIn();

@@ -60,17 +60,22 @@
         </div>
         <!-- Error Alert: Week From less than Week To -->
         <div class="row">
-          <div class="col" ng-show="(weekto>0 && weekfrom > weekto)">
+          <div class="col" ng-show="loadingReports">
+            <div class="alert alert-warning" role="alert">
+              {{i18n.alerts.loading}}
+            </div>
+          </div>
+          <div class="col" ng-show="!loadingReports && (weekto>0 && weekfrom > weekto)">
             <div class="alert alert-danger" role="alert">
               {{i18n.admin.dashboard.weeksOrderError}}
             </div>
           </div>
-          <div class="col" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
+          <div class="col" ng-show="!loadingReports && reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
             <div class="alert alert-danger" role="alert">
               {{i18n.admin.dashboard.noReportsError}}
             </div>
           </div>
-          <div class="col" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
+          <div class="col" ng-show="!loadingReports && reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
             <div class="alert alert-success" role="alert">
               {{reportsForSelectedWeek.length}} {{i18n.admin.dashboard.weekSection.resultsLoaded}}
             </div>

@@ -9,20 +9,26 @@
       <div class="row mt-4 mb-4">
         <div class="col text-center">
           <h2><span class="badge badge-primary">
-            {{reunionStatusSummary.completedReunions + reunionStatusSummary.canceledReunions}}</span>
+            {{reunionStatusSummary.approvedReports + reunionStatusSummary.rejectedReports + reunionStatusSummary.pendingReports}}</span>
             {{i18n.admin.dashboard.counters.totalReports}}
           </h2>
         </div>
         <div class="col text-center">
+          <h2><span class="badge badge-dark">
+            {{reunionStatusSummary.pendingReports}}</span>
+            {{i18n.admin.dashboard.counters.pendingReports}}
+          </h2>
+        </div>
+        <div class="col text-center">
           <h2><span class="badge badge-success">
-            {{reunionStatusSummary.completedReunions}}</span>
-            {{i18n.admin.dashboard.counters.successReports}}
+            {{reunionStatusSummary.approvedReports}}</span>
+            {{i18n.admin.dashboard.counters.approvedReports}}
           </h2>
         </div>
         <div class="col text-center">
           <h2><span class="badge badge-danger">
-            {{reunionStatusSummary.canceledReunions}}</span>
-            {{i18n.admin.dashboard.counters.canceledReports}}
+            {{reunionStatusSummary.rejectedReports}}</span>
+            {{i18n.admin.dashboard.counters.rejectedReports}}
           </h2>
         </div>
       </div>
@@ -39,6 +45,10 @@
         <thead class="">
           <tr>
             <!-- <th scope="col">#</th> -->
+            <th scope="col">
+              <span style="cursos:pointer" ng-click="sortBy('audit.reportStatus')">{{i18n.admin.dashboard.reportTable.reportStatus}}</span>
+              <span class="sortorder" ng-show="propertyName === 'audit.reportStatus'" ng-class="{reverse: reverse}"></span>
+            </th>
             <th scope="col">
               <span style="cursos:pointer" ng-click="sortBy('reunion.groupname')">{{i18n.admin.dashboard.reportTable.group}}</span>
               <span class="sortorder" ng-show="propertyName === 'reunion.groupname'" ng-class="{reverse: reverse}"></span>
@@ -72,6 +82,17 @@
         <tbody>
           <tr ng-repeat="report in reportsForSelectedWeek | filter:filterText | orderBy:propertyName:reverse ">
             <!-- <td scope="row">{{$index + 1}}</td> -->
+            <!-- Report Status -->
+            <td class="text-danger" ng-if="report.audit.reportStatus == 'rejected'">
+              {{i18n.forms.report.rejectedStatusLbl}}
+            </td>
+            <td class="text-success" ng-if="report.audit.reportStatus == 'approved'">
+              {{i18n.forms.report.approvedStatusLbl}}
+            </td>
+            <td class="text-dark" ng-if="!report.audit.reportStatus || report.audit.reportStatus == 'pending'">
+              {{i18n.forms.report.pendingStatusLbl}}
+            </td>
+
             <td scope="row">
               <a target="_blank" ng-href="#!/reports/edit/{{report.$id}}">
                 {{report.reunion.groupname}}
@@ -89,7 +110,7 @@
             <td>{{report.reunion.duration}} min</td>
             <td>${{report.reunion.money}}</td>
             <td>{{report.attendance.total}}</td>
-            <td>{{report.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
+            <td>{{report.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
           </tr>
         </tbody>
       </table>

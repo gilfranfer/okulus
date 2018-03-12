@@ -1,15 +1,25 @@
-okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject','AuditSvc',
-	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc){
-		$scope.auditRecords = null;
-		let auditRef = firebase.database().ref().child('pibxalapa/audit');
+okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject','AuditSvc','$firebaseAuth','$location','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc,$firebaseAuth,$location,AuthenticationSvc){
 
-		let usersRef = firebase.database().ref().child('pibxalapa/users');
-		$scope.userRecords = $firebaseArray( usersRef );
+		let auditRef = undefined;
+		let usersRef = undefined;
+		let errorsRef = undefined;
 
-		let errorsRef = firebase.database().ref().child('pibxalapa/errors');
-		$scope.errorsRecords = $firebaseArray( errorsRef );
-
-
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    		if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						auditRef = firebase.database().ref().child('pibxalapa/audit');
+						usersRef = firebase.database().ref().child('pibxalapa/users');
+						errorsRef = firebase.database().ref().child('pibxalapa/errors');
+						$scope.userRecords = $firebaseArray( usersRef );
+						$scope.errorsRecords = $firebaseArray( errorsRef );
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 
 		getAuditRecords = function(selectObj){
 			// get the index of the selected option
@@ -45,24 +55,37 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 	}
 ]);
 
-okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc',
-	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc){
-		$scope.adminViewActive = true;
-		WeeksSvc.loadAllWeeks();
-		$scope.groupsList = GroupsSvc.loadAllGroupsList();
+okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
+		
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    		if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						
+						$scope.adminViewActive = true;
+						WeeksSvc.loadAllWeeks();
+						$scope.groupsList = GroupsSvc.loadAllGroupsList();
 
-		let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
-		$scope.globalCounter = $firebaseObject(countersRef);
-		$scope.globalCounter.$loaded().then(
-			function (counter) {
-				// console.log(counter);
-				if(!counter || !counter.members){
-					counter.members = {active:0,inactive:0};
-					counter.groups = {active:0,inactive:0};
-					counter.reports = {approved:0,pending:0,rejected:0};
-					$scope.globalCounter.$save();
-				}
+						let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
+						$scope.globalCounter = $firebaseObject(countersRef);
+						$scope.globalCounter.$loaded().then(
+							function (counter) {
+								// console.log(counter);
+								if(!counter || !counter.members){
+									counter.members = {active:0,inactive:0};
+									counter.groups = {active:0,inactive:0};
+									counter.reports = {approved:0,pending:0,rejected:0};
+									$scope.globalCounter.$save();
+								}
+							}
+						);
+
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
 			}
-		);
-	}
-]);
+		});
+		
+}]);

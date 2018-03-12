@@ -26,7 +26,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reports: "Reportes",
 					monitor:"Monitor"
 				},
-				user:{groups:"Mis Grupos", reports:"Ver Reportes"
+				user:{groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos"
 				}
 			},
 			btns:{
@@ -37,7 +37,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
 				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
 				login:"Iniciar Sesión", register:"Registrarse",
-				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización"
+				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización",
+				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
 			},
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
@@ -79,7 +80,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					durationLbl: "Duración (min)",
 					weekLbl:"Semana", moneyLbl: "Ofrenda",
 					statusLbl:"Estado de la Reunión",
-					cancelStatusLbl:"Cancelada", okStatusLbl:"Realizada",
+					cancelStatusLbl:"Cancelada", okStatusLbl:"Completada",
+					pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
 					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
 					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados",
@@ -145,8 +147,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
-					title: "Miembros con Accceso al Grupo",
-					description: "Seleccionar un Miembro de la lista para otrogarle acceso al Grupo.",
+					title: "Accceso al Grupo",
+					description: "Otorgar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros que tiene permiso para ser Usuarios del sistema.",
 					noRecordsError: "No hay reglas de acceso en este grupo",
 					table:{
 						memberName:"Miembro", memberId:"Id", date:"Desde"
@@ -156,21 +158,23 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					counters:{
 						total: "Existentes", active:"Activos", inactive:"Inactivos",
 						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
-						totalReports: "Reuniones", successReports: "Realizadas", canceledReports: "Canceladas"
+						totalReports: "Reportes", approvedReports:"Aprobados", rejectedReports:"Rechazados", pendingReports:"Pendientes",
+						totalReunions: "Reuniones", successReports: "Completadas", canceledReports: "Canceladas"
 					},
 					titles:{
 						weekSection: "Buscador de Reportes",
 						reportsList: "Reportes",
 						attendance: "Reuniones y Asistencia",
-						money: "Diezmo",
+						money: "Ofrenda",
 					},
 					reportTable:{
 						report:"", week:"Semana",
 						date:"Fecha de Creación",
 						group:"Grupo",
 						reunionStatus:"Reunión",
+						reportStatus:"Reporte",
 						duration: "Duración",
-						money: "Diezmo",
+						money: "Ofrenda",
 						attendance: "Asistencia", view: "Ver"
 					},
 					weekSection:{
@@ -212,6 +216,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					title:"Mis Grupos Familiares",
 					description: "Infromación sobre mis Grupos Familiares activos.",
 					noGroupsError: "No tienes Grupos asiganos."
+				},
+				contactsList:{
+					title:"Miembros de mis Grupos Familiares",
+					noContactsError: "No encontramos ningun contacto."
 				}
 			},
 			home:{

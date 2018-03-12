@@ -1,6 +1,16 @@
-okulusApp.controller('MembersListCntrl', ['MembersSvc', '$rootScope',
-	function(MembersSvc, $rootScope){
-		MembersSvc.loadAllMembersList();
+okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
+	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.membersList = MembersSvc.loadAllMembersList();
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 	}
 ]);
 
@@ -199,7 +209,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
-					console.log("Creating firebaseArray for allMembers");
+					// console.log("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				}
 				return $rootScope.allMembers;
@@ -209,6 +219,9 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
 				}
 				return $rootScope.allActiveMembers;
+			},
+			getMembersThatCanBeUser: function(){
+				return  $firebaseArray(membersRef.orderByChild("member/canBeUser").equalTo(true));
 			},
 			filterActiveHosts: function(activeMembers){
 				let activeHosts = [];
@@ -289,6 +302,22 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 						resolve(myGroups);
 					});
 
+				});
+			},
+			/*Use the passed Groups List to get all members with those groups as BaseGroup*/
+			getMembersInGroups: function(groups) {
+				return new Promise((resolve, reject) => {
+					let contacts = [];
+					groups.forEach(function(group) {
+						//get from members folder order by member.baseGroup equals to group.$id
+						let ref = membersRef.orderByChild("member/baseGroup").equalTo(group.$id);
+						$firebaseArray(ref).$loaded().then(function(members){
+							members.forEach(function(member) {
+								contacts.push( member );
+							});
+						});
+					});
+					resolve(contacts);
 				});
 			},
 			findMemberByEmail: function(email){

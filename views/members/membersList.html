@@ -1,51 +1,9 @@
 <!-- Members List -->
-<section ng-if="currentSession.user.type == 'admin'">
-  <article class="card mb-3">
-    <div class="card-header">
-      {{i18n.admin.membersList.title}}
-    </div>
-    <div class="card-body">
-      <div class="card-text">
-          <p>{{i18n.admin.membersList.description}}</p>
-      </div>
-      <!-- Group Search and New Button -->
-      <div class="row mb-3">
-        <div class="col-8">
-          <input type="text" placeholder="{{i18n.forms.search.hint}}" class="form-control form-control-lg" ng-model="searchText">
-        </div>
-        <div class="col-4">
-          <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
-            {{i18n.btns.newMemberBtn}}
-          </a>
-        </div>
-      </div>
-    </div>
-  </article>
-
-    <!-- Alert/Error row -->
-  <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
-    {{response.memberMsgOk}}
-  </div>
-  <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
-    {{response.memberMsgError}}
-  </div>
-
-  <!-- Loading/No Records Alert -->
-  <div class="col"  ng-show="allMembers && allMembers.length == 0">
-    <div class="alert alert-danger" role="alert">
-      {{i18n.admin.membersList.noMembersError}}
-    </div>
-  </div>
-  <div class="col"  ng-show="!allMembers">
-    <div class="alert alert-warning" role="alert">
-      {{i18n.alerts.loading}}
-    </div>
-  </div>
+<section>
 
   <div class="row">
-
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="m in allMembers | filter:searchText">
+      ng-repeat="m in membersList | filter:searchText">
       <!-- Group card -->
       <div class="card h-100">
         <h4 class="card-header">
@@ -83,5 +41,3 @@
   </div>
 
 </section>
-
-<article ng-include="'views/responses/error-norecord.html'" ng-if="currentSession.user.type != 'admin'"></article>

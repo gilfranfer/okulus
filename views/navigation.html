@@ -33,6 +33,9 @@
         <a class="nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
       </li>
       <li class="nav-item" ng-if="currentSession.member" >
+        <a class="nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.member" >
         <a class="nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
       </li>
       <!-- Admin Menu: if user is Admin type -->
@@ -50,9 +53,9 @@
         </div>
       </li>
       <!-- User Menu: if user is logged in -->
-      <li class="nav-item" ng-if="currentSession.user">
+      <!-- <li class="nav-item" ng-if="currentSession.user">
         <a class="nav-link" ng-href="#!/members/edit/{{currentSession.user.memberId}}">{{currentSession.user.email}}</a>
-      </li>
+      </li> -->
       <li class="nav-item" ng-if="currentSession.user">
         <a class="nav-link" ng-href="#!/login" ng-click="logout()">{{i18n.navigation.logout}}</a>
       </li>

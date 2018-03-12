@@ -29,6 +29,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myGroups.html',
 				controller: 'UserMyGroupsCntrl'
 			})
+			.when('/mycontacts', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/myContacts.html',
+				controller: 'UserMyContactsCntrl'
+			})
 			.when('/myreports', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -89,7 +98,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/groups/accessRules.html',
-				controller: 'AccessRulesCntrl'
+				controller: 'GroupAccessRulesCntrl'
 			})
 			.when('/members', {
 				resolve: {
@@ -97,8 +106,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/membersList.html',
-				controller: 'MembersListCntrl'
+				templateUrl: 'views/admin/members.html',
+				controller: 'AdminMembersListCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
