@@ -165,6 +165,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					repRef = ReportsSvc.getReportReference($scope.reportId);
 					successMessage = "Reporte Actualizado";
 					action = "update";
+					record.audit.reportStatus:"pending";
 				}else{
 					/* Otherwise we are going to create a NEW record */
 					repRef = ReportsSvc.getNewReportReference();
