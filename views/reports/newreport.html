@@ -153,7 +153,7 @@
           <div class="col-8">
             <select id="memberSelect" class="form-control form-control-lg"
                 ng-model="addmemberId" ng-required="false">
-              <option ng-repeat="m in groupMembersList" value="{{m.$id}}">
+              <option ng-repeat="m in groupMembersList | orderBy:'member.shortname'" value="{{m.$id}}">
                 {{m.member.shortname}}
               </option>
             </select>
@@ -162,6 +162,14 @@
             <button type="button" ng-click="addMemberAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addmemberId">
               {{i18n.btns.addBtn}}
             </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label id="" class="font-weight-light text-info" ng-click="showAllMembers()">{{i18n.forms.report.allMembersLbl}}</label>
+            <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
+              {{i18n.alerts.loading}}
+            </div>
           </div>
         </div>
         <!-- Members Table -->
@@ -213,6 +221,11 @@
             <button type="button" ng-click="addGuestAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addGuestName">
               {{i18n.btns.addBtn}}
             </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label>&nbsp;</label>
           </div>
         </div>
         <!-- Guests Table -->
