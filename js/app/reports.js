@@ -320,7 +320,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 						}
 					}
 			});
-		}
+		};
 
 		$scope.removeGuestAttendance = function (whichMember) {
 			let guestName = whichMember.guestName;
@@ -330,7 +330,16 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 						$scope.response = { guestsListOk: guestName + " fue removido de la lista"};
 					}
 			});
-		}
+		};
+
+		$scope.showAllMembers = function(){
+			console.log("Getting all mebers");
+			$scope.loadingAllMembers =  true;
+			$scope.groupMembersList = MembersSvc.loadAllMembersList();
+			$scope.groupMembersList.$loaded().then(function() {
+				$scope.loadingAllMembers =  false;
+			});
+		};
 
 	}
 ]);
