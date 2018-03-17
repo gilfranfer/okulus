@@ -208,8 +208,8 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 	}
 ]);
 
-okulusApp.controller('HomeCntrl', ['$rootScope','$location', 'AuthenticationSvc','$firebaseAuth',
-	function($rootScope,$location, AuthenticationSvc,$firebaseAuth){
+okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
+	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
@@ -222,6 +222,5 @@ okulusApp.controller('HomeCntrl', ['$rootScope','$location', 'AuthenticationSvc'
 				}
 			});
 		});
-
 	}]
 );
