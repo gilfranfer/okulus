@@ -9,16 +9,19 @@ okulusApp.factory('MessageCenterSvc', ['$rootScope', '$firebaseArray', '$firebas
 		};
 }]);
 
-okulusApp.controller('MessageCenterCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc','AuditSvc',
-	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc,AuditSvc){
+okulusApp.controller('MessageCenterCntrl', ['$rootScope','$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc','AuditSvc',
+	function($rootScope, $scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc,AuditSvc){
 		$scope.messages = MessageCenterSvc.getAdminMessages();
 		console.log("Persist Message:");
 
 		$scope.saveMessage = function(){
-			$scope.messages.$add({message:$scope.newmessage, type:'secondary'}).then(function(ref) {
-				AuditSvc.recordAudit(ref.key, "create", "messages");
-			});
-			$scope.newmessage = "";
+			if($rootScope.currentSession.user.type == 'admin'){
+				$scope.messages.$add({message:$scope.newmessage, type:'secondary'}).then(function(ref) {
+					AuditSvc.recordAudit(ref.key, "create", "messages");
+				});
+				$scope.newmessage = "";
+			}
+			
 		};
 
 	}]
