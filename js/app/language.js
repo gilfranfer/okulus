@@ -192,6 +192,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reportsOptn:"Reportes",
 					weeksOptn:"Semanas",
 					usersOptn:"Usuarios",
+					messagesOptn:"Mensajes",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
@@ -225,9 +226,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			home:{
 				title:"Inicio", welcome:"Hola",
 				basicInfo: "Información Básica",
-				address: "Dirección",
+				address: "Dirección"
+			},
+			msgCenter:{
 				messageCenter: "Centro de Mensajes",
-				errorCenter: "Errores Recientes"
+				messageCenterInstruction: "Escribe un mensaje y envialo",
+				importanMsg: "Mensaje Importante",
+				deleteMsg: "X Eliminar Mensaje"
 			},
 			success:{
 				deleted:{
