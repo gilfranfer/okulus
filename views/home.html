@@ -46,7 +46,7 @@
     <div class="col">
       <div class="card">
         <div class="card-header">
-          {{i18n.home.messageCenter}}
+          {{i18n.msgCenter.messageCenter}}
         </div>
         <div class="card-body">
           <div class="pre-scrollable">
@@ -57,6 +57,11 @@
                 <span class="small font-weight-light">
                 {{m.audit.createdBy}} - {{m.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}
                 </span>
+                <div class="" ng-if="m.audit.createdBy == currentSession.user.email">
+                  <span class="small font-weight-light" style="cursor:pointer" ng-click="deleteMessage(m.$id)">
+                    {{i18n.msgCenter.deleteMsg}}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -65,7 +70,7 @@
           <form name="messageForm" novalidate ng-submit="saveMessage()"  ng-show="currentSession.user.type == 'admin'">
             <div class="row mt-3">
               <div class="col-sm-10">
-                <textarea  class="form-control" placeholder="{{i18n.home.messageCenterInstruction}}"
+                <textarea  class="form-control" placeholder="{{i18n.msgCenter.messageCenterInstruction}}"
                   ng-required="true" ng-model="newmessage"></textarea>
               </div>
               <div class="col-sm-2">
@@ -78,7 +83,7 @@
             <div class="row">
               <div class="col-sm-10">
                 <input type="checkbox" id="importantMsgCheck" ng-model="importantMessage">
-                <label for="importantMsgCheck">{{i18n.home.importanMsg}}</label>
+                <label for="importantMsgCheck">{{i18n.msgCenter.importanMsg}}</label>
               </div>
             </div>
           </form>

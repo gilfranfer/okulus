@@ -225,11 +225,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			home:{
 				title:"Inicio", welcome:"Hola",
 				basicInfo: "Información Básica",
-				address: "Dirección",
+				address: "Dirección"
+			},
+			msgCenter:{
 				messageCenter: "Centro de Mensajes",
 				messageCenterInstruction: "Escribe un mensaje y envialo",
 				importanMsg: "Mensaje Importante",
-				errorCenter: "Errores Recientes"
+				deleteMsg: "X Eliminar Mensaje"
 			},
 			success:{
 				deleted:{

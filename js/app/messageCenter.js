@@ -29,5 +29,12 @@ okulusApp.controller('MessageCenterCntrl', ['$rootScope','$scope','$location', '
 
 		};
 
+		$scope.deleteMessage = function(id ){
+			var rec = $scope.messages.$getRecord(id);
+			$scope.messages.$remove(rec).then(function(ref) {
+				AuditSvc.recordAudit(ref.key, "delete", "messages");
+			});
+		};
+
 	}]
 );
