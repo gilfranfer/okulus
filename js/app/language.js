@@ -228,6 +228,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				address: "Dirección",
 				messageCenter: "Centro de Mensajes",
 				messageCenterInstruction: "Escribe un mensaje y envialo",
+				importanMsg: "Mensaje Importante",
 				errorCenter: "Errores Recientes"
 			},
 			success:{

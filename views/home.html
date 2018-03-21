@@ -65,7 +65,7 @@
           <form name="messageForm" novalidate ng-submit="saveMessage()"  ng-show="currentSession.user.type == 'admin'">
             <div class="row mt-3">
               <div class="col-sm-10">
-                <textarea  class="form-control" placeholder="{{i18n.home.messageCenterInstruction}}" 
+                <textarea  class="form-control" placeholder="{{i18n.home.messageCenterInstruction}}"
                   ng-required="true" ng-model="newmessage"></textarea>
               </div>
               <div class="col-sm-2">
@@ -75,8 +75,14 @@
                 </button>
               </div>
             </div>
+            <div class="row">
+              <div class="col-sm-10">
+                <input type="checkbox" id="importantMsgCheck" ng-model="importantMessage">
+                <label for="importantMsgCheck">{{i18n.home.importanMsg}}</label>
+              </div>
+            </div>
           </form>
-        </div>        
+        </div>
       </div>
     </div>
   </article>
