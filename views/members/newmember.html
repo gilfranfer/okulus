@@ -70,7 +70,7 @@
         ng-show="!provideAddress" ng-click="provideAddress = !provideAddress">
         {{i18n.btns.provideAddress}}
       </button>
-      <button type="button" class="btn btn-lg btn-warning"
+      <button type="button" class="btn btn-lg btn-secondary"
         ng-show="provideAddress" ng-click="provideAddress = !provideAddress">
         {{i18n.btns.notProvideAddress}}
       </button>
@@ -111,7 +111,7 @@
         <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isHost" ng-click="isHost(false)">
           {{i18n.btns.yesBtn}}
         </button>
-        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isHost" ng-click="isHost(true)">
+        <button type="button" class="btn btn-lg btn-block btn-secondary" ng-if="!member.isHost" ng-click="isHost(true)">
           {{i18n.btns.noBtn}}
         </button>
       </div>
@@ -121,7 +121,7 @@
         <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isLeader" ng-click="isLeader(false)">
           {{i18n.btns.yesBtn}}
         </button>
-        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isLeader" ng-click="isLeader(true)">
+        <button type="button" class="btn btn-lg btn-block btn-secondary" ng-if="!member.isLeader" ng-click="isLeader(true)">
           {{i18n.btns.noBtn}}
         </button>
       </div>
@@ -131,7 +131,7 @@
         <button type="button" class="btn btn-lg btn-block btn-primary" ng-if="member.isTrainee" ng-click="isTrainee(false)">
           {{i18n.btns.yesBtn}}
         </button>
-        <button type="button" class="btn btn-lg btn-block btn-warning" ng-if="!member.isTrainee" ng-click="isTrainee(true)">
+        <button type="button" class="btn btn-lg btn-block btn-secondary" ng-if="!member.isTrainee" ng-click="isTrainee(true)">
           {{i18n.btns.noBtn}}
         </button>
       </div>
@@ -142,7 +142,7 @@
                 ng-if="member.canBeUser" ng-disabled="!member.email" ng-click="canBeUser(false)">
           {{i18n.btns.yesBtn}}
         </button>
-        <button type="button" class="btn btn-lg btn-block btn-warning"
+        <button type="button" class="btn btn-lg btn-block btn-secondary"
                 ng-if="!member.canBeUser" ng-disabled="!member.email" ng-click="canBeUser(true)">
           {{i18n.btns.noBtn}}
         </button>
