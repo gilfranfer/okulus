@@ -43,7 +43,7 @@
             {{g.schedule.weekday}}, {{g.schedule.time.HH}}:{{g.schedule.time.MM}} hrs.
           </p>
 
-          <div class="row">
+          <div class="row" ng-if="g.group.status == 'active'">
             <div class="col mb-3">
               <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">{{i18n.btns.addReport}}</a>
             </div>
