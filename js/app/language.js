@@ -192,6 +192,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					reportsOptn:"Reportes",
 					weeksOptn:"Semanas",
 					usersOptn:"Usuarios",
+					messagesOptn:"Mensajes",
 					norecords: "No hay registros disponibles",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
