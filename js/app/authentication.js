@@ -106,16 +106,15 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 						//if User already has a Member mapped:
 						// 1. Verify The member still active,
 						// 2. Confirm the member still canBeUser
-						// 3. Validate the email form the user and the member.
+						// 3. Validate the email from the user and the member.
 						// 		In case they differ (the member emial was updated), remove the member reference from the user
 						if(user.isRoot){
 							// console.log("Welcome Root");
 						}else{
+							//User has a Member mapped
 							if(user.memberId){
-								// console.log("With Member Id");
 								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
 									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
-										// console.log("Assign Member");
 										if(user.email !=  memberObj.member.email){
 											user.memberId = null;
 											user.$save();
@@ -123,11 +122,14 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 											ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
 												+ memberObj.$id + ", porque el correo electrónico no coindía con: " + memberObj.member.email );
 										}else{
+											//All ok. Save the member in session
 											$rootScope.currentSession.member = memberObj;
+											//update lastlogin and sessionstatus
+											
 										}
 									}else{
-										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta."};
-										ErrorsSvc.logError("El usuario "+ user.email +" esta asignado a un Miembro que no existe: "+ user.memberId);
+										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta. Contacta al administrador."};
+										ErrorsSvc.logError("El usuario "+ user.email +" está asignado a un Miembro inactivo o que ya no existe: "+ user.memberId);
 									}
 								});
 							}
