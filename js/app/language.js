@@ -202,7 +202,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					title:"Usuarios Registrados",
 					table:{
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
-						sessionStatus:"Estado"
+						lastActivity:"Última Actividad", sessionStatus:"Estado"
 					}
 				},
 				errors:{
