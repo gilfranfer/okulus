@@ -28,9 +28,8 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 					usersFolder.child(regUser.uid).set({
 						email: $scope.newUser.email,
 						type:"user",
-						//userId: regUser.uid,
-						createdOn: firebase.database.ServerValue.TIMESTAMP,
 						lastLogin: firebase.database.ServerValue.TIMESTAMP,
+						lastActivityOn: firebase.database.ServerValue.TIMESTAMP,
 						sessionStatus: "online"
 					});
 					AuditSvc.recordAudit(regUser.uid, "create", "users");
@@ -66,9 +65,8 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 
 		$scope.login = function(){
 			AuthenticationSvc.loginUser($scope.user).then( function (user){
-				// console.log( "Sucessful Login!");
-				// console.log(user);
-				usersFolder.child(user.uid).update({lastLogin: firebase.database.ServerValue.TIMESTAMP, sessionStatus:"online"});
+				AuthenticationSvc.updateUserLastLogin(user.uid);
+				AuthenticationSvc.updateUserLastActivity(user.uid,"online");
 				$location.path( "/home" );
 			}).catch( function(error){
 				let message = undefined;
@@ -81,7 +79,7 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 							message = "Intente nuevamente";
 				}
 				$scope.response = { loginErrorMsg: message};
-				// console.error( error ) ;
+				console.error( error ) ;
 			});
 		};
 
@@ -91,7 +89,9 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 	function($rootScope,$scope, AuthenticationSvc){
 		$scope.logout = function(){
-			AuthenticationSvc.logout($rootScope.currentSession.user.$id);
+			let userId = $rootScope.currentSession.user.$id;
+			AuthenticationSvc.updateUserLastActivity(userId,"offline");
+			AuthenticationSvc.logout(userId);
 		};
 	}]
 );
@@ -125,7 +125,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 											//All ok. Save the member in session
 											$rootScope.currentSession.member = memberObj;
 											//update lastlogin and sessionstatus
-											
+											AuthenticationSvc.updateUserLastActivity(authUser.uid,"online");
 										}
 									}else{
 										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta. Contacta al administrador."};
@@ -182,13 +182,17 @@ okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObje
 		var auth = $firebaseAuth();
 
 		return{
+			updateUserLastActivity: function(userid,sessionStatus){
+				usersFolder.child(userid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP, sessionStatus:sessionStatus});
+			},
+			updateUserLastLogin: function(userid){
+				usersFolder.child(userid).update({lastLogin: firebase.database.ServerValue.TIMESTAMP});
+			},
 			loginUser: function(user){
-				return auth.$signInWithEmailAndPassword( user.email,user.pwd)
-
+				return auth.$signInWithEmailAndPassword(user.email,user.pwd)
 			},
 			logout: function(userId){
-				usersFolder.child(userId).update({sessionStatus:"offline"});
-				return auth.$signOut().then(function(){});
+				return auth.$signOut();
 			},
 			isUserLoggedIn: function(){
 				return auth.$requireSignIn();
