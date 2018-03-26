@@ -202,7 +202,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					title:"Usuarios Registrados",
 					table:{
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
-						sessionStatus:"Estado"
+						lastActivity:"Última Actividad", sessionStatus:"Estado"
 					}
 				},
 				errors:{
@@ -229,7 +229,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				address: "Dirección"
 			},
 			msgCenter:{
-				messageCenter: "Centro de Mensajes",
+				messageCenter: "Mensajes del Administrador",
 				messageCenterInstruction: "Escribe un mensaje y envialo",
 				importanMsg: "Mensaje Importante",
 				deleteMsg: "X Eliminar Mensaje"
