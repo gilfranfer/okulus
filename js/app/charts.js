@@ -105,20 +105,9 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 							totalGuests += value.guests;
 							groups++;
 						});
-
-						let attendanceChart = undefined;
-						let areaCharts = undefined;
-						if( chartOrientation == 'landscape'){
-							attendanceChart = { type: 'column', height:600};
-							areaCharts = { type: 'area', inverted: false, height:600 };
-						}else{ //portrait
-							attendanceChart = { type: 'bar', height: (300+(groups*15)) };
-							areaCharts = { type: 'area', inverted: true, height: (300+(groups*20)) };
-						}
-
             //Build Charts
             var attendanceByGroupOptions = {
-                chart: attendanceChart,
+                //chart: attendanceChart,
                 credits: { enabled: false },
                 title: { text: '' },
                 xAxis: { categories: groupNameAsCategory },
@@ -135,11 +124,11 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var durationByGroupOptions = {
-                chart: areaCharts,
+                //chart: areaCharts,
                 credits: { enabled: false },
                 title: { text: '' },
                 xAxis: { categories: groupNameAsCategory },
-                yAxis: { min:0, title: { text: '' },
+                yAxis: { min:0, title: { text: 'Minutos Ministrados' },
                         stackLabels: { enabled: true,
                             style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
                         }
@@ -149,11 +138,11 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
             };
 
 						var moneyByGroupOptions = {
-                chart: areaCharts,
+                //chart: areaCharts,
                 credits: { enabled: false },
                 title: { text: '' },
                 xAxis: { categories: groupNameAsCategory },
-                yAxis: { min:0, title: { text: '' },
+                yAxis: { min:0, title: { text: 'Ofrenda' },
                         stackLabels: { enabled: true,
                             style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
                         }
@@ -203,6 +192,22 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     ]
                 }]
             };
+
+						if( chartOrientation == 'landscape'){
+							attendanceByGroupOptions.chart =  { type: 'column', height:600};
+							attendanceByGroupOptions.yAxis.opposite =  false;
+							durationByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+							durationByGroupOptions.yAxis.opposite =  false;
+							moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+							moneyByGroupOptions.yAxis.opposite =  false;
+						}else{ //portrait
+							attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(groups*15)) };
+							attendanceByGroupOptions.yAxis.opposite =  true;
+							durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+							durationByGroupOptions.yAxis.opposite =  true;
+							moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+							moneyByGroupOptions.yAxis.opposite =  true;
+						}
 
             Highcharts.chart('attendanceByGroupContainer', attendanceByGroupOptions);
             Highcharts.chart('reunionsPieContainer', reunionsPieOptions);

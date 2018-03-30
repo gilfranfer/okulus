@@ -1,7 +1,21 @@
 okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+
+		$scope.loadMemberByType = function () {
+			if($scope.memberTypeFilter=="all"){
+				$scope.membersList = MembersSvc.loadAllMembersList();
+			}else if($scope.memberTypeFilter=="host"){
+				$scope.membersList = MembersSvc.filterActiveHosts($rootScope.allMembers);
+			}else if($scope.memberTypeFilter=="lead"){
+				$scope.membersList = MembersSvc.filterActiveLeads($rootScope.allMembers);
+			}else if($scope.memberTypeFilter=="trainee"){
+				$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
+			}
+		};
+
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
+				$scope.memberTypeFilter = "all";
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
 						$scope.membersList = MembersSvc.loadAllMembersList();
@@ -11,6 +25,9 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 				});
 			}
 		});
+
+
+
 	}
 ]);
 
