@@ -40,7 +40,9 @@
           <div class="col">
             <label for="specificGroupSelect">{{i18n.admin.dashboard.weekSection.group}}</label>
           </div>
-          <div class="col"></div>
+          <div class="col">
+            <label for="charOrientation">{{i18n.admin.dashboard.weekSection.chartOrientation}}</label>
+          </div>
         </div>
         <div class="row mb-3">
           <div class="col">
@@ -52,6 +54,18 @@
             </select>
           </div>
           <div class="col">
+            <div class="form-check">
+              <input checked class="" type="radio" name="chartOrientation" id="inlineRadio1" value="landscape" ng-model="$parent.chartOrientation">
+              <label class="form-check-label" for="inlineRadio1">{{i18n.admin.dashboard.weekSection.chartOrientationLandscape}}</label>
+            </div>
+            <div class="form-check">
+              <input class="" type="radio" name="chartOrientation" id="inlineRadio2" value="portrait" ng-model="$parent.chartOrientation">
+              <label class="form-check-label" for="inlineRadio2">{{i18n.admin.dashboard.weekSection.chartOrientationPortrait}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col">
             <button type="button" class="btn btn-lg btn-block btn-success"
               ng-click="getReportsForSelectedWeeks(adminViewActive)" ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)">
               {{i18n.btns.viewBtn}}
@@ -60,14 +74,16 @@
         </div>
         <!-- Error Alert: Week From less than Week To -->
         <div class="row">
-          <div class="col" ng-show="loadingReports">
-            <div class="alert alert-warning" role="alert">
-              {{i18n.alerts.loading}}
-            </div>
-          </div>
           <div class="col" ng-show="!loadingReports && (weekto>0 && weekfrom > weekto)">
             <div class="alert alert-danger" role="alert">
               {{i18n.admin.dashboard.weeksOrderError}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" ng-show="loadingReports">
+            <div class="alert alert-warning" role="alert">
+              {{i18n.alerts.loading}}
             </div>
           </div>
           <div class="col" ng-show="!loadingReports && reportsForSelectedWeek && reportsForSelectedWeek.length == 0">
@@ -78,6 +94,13 @@
           <div class="col" ng-show="!loadingReports && reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
             <div class="alert alert-success" role="alert">
               {{reportsForSelectedWeek.length}} {{i18n.admin.dashboard.weekSection.resultsLoaded}}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" ng-show="response.reportAddedMsg">
+            <div class="alert alert-info" role="alert">
+              {{response.reportAddedMsg}}
             </div>
           </div>
         </div>
