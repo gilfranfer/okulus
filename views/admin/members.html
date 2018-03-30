@@ -1,6 +1,6 @@
 <!-- Admin Members List View -->
 <section id="adminMemberssList">
-  
+
   <article class="card mb-3">
     <div class="card-header">
       {{i18n.admin.membersList.title}}
@@ -18,6 +18,21 @@
           <a class="btn btn-lg btn-block btn-success" href="#!/members/new">
             {{i18n.btns.newMemberBtn}}
           </a>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-8">
+          <input type="radio" ng-click="loadMemberByType()" value="all" name="memberTypeFilter" id="memberTypeAll" ng-model="memberTypeFilter">
+          <label class="pr-3" for="memberTypeAll">{{i18n.admin.membersList.allMembersLabel}}</label>
+
+          <input type="radio" ng-click="loadMemberByType()" value="host" name="memberTypeFilter" id="memberTypeHost" ng-model="memberTypeFilter">
+          <label class="pr-3" for="memberTypeHost">{{i18n.admin.membersList.hostLabel}}</label>
+
+          <input type="radio" ng-click="loadMemberByType()" value="lead" name="memberTypeFilter" id="memberTypeLead" ng-model="memberTypeFilter">
+          <label class="pr-3" for="memberTypeLead">{{i18n.admin.membersList.leadLabel}}</label>
+
+          <input type="radio" ng-click="loadMemberByType()" value="trainee" name="memberTypeFilter" id="memberTypeTrainee" ng-model="memberTypeFilter">
+          <label class="pr-3" for="userTypeTrainee">{{i18n.admin.membersList.traineeLabel}}</label>
         </div>
       </div>
     </div>
