@@ -7,28 +7,28 @@
     <div class="card-body">
       <!--  Summary Badges -->
       <div class="row mt-4 mb-4">
-        <div class="col text-center">
+        <!-- <div class="col text-center">
           <h2><span class="badge badge-primary">
-            {{reunionStatusSummary.approvedReports + reunionStatusSummary.rejectedReports + reunionStatusSummary.pendingReports}}</span>
+            {{reunionSummary.approvedReports + reunionSummary.rejectedReports + reunionSummary.pendingReports}}</span>
             {{i18n.admin.dashboard.counters.totalReports}}
           </h2>
-        </div>
+        </div> -->
         <div class="col text-center">
-          <h2><span class="badge badge-dark">
-            {{reunionStatusSummary.pendingReports}}</span>
-            {{i18n.admin.dashboard.counters.pendingReports}}
+          <h2><span class="badge badge-primary">
+            {{reunionSummary.pendingReports}}</span>
+            {{i18n.admin.dashboard.counters.pending}}
           </h2>
         </div>
         <div class="col text-center">
           <h2><span class="badge badge-success">
-            {{reunionStatusSummary.approvedReports}}</span>
-            {{i18n.admin.dashboard.counters.approvedReports}}
+            {{reunionSummary.approvedReports}}</span>
+            {{i18n.admin.dashboard.counters.approved}}
           </h2>
         </div>
         <div class="col text-center">
           <h2><span class="badge badge-danger">
-            {{reunionStatusSummary.rejectedReports}}</span>
-            {{i18n.admin.dashboard.counters.rejectedReports}}
+            {{reunionSummary.rejectedReports}}</span>
+            {{i18n.admin.dashboard.counters.rejected}}
           </h2>
         </div>
       </div>
@@ -40,7 +40,7 @@
         </div>
       </div>
       <!-- Reports Table -->
-      <div class="pre-scrollable">
+      <div class="pre-scrollable mb-4">
       <table class="table table-responsive-s table-md table-striped">
         <thead class="">
           <tr>
@@ -115,6 +115,41 @@
         </tbody>
       </table>
       </div>
+
+      <h4 class="card-title mt-4">Resumen</h4>
+
+      <div class="row mt-4 mb-4">
+        <div class="col text-center">
+          <h4><span class="badge badge-info">{{reunionSummary.completedReunions}}</span>
+            {{i18n.admin.dashboard.counters.successReunions}}
+          </h4>
+        </div>
+        <div class="col text-center">
+          <h4><span class="badge badge-info">{{reunionSummary.canceledReunions}}</span>
+            {{i18n.admin.dashboard.counters.canceledReunions}}
+          </h4>
+        </div>
+      <!-- </div> -->
+      <!-- <div class="row mt-4 mb-4"> -->
+        <div class="col text-center">
+          <h4><span class="badge badge-info">{{reunionSummary.totalAttendance}}</span>
+            {{i18n.admin.dashboard.counters.totalAttendance}}
+          </h4>
+        </div>
+        <div class="col text-center">
+          <h4><span class="badge badge-info">{{reunionSummary.totalDuration}}</span>
+            {{i18n.admin.dashboard.counters.totalDuration}}
+          </h4>
+        </div>
+      <!-- </div> -->
+      <!-- <div class="row mt-4 mb-4"> -->
+        <div class="col text-center">
+          <h4><span class="badge badge-info">${{reunionSummary.totalMoney}}</span>
+            {{i18n.admin.dashboard.counters.totalMoney}}
+          </h4>
+        </div>
+      </div>
+
     </div>
   </div>
 </article>

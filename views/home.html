@@ -57,7 +57,7 @@
                 <span class="small font-weight-light">
                 {{m.audit.createdBy}} - {{m.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}
                 </span>
-                <div class="" ng-if="m.audit.createdBy == currentSession.user.email">
+                <div class="" ng-if="(m.audit.createdBy == currentSession.user.email) || (currentSession.user.type == 'admin') ">
                   <span class="small font-weight-light" style="cursor:pointer" ng-click="deleteMessage(m.$id)">
                     {{i18n.msgCenter.deleteMsg}}
                   </span>

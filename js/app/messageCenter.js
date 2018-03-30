@@ -12,7 +12,6 @@ okulusApp.factory('MessageCenterSvc', ['$rootScope', '$firebaseArray', '$firebas
 okulusApp.controller('MessageCenterCntrl', ['$rootScope','$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc','AuditSvc',
 	function($rootScope, $scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc,AuditSvc){
 		$scope.messages = MessageCenterSvc.getAdminMessages();
-		console.log("Persist Message:");
 
 		$scope.saveMessage = function(){
 			if($rootScope.currentSession.user.type == 'admin'){

@@ -158,14 +158,15 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					counters:{
 						total: "Existentes", active:"Activos", inactive:"Inactivos",
 						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
-						totalReports: "Reportes", approvedReports:"Aprobados", rejectedReports:"Rechazados", pendingReports:"Pendientes",
-						totalReunions: "Reuniones", successReports: "Completadas", canceledReports: "Canceladas"
+						totalAttendance:"Personas Ministradas", totalDuration:"Minutos Ministrados",
+						totalMoney:"Ofrenda", successReunions: "Reuniones Completadas", canceledReunions: "Reuniones Canceladas"
 					},
 					titles:{
 						weekSection: "Buscador de Reportes",
 						reportsList: "Reportes",
 						attendance: "Reuniones y Asistencia",
 						money: "Ofrenda",
+						duration: "Duración"
 					},
 					reportTable:{
 						report:"", week:"Semana",
@@ -179,7 +180,9 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					},
 					weekSection:{
 						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico.",
-						from: "De la Semana:", to:"a la Semana:", group:"Grupo", resultsLoaded: "Reportes encontrados",
+						from: "De la Semana:", to:"a la Semana:", group:"Grupo",
+						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
+						resultsLoaded: "Reportes encontrados",
 					},
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"

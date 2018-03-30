@@ -1,12 +1,15 @@
 okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
+		//Default chart Orientation
+		$scope.chartOrientation = 'portrait';
+
 		updateCharts = function(groupId){
-			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, groupId);
-			$scope.reunionStatusSummary = ChartsSvc.getReunionStatusTotals();
+			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, groupId, $scope.chartOrientation);
+			$scope.reunionSummary = ChartsSvc.getReunionTotals();
 		};
 
 		/* if a group was selected on the search view, we need to filter the $scope.reportsArray.
-		   because at this point, it contains all reports for all groups for the slected weeks period */
+		   because at this point, it contains all reports for all groups for the selected weeks period */
 		filterReportsForGroup = function(groupId){
 			if(groupId){
 				let reportsList = [];
@@ -33,12 +36,14 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			return reportsList;
 		};
 
+		/* Filter reports according to member access list, so he can only see
+		reports linked to the groups he has access to */
 		filterReportsAndUpdateCharts = function (groupId, isAdminDashView) {
 			filterReportsForGroup(groupId);
-			/*Now filter reports according to member access list, so he can only see
-			reports linked to the groups he has access to */
 			let memberId = $rootScope.currentSession.user.memberId;
 			if(!memberId && $rootScope.currentSession.user.isRoot){
+				/* A root user doesnt have a member associated in the system, but has Admin privileges
+				 	 so we can go ahead and show all information. */
 				updateCharts(groupId);
 			}else{
 				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
@@ -48,8 +53,8 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 						accessGroups.set(rule.groupId,rule);
 					});
 					if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
-						//Even an Admin user will get his Reports Filtered when using My Groups view (isAdminDashView = false)
-						//Reports should not be filtered for the Admi only when comming from Admin Dashboard
+						//Reports should not be filtered for the Admi when comming from "Admin Dashboard"
+						//Even an Admin will get his Reports Filtered when using "My Groups" view (isAdminDashView = false)
 					}else{
 						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
 					}
@@ -58,22 +63,22 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			}
 		};
 
-		$scope.sortBy = function(propertyName) {
-			$scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
-			$scope.propertyName = propertyName;
-		};
-
 		$scope.getReportsForSelectedWeeks = function (isAdminDashView) {
+			$scope.response = null;
 			$scope.propertyName = 'reunion.groupname';
 			$scope.reverse = true;
 			$scope.loadingReports = true;
 
+			/* Get User Input */
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
 			let groupId = $scope.specificGroup;
+			$rootScope.weekfrom = fromWeek;
+			$rootScope.weekto = toWeek;
+			$rootScope.specificGroup = groupId;
 
 			/* If user didnt select a group, but only has access to 1 groups
-			   then we better select that group for him*/
+				 then we better select that group for him*/
 			if(!groupId && $scope.groupsList.length == 1){
 				groupId = ($scope.groupsList[0].$id);
 			}
@@ -81,20 +86,42 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
 			$scope.reportsArray = reportsArray;
 
-			/* reportsArray has all reports for the week period, even for groups where the member doesnt have access */
+			/* reportsArray has all reports for the week period,  even for groups where
+				the member doesnt have access, so we need to apply some filters before
+			 */
 			reportsArray.$loaded().then( function( reports ) {
 				filterReportsAndUpdateCharts(groupId,isAdminDashView);
-				reportsArray.$watch(function(event){
-					filterReportsAndUpdateCharts(groupId,isAdminDashView);
-				});
+				reportsArray.$watch(function(event){ notifyReportAdded(event); });
 				$scope.loadingReports = false;
 			});
 
-			$rootScope.weekfrom = fromWeek;
-			$rootScope.weekto = toWeek;
-			$rootScope.specificGroup = groupId;
-			//$rootScope.specificGroup = groupId;
 		};
+
+		$scope.sortBy = function(propertyName) {
+			$scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+			$scope.propertyName = propertyName;
+		};
+
+		notifyReportAdded = function(event){
+			let reportId = event.key;
+			ReportsSvc.getReportObj(reportId).$loaded().then(function (report) {
+				if( report.reunion.weekId >= $rootScope.weekfrom && report.reunion.weekId <= $rootScope.weekto ){
+					let message = "";
+					if(event.event == "child_added"){
+						message = "Se ha creado un nuevo Reporte para la semana "+report.reunion.weekId
+																								+ " del grupo "+report.reunion.groupname;
+					}else if(event.event == "child_changed"){
+						message = "Se ha modificado un Reporte para la semana "+report.reunion.weekId
+																								+ " del grupo "+report.reunion.groupname;;
+					}
+					$scope.response = { reportAddedMsg:message };
+					// console.log(event);
+				}else{
+					// console.log("Update on other week");
+				}
+			});
+		};
+
 }]);
 
 okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
@@ -229,7 +256,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			2. Remove report reference from group/reports
 			3. Remove report reference from member/reports
 		*/
-		$scope.delete = function(){	
+		$scope.delete = function(){
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
 			}else if($scope.audit && $scope.audit.reportStatus == "approved"){
@@ -282,6 +309,21 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				}
 			}
 		};
+
+		// $scope.addGuests = function () {
+		// 	let guestNumber = Number($scope.addGuestName);
+		// 	let guestName = "Invitado ";
+		// 	if(!$scope.attendance.guests.list){
+		// 		$scope.attendance.guests.list = [];
+		// 	}
+		// 	while(guestNumber>0){
+		// 		let name = guestName + guestNumber;
+		// 		$scope.attendance.guests.list.push({guestName:name});
+		// 		guestNumber --;
+		// 	}
+		// 	$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
+		// 	$scope.addGuestName = "";
+		// };
 
 		$scope.addGuestAttendance = function () {
 			let guestName = $scope.addGuestName;
@@ -353,7 +395,10 @@ okulusApp.controller('NewReportCntrl', ['$rootScope', '$scope','$routeParams', '
 		$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(whichGroup);
 		GroupsSvc.getGroupObj(whichGroup).$loaded().then(function(groupObj) {
 			$scope.reunion.groupname = groupObj.group.name;
-			$scope.reunion.hostId = groupObj.group.hostId;
+			let hostId = groupObj.group.hostId;
+			if(hostId){
+				$scope.reunion.hostId = hostId;
+			}
 			$scope.reunion.leadId = groupObj.group.leadId;
 		}).catch(function(error) {
 			$location.path("/error/norecord");
