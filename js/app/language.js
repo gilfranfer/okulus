@@ -143,7 +143,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				membersList:{
 					title:"Administrar Miembros del Grupo de Siervos",
 					description: "A countinuación se muestran todos los Miembros registrados, incluyendo los inactivos, que forman parte del Grupo de Siervos.",
-					noMembersError: "No se han creado Miembros"
+					noMembersError: "No se han creado Miembros",
+					allMembersLabel:"Todos", hostLabel: "Anfitriones", leadLabel:"Líderes", traineeLabel: "Aprendíces"
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
