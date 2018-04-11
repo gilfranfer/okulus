@@ -19,8 +19,8 @@
             </a>
           </h4>
           <hr>
-          <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">Grupo Inactivo </span>
-          <span class="badge badge-success" ng-if="g.group.status == 'active'">Grupo Activo </span>
+          <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.forms.group.inactive}}</span>
+          <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.forms.group.active}}</span>
           <p class="card-text mt-2" ng-if="g.address">
             <span class="font-weight-bold">
               {{i18n.forms.address.legend}}:
