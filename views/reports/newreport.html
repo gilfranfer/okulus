@@ -12,7 +12,7 @@
           {{i18n.forms.report.groupLbl}}
         </label>
         <input type="text" disabled id="groupId" class="form-control form-control-lg"
-        	ng-model="reunion.groupname" ng-required="true"/>
+        	ng-model="reunion.groupname" ng-required="false"/>
         <input type="text" disabled hidden ng-model="reunion.groupId"/>
       </div>
       <div class="col-sm form-group">
@@ -90,7 +90,7 @@
         </label>
         <div class="input-group" >
           <span class="input-group-addon">$</span>
-          <input type="number" id="money" min="0" step=".01" class="form-control form-control-lg"
+          <input type="number" id="money" min="0" step=".10" class="form-control form-control-lg"
             ng-model="reunion.money" ng-required="true">
         </div>
       </div>
