@@ -61,10 +61,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					shcLegend:"Horario de Servicio",
 					typeLegend:"Tipo de Grupo",
 					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "",
-					mandatoryFields: "Campos Obligatorios"
+					mandatoryFields: "Campos Obligatorios",
+					active: "Grupo Activo", inactive: "Grupo Inactivo"
 				},
 				member:{
-					legend: "Información básica", membership:"Membresía",
+					newMember: "Nuevo Miembro",
+					basicDataLegend: "Datos del Miembro", membership:"Membresía",
 					fnameLbl:"Nombre", fnameHint:"",
 					lnameLbl:"Apellido", lnameHint:"",
 					snameLbl:"Alias", snameHint:"",
@@ -73,7 +75,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					baseGroupLbl: "Grupo Base",
 					canBeUserLbl: "Puede ser Usuario?",
 					typeLbl:"Tipo de Miembro", isHostLbl:"Es Anfitrión?",
-					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?"
+					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?",
+					active: "Miembro Activo", inactive: "Miembro Inactivo"
 				},
 				report:{
 					title:"Datos generales de la Reunión",

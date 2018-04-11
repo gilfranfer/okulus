@@ -1,43 +1,53 @@
 <!-- Members List -->
-<section>
-
+<section id="membersList">
   <div class="row">
-    <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="m in membersList | filter:searchText">
-      <!-- Group card -->
+    <!-- Loading Alert -->
+    <div class="col"  ng-show="!membersList">
+      <div class="alert alert-warning" role="alert">
+        {{i18n.alerts.loading}}
+      </div>
+    </div>
+
+    <!-- Member card -->
+    <div class="col-md-6 col-lg-4 mb-3" ng-repeat="m in membersList | filter:searchText | orderBy:'member.shortname'">
       <div class="card h-100">
-        <h4 class="card-header">
-          <a ng-href="#!/members/edit/{{m.$id}}">
-            {{m.member.shortname}}
-          </a>
-        </h4>
+        <!-- <h4 class="card-header"></h4> -->
         <div class="card-body">
           <h4 class="card-title">
-            {{i18n.forms.member.legend}}
+            <a ng-href="#!/members/edit/{{m.$id}}">
+              {{m.member.shortname}}
+            </a>
           </h4>
-          <span class="badge badge-danger" ng-if="m.member.status == 'inactive'">Miembro Inactivo </span>
-          <p>
-            <span class="font-weight-bold">{{i18n.forms.member.fnameLbl}}:</span>
+          <hr>
+          <span class="badge badge-danger" ng-if="m.member.status == 'inactive'">{{i18n.forms.member.inactive}}</span>
+          <span class="badge badge-success" ng-if="m.member.status  == 'active'">{{i18n.forms.member.active}}</span>
+          <p class="card-text mt-2">
+            <span class="font-weight-bold">
+              {{i18n.forms.member.fnameLbl}}:
+            </span><br>
             {{m.member.firstname}} {{m.member.lastname}}
           </p>
           <p class="card-text" ng-if="m.address">
-            <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span>
+            <span class="font-weight-bold">
+              {{i18n.forms.address.legend}}:
+            </span><br>
             {{m.address.street}}
             #{{m.address.extNumber}}<span ng-if="m.address.intNumber">, Int {{m.address.intNumber}}</span><br>
             {{m.address.city}} {{m.address.state}}, {{m.address.country}}<br>
             {{i18n.forms.address.zipLbl}} {{m.address.zip}}
           </p>
           <p class="card-text" ng-if="m.member.phone">
-            <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.phone.phoneLbl}}:</span><br>
             <a href="tel:{{m.phone}}">{{m.member.phone}}</a>
           </p>
           <p class="card-text" ng-if="m.member.email">
-            <span class="font-weight-bold">{{i18n.forms.group.emailLbl}}:</span>
+            <span class="font-weight-bold">{{i18n.forms.group.emailLbl}}:</span><br>
             <a href="mailto:{{m.email}}">{{m.member.email}}</a>
           </p>
         </div>
       </div>
     </div>
+
   </div>
 
 </section>
