@@ -71,8 +71,11 @@
               </label>
               <select id="week" name="week" class="form-control form-control-lg"
                       ng-model="reunion.weekId" ng-required="true">
-                <option ng-repeat="w in allActiveWeeks" value="{{w.$id}}">
-                  {{w.name}}
+                <option ng-if="reportWeek" value="{{reportWeek.$id}}">
+                  {{reportWeek.$id}} - {{reportWeek.name}}
+                </option>
+                <option ng-repeat="w in allActiveWeeks | orderBy:'w.$id':true" value="{{w.$id}}">
+                  {{w.$id}} - {{w.name}}
                 </option>
               </select>
             </div>

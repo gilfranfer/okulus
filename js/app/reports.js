@@ -455,9 +455,12 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 
 				$scope.attendance = record.attendance;
 				if($scope.attendance.members.list){
-					$scope.attendance.members.list = Object.values(record.attendance.members.list);}
+					$scope.attendance.members.list = Object.values(record.attendance.members.list);
+				}
 				if($scope.attendance.guests.list){
-					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);}
+					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);
+				}
+				$scope.reportWeek = WeeksSvc.getWeekObj( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
 			}else{
 				$location.path( "/error/norecord" );

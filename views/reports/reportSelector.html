@@ -21,16 +21,16 @@
         <div class="row mb-3">
           <div class="col">
             <select id="weekFromSelect" class="form-control form-control-lg" ng-model="$parent.weekfrom" ng-required="true">
-              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
-                {{w.name}} ({{w.$id}})
+              <option ng-repeat="w in allWeeks | orderBy:'w.$id':true" value="{{w.$id}}" >
+                {{w.$id}} - {{w.name}}
               </option>
             </select>
           </div>
           <div class="col">
             <select id="weekToSelect" class="form-control form-control-lg" ng-model="$parent.weekto" ng-required="false">
               <option value="0"></option>
-              <option ng-repeat="w in allWeeks" value="{{w.$id}}" >
-                {{w.name}} ({{w.$id}})
+              <option ng-repeat="w in allWeeks | orderBy:'w.$id':true" value="{{w.$id}}" >
+                {{w.$id}} - {{w.name}}
               </option>
             </select>
           </div>
