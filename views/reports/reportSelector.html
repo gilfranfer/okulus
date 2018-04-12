@@ -47,8 +47,8 @@
           <div class="col">
             <select id="specificGroupSelect" class="form-control form-control-lg" ng-model="$parent.specificGroup" ng-required="false">
               <option value=""></option>
-              <option ng-repeat="g in groupsList" value="{{g.$id}}" >
-                {{g.group.name}}
+              <option ng-repeat="g in groupsList | orderBy:'group.number'" value="{{g.$id}}" >
+                {{g.group.number}} - {{g.group.name}}
               </option>
             </select>
           </div>
