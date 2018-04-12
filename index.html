@@ -11,18 +11,18 @@
 
 	</head>
 	<body ng-controller="AuthenticationCntrl">
-    <section ng-controller="LanguageCntrl">
+    <section class="mb-5" ng-controller="LanguageCntrl">
       <header ng-include="'views/navigation.html'"></header>
       <!-- Main Bootstrap container -->
-  		<div class="container mt-4">
+  		<div class="container mt-4 mb-4">
   			<main id="main" ng-view></main>
-        <footer class="footer mt-4">
-  				<p>&copy; GilLab 2018</p>
-  			</footer>
   		</div>
       <!-- Main Bootstrap container  -->
     </section>
 
+    <footer class="mt-4 footer text-center text-light">
+      &copy; GilLab 2018
+    </footer>
   	<!-- Bootstrap, jQuery, and Popper.js -->
   	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>

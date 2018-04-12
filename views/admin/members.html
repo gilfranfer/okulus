@@ -2,10 +2,10 @@
 <section id="adminMemberssList">
 
   <article class="card mb-3">
-    <div class="card-header">
-      {{i18n.admin.membersList.title}}
-    </div>
+    <!-- <div class="card-header"></div> -->
     <div class="card-body">
+      <h4 class="card-title">{{i18n.admin.membersList.title}}</h4>
+      <hr>
       <div class="card-text">
           <p>{{i18n.admin.membersList.description}}</p>
       </div>
@@ -45,15 +45,10 @@
   <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
     {{response.memberMsgError}}
   </div>
-  <!-- Loading/No Records Alert -->
-  <div class="col"  ng-show="allMembers && allMembers.length == 0">
+  <!-- No Records Alert -->
+  <div class="col"  ng-show="membersList && membersList.length == 0">
     <div class="alert alert-danger" role="alert">
       {{i18n.admin.membersList.noMembersError}}
-    </div>
-  </div>
-  <div class="col"  ng-show="!allMembers">
-    <div class="alert alert-warning" role="alert">
-      {{i18n.alerts.loading}}
     </div>
   </div>
 

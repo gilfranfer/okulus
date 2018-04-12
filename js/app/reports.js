@@ -141,7 +141,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				let action = undefined;
 
 				if(approved){
-					response = { reportMsgOk: "Reporte Aprovado"};
+					response = { reportMsgOk: "Reporte Aprobado"};
 					action = "approved";
 				}else{
 					response = { reportMsgError: "Reporte Rechazado"};

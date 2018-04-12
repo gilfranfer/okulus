@@ -1,37 +1,11 @@
 <article >
   <!-- Reports Table -->
   <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
-    <div class="card-header">
-        {{i18n.admin.dashboard.titles.reportsList}} {{week.id}}
-    </div>
     <div class="card-body">
-      <!--  Summary Badges -->
-      <div class="row mt-4 mb-4">
-        <!-- <div class="col text-center">
-          <h2><span class="badge badge-primary">
-            {{reunionSummary.approvedReports + reunionSummary.rejectedReports + reunionSummary.pendingReports}}</span>
-            {{i18n.admin.dashboard.counters.totalReports}}
-          </h2>
-        </div> -->
-        <div class="col text-center">
-          <h2><span class="badge badge-primary">
-            {{reunionSummary.pendingReports}}</span>
-            {{i18n.admin.dashboard.counters.pending}}
-          </h2>
-        </div>
-        <div class="col text-center">
-          <h2><span class="badge badge-success">
-            {{reunionSummary.approvedReports}}</span>
-            {{i18n.admin.dashboard.counters.approved}}
-          </h2>
-        </div>
-        <div class="col text-center">
-          <h2><span class="badge badge-danger">
-            {{reunionSummary.rejectedReports}}</span>
-            {{i18n.admin.dashboard.counters.rejected}}
-          </h2>
-        </div>
-      </div>
+      <h4 class="card-title">
+        {{i18n.admin.dashboard.titles.reportsList}} {{week.id}}
+      </h4>
+      <hr>
       <!-- Search -->
       <div class="row mb-3">
         <div class="col">
@@ -44,7 +18,7 @@
       <table class="table table-responsive-s table-md table-striped">
         <thead class="">
           <tr>
-            <!-- <th scope="col">#</th> -->
+            <th scope="col"></th>
             <th scope="col">
               <span style="cursos:pointer" ng-click="sortBy('audit.reportStatus')">{{i18n.admin.dashboard.reportTable.reportStatus}}</span>
               <span class="sortorder" ng-show="propertyName === 'audit.reportStatus'" ng-class="{reverse: reverse}"></span>
@@ -83,6 +57,11 @@
           <tr ng-repeat="report in reportsForSelectedWeek | filter:filterText | orderBy:propertyName:reverse ">
             <!-- <td scope="row">{{$index + 1}}</td> -->
             <!-- Report Status -->
+            <td scope="row">
+              <a target="_blank" ng-href="#!/reports/edit/{{report.$id}}">
+                {{i18n.admin.dashboard.reportTable.view}}
+              </a>
+            </td>
             <td class="text-danger" ng-if="report.audit.reportStatus == 'rejected'">
               {{i18n.forms.report.rejectedStatusLbl}}
             </td>
@@ -92,11 +71,8 @@
             <td class="text-dark" ng-if="!report.audit.reportStatus || report.audit.reportStatus == 'pending'">
               {{i18n.forms.report.pendingStatusLbl}}
             </td>
-
             <td scope="row">
-              <a target="_blank" ng-href="#!/reports/edit/{{report.$id}}">
-                {{report.reunion.groupname}}
-              </a>
+              {{report.reunion.groupname}}
             </td>
             <td scope="row">
               {{report.reunion.weekId}}
@@ -115,41 +91,6 @@
         </tbody>
       </table>
       </div>
-
-      <h4 class="card-title mt-4">Resumen</h4>
-
-      <div class="row mt-4 mb-4">
-        <div class="col text-center">
-          <h4><span class="badge badge-info">{{reunionSummary.completedReunions}}</span>
-            {{i18n.admin.dashboard.counters.successReunions}}
-          </h4>
-        </div>
-        <div class="col text-center">
-          <h4><span class="badge badge-info">{{reunionSummary.canceledReunions}}</span>
-            {{i18n.admin.dashboard.counters.canceledReunions}}
-          </h4>
-        </div>
-      <!-- </div> -->
-      <!-- <div class="row mt-4 mb-4"> -->
-        <div class="col text-center">
-          <h4><span class="badge badge-info">{{reunionSummary.totalAttendance}}</span>
-            {{i18n.admin.dashboard.counters.totalAttendance}}
-          </h4>
-        </div>
-        <div class="col text-center">
-          <h4><span class="badge badge-info">{{reunionSummary.totalDuration}}</span>
-            {{i18n.admin.dashboard.counters.totalDuration}}
-          </h4>
-        </div>
-      <!-- </div> -->
-      <!-- <div class="row mt-4 mb-4"> -->
-        <div class="col text-center">
-          <h4><span class="badge badge-info">${{reunionSummary.totalMoney}}</span>
-            {{i18n.admin.dashboard.counters.totalMoney}}
-          </h4>
-        </div>
-      </div>
-
     </div>
   </div>
 </article>
