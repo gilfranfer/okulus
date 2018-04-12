@@ -1,10 +1,9 @@
 <section id="adminMonitor">
   <article class="users">
     <div class="card mb-3">
-      <div class="card-header">
-        {{i18n.admin.users.title}}
-      </div>
       <div class="card-body">
+        <h4 class="card-title">{{i18n.admin.users.title}}</h4>
+        <hr>
         <div class="form-group row">
           <div class="col"></div>
           <div class="col">
@@ -74,10 +73,9 @@
 
   <article class="audit">
     <div class="card mb-3">
-      <div class="card-header">
-        {{i18n.admin.audit.title}}
-      </div>
       <div class="card-body">
+        <h4 class="card-title">{{i18n.admin.audit.title}}</h4>
+        <hr>
         <div class="form-group row">
           <div class="col">
             <select class="form-control form-control-lg" onchange="getAuditRecords(this)">
@@ -136,10 +134,9 @@
     <div class="row">
       <div class="col mb-3">
         <div class="card h-100">
-          <div class="card-header">
-            {{i18n.home.errorCenter}}
-          </div>
           <div class="card-body">
+            <h4 class="card-title">{{i18n.admin.errors.title}}</h4>
+            <hr>
             <div class="form-group row">
               <div class="col"></div>
               <div class="col">

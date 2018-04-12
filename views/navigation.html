@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+<nav class="navbar navbar-expand-sm navbar-dark bg-primary mb-3">
 
   <span class="navbar-brand bg-danger" ng-if="config.env !='prod'" >
     {{config.env}}
@@ -40,7 +40,7 @@
       </li>
       <!-- Admin Menu: if user is Admin type -->
       <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
-        <a class="nav-link dropdown-toggle" href="#!/admin/dashboard" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">

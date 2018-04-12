@@ -9,12 +9,15 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
     var totalMoney = 0.0;
     var totalDuration = 0;
     var totalAttendance = 0;
+		var totalMembers = 0;
+		var totalGuests = 0;
 
     return {
         getReunionTotals: function(){
             return  { completedReunions: totalCompletedReunions, canceledReunions:totalCanceledReunions,
                       approvedReports: totalApprovedReports, rejectedReports: totalRejectedReports, pendingReports: totalPendingReports,
-											totalMoney: totalMoney.toFixed(2), totalDuration: totalDuration, totalAttendance: totalAttendance
+											totalMoney: totalMoney.toFixed(2), totalDuration: totalDuration, totalAttendance: totalAttendance,
+											totalMembers: totalMembers, totalGuests: totalGuests
 										};
         },
 				/* Use the reportsList to get some data (Attendance, Money, Duration) that will
@@ -25,7 +28,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 						//reset summary variables
             totalCompletedReunions = 0; totalCanceledReunions = 0;
 						totalApprovedReports = 0; totalRejectedReports = 0; totalPendingReports = 0;
-						totalMoney = 0.0;  totalDuration = 0; totalAttendance = 0;
+						totalMoney = 0.0;  totalDuration = 0; totalAttendance = 0, totalMembers = 0, totalGuests=0;
 						//Array Holders for CAtegories and Data Series
             let groupNameAsCategory = [];
             let totalMembersByReport = [];
@@ -85,8 +88,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                 }
             });
 
-						let totalMembers = 0;
-						let totalGuests = 0;
+
 						let groups = 0;
 						/* Using the Map (with totals per group over weeks) to build Data Series*/
 						groupDetailsMap.forEach(function(value, key) {

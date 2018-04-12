@@ -41,7 +41,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
 			},
 			alerts:{
-				invalidForm:"Hay datos faltantes o incorrectos en el formulario.",
+				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
 				confirmDelete: "Seguro que deseas eliminar este registro?",
 				loading:"Cargando ..."
 			},
@@ -50,29 +50,37 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					legend: "Semanas",
 					description:"Las Semanas serán los contenedores de los Reportes. Se recomienda cerrar las semanas cuando se hayan recibido todos los reportes. Las semanas cerradas no aparecerán listadas al momento de crear un reporte.",
 					week: "Semana",weekBtn:"Agregar",
-					weekName: "Nombre", weekNameHint: "Semana 1",
+					weekName: "Nombre", weekNameHint: "",
 				},
 				group:{
-					legend: "Datos del Grupo",
-					numberLbl:"#", numberHint:"1", typeLbl:"Tipo",
-					nameLbl:"Nombre del Grupo", nameHint:"Semillas de Esperanza",
-					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
+					newGroup: "Nuevo Grupo",
+					basicDataLegend: "Datos del Grupo",
+					numberLbl:"Número", numberHint:"", typeLbl:"Tipo",
+					nameLbl:"Nombre", nameHint:"",
+					emailLbl:"Correo", emailHint:"",
 					shcLegend:"Horario de Servicio",
-					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "07:30 PM"
+					typeLegend:"Tipo de Grupo",
+					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "",
+					mandatoryFields: "Campos Obligatorios",
+					active: "Grupo Activo", inactive: "Grupo Inactivo"
 				},
 				member:{
-					legend: "Información básica", membership:"Membresía",
-					fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
-					lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
-					snameLbl:"Alias", snameHint:"Fernando Gil",
-					emailLbl:"Correo", emailHint:"micorreo@gmail.com",
+					newMember: "Nuevo Miembro",
+					basicDataLegend: "Datos del Miembro", membership:"Membresía",
+					fnameLbl:"Nombre", fnameHint:"",
+					lnameLbl:"Apellido", lnameHint:"",
+					snameLbl:"Alias", snameHint:"",
+					emailLbl:"Correo", emailHint:"",
 					bdayLbl:"Fecha de nacimiento",
 					baseGroupLbl: "Grupo Base",
 					canBeUserLbl: "Puede ser Usuario?",
 					typeLbl:"Tipo de Miembro", isHostLbl:"Es Anfitrión?",
-					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?"
+					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?",
+					active: "Miembro Activo", inactive: "Miembro Inactivo"
 				},
 				report:{
+					newReport: "Nuevo Reporte",
+					basicDataLegend: "Detalles del Reporte para el Grupo",
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
 					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
@@ -93,27 +101,27 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					noGuestsList:"No se ha registrado la asistencia de Invitados"
 				},
 				phone:{
-					phoneLbl:"Teléfono", phoneHint:"228 8112233"
+					phoneLbl:"Teléfono", phoneHint:""
 				},
 				search:{
 					hint:"Buscar ..."
 				},
 				address:{
 					legend: "Dirección",
-					streetLbl:"Calle", streetHint:"Av. Principal",
-					extNumberLbl: "Num ext", extNumberHint: "007",
-					intNumberLbl: "Num int", intNumberHint: "1",
-					zipLbl: "Codigo Postal", zipHint: "77777",
-					cityLbl: "Ciudad", cityHint: "Xalapa",
-					neighborhoodLbl: "Colonia", neighborhoodHint: "Centro",
-					stateLbl: "Estado", stateHint: "Veracruz",
-					countryLbl: "Pais", countryHint: "Mexico"
+					streetLbl:"Calle", streetHint:"",
+					extNumberLbl: "Num ext", extNumberHint: "",
+					intNumberLbl: "Num int", intNumberHint: "",
+					zipLbl: "Codigo Postal", zipHint: "",
+					cityLbl: "Ciudad", cityHint: "",
+					neighborhoodLbl: "Colonia", neighborhoodHint: "",
+					stateLbl: "Estado", stateHint: "",
+					countryLbl: "Pais", countryHint: ""
 				},
 				orgForm:{
 					basicInfoFieldset: "Datos de la Organizacion",
-					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "Mi Organizacion",
-					emailLbl:"Correo electronico", emailHint:"micorreo@gmail.com",
-					urlLbl:"Sitio Web", urlHint:"http://www.misitio.com"
+					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "",
+					emailLbl:"Correo electronico", emailHint:"",
+					urlLbl:"Sitio Web", urlHint:""
 				},
 				login:{
 					title:"Inicia sesión",
@@ -148,7 +156,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
-					title: "Accceso al Grupo",
+					title: "Lista de acccesos al Grupo",
 					description: "Otorgar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros que tiene permiso para ser Usuarios del sistema.",
 					noRecordsError: "No hay reglas de acceso en este grupo",
 					table:{
@@ -157,17 +165,19 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				dashboard:{
 					counters:{
-						total: "Existentes", active:"Activos", inactive:"Inactivos",
-						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
-						totalAttendance:"Personas Ministradas", totalDuration:"Minutos Ministrados",
-						totalMoney:"Ofrenda", successReunions: "Reuniones Completadas", canceledReunions: "Reuniones Canceladas"
+						total: "Total",
+						active:"Activos", inactive:"Inactivos",
+						approved:"Aprobados", pending:"Pendientes", rejected: "Rechazados",
+						totalMembers: "Miembros", totalGuests: "Invitados",
+						totalDuration:"Minutos Ministrados", totalMoney:"Ofrenda",
+						successReunions: "Completadas", canceledReunions: "Canceladas"
 					},
 					titles:{
 						weekSection: "Buscador de Reportes",
-						reportsList: "Reportes",
-						attendance: "Reuniones y Asistencia",
-						money: "Ofrenda",
-						duration: "Duración"
+						reportsList: "Lista de Reportes", reportsSummary: "Reportes", reunionsSummary: "Reuniones",
+						attendanceSummary:"Asistentes", othersSummary:"Otros",
+						attendanceCharts: "Gráficas de Reuniones y Asistencia",
+						moneyCharts: "Gráfica de Ofrenda",	durationCharts: "Gráfica de Duración"
 					},
 					reportTable:{
 						report:"", week:"Semana",
@@ -210,6 +220,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					}
 				},
 				errors:{
+					title:"Errores Recientes",
 					table:{
 						user: "Usuario Impactado", error:"Error", date:"Fecha"
 					}
@@ -261,7 +272,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					fri:"Viernes", sat:"Sabado", sun:"Domingo"
 				},
 				gtype:{
-					mix:"Mixto", men:"Hombres",women:"Mujeres",young:"Jovenes",pilot:"Piloto"
+					mix:"Mixto", men:"Hombres",women:"Mujeres",young:"Jovenes",floating:"Flotante", reorg:"En Reestructura"
 				}
 			}
 		};
