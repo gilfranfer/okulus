@@ -24,7 +24,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				be used to build the Charts. There are 2 approaches to paint Categories:
 				1. Using the groups name, when a Specific groups was not selected.
 				2. Using the Week Id, when only one group was selected */
-        buildCharts: function(reportsList, groupId, chartOrientation) {
+        buildCharts: function(reportsList, groupId, chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator) {
 						//reset summary variables
             totalCompletedReunions = 0; totalCanceledReunions = 0;
 						totalApprovedReports = 0; totalRejectedReports = 0; totalPendingReports = 0;
@@ -117,13 +117,13 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                         stackLabels: { enabled: true,
                             style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
                         },
-												plotLines: [{ value: 8, color: 'red', width: 2,
+												plotLines: [{ value: goodWeekAttendanceIndicator, color: 'red', width: 1, dashStyle: 'solid',
 													            label: {
 													                text: '',
 													                align: 'center', style: {  color: 'gray' }
 													            }
 													        	},
-																		{ value: 14, color: 'blue', width: 2,
+																		{ value: excelentWeekAttendanceIndicator, color: 'black', width: 1, dashStyle: 'dash',
 													            label: {
 													                text: '',
 													                align: 'center', style: {  color: 'gray' }
