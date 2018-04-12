@@ -79,6 +79,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					active: "Miembro Activo", inactive: "Miembro Inactivo"
 				},
 				report:{
+					newReport: "Nuevo Reporte",
+					basicDataLegend: "Detalles del Reporte para el Grupo",
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
 					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
@@ -163,17 +165,19 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				dashboard:{
 					counters:{
-						total: "Existentes", active:"Activos", inactive:"Inactivos",
-						approved:"Aprobados", pending:"Sin Revisar", rejected: "Rechazados",
-						totalAttendance:"Personas Ministradas", totalDuration:"Minutos Ministrados",
-						totalMoney:"Ofrenda", successReunions: "Reuniones Completadas", canceledReunions: "Reuniones Canceladas"
+						total: "Total",
+						active:"Activos", inactive:"Inactivos",
+						approved:"Aprobados", pending:"Pendientes", rejected: "Rechazados",
+						totalMembers: "Miembros", totalGuests: "Invitados",
+						totalDuration:"Minutos Ministrados", totalMoney:"Ofrenda",
+						successReunions: "Completadas", canceledReunions: "Canceladas"
 					},
 					titles:{
 						weekSection: "Buscador de Reportes",
-						reportsList: "Reportes",
-						attendance: "Reuniones y Asistencia",
-						money: "Ofrenda",
-						duration: "Duración"
+						reportsList: "Lista de Reportes", reportsSummary: "Reportes", reunionsSummary: "Reuniones",
+						attendanceSummary:"Asistentes", othersSummary:"Otros",
+						attendanceCharts: "Gráficas de Reuniones y Asistencia",
+						moneyCharts: "Gráfica de Ofrenda",	durationCharts: "Gráfica de Duración"
 					},
 					reportTable:{
 						report:"", week:"Semana",

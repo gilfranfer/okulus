@@ -185,33 +185,28 @@
     </div>
   </div>
 
-
-  <div class="card h-100 mb-3" ng-if="currentSession.user.type == 'admin'">
-    <div class="card-body">
-      <!-- Buttons rows -->
-      <div class="form-row">
-        <div class="col-sm form-group" >
-          <button type="submit" class="btn btn-lg btn-block btn-success"
-            ng-disabled="memberForm.$invalid">
-            {{i18n.btns.saveBtn}}
+  <!-- Buttons rows -->
+  <div class="form-row">
+    <div class="col-sm form-group" >
+      <button type="submit" class="btn btn-lg btn-block btn-success"
+        ng-disabled="memberForm.$invalid">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+    <div class="col-sm form-group" ng-if="memberId">
+      <button type="button" class="btn btn-lg btn-block btn-danger"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.btns.deleteBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="deleteMember()">
+            {{i18n.btns.yesBtn}}
           </button>
-        </div>
-        <div class="col-sm form-group" ng-if="memberId">
-          <button type="button" class="btn btn-lg btn-block btn-danger"
-              data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
-            {{i18n.btns.deleteBtn}}
+          <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
           </button>
-          <div  class="collapse" id="collapseDelete">
-            <div class="alert alert-danger" role="alert">
-              {{i18n.alerts.confirmDelete}}
-              <button type="button" class="btn btn-danger" ng-click="deleteMember()">
-                {{i18n.btns.yesBtn}}
-              </button>
-              <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
-                {{i18n.btns.noBtn}}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

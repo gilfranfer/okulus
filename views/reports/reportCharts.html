@@ -1,10 +1,11 @@
 
 <!-- Attendance Charts -->
 <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
-  <div class="card-header">
-      {{i18n.admin.dashboard.titles.attendance}}
-  </div>
   <div class="card-body">
+    <h4 class="card-title">
+      {{i18n.admin.dashboard.titles.attendanceCharts}}
+    </h4>
+    <hr>
     <div class="row mt-4">
       <div class="col mb-3">
         <div id="attendanceByGroupContainer" style="width:100%;"></div>
@@ -22,10 +23,11 @@
 </div>
 
 <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
-  <div class="card-header">
-      {{i18n.admin.dashboard.titles.duration}}
-  </div>
   <div class="card-body">
+    <h4 class="card-title">
+      {{i18n.admin.dashboard.titles.durationCharts}}
+    </h4>
+    <hr>
     <div class="row mt-4">
       <div class="col-md mb-3">
         <div id="durationContainer" style="width:100%;"></div>
@@ -35,10 +37,11 @@
 </div>
 
 <div class="card  mb-3" ng-show="reportsForSelectedWeek && reportsForSelectedWeek.length > 0">
-  <div class="card-header">
-      {{i18n.admin.dashboard.titles.money}}
-  </div>
   <div class="card-body">
+    <h4 class="card-title">
+      {{i18n.admin.dashboard.titles.moneyCharts}}
+    </h4>
+    <hr>
     <div class="row mt-4">
       <div class="col-md mb-3">
         <div id="moneyContainer" style="width:100%;"></div>
