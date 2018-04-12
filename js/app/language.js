@@ -220,6 +220,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					}
 				},
 				errors:{
+					title:"Errores Recientes",
 					table:{
 						user: "Usuario Impactado", error:"Error", date:"Fecha"
 					}
