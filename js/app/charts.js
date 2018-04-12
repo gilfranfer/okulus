@@ -116,7 +116,19 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                 yAxis: { min:0, title: { text: 'Personas Ministradas' },
                         stackLabels: { enabled: true,
                             style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
-                        }
+                        },
+												plotLines: [{ value: 8, color: 'red', width: 2,
+													            label: {
+													                text: '',
+													                align: 'center', style: {  color: 'gray' }
+													            }
+													        	},
+																		{ value: 14, color: 'blue', width: 2,
+													            label: {
+													                text: '',
+													                align: 'center', style: {  color: 'gray' }
+													            }
+													        	}]
                       },
                 legend: { reversed: true },
                 plotOptions: { series: { stacking: 'normal' } },
