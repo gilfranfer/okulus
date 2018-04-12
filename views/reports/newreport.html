@@ -34,7 +34,7 @@
               {{i18n.forms.report.hostLbl}}
             </label>
             <select id="hostId" name="hostId" class="form-control form-control-lg"
-             	ng-model="reunion.hostId" ng-required="true">
+             	ng-model="reunion.hostId" ng-required="false">
              	<option ng-repeat="m in hostsList" value="{{m.$id}}">
             		{{m.member.shortname}}
             	</option>
@@ -93,7 +93,28 @@
               ng-model="reunion.dateObj" ng-required="true">
           </div>
         </div>
-        <!-- Duration -->
+        <!-- Report Status -->
+        <div class="form-row">
+          <div class="col-sm form-group">
+            <label for="status">
+              {{i18n.forms.report.statusLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="status" class="form-control form-control-lg"
+              ng-model="reunion.status" ng-required="true">
+              <option value="completed">
+                {{i18n.forms.report.okStatusLbl}}
+              </option>
+              <option value="canceled">
+                {{i18n.forms.report.cancelStatusLbl}}
+              </option>
+            </select>
+          </div>
+          <div class="col-sm form-group"></div>
+        </div>
+
+        <div ng-show="reunion.status == 'completed'">
+        <!-- Duration and money -->
         <div class="form-row">
           <div class="col-sm form-group">
             <label for="duration">
@@ -102,7 +123,7 @@
             </label>
             <input id="duration" name="duration" class="form-control form-control-lg"
               type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
-              ng-model="reunion.duration" ng-required="true">
+              ng-model="reunion.duration" ng-required="reunion.status == 'completed'">
           </div>
           <div class="col-sm form-group">
             <label for="money">
@@ -112,33 +133,16 @@
             <div class="input-group" >
               <span class="input-group-addon">$</span>
               <input type="number" id="money" min="0" step=".10" class="form-control form-control-lg"
-                ng-model="reunion.money" ng-required="true">
+                ng-model="reunion.money" ng-required="reunion.status == 'completed'">
             </div>
           </div>
         </div>
-
-        <div class="form-row">
-          <div class="col-sm form-group">
-            <label for="status">
-              {{i18n.forms.report.statusLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <select id="status" class="form-control form-control-lg"
-             	ng-model="reunion.status" ng-required="true">
-             	<option value="completed">
-            		{{i18n.forms.report.okStatusLbl}}
-            	</option>
-             	<option value="canceled">
-            		{{i18n.forms.report.cancelStatusLbl}}
-            	</option>
-            </select>
-          </div>
-          <div class="col-sm form-group"></div>
         </div>
+
       </fieldset>
 
       <!-- Study Details -->
-      <fieldset class="mt-3">
+      <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
         <legend>{{i18n.forms.report.studyLegend}}</legend>
 
         <div class="form-row">
@@ -148,7 +152,7 @@
               <span class="text-danger">*</span>
             </label>
             <input type="text" id="study" name="study" class="form-control form-control-lg"
-              placeholder="{{i18n.forms.report.studyHint}}" ng-model="reunion.study" ng-required="true">
+              placeholder="{{i18n.forms.report.studyHint}}" ng-model="reunion.study" ng-required="reunion.status == 'completed'">
           </div>
           <div class="col-md form-group">
             <label for="series">
@@ -156,14 +160,14 @@
               <span class="text-danger">*</span>
             </label>
             <input type="text" id="series" name="series" class="form-control form-control-lg"
-              placeholder="{{i18n.forms.report.seriesHint}}" ng-model="reunion.series" ng-required="true">
+              placeholder="{{i18n.forms.report.seriesHint}}" ng-model="reunion.series" ng-required="reunion.status == 'completed'">
           </div>
         </div>
 
       </fieldset>
 
     	<!-- Attendance -->
-      <fieldset class="mt-3">
+      <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
         <legend>{{i18n.forms.report.attendanceLegend}}</legend>
         <div class="row">
           <!-- Members -->
@@ -196,6 +200,16 @@
                 </div>
               </div>
             </div>
+            <!-- Alerts -->
+            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+              {{response.membersListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+              {{response.membersListOk}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
+              {{i18n.forms.report.noMembersList}}
+            </div>
             <!-- Members Table -->
             <div class="pre-scrollable mt-3" ng-if="attendance.members.list && attendance.members.list.length > 0">
               <table class="table table-md table-striped">
@@ -218,16 +232,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-            <!-- Alerts -->
-            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
-              {{response.membersListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
-              {{response.membersListOk}}
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
-              {{i18n.forms.report.noMembersList}}
             </div>
           </div>
           <!-- Guests -->
@@ -256,6 +260,16 @@
                 <label>&nbsp;</label>
               </div>
             </div>
+            <!-- Alerts -->
+            <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
+              {{i18n.forms.report.noGuestsList}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+              {{response.guestsListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+              {{response.guestsListOk}}
+            </div>
             <!-- Guests Table -->
             <div class="pre-scrollable mt-3" ng-if="attendance.guests.list && attendance.guests.list.length > 0">
               <table class="table table-md table-striped">
@@ -279,28 +293,18 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Alerts -->
-            <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
-              {{i18n.forms.report.noGuestsList}}
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
-              {{response.guestsListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
-              {{response.guestsListOk}}
-            </div>
           </div>
         </div>
       </fieldset>
 
       <!-- Notes and Comments -->
       <fieldset class="mt-3">
-        <legend>{{i18n.forms.report.notesLegend}}</legend>
+        <legend>{{i18n.forms.report.notesLegend}}
+                <span ng-if="reunion.status == 'canceled'" class="text-danger">*</span></legend>
         <div class="form-row">
           <div class="col-md form-group">
             <textarea id="notes" name="notes" class="form-control form-control-lg"
-            placeholder="{{i18n.forms.report.notesHint}}" ng-model="reunion.notes" ng-required="false">
+            placeholder="{{i18n.forms.report.notesHint}}" ng-model="reunion.notes" ng-required="reunion.status == 'canceled'">
             </textarea>
           </div>
         </div>
