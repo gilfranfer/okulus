@@ -462,6 +462,17 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 				}
 				$scope.reportWeek = WeeksSvc.getWeekObj( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
+
+				//Report Status
+				if(record.audit){
+					if(record.audit.reportStatus == "pending"){
+						$scope.reportStatusAlert = { color: "primary", message:"Reporte en Revision"};
+					}else if(record.audit.reportStatus == "approved"){
+						$scope.reportStatusAlert = { color: "success", message:"Reporte Aprobado"};
+					}else if(record.audit.reportStatus == "rejected"){
+						$scope.reportStatusAlert = { color: "danger", message:"Reporte Rechazado"};
+					}
+				}
 			}else{
 				$location.path( "/error/norecord" );
 			}

@@ -1,5 +1,9 @@
 <section ng-controller="ReportFormCntrl">
 
+  <div class="alert alert-{{reportStatusAlert.color}}" role="alert" ng-show="reportStatusAlert">
+    {{reportStatusAlert.message}}
+  </div>
+
   <form class="mt-3" name="reportForm" novalidate ng-submit="saveOrUpdateReport()">
   <div class="card h-100 mb-3">
     <div class="card-body">
