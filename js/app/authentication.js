@@ -124,6 +124,9 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 										}else{
 											//All ok. Save the member in session
 											$rootScope.currentSession.member = memberObj;
+											//Update User with the Member ShortName
+											user.memberShortname = memberObj.member.shortname;
+											user.$save();
 											//update lastlogin and sessionstatus
 											AuthenticationSvc.updateUserLastActivity(authUser.uid,"online");
 										}
@@ -148,6 +151,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 										if(data && data.member.status == 'active' && data.member.canBeUser){
 											$rootScope.currentSession.member = data;
 											user.memberId = data.$id
+											user.memberShortname = data.member.shortname;
 											user.$save();
 										}
 									}
