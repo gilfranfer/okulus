@@ -12,16 +12,18 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 
 		$rootScope.i18n = {
 			navigation:{
-				brand:"PIB Xalapa",
+				brand:"Grupos PIB Xalapa",
 				register:"Registrarse",
 				login:"Iniciar Sesión",
-				logout:"Salir",
+				logout:"Cerrar Sesión",
+				chat:"Conversaciones",
+				notifications:"Notificaciones",
 				home:"Inicio",
 				admin:{
-					menu: "Admin",
+					menu: "Administrador",
 					dashboard:"Dashboard",
-					groups: "Grupos",
-					members: "Miembros",
+					groups: "Todos los Grupos",
+					members: "Todos los Miembros",
 					weeks: "Semanas",
 					reports: "Reportes",
 					monitor:"Monitor"
