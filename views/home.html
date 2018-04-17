@@ -1,4 +1,4 @@
-<section>
+<section ng-show="currentSession.member">
 
   <article id="welcomeMessage" class="row mb-3">
       <div class="col alert alert-success" role="alert">
@@ -53,18 +53,18 @@
           <hr>
           <div class="pre-scrollable">
             <div class="row" ng-repeat="m in messages | orderBy:'audit.createdOn':true">
-              <div class="alert alert-{{m.type}}" style="margin-left: 20px;margin-right: 20px;">
-                {{m.message}}
-                <hr style="margin-bottom: 0;">
-                <span class="small font-weight-light">
-                {{m.audit.createdBy}} - {{m.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}
-                </span>
-                <div class="" ng-if="(m.audit.createdBy == currentSession.user.email) || (currentSession.user.type == 'admin') ">
-                  <span class="small font-weight-light" style="cursor:pointer" ng-click="deleteMessage(m.$id)">
-                    {{i18n.msgCenter.deleteMsg}}
+                <div class="alert alert-{{m.type}} ml-4 mr-4">
+                  {{m.message}}
+                  <hr style="margin-bottom: 0;">
+                  <span class="small font-weight-light">
+                  {{m.audit.createdBy}} - {{m.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}
                   </span>
+                  <div class="" ng-if="(m.audit.createdBy == currentSession.user.email) || (currentSession.user.type == 'admin') ">
+                    <span class="small font-weight-light" style="cursor:pointer" ng-click="deleteMessage(m.$id)">
+                      {{i18n.msgCenter.deleteMsg}}
+                    </span>
+                  </div>
                 </div>
-              </div>
             </div>
           </div>
           <h4 class="card-title"></h4>
