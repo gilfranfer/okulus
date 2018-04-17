@@ -5,6 +5,14 @@
 			<article id="usersList" class="list-group h-100">
 				<!-- List of User Chats-->
 				<div class="list-group-item bg-info font-weight-bold text-light">{{i18n.chat.userChatsList}}</div>
+				
+				<div class="list-group-item list-group-item-action flex-column align-items-start" 
+					ng-if="!userChatsList || userChatsList.length == 0">
+					<div class="alert alert-danger">
+						{{i18n.chat.noChats}}
+					</div>
+				</div>
+
 				<div id="chat-{{chat.$id}}" class="list-group-item list-group-item-action flex-column align-items-start" 
 					ng-repeat="chat in userChatsList | orderBy:'chat.metadata.chatWith'" 
 					ng-click="openChatWithUser(chat.$id)">
@@ -49,12 +57,20 @@
 		</div>
 	</div>
 	
-	<form class="row mt-2">
-		<div class="col-4"></div>
-		<div class="col-8 form-group">
-            <textarea id="chatInput" name="chatInput" class="form-control" ng-model="chat.input" ng-required="true">
-            </textarea>
-        </div>	
-		<!-- <div class="col-4"></div> -->
-	</form>
+		<!-- <div class="row mt-2" ng-show="activeChatId">
+			<div class="col-4"></div>
+			<div class="col-4">
+				<button class="btn btn-block btn-primary" onclick="scrollBottom()">Go Up</button>
+			</div>
+			<div class="col-4">
+				<button class="btn btn-block btn-primary" onclick="scrollToTop()">Go Up</button>
+			</div>
+		</div> -->
+		<div class="row mt-2" ng-show="activeChatId">
+			<div class="col-4"></div>
+			<div class="col-8 form-group">
+	            <textarea id="chatInput" name="chatInput" class="form-control">
+	            </textarea>
+	        </div>	
+		</div>
 </section>

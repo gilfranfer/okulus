@@ -64,17 +64,20 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 			var element = document.getElementById("chatArea");
     		element.scrollTop = element.scrollHeight;
 		}
+		scrollToTop = function(){
+			var element = document.getElementById("chatArea");
+    		element.scrollTop = 0;
+		}
 
 		$scope.openChatWithUser = function(chatWithUserId){
 			let loggedUserId = $rootScope.currentSession.user.$id;
-
 			//Visual updates on the previous selected chat
 			let prevHtmlElement = document.getElementById("chat-"+$scope.activeChatId);
 			if($scope.activeChatId && prevHtmlElement){
 				prevHtmlElement.classList.remove("active");
 				prevHtmlElement.classList.remove("text-white");
 			}
-
+			
 			//Load Messages only if clicking in a different Chat
 			if( !$scope.activeChatId || ($scope.activeChatId && $scope.activeChatId != chatWithUserId) ){
 				$scope.activeChatId = chatWithUserId;
@@ -94,17 +97,19 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 			//Clean unreadCount for this chat everytime you click on it
 			$scope.activeChatMetadataFrom.$loaded().then(function(metadata){
 				metadata.unreadCount = 0;
-				metadata.$save();
+				metadata.$save().then(function(){
+					
+					//Visual updates on the selected chat
+					document.getElementById("chatInput").value = "";;
+					document.getElementById("chatInput").focus();
+					let htmlElement = document.getElementById("chat-"+chatWithUserId);
+					if( htmlElement ){
+						htmlElement.classList.add("active");
+						htmlElement.classList.add("text-white");
+					}
+					scrollBottom();
+				});
 			});
-
-			//Visual updates on the selected chat
-			scrollBottom();
-			document.getElementById("chatInput").focus();
-			let htmlElement = document.getElementById("chat-"+chatWithUserId);
-			if( htmlElement ){
-				htmlElement.classList.add("active");
-				htmlElement.classList.add("text-white");
-			}
 		};
 
 		$scope.initChatWithUser = function(chatWithUserId,chatWithUserShortname){

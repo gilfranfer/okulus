@@ -33,7 +33,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			chat:{
 				emptyChat:"No hay mensajes en esta conversación",
-				startConversation:"Abrir Conversación",
+				startConversation:"Abrir Conversación", noChats:"No hay Chats",
 				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones"
 			},
 			btns:{
