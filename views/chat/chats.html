@@ -28,7 +28,7 @@
 				</div>
 			</article>
 		</div>
-		<div class="col-8 pr-0  bg-white" style="overflow-y: scroll;height: {{chatSectionHeight}}px">
+		<div id="chatArea" class="col-8 pr-0  bg-white" style="overflow-y: scroll;height: {{chatSectionHeight}}px">
 			<article class="h-100 pt-3 pl-3">
 				<div ng-if="activeChatMessages && activeChatMessages.length<1" class="alert alert-warning m-4">
 					{{i18n.chat.emptyChat}}

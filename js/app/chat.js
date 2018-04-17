@@ -51,11 +51,19 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 				//Clean unreadCount for this chat everytime you click on it
 				$scope.activeChatMetadataFrom.$loaded().then(function(metadata){
 					metadata.unreadCount = 0;
-					metadata.$save();
+					metadata.$save().then(function(){
+						scrollBottom();
+					});
 				});
 	        }
 	        chatInput.value = "";
+	        //scrollBottom();
 		};
+
+		scrollBottom = function(){
+			var element = document.getElementById("chatArea");
+    		element.scrollTop = element.scrollHeight;
+		}
 
 		$scope.openChatWithUser = function(chatWithUserId){
 			let loggedUserId = $rootScope.currentSession.user.$id;
@@ -73,8 +81,9 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 				$scope.activeChatMessages = undefined;
 				//Get the Chat conversation Messages from the loggedUserId folder
 				$scope.activeChatMessages = ChatService.getConversationMessages(loggedUserId,chatWithUserId);
-				$scope.activeChatMessages.$watch(function(event) {
-				  console.log(event);
+				$scope.activeChatMessages.$loaded().then(function(event) {
+					$scope.activeChatMessages.$watch(function(event) {scrollBottom();});
+					scrollBottom();
 				});
 				//Metadata for this conversation (receiver folder). Used when sending messages
 				$scope.activeChatMetadataTo = ChatService.getConversationMetadata(chatWithUserId,loggedUserId);
@@ -89,6 +98,7 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 			});
 
 			//Visual updates on the selected chat
+			scrollBottom();
 			document.getElementById("chatInput").focus();
 			let htmlElement = document.getElementById("chat-"+chatWithUserId);
 			if( htmlElement ){
