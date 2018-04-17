@@ -1,3 +1,4 @@
+//Mapping: /members
 okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
 
@@ -31,11 +32,26 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc',
-	function($rootScope, $scope, $location, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc){
-		$rootScope.response = null;
-		$scope.provideAddress = true;
-		$scope.groupsList = GroupsSvc.loadActiveGroups();
+okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseAuth','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc','AuthenticationSvc',
+	function($rootScope, $scope, $location,$firebaseAuth, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc,AuthenticationSvc){
+		
+
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    		if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(!user.memberId){
+						$location.path("/error/nomember");
+						return;
+					}
+
+					$rootScope.response = null;
+					$scope.provideAddress = true;
+					$scope.groupsList = GroupsSvc.loadActiveGroups();
+				});
+			}
+		}); 
+
+		
 
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
@@ -239,6 +255,9 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getMembersThatCanBeUser: function(){
 				return  $firebaseArray(membersRef.orderByChild("member/canBeUser").equalTo(true));
+			},
+			getMembersWithUser: function(){
+				return  $firebaseArray(membersRef.orderByChild("user/isUser").equalTo(true));
 			},
 			filterActiveHosts: function(activeMembers){
 				let activeHosts = [];
