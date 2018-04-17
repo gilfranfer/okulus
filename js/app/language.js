@@ -31,6 +31,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				user:{groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos"
 				}
 			},
+			chat:{
+				emptyChat:"No hay mensajes en esta conversación",
+				startConversation:"Abrir Conversación",
+				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones"
+			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",

@@ -157,6 +157,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/weeks/weeks.html',
 				controller: "WeeksCntrl"
 			})
+			.when('/chats', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/chat/chats.html',
+				controller: "ChatCntrl"
+			})
 			.when('/error/norecord', {
 				templateUrl: 'views/responses/error-norecord.html'
 			})
