@@ -3,6 +3,13 @@
   <a class="navbar-brand  fas fa-home fa-lg" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
   <a class="navbar-brand" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}">{{i18n.navigation.brand}}</a>
   
+  <!--  Collapsable button -->
+  <button class="navbar-toggler" type="button"
+      data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
   <!--  Collapsable Menu -->
   <div class="collapse navbar-collapse" id="navbarSupportedContent" ng-controller="LogoutCntrl">
     <ul class="navbar-nav ml-auto">
@@ -13,7 +20,21 @@
       <li class="nav-item" ng-if="!currentSession.user" >
         <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
       </li>
-            <!-- Admin Menu: if user is Admin type -->
+      
+      <!-- User Menu: if user has an associated Member -->
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.user.groups}}"></a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.user.contacts}}"></a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.user.reports}}"></a>
+      </li>
+      <!-- Admin Menu: if user is Admin type -->
       <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
         <a class="d-md-none nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
@@ -29,19 +50,7 @@
           <a class="dropdown-item" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
         </div>
       </li>
-      <!-- User Menu: if user has an associated Member -->
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.user.groups}}"></a>
-      </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.user.contacts}}"></a>
-      </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.user.reports}}"></a>
-      </li>
+      <!-- User Menu: if user is logged in -->
       <li class="nav-item" ng-if="currentSession.member">
         <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-comments" href="#!/chats" data-toggle="tooltip" title="{{i18n.navigation.chat}}"></a>
@@ -50,18 +59,16 @@
         <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-bell" href="#!/notifications" data-toggle="tooltip" title="{{i18n.navigation.notifications}}"></a>
       </li>
-      <!-- User Menu: if user is logged in -->
+      <!-- <li class="nav-item" ng-if="currentSession.member">
+        <a class="d-md-none nav-link" href="#!/config">{{i18n.navigation.configurations}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-cog" href="#!/configurations" data-toggle="tooltip" title="{{i18n.navigation.configurations}}"></a>
+      </li> -->
       <li class="nav-item" ng-if="currentSession.user">
         <a class="d-md-none nav-link" href="#!/login" ng-click="logout()">{{i18n.navigation.logout}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-window-close" href="#!/login" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" href="#!/login" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
       </li>
     </ul>
   </div>
   
-   <!--  Collapsable button -->
-  <button class="navbar-toggler" type="button"
-      data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+   
 </nav>
