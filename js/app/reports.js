@@ -5,10 +5,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 		updateCharts = function(groupId,weeksElapsed){
 			let goodWeekAttendanceIndicator = 8;
-			let excelentWeekAttendanceIndicator = 14; 
+			let excelentWeekAttendanceIndicator = 14;
 			/* weeksElapsed is used to modify the reference values "goodWeekAttendanceIndicator" and "excelentWeekAttendanceIndicator"
 			Those values are week-based, so they need to be multiplied by the number of weeks selected in the Reports Search.
-			When only ONE Specefic group was selected, then we do not need to modify those values because we will be displaying the 
+			When only ONE Specefic group was selected, then we do not need to modify those values because we will be displaying the
 			data with the Weeks as Category, that means, in this case we are not accumulating the totals across weeks. */
 			if(!groupId){
 				goodWeekAttendanceIndicator *= weeksElapsed;
@@ -220,7 +220,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					}else{
 						if(membersAttendanceList){
 							membersAttendanceList.forEach(function(element) {
-								repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
+								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
 								//console.log(repRef.key);
 								MembersSvc.addReportReference(element.memberId,repRef.key,record);
 							});
