@@ -96,8 +96,8 @@ okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 	}]
 );
 
-okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location', 'MembersSvc','ErrorsSvc',
-	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location,MembersSvc,ErrorsSvc){
+okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc','ChatService', '$firebaseAuth','$location', 'MembersSvc','ErrorsSvc',
+	function($scope, $rootScope, AuthenticationSvc, ChatService, $firebaseAuth, $location,MembersSvc,ErrorsSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
@@ -109,7 +109,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 							/* if User already has a Member mapped:
 							// 1. Verify The member still active and Confirm still canBeUser
 							// 2. Validate the email from the user and the member.
-							// 		In case they differ (the member emial was updated), remove the member reference from the user */						
+							// 		In case they differ (the member emial was updated), remove the member reference from the user */
 							if(user.memberId){
 								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
 									let error = undefined;
@@ -120,6 +120,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 											memberObj.user = {isUser:true, userId:authUser.uid};
 											memberObj.$save();
 											//update lastlogin and sessionstatus
+											$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
 											AuthenticationSvc.updateUserLastActivity(authUser.uid,"online");
 										}else{
 											error = "El Correo "+user.email+" (usuario) no coincide con "+emberObj.member.email+" (miembro).";
@@ -166,7 +167,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'Authentica
 												tempMember.user = {isUser:true, userId:authUser.uid};
 												tempMember.$save();
 											});
-											
+
 										}
 									}
 								});

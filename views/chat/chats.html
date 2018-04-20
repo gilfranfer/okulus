@@ -5,31 +5,30 @@
 			<article id="usersList" class="list-group h-100">
 				<!-- List of User Chats-->
 				<div class="list-group-item bg-info font-weight-bold text-light">{{i18n.chat.userChatsList}}</div>
-				
-				<div class="list-group-item list-group-item-action flex-column align-items-start" 
+				<div class="list-group-item list-group-item-action flex-column align-items-start"
 					ng-if="!userChatsList || userChatsList.length == 0">
 					<div class="alert alert-danger">
 						{{i18n.chat.noChats}}
 					</div>
 				</div>
 
-				<div id="chat-{{chat.$id}}" class="list-group-item list-group-item-action flex-column align-items-start" 
-					ng-repeat="chat in userChatsList | orderBy:'chat.metadata.chatWith'" 
+				<div id="chat-{{chat.$id}}" class="list-group-item list-group-item-action flex-column align-items-start"
+					ng-repeat="chat in userChatsList | orderBy:'chat.chatWith'"
 					ng-click="openChatWithUser(chat.$id)">
 					<div class="d-flex w-100 justify-content-between">
-					  <span class="mb-1 font-weight-bold">{{chat.metadata.chatWith}}</span>
-					  <small class=" d-none d-md-block  badge badge-danger" ng-if="chat.metadata.unreadCount >0">{{chat.metadata.unreadCount}}</small>
+					  <span class="mb-1 font-weight-bold">{{chat.chatWith}}</span>
+					  <small class=" d-none d-md-block  badge badge-danger" ng-if="chat.unreadCount >0">{{chat.unreadCount}}</small>
 					</div>
-					<small class="d-md-none badge badge-danger" ng-if="chat.metadata.unreadCount >0">{{chat.metadata.unreadCount}}</small>
-					<small class="d-none d-md-block">{{chat.metadata.lastReceivedExcerpt}}</small>
-					<small class="ml-auto d-none d-md-block text-right">{{chat.metadata.lastReceivedOn | date: 'MMM dd yyyy hh:mm a' }}</small>
+					<small class="d-md-none badge badge-danger" ng-if="chat.unreadCount >0">{{chat.unreadCount}}</small>
+					<small class="d-none d-md-block">{{chat.lastMessageExcerpt}}</small>
+					<small class="ml-auto d-none d-md-block text-right">{{chat.lastMessageOn | date: 'MMM dd yyyy hh:mm a' }}</small>
 				</div>
 
 				<!-- List of all Members with User Id -->
 				<div class="list-group-item bg-info font-weight-bold text-light ">{{i18n.chat.usersList}}</div>
-				<div id="user-{{user.user.userId}}" class="list-group-item list-group-item-action flex-column align-items-start" 
-					ng-repeat="user in usersList" 
-					ng-show="user.member.email != currentSession.user.email" 
+				<div id="user-{{user.user.userId}}" class="list-group-item list-group-item-action flex-column align-items-start"
+					ng-repeat="user in usersList"
+					ng-show="user.member.email != currentSession.user.email"
 					ng-click="initChatWithUser(user.user.userId,user.member.shortname)">
 					<span class="mb-1 font-weight-bold">{{user.member.shortname}}</span>
 					<button class="btn btn-success btn-block">{{i18n.chat.startConversation}}</button>
@@ -41,36 +40,24 @@
 				<div ng-if="activeChatMessages && activeChatMessages.length<1" class="alert alert-warning m-4">
 					{{i18n.chat.emptyChat}}
 				</div>
-            	<div class="row" ng-repeat="m in activeChatMessages | orderBy:'audit.createdOn':false">
-					<div ng-if="m.audit.createdBy != currentSession.user.email" 
-						class="alert alert-primary m-1 ml-4 p-2" data-toggle="tooltip" 
-						title="{{m.audit.createdOn| date: 'MMM dd yyyy hh:mm a'}}">
-		                {{m.message}}
-	              	</div>
-	              	<div ng-if="m.audit.createdBy == currentSession.user.email" 
-	              		class="alert alert-secondary ml-auto mr-4 p-2" data-toggle="tooltip" 
-						title="{{m.audit.createdOn| date: 'MMM dd yyyy hh:mm a'}}">
-		                {{m.message}}
-	              	</div>
-	            </div>
+        <div class="row" ng-repeat="m in activeChatMessages | orderBy:'time':false">
+					<div ng-if="m.from != currentSession.user.$id" class="alert alert-primary m-1 ml-4 p-2" data-toggle="tooltip"
+							title="{{m.time | date: 'MMM dd yyyy hh:mm a'}}">
+		      	{{m.message}}
+	        </div>
+        	<div ng-if="m.from == currentSession.user.$id" class="alert alert-secondary ml-auto mr-4 p-2" data-toggle="tooltip"
+							title="{{m.time| date: 'MMM dd yyyy hh:mm a'}}">
+            {{m.message}}
+        	</div>
+				</div>
 			</article>
 		</div>
 	</div>
-	
-		<!-- <div class="row mt-2" ng-show="activeChatId">
-			<div class="col-4"></div>
-			<div class="col-4">
-				<button class="btn btn-block btn-primary" onclick="scrollBottom()">Go Up</button>
-			</div>
-			<div class="col-4">
-				<button class="btn btn-block btn-primary" onclick="scrollToTop()">Go Up</button>
-			</div>
-		</div> -->
-		<div class="row mt-2" ng-show="activeChatId">
-			<div class="col-4"></div>
-			<div class="col-8 form-group">
-	            <textarea id="chatInput" name="chatInput" class="form-control">
-	            </textarea>
-	        </div>	
-		</div>
+
+	<div class="row mt-2" ng-show="activeChatWith">
+		<div class="col-4"></div>
+		<div class="col-8 form-group">
+    	<textarea id="chatInput" name="chatInput" class="form-control"></textarea>
+    </div>
+	</div>
 </section>

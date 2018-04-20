@@ -2,7 +2,7 @@
   <!-- Brand -->
   <a class="navbar-brand  fas fa-home fa-lg" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
   <a class="navbar-brand" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}">{{i18n.navigation.brand}}</a>
-  
+
   <!--  Collapsable button -->
   <button class="navbar-toggler" type="button"
       data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -20,7 +20,7 @@
       <li class="nav-item" ng-if="!currentSession.user" >
         <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
       </li>
-      
+
       <!-- User Menu: if user has an associated Member -->
       <li class="nav-item" ng-if="currentSession.member" >
         <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
@@ -52,8 +52,16 @@
       </li>
       <!-- User Menu: if user is logged in -->
       <li class="nav-item" ng-if="currentSession.member">
-        <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-comments" href="#!/chats" data-toggle="tooltip" title="{{i18n.navigation.chat}}"></a>
+        <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}
+          <span ng-show="unreadChats.length" class="badge badge-danger badge-text">
+            {{unreadChats.length}}
+          </span>
+        </a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-comments" href="#!/chats" data-toggle="tooltip" title="{{i18n.navigation.chat}}">
+          <span ng-show="unreadChats.length" class="badge badge-danger badge-text">
+            {{unreadChats.length}}
+          </span>
+        </a>
       </li>
       <li class="nav-item" ng-if="currentSession.member">
         <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}</a>
@@ -69,6 +77,6 @@
       </li>
     </ul>
   </div>
-  
-   
+
+
 </nav>
