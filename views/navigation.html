@@ -8,6 +8,9 @@
       data-toggle="collapse" data-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
+    <span ng-show="notifications.unread+unreadChats.length"class="badge badge-danger badge-text">
+      {{notifications.length + unreadChats.length}}
+    </span>
   </button>
 
   <!--  Collapsable Menu -->
@@ -64,8 +67,16 @@
         </a>
       </li>
       <li class="nav-item" ng-if="currentSession.member">
-        <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-bell" href="#!/notifications" data-toggle="tooltip" title="{{i18n.navigation.notifications}}"></a>
+        <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}
+          <span ng-show="notifications.length" class="badge badge-danger badge-text">
+            {{notifications.length}}
+          </span>
+        </a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-bell" href="#!/notifications" data-toggle="tooltip" title="{{i18n.navigation.notifications}}">
+          <span ng-show="notifications.length" class="badge badge-danger badge-text">
+            {{notifications.length}}
+          </span>
+        </a>
       </li>
       <!-- <li class="nav-item" ng-if="currentSession.member">
         <a class="d-md-none nav-link" href="#!/config">{{i18n.navigation.configurations}}</a>

@@ -21,6 +21,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 					user = "System";
 				} else if (session.user.isRoot){
 					user = "Root";
+					userId = session.user.$id;
 				} else {
 					user = session.user.email;
 					userId = session.user.$id;
@@ -51,7 +52,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Notifications get Triggered from same places as audit
-        NotificationsSvc.sendNotification(action, on, objectId, userId);
+        NotificationsSvc.sendNotification(action, on, objectId, user, userId);
 				return baseRef.child(on).child(objectId).child("audit");
 			}
 		};

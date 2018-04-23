@@ -166,6 +166,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/chat/chats.html',
 				controller: "ChatCntrl"
 			})
+			.when('/notifications', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/notifications/notificationCenter.html',
+				controller: "NotificationCntrl"
+			})
 			.when('/error/norecord', {
 				templateUrl: 'views/errors/error-norecord.html'
 			})
