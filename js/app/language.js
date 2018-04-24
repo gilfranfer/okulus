@@ -200,10 +200,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						attendance: "Asistencia", view: "Ver"
 					},
 					weekSection:{
-						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico.",
+						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
 						from: "De la Semana:", to:"a la Semana:", group:"Grupo", allGroups: "Todos los Grupos",
 						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
-						resultsLoaded: "Reportes encontrados",
+						resultsLoaded: "Reportes encontrados"
 					},
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
