@@ -1,3 +1,16 @@
+<section ng-show="emailNotVerifiedError" class="row">
+    <div class="col alert alert-danger" role="alert">
+      <h2>{{i18n.forms.verification.emailNotVerifiedError}}</h2>
+      <h4>{{currentSession.user.email}}</h4>
+      <p ng-if="response.verificationEmailSent">
+        {{i18n.forms.verification.reviewEmail}}
+      </p>
+      <p ng-if="!response.verificationEmailSent">
+        <button class="btn btn-link" ng-click="verifyEmail()">{{i18n.forms.verification.verify}}</button>
+      </p>
+    </div>
+</section>
+
 <section ng-show="currentSession.member">
 
   <article id="welcomeMessage" class="row mb-3">

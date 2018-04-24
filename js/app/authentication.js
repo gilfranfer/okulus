@@ -18,7 +18,6 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
-					console.log("AuthSvc - User is Logged");
 					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 						if(user.isRoot){
 							// console.log("Welcome Root");
@@ -110,6 +109,16 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			}
 		};
 
+		$scope.verifyEmail = function() {
+			console.log("verifyEmail");
+			var user = firebase.auth().currentUser;
+			$rootScope.response = { verificationEmailSent: true };
+			user.sendEmailVerification().then(function() {
+			}).catch(function(error) {
+				$rootScope.response = { verificationEmailSent: false };
+			});
+		};
+
 	}]//function
 );
 
@@ -198,8 +207,8 @@ okulusApp.controller('PwdResetCntrl', ['$scope','$location', '$rootScope', '$fir
 																	+" Revisa tu bandeja de entrada.!"};
 			}).catch(function(error) {
 				$scope.loading = false;
-				$scope.response = { errorMsg: "Ha sucedido un Error. Intenta más tarde, o comunícate con el Administrador."};
-				console.error("Error: ", error);
+				$scope.response = { errorMsg: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador."};
+				//console.error("Error: ", error);
 			});
 		};
 }]);
@@ -244,6 +253,13 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			loadSessionData: function(authUserUid){
 				if(!$rootScope.currentSession){
 					console.log("AuthSvc - Loading User Data");
+					var user = firebase.auth().currentUser;
+						console.log("AuthSvc - User is Logged");
+						if(!user.emailVerified){
+							$rootScope.emailNotVerifiedError = true;
+						}else{
+							$rootScope.emailNotVerifiedError = false;
+						}
 					$rootScope.currentSession = {user: $firebaseObject(usersFolder.child(authUserUid)) };
 				}
 				return $rootScope.currentSession.user;

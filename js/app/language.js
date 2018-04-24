@@ -124,12 +124,6 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					stateLbl: "Estado", stateHint: "",
 					countryLbl: "Pais", countryHint: ""
 				},
-				orgForm:{
-					basicInfoFieldset: "Datos de la Organizacion",
-					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "",
-					emailLbl:"Correo electronico", emailHint:"",
-					urlLbl:"Sitio Web", urlHint:""
-				},
 				pwdReset:{
 					title:"Restablecer contraseña",
 				},
@@ -150,6 +144,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 								pwdMatch:"Las contraseñas deben coincidir"
 
 					}
+				},
+				verification:{
+					emailNotVerifiedError: "Tu correo electrónico no ha sido verificado",
+					reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
+					verify: "Mandar correo de verificación."
 				}
 			},
 			admin:{
@@ -274,7 +273,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido",
 				message:"Houston, Tenemos Problemas!",
-				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
+				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador.",
 			},
 			dropdowns:{
 				status:{
