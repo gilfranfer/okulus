@@ -130,10 +130,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					emailLbl:"Correo electronico", emailHint:"",
 					urlLbl:"Sitio Web", urlHint:""
 				},
+				pwdReset:{
+					title:"Restablecer contraseña",
+				},
 				login:{
 					title:"Inicia sesión",
 					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
 					password: "Contraseña", passwordHint: "Tus palabras secretas",
+					forgotPwd: "Restablecer mi contraseña",
 					alert:{ invalidEmail:"Ese no es un correo válido", pwdRequired:"La contraseña es requerida" }
 				},
 				register:{

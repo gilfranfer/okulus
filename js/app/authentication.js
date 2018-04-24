@@ -153,7 +153,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 	}]
 );
 
-okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc',
+okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope','AuthenticationSvc',
 	function($scope, $location, $rootScope, AuthenticationSvc){
 		let usersFolder = firebase.database().ref().child('pibxalapa/users')
 
@@ -186,6 +186,23 @@ okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope', 'Authent
 
 	}]
 );
+
+okulusApp.controller('PwdResetCntrl', ['$scope','$location', '$rootScope', '$firebaseAuth',
+	function($scope, $location, $rootScope, $firebaseAuth){
+		$scope.resetPwd = function() {
+			$scope.loading = true;
+			$firebaseAuth().$sendPasswordResetEmail($scope.user.email).then(function() {
+				$scope.loading = false;
+				$scope.loading = false;
+				$scope.response = { success:true, okMsg: "Hemos enviado un correo para restablecer tu contraseña."
+																	+" Revisa tu bandeja de entrada.!"};
+			}).catch(function(error) {
+				$scope.loading = false;
+				$scope.response = { errorMsg: "Ha sucedido un Error. Intenta más tarde, o comunícate con el Administrador."};
+				console.error("Error: ", error);
+			});
+		};
+}]);
 
 okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 	function($rootScope,$scope, AuthenticationSvc){
