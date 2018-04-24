@@ -4,13 +4,114 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 		if(error == 'AUTH_REQUIRED'){
 			$location.path('/error/login');
 		}else{
-			console.error();(error);
+			//console.error();(error);
 			//$rootScope.appMessages.errorMessage = error;
 			$location.path('/error');
 		}
 	});
-
 }]);
+
+okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseAuth','$location',
+											'AuthenticationSvc','ChatService', 'NotificationsSvc', 'MembersSvc','ErrorsSvc',
+	function($scope, $rootScope, $firebaseAuth, $location,
+						AuthenticationSvc, ChatService, NotificationsSvc, MembersSvc, ErrorsSvc){
+
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+				if(authUser){
+					console.log("AuthSvc - User is Logged");
+					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+						if(user.isRoot){
+							// console.log("Welcome Root");
+						}else{
+							/* if User already has a Member mapped:
+							// 1. Verify The member still active and Confirm still canBeUser
+							// 2. Validate the email from the user and the member.
+							// 		In case they differ (the member emial was updated), remove the member reference from the user */
+							if(user.memberId){
+								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
+									let error = undefined;
+									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
+										if(user.email ==  memberObj.member.email){
+											//All ok. Save the member in session
+											$rootScope.currentSession.member = memberObj;
+											memberObj.user = {isUser:true, userId:authUser.uid};
+											memberObj.$save();
+											//update lastlogin and sessionstatus
+											$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
+											$rootScope.notifications = NotificationsSvc.getNotificationsMetadata(authUser.uid);
+											AuthenticationSvc.updateUserLastActivity(authUser.uid,"online");
+										}else{
+											error = "El Correo "+user.email+" (usuario) no coincide con "+emberObj.member.email+" (miembro).";
+										}
+									}else{
+										if(!memberObj.member){
+											error = "No existe un miembro con el id "+user.memberId;
+										}else if(memberObj.member.status == 'inactive' ){
+											error = "El miembro "+user.memberId+" se encuentra incativo.";
+										}else if(!memberObj.member.canBeUser){
+											error = "El miembro "+user.memberId+" no puede ser usuario.";
+										}
+									}
+
+									if(error){
+										user.memberId = null;
+										user.type = "user";
+										user.$save();
+										memberObj.user = null;
+										memberObj.$save();
+										ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro " + memberObj.$id + " por el motivo: "+ error );
+										$location.path( "/error/nomember" );
+									}
+
+
+								});
+							}
+							//if User doesnt have a Member mapped:
+							else{
+								//Try to find a member Reference for this user
+								MembersSvc.findMemberByEmail(user.email).$loaded().then(function(membersFound) {
+									//if there more than one members with same email, notify admin
+									if(membersFound.length > 1){
+										$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
+										ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
+									}else{
+										//map the member Id to the user
+										memberObj = membersFound[0];
+										if(memberObj && memberObj.member.status == 'active' && memberObj.member.canBeUser){
+											$rootScope.currentSession.member = memberObj;
+											user.memberId = memberObj.$id
+											user.$save();
+											MembersSvc.getMember(user.memberId).$loaded().then(function(tempMember){
+												tempMember.user = {isUser:true, userId:authUser.uid};
+												tempMember.$save();
+											});
+
+										}
+									}
+								});
+							}
+						}
+					});
+					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
+				}else{
+					console.log("AuthSvc - No User Authenticated");
+					cleanRootScope();
+					$location.path( "/login" );
+				}
+		} );
+
+		var cleanRootScope = function(){
+			for (var prop in $rootScope) {
+			    if (prop.substring(0,1) !== '$') {
+						// console.log("Rootscope Prop: "+prop);
+						if( prop!="config" && prop!="i18n")
+			      delete $rootScope[prop];
+			    }
+			}
+		};
+
+	}]//function
+);
 
 okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc','AuditSvc',
 	function($scope, $location, $rootScope, AuthenticationSvc,AuditSvc){
@@ -96,87 +197,7 @@ okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 	}]
 );
 
-okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', 'AuthenticationSvc', '$firebaseAuth','$location', 'MembersSvc','ErrorsSvc',
-	function($scope, $rootScope, AuthenticationSvc,$firebaseAuth, $location,MembersSvc,ErrorsSvc){
-
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-				if(authUser){
-					console.log("AuthSvc - User is Logged");
-					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-						//if User already has a Member mapped:
-						// 1. Verify The member still active,
-						// 2. Confirm the member still canBeUser
-						// 3. Validate the email from the user and the member.
-						// 		In case they differ (the member emial was updated), remove the member reference from the user
-						if(user.isRoot){
-							// console.log("Welcome Root");
-						}else{
-							//User has a Member mapped
-							if(user.memberId){
-								MembersSvc.getMember(user.memberId).$loaded().then(function(memberObj) {
-									if(memberObj.member && memberObj.member.status == 'active' && memberObj.member.canBeUser){
-										if(user.email !=  memberObj.member.email){
-											user.memberId = null;
-											user.$save();
-											$scope.response = {authErrorMsg:"Inteta nuevamente"};
-											ErrorsSvc.logError("Se ha desvinculado al usuario "+ user.email +" del Miembro "
-												+ memberObj.$id + ", porque el correo electrónico no coindía con: " + memberObj.member.email );
-										}else{
-											//All ok. Save the member in session
-											$rootScope.currentSession.member = memberObj;
-											//update lastlogin and sessionstatus
-											AuthenticationSvc.updateUserLastActivity(authUser.uid,"online");
-										}
-									}else{
-										$scope.response = {authErrorMsg:"No pudimos encontrar información del Miembro ligado a tu cuenta. Contacta al administrador."};
-										ErrorsSvc.logError("El usuario "+ user.email +" está asignado a un Miembro inactivo o que ya no existe: "+ user.memberId);
-									}
-								});
-							}
-							//if User doesnt have a Member mapped:
-							else{
-								// console.log("No Member Id");
-								//Try to find a member Reference for this user
-								MembersSvc.findMemberByEmail(user.email).$loaded().then(function(dataArray) {
-									//if there more than one members with same email, notify admin
-									if(dataArray.length > 1){
-										$scope.response = {authErrorMsg:"Hay mas de un miembro con el mismo correo electrónico. Notificalo a tu administrador."};
-										ErrorsSvc.logError("Mas de un Miembro usan el correo: "+user.email);
-									}else{
-										//map the member Id to the user
-										data = dataArray[0];
-										if(data && data.member.status == 'active' && data.member.canBeUser){
-											$rootScope.currentSession.member = data;
-											user.memberId = data.$id
-											user.$save();
-										}
-									}
-								});
-							}
-						}
-					});
-					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
-				}else{
-					console.log("AuthSvc - No User Authenticated");
-					cleanRootScope();
-					$location.path( "/login" );
-				}
-		} );
-
-		var cleanRootScope = function(){
-			for (var prop in $rootScope) {
-			    if (prop.substring(0,1) !== '$') {
-						// console.log("Rootscope Prop: "+prop);
-						if( prop!="config" && prop!="i18n")
-			      delete $rootScope[prop];
-			    }
-			}
-		};
-
-	}]//function
-);
-
-okulusApp.factory( 'AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
+okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
 		let usersFolder = firebase.database().ref().child('pibxalapa/users')
 		var auth = $firebaseAuth();

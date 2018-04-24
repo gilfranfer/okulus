@@ -157,14 +157,32 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/weeks/weeks.html',
 				controller: "WeeksCntrl"
 			})
+			.when('/chats', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/chat/chats.html',
+				controller: "ChatCntrl"
+			})
+			.when('/notifications', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/notifications/notificationCenter.html',
+				controller: "NotificationCntrl"
+			})
 			.when('/error/norecord', {
-				templateUrl: 'views/responses/error-norecord.html'
+				templateUrl: 'views/errors/error-norecord.html'
 			})
 			.when('/error/nomember', {
-				templateUrl: 'views/responses/error-nomember.html'
+				templateUrl: 'views/errors/error-nomember.html'
 			})
 			.when('/error/login', {
-				templateUrl: 'views/responses/error-login.html'
+				templateUrl: 'views/errors/error-login.html'
 			})
 			.otherwise({
 				redirectTo: '/home'

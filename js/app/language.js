@@ -12,22 +12,29 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 
 		$rootScope.i18n = {
 			navigation:{
-				brand:"PIB Xalapa",
+				brand:"Grupos PIB Xalapa",
 				register:"Registrarse",
 				login:"Iniciar Sesión",
-				logout:"Salir",
+				logout:"Cerrar Sesión",
+				chat:"Conversaciones",
+				notifications:"Notificaciones",
 				home:"Inicio",
 				admin:{
-					menu: "Admin",
+					menu: "Administrador",
 					dashboard:"Dashboard",
-					groups: "Grupos",
-					members: "Miembros",
+					groups: "Todos los Grupos",
+					members: "Todos los Miembros",
 					weeks: "Semanas",
 					reports: "Reportes",
 					monitor:"Monitor"
 				},
 				user:{groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos"
 				}
+			},
+			chat:{
+				emptyChat:"No hay mensajes en esta conversación",
+				startConversation:"Abrir Conversación", noChats:"No hay Chats",
+				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones"
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
@@ -92,7 +99,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
 					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
-					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados", allMembersLbl:"Todos los miembros",
+					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados", allMembersLbl:"Mostrar todos los miembros",
 					maleLbl: "Hombres", femaleLbl: "Mujeres",
 					maleAbrev: "H", femaleAbrev: "M",
 					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
@@ -191,7 +198,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					},
 					weekSection:{
 						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico.",
-						from: "De la Semana:", to:"a la Semana:", group:"Grupo",
+						from: "De la Semana:", to:"a la Semana:", group:"Grupo", allGroups: "Todos los Grupos",
 						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
 						resultsLoaded: "Reportes encontrados",
 					},
@@ -248,6 +255,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				messageCenterInstruction: "Escribe un mensaje y envialo",
 				importanMsg: "Mensaje Importante",
 				deleteMsg: "X Eliminar Mensaje"
+			},
+			notifications:{
+				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
+				new: "Nueva"
 			},
 			success:{
 				deleted:{

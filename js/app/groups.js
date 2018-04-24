@@ -1,3 +1,4 @@
+//mappgin: /groups
 okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
@@ -14,18 +15,28 @@ okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope'
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', 'GroupsSvc', 'MembersSvc', 'AuditSvc', 'UtilsSvc',
-	function($rootScope, $scope, $location, GroupsSvc, MembersSvc, AuditSvc, UtilsSvc){
-	   	$rootScope.response = null;
-			$scope.provideAddress = true;
-			$scope.membersList = MembersSvc.loadActiveMembers();
-			$scope.membersList.$loaded().then(function(activeMembers){
-				$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
-				$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
-			});
+okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$firebaseAuth', 'GroupsSvc', 'MembersSvc', 'AuditSvc', 'UtilsSvc', 'AuthenticationSvc',
+	function($rootScope, $scope, $location, $firebaseAuth, GroupsSvc, MembersSvc, AuditSvc, UtilsSvc,AuthenticationSvc){
 
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    		if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(!user.memberId){
+						$location.path("/error/nomember");
+						return;
+					}
+					$rootScope.response = null;
+					$scope.provideAddress = true;
+					$scope.membersList = MembersSvc.loadActiveMembers();
+					$scope.membersList.$loaded().then(function(activeMembers){
+						$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+						$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+					});
+				});
+			}
+		});
 
-			cleanScope = function(){
+		cleanScope = function(){
 	    	$scope.groupId = null;
 	    	$scope.group = null;
 	    	$scope.address = null;
@@ -280,10 +291,10 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 	}
 ]);
 
-okulusApp.controller('GroupAccessRulesCntrl', 
-	['GroupsSvc', 'MembersSvc', 'AuditSvc','$rootScope', '$scope','$routeParams', '$location','$firebaseAuth','AuthenticationSvc',
-	function(GroupsSvc, MembersSvc, AuditSvc, $rootScope, $scope,$routeParams, $location, $firebaseAuth,AuthenticationSvc){
-		
+okulusApp.controller('GroupAccessRulesCntrl',
+	['GroupsSvc', 'MembersSvc', 'AuditSvc','NotificationsSvc','$rootScope', '$scope','$routeParams', '$location','$firebaseAuth','AuthenticationSvc',
+	function(GroupsSvc, MembersSvc, AuditSvc, NotificationsSvc, $rootScope, $scope,$routeParams, $location, $firebaseAuth,AuthenticationSvc){
+
 		$scope.response = null;
 		let whichGroup = $routeParams.groupId;
 
@@ -300,7 +311,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 				});
 			}
 		});
-			
+
 		$scope.addRule = function(){
 			let whichMember = $scope.access.memberId;
 			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
@@ -317,7 +328,12 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			if(!ruleExists){
 				//Use the Group´s access list to add a new record
 				$scope.acessList.$add(record).then(function(ref) {
-					AuditSvc.recordAudit(whichGroup, "access granted", "groups");
+					AuditSvc.recordAudit(whichGroup, "access-granted", "groups");
+					//notify the member that got the access
+					MembersSvc.getMember(whichMember).$loaded().then(function(member){
+						console.log(member);
+						NotificationsSvc.sendNotificationTo(member.user.userId,"access-granted", "groups", whichGroup,null,null);
+					});
 					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };
 					//update record. Now to point to the Group
 					var id = ref.key; //use the same push key for the record on member/access folder
@@ -326,14 +342,14 @@ okulusApp.controller('GroupAccessRulesCntrl',
 						if(error){
 							$scope.response = { accessMsgError: error };
 						}else{
-							AuditSvc.recordAudit(whichMember, "access granted", "members");
+							AuditSvc.recordAudit(whichMember, "access-granted", "members");
 						}
 					});
 				});
 			}else{
 				$scope.response = { accessMsgError: memberName + " ya tiene acceso al grupo"};
 			}
-			
+
 		};
 
 		$scope.deleteRule = function(ruleId){
@@ -343,17 +359,21 @@ okulusApp.controller('GroupAccessRulesCntrl',
 				//rule removed from Groups access folder
 				$scope.response = { accessMsgOk: "Acceso Revocado" };
 				//now removed the same rule from Member access folder
-			  AuditSvc.recordAudit(whichGroup, "access deleted", "groups");
+			  AuditSvc.recordAudit(whichGroup, "access-deleted", "groups");
+				//notify the member that got the access
+				MembersSvc.getMember(whichMember).$loaded().then(function(member){
+					NotificationsSvc.sendNotificationTo(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
+				});
 				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
 					if(error){
 						$scope.response = { accessMsgError: error };
 					}else{
-						AuditSvc.recordAudit(whichMember, "access deleted", "members");
+						AuditSvc.recordAudit(whichMember, "access-deleted", "members");
 					}
 				});
 			});
 		};
-	
+
 
 	}
 ]);

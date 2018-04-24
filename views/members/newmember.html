@@ -186,7 +186,7 @@
   </div>
 
   <!-- Buttons rows -->
-  <div class="form-row">
+  <div class="form-row"  ng-if="currentSession.user.type == 'admin'">
     <div class="col-sm form-group" >
       <button type="submit" class="btn btn-lg btn-block btn-success"
         ng-disabled="memberForm.$invalid">

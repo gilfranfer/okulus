@@ -1,10 +1,20 @@
 okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
-		//Default chart Orientation
-		$scope.chartOrientation = 'portrait';
+		//Default chart Orientation (portrait or landscape)
+		$scope.chartOrientation = 'landscape';
 
-		updateCharts = function(groupId){
-			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, groupId, $scope.chartOrientation);
+		updateCharts = function(groupId,weeksElapsed){
+			let goodWeekAttendanceIndicator = 8;
+			let excelentWeekAttendanceIndicator = 14;
+			/* weeksElapsed is used to modify the reference values "goodWeekAttendanceIndicator" and "excelentWeekAttendanceIndicator"
+			Those values are week-based, so they need to be multiplied by the number of weeks selected in the Reports Search.
+			When only ONE Specefic group was selected, then we do not need to modify those values because we will be displaying the
+			data with the Weeks as Category, that means, in this case we are not accumulating the totals across weeks. */
+			if(!groupId){
+				goodWeekAttendanceIndicator *= weeksElapsed;
+				excelentWeekAttendanceIndicator *= weeksElapsed;
+			}
+			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, groupId, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
 			$scope.reunionSummary = ChartsSvc.getReunionTotals();
 		};
 
@@ -37,14 +47,17 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		};
 
 		/* Filter reports according to member access list, so he can only see
-		reports linked to the groups he has access to */
-		filterReportsAndUpdateCharts = function (groupId, isAdminDashView) {
+		reports linked to the groups he has access to.
+		groupdId will have a value if the user selected at least one group on the view
+		isAdminDashView is to identify if the Reports Search is comming from Admins Dashboard or User My Groups
+		weeksElapsed will give us the number of weeks selected (weekTo - WeekFrom) */
+		filterReportsAndUpdateCharts = function (groupId, isAdminDashView, weeksElapsed) {
 			filterReportsForGroup(groupId);
 			let memberId = $rootScope.currentSession.user.memberId;
 			if(!memberId && $rootScope.currentSession.user.isRoot){
 				/* A root user doesnt have a member associated in the system, but has Admin privileges
 				 	 so we can go ahead and show all information. */
-				updateCharts(groupId);
+				updateCharts(groupId,weeksElapsed);
 			}else{
 				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
 				let accessGroups = new Map();
@@ -58,7 +71,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 					}else{
 						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
 					}
-					updateCharts(groupId);
+					updateCharts(groupId,weeksElapsed);
 				});
 			}
 		};
@@ -90,7 +103,8 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				the member doesnt have access, so we need to apply some filters before
 			 */
 			reportsArray.$loaded().then( function( reports ) {
-				filterReportsAndUpdateCharts(groupId,isAdminDashView);
+				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
+				filterReportsAndUpdateCharts(groupId,isAdminDashView,weeksElapsed);
 				reportsArray.$watch(function(event){ notifyReportAdded(event); });
 				$scope.loadingReports = false;
 			});
@@ -206,7 +220,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					}else{
 						if(membersAttendanceList){
 							membersAttendanceList.forEach(function(element) {
-								repRef.child("attendance/members/list").push({memberId:element.memberId,memberName:element.memberName});
+								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
 								//console.log(repRef.key);
 								MembersSvc.addReportReference(element.memberId,repRef.key,record);
 							});
@@ -441,10 +455,24 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 
 				$scope.attendance = record.attendance;
 				if($scope.attendance.members.list){
-					$scope.attendance.members.list = Object.values(record.attendance.members.list);}
+					$scope.attendance.members.list = Object.values(record.attendance.members.list);
+				}
 				if($scope.attendance.guests.list){
-					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);}
+					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);
+				}
+				$scope.reportWeek = WeeksSvc.getWeekObj( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
+
+				//Report Status
+				if(record.audit){
+					if(record.audit.reportStatus == "pending"){
+						$scope.reportStatusAlert = { color: "primary", message:"Reporte en Revision"};
+					}else if(record.audit.reportStatus == "approved"){
+						$scope.reportStatusAlert = { color: "success", message:"Reporte Aprobado"};
+					}else if(record.audit.reportStatus == "rejected"){
+						$scope.reportStatusAlert = { color: "danger", message:"Reporte Rechazado"};
+					}
+				}
 			}else{
 				$location.path( "/error/norecord" );
 			}
