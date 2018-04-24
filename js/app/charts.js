@@ -24,7 +24,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				be used to build the Charts. There are 2 approaches to paint Categories:
 				1. Using the groups name, when a Specific groups was not selected.
 				2. Using the Week Id, when only one group was selected */
-        buildCharts: function(reportsList, groupId, chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator) {
+        buildCharts: function(reportsList, selectedGroupIds, chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator) {
 						//reset summary variables
             totalCompletedReunions = 0; totalCanceledReunions = 0;
 						totalApprovedReports = 0; totalRejectedReports = 0; totalPendingReports = 0;
@@ -61,8 +61,8 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
                     let duration = report.reunion.duration;
                     let money = report.reunion.money;
 
-										if(groupId){
-											//When a group was selected, we will be displayign reports and charts
+										if(selectedGroupIds.length == 1){
+											//When 1 group was selected, we will be displayign reports and charts
 											//only for that group, so we better change the Category name to the weekID.
 											//transform weekID from 201801 to 2018-01
 											let str = report.reunion.weekId;

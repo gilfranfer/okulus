@@ -8,8 +8,8 @@
       <p class="card-text">
         {{i18n.admin.dashboard.weekSection.description}}
       </p>
-      <!-- All Weeks List -->
       <form name="weekForm" class="mb-3" novalidate>
+        <!-- Weeks Titles -->
         <div class="row">
           <div class="col">
             <label for="weekFromSelect">{{i18n.admin.dashboard.weekSection.from}}</label>
@@ -18,6 +18,7 @@
             <label for="weekToSelect">{{i18n.admin.dashboard.weekSection.to}}</label>
           </div>
         </div>
+        <!-- Weeks Selector -->
         <div class="row mb-3">
           <div class="col">
             <select id="weekFromSelect" class="form-control form-control-lg" ng-model="$parent.weekfrom" ng-required="true">
@@ -35,6 +36,7 @@
             </select>
           </div>
         </div>
+        <!-- Group Titles -->
         <div class="row">
           <div class="col">
             <label for="specificGroupSelect">{{i18n.admin.dashboard.weekSection.group}}</label>
@@ -43,16 +45,15 @@
             <label for="charOrientation">{{i18n.admin.dashboard.weekSection.chartOrientation}}</label>
           </div>
         </div>
+        <!-- Group Selector -->
         <div class="row mb-3">
           <div class="col">
-            <select id="specificGroupSelect" class="form-control form-control-lg" ng-model="$parent.specificGroup" ng-required="false">
-              <option value="">
-                {{i18n.admin.dashboard.weekSection.allGroups}}
-              </option>
+            <select multiple id="specificGroupSelect" class="form-control" ng-model="$parent.specificGroups" ng-required="true">
               <option ng-repeat="g in groupsList | orderBy:'group.number'" value="{{g.$id}}" >
                 {{g.group.number}} - {{g.group.name}}
               </option>
             </select>
+            <button type="button" class="btn btn-link clickable" ng-click="selectAllGroups()">Seleccionar Todo</button>
           </div>
           <div class="col">
             <div class="form-check">
@@ -109,5 +110,5 @@
       </div>
     </div>
   </div>
-  
+
 </article>

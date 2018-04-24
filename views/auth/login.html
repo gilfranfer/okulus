@@ -17,10 +17,10 @@
 		    	<label for="loginpwd">Password</label>
 		    	<input type="password" name="password" id="loginpwd" placeholder="{{i18n.forms.login.passwordHint}}"
 		    		class="form-control form-control-lg" ng-model="user.pwd" ng-required="true">
-
 		    	<div class="alert alert-danger" role="alert" ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
 						{{i18n.forms.login.alert.pwdRequired}}
 					</div>
+					<a href="#!/pwdreset">{{i18n.forms.login.forgotPwd}}</a>
 		  	</div>
 		  </div>
 	  </div>

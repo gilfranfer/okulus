@@ -1,36 +1,50 @@
+//Controller For reportSelector view
 okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
 		//Default chart Orientation (portrait or landscape)
 		$scope.chartOrientation = 'landscape';
 
-		updateCharts = function(groupId,weeksElapsed){
+		updateCharts = function(selectedGroupIds,weeksElapsed){
+			// console.log(selectedGroupIds);
+
 			let goodWeekAttendanceIndicator = 8;
 			let excelentWeekAttendanceIndicator = 14;
 			/* weeksElapsed is used to modify the reference values "goodWeekAttendanceIndicator" and "excelentWeekAttendanceIndicator"
 			Those values are week-based, so they need to be multiplied by the number of weeks selected in the Reports Search.
 			When only ONE Specefic group was selected, then we do not need to modify those values because we will be displaying the
 			data with the Weeks as Category, that means, in this case we are not accumulating the totals across weeks. */
-			if(!groupId){
+			if(selectedGroupIds.length > 1){
 				goodWeekAttendanceIndicator *= weeksElapsed;
 				excelentWeekAttendanceIndicator *= weeksElapsed;
 			}
-			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, groupId, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
+			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, selectedGroupIds, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
 			$scope.reunionSummary = ChartsSvc.getReunionTotals();
 		};
 
 		/* if a group was selected on the search view, we need to filter the $scope.reportsArray.
 		   because at this point, it contains all reports for all groups for the selected weeks period */
-		filterReportsForGroup = function(groupId){
-			if(groupId){
+		filterReportsForGroup = function(selectedGroupIds){
+			if(selectedGroupIds.length == $scope.groupsList.length){
+				//All groups option selected
+				$scope.reportsForSelectedWeek = $scope.reportsArray;
+				// console.log("All Groups Selected");
+			}else{
+				//One or more groups selected
+				// console.log("Some groups selected");
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
-					if(report.reunion.groupId == groupId){
+					let found = false;
+					for (i = 0; i < selectedGroupIds.length; i++) {
+					    if(selectedGroupIds[i] == report.reunion.groupId){
+					    	found = true;
+					        break;
+					    }
+					}
+					if(found){
 						reportsList.push(report);
 					}
 				});
 				$scope.reportsForSelectedWeek = reportsList;
-			}else{
-				$scope.reportsForSelectedWeek = $scope.reportsArray;
 			}
 		};
 
@@ -51,13 +65,13 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		groupdId will have a value if the user selected at least one group on the view
 		isAdminDashView is to identify if the Reports Search is comming from Admins Dashboard or User My Groups
 		weeksElapsed will give us the number of weeks selected (weekTo - WeekFrom) */
-		filterReportsAndUpdateCharts = function (groupId, isAdminDashView, weeksElapsed) {
-			filterReportsForGroup(groupId);
+		filterReportsAndUpdateCharts = function (selectedGroupIds, isAdminDashView, weeksElapsed) {
+			filterReportsForGroup(selectedGroupIds);
 			let memberId = $rootScope.currentSession.user.memberId;
 			if(!memberId && $rootScope.currentSession.user.isRoot){
 				/* A root user doesnt have a member associated in the system, but has Admin privileges
 				 	 so we can go ahead and show all information. */
-				updateCharts(groupId,weeksElapsed);
+				updateCharts(selectedGroupIds,weeksElapsed);
 			}else{
 				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
 				let accessGroups = new Map();
@@ -71,7 +85,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 					}else{
 						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
 					}
-					updateCharts(groupId,weeksElapsed);
+					updateCharts(selectedGroupIds,weeksElapsed);
 				});
 			}
 		};
@@ -85,16 +99,17 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			/* Get User Input */
 			let fromWeek = $scope.weekfrom;
 			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
-			let groupId = $scope.specificGroup;
+			let selectedGroups = $scope.specificGroups;
 			$rootScope.weekfrom = fromWeek;
 			$rootScope.weekto = toWeek;
-			$rootScope.specificGroup = groupId;
+			$rootScope.specificGroups = selectedGroups;
 
 			/* If user didnt select a group, but only has access to 1 groups
-				 then we better select that group for him*/
-			if(!groupId && $scope.groupsList.length == 1){
-				groupId = ($scope.groupsList[0].$id);
-			}
+				 then we better select that group for him
+			if(!selectedGroups && $scope.groupsList.length == 1){
+				selectedGroups = [$scope.groupsList[0].$id];
+				$scope.specificGroups = selectedGroups;
+			}*/
 
 			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
 			$scope.reportsArray = reportsArray;
@@ -103,8 +118,9 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				the member doesnt have access, so we need to apply some filters before
 			 */
 			reportsArray.$loaded().then( function( reports ) {
+				//console.log("Start to filter Reports");
 				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
-				filterReportsAndUpdateCharts(groupId,isAdminDashView,weeksElapsed);
+				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
 				reportsArray.$watch(function(event){ notifyReportAdded(event); });
 				$scope.loadingReports = false;
 			});
@@ -114,6 +130,15 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		$scope.sortBy = function(propertyName) {
 			$scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
 			$scope.propertyName = propertyName;
+		};
+
+		$scope.selectAllGroups = function() {
+			selectObj = document.getElementById("specificGroupSelect");
+			let allgroups = [];
+			for(var i = 0; i < selectObj.length; i++) {
+				allgroups.push(selectObj.options[i].value);
+			}
+			$scope.specificGroups = allgroups;
 		};
 
 		notifyReportAdded = function(event){
@@ -388,7 +413,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		};
 
 		$scope.showAllMembers = function(){
-			console.log("Getting all mebers");
+			//console.log("Getting all mebers");
 			$scope.loadingAllMembers =  true;
 			$scope.groupMembersList = MembersSvc.loadAllMembersList();
 			$scope.groupMembersList.$loaded().then(function() {

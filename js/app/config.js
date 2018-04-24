@@ -10,6 +10,10 @@ okulusApp.config(['$routeProvider',
 			when('/register',{
 				controller: 'RegistrationCntrl',
 				templateUrl: 'views/auth/register.html'
+			}).
+			when('/pwdreset',{
+				controller: 'PwdResetCntrl',
+				templateUrl: 'views/auth/pwdReset.html'
 			})
 			.when('/home', {
 				resolve: {

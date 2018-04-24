@@ -124,16 +124,14 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					stateLbl: "Estado", stateHint: "",
 					countryLbl: "Pais", countryHint: ""
 				},
-				orgForm:{
-					basicInfoFieldset: "Datos de la Organizacion",
-					orgnameLbl:"Nombre de la Organizacion", orgNameHint: "",
-					emailLbl:"Correo electronico", emailHint:"",
-					urlLbl:"Sitio Web", urlHint:""
+				pwdReset:{
+					title:"Restablecer contraseña",
 				},
 				login:{
 					title:"Inicia sesión",
 					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
 					password: "Contraseña", passwordHint: "Tus palabras secretas",
+					forgotPwd: "Restablecer mi contraseña",
 					alert:{ invalidEmail:"Ese no es un correo válido", pwdRequired:"La contraseña es requerida" }
 				},
 				register:{
@@ -146,6 +144,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 								pwdMatch:"Las contraseñas deben coincidir"
 
 					}
+				},
+				verification:{
+					emailNotVerifiedError: "Tu correo electrónico no ha sido verificado",
+					reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
+					verify: "Mandar correo de verificación."
 				}
 			},
 			admin:{
@@ -197,10 +200,10 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 						attendance: "Asistencia", view: "Ver"
 					},
 					weekSection:{
-						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Es posible limitar la busqueda a un grupo especifico.",
+						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
 						from: "De la Semana:", to:"a la Semana:", group:"Grupo", allGroups: "Todos los Grupos",
 						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
-						resultsLoaded: "Reportes encontrados",
+						resultsLoaded: "Reportes encontrados"
 					},
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
@@ -270,7 +273,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido",
 				message:"Houston, Tenemos Problemas!",
-				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador."
+				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador.",
 			},
 			dropdowns:{
 				status:{
