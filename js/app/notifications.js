@@ -13,19 +13,25 @@ okulusApp.controller('NotificationCntrl', ['$rootScope','$scope','$firebaseAuth'
 
 		}});
 
-		$scope.openNotification = function(notification){
+		$scope.markNotificacionReaded = function(notification){
 			if(!notification.readed){
 				let loggedUserId = $rootScope.currentSession.user.$id;
 				NotificationsSvc.markNotificacionReaded(loggedUserId,notification.$id);
 			}
+		};
 
+		$scope.openNotification = function(notification){
+			$scope.markNotificacionReaded(notification);
 			if(notification.onFolder == "weeks"){
 				$location.path("/weeks");
-			}else if(notification.onFolder == "users"){
-				$location.path("/admin/monitor");
 			}else{
 				$location.path("/"+notification.onFolder+"/edit/"+notification.onObject);
 			}
+		};
+
+		$scope.openMemberByUserId = function(notification){
+			$scope.markNotificacionReaded(notification);
+			$location.path("/users/edit/"+notification.fromId);
 		};
 
 		$scope.deleteNotification = function(notificationId){
@@ -42,7 +48,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		let notificationsRef = firebase.database().ref().child('pibxalapa/notifications');
 		let adminUsersRef = firebase.database().ref().child('pibxalapa/users').orderByChild("type").equalTo("admin");
 
-		let getNotificationDescription = function (action,onFolder) {
+		let getNotificationDescription = function (action,onFolder,objectId) {
 				let description = "";
 
 				if(onFolder == "groups"){
@@ -52,7 +58,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				}else if(onFolder == "reports"){
 					description = "Reporte ";
 				}else if(onFolder == "weeks"){
-					description = "Semana ";
+					description = "Semana "+objectId+" ";
 				}else if(onFolder == "users"){
 					description = "Usuario ";
 				}
@@ -63,11 +69,30 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 					description += "actualizado";
 				}else if(action == "delete"){
 					description += "eliminado";
-				}else if(action == "approved"){
+				}
+				//report
+				else if(action == "approved"){
 					description += "aprobado";
 				}else if(action == "rejected"){
 					description += "rechazado";
-				}else {
+				}
+				//groups access
+				else if(action == "access-granted"){
+					description = "Acceso Concedido a " + description;
+				}else if(action == "access-deleted"){
+					description = "Acceso Removido a " + description;
+				}
+				//user type
+				else if(action == "type-update"){
+					description = "Tipo de Usuario Modificado";
+				}
+				//weeks
+				else if(action == "open"){
+					description += "abierta";
+				}else if(action == "closed"){
+					description += "cerrada";
+				}
+				else {
 					description += "modificado";
 				}
 				return description;
@@ -78,18 +103,23 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		};
 
 		let createNotification = function (notificationFor, notification){
-			console.log("Creating notification for",notificationFor);
-			let notKey = notificationsRef.child("list").child(notificationFor).push();
-			notKey.set(notification);
-			notificationsRef.child("metadata").child(notificationFor).child(notKey.key).set({readed:false});
+			// console.log("Creating notification for",notificationFor, notification.fromId);
+			if(notificationFor != notification.fromId){
+				//Do not send notification to the user performin the action
+				let notKey = notificationsRef.child("list").child(notificationFor).push();
+				notKey.set(notification);
+				notificationsRef.child("metadata").child(notificationFor).child(notKey.key).set({readed:false});
+			}
+
 		};
 
 		return {
+			//This notification is sent to all admins and involved parties (creator, updator, apprver, etc)
 			sendNotification: function(action, onFolder, objectId, actionByUser, actionByUserId){
 				if( onFolder == "groups" || onFolder == "members" || onFolder == "reports"
 						|| onFolder == "weeks" || onFolder == "users" ){
 
-					let desc = getNotificationDescription(action,onFolder);
+					let desc = getNotificationDescription(action,onFolder,objectId);
 					let notification = { action: action, onFolder: onFolder, onObject: objectId,
 														from: actionByUser, fromId: actionByUserId, readed: false,
 														description: desc, time: firebase.database.ServerValue.TIMESTAMP }
@@ -125,6 +155,15 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 					});
 
 				}
+			},
+			//Sends notification to the specific receiver
+			sendNotificationTo: function(receiver, action, onFolder, objectId, actionByUser, actionByUserId){
+					let desc = getNotificationDescription(action,onFolder,objectId);
+					let notification = { action: action, onFolder: onFolder, onObject: objectId,
+														from: actionByUser, fromId: actionByUserId, readed: false,
+														description: desc, time: firebase.database.ServerValue.TIMESTAMP }
+
+					createNotification(receiver, notification);
 			},
 			getNotificationsMetadata: function(userid) {
 				return $firebaseArray(notificationsRef.child("metadata").child(userid));

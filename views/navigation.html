@@ -23,20 +23,6 @@
       <li class="nav-item" ng-if="!currentSession.user" >
         <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
       </li>
-
-      <!-- User Menu: if user has an associated Member -->
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.user.groups}}"></a>
-      </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.user.contacts}}"></a>
-      </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.user.reports}}"></a>
-      </li>
       <!-- Admin Menu: if user is Admin type -->
       <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
         <a class="d-md-none nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -52,6 +38,19 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
         </div>
+      </li>
+      <!-- User Menu: if user has an associated Member -->
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.user.groups}}"></a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.user.contacts}}"></a>
+      </li>
+      <li class="nav-item" ng-if="currentSession.member" >
+        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.user.reports}}"></a>
       </li>
       <!-- User Menu: if user is logged in -->
       <li class="nav-item" ng-if="currentSession.member">

@@ -2,26 +2,28 @@
   <div class="card-body">
     <h4 class="card-title">{{i18n.notifications.title}}</h4>
     <hr>
+    <!-- No Records Alert -->
+    <div ng-if="!allNotifications || allNotifications.length <= 0" class="alert alert-danger" role="alert">
+      {{i18n.notifications.noRecords}}
+    </div>
     <!-- Notificat List -->
     <div class="list-group">
       <div ng-repeat="notification in allNotifications | orderBy:'-time'" >
-        <div ng-if="!notification.readed" class="list-group-item list-group-item-action flex-column align-items-start list-group-item-secondary">
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+          <p class="">
+            <span class="mr-auto badge badge-danger" ng-if="!notification.readed" ng-click="markNotificacionReaded(notification)">
+              {{i18n.notifications.new}}
+            </span>
+          </p>
           <div class="d-flex w-100">
-            <p class="mb-1 clickable w-100" ng-click="openNotification(notification)">
-              {{notification.description}} {{i18n.notifications.by}} {{notification.from}}
-             <br>
-             <small>{{notification.time | date: 'MMM dd yyyy hh:mm a' }}</small>
-            </p>
-            <small class="ml-auto">
-              <button type="button" class="close" aria-label="{{i18n.btns.deleteBtn}}" title="{{i18n.btns.deleteBtn}}" ng-click="deleteNotification(notification.$id)">
-                <span class="clickable" aria-hidden="true">&times;</span>
+            <p class="w-100" >
+              <button type="button" class="clickable btn btn-link" name="button" ng-click="openNotification(notification)">
+                {{notification.description}}
               </button>
-            </small>
-          </div>
-        </div>
-        <div ng-if="notification.readed" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100">
-            <p class="mb-1 clickable w-100" ng-click="openNotification(notification)">{{notification.description}}
+              <button type="button" class="clickable btn btn-link" name="button"
+                ng-if="notification.from" ng-click="openMemberByUserId(notification)">
+                {{i18n.notifications.by}} {{notification.from}}
+              </button>
              <br>
              <small>{{notification.time | date: 'MMM dd yyyy hh:mm a' }}</small>
             </p>

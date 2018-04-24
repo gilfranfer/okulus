@@ -257,7 +257,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				deleteMsg: "X Eliminar Mensaje"
 			},
 			notifications:{
-				title:"Centro de Notificaciones", by:"por"
+				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
+				new: "Nueva"
 			},
 			success:{
 				deleted:{
