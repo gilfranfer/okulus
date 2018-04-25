@@ -1,8 +1,8 @@
 
 okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 	function($rootScope, ErrorsSvc, NotificationsSvc){
-		let baseRef = firebase.database().ref().child('pibxalapa');
-		let auditRef = firebase.database().ref().child('pibxalapa').child("audit");
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let auditRef = firebase.database().ref().child(rootFolder).child("audit");
 
 		return {
 			/**

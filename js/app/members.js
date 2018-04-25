@@ -34,7 +34,7 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 
 okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseAuth','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $location,$firebaseAuth, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc,AuthenticationSvc){
-		
+
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     		if(authUser){
@@ -49,9 +49,9 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					$scope.groupsList = GroupsSvc.loadActiveGroups();
 				});
 			}
-		}); 
+		});
 
-		
+
 
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
@@ -220,9 +220,9 @@ okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location'
 okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
-		let membersRef = firebase.database().ref().child('pibxalapa/members');
+		let membersRef = firebase.database().ref().child(rootFolder).child('members');
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
-		let counterRef = firebase.database().ref().child('pibxalapa/counters/members');
+		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
 
 		return {
 			allMembersLoaded: function() {

@@ -1,6 +1,6 @@
 okulusApp.factory('MessageCenterSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
-		let messagesRef = firebase.database().ref().child('pibxalapa/messages');
+		let messagesRef = firebase.database().ref().child(rootFolder).child('messages');
 
 		return{
 			getAdminMessages: function(){

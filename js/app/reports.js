@@ -509,8 +509,8 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let reportsRef = firebase.database().ref().child('pibxalapa/reports');
-		let counterRef = firebase.database().ref().child('pibxalapa/counters/reports');
+		let reportsRef = firebase.database().ref().child(rootFolder).child('reports');
+		let counterRef = firebase.database().ref().child(rootFolder).child('counters/reports');
 
 		return {
 			allReportsLoaded: function() {
