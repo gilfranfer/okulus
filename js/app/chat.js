@@ -140,7 +140,7 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 okulusApp.factory('ChatService', ['$rootScope', '$firebaseArray', '$firebaseObject', 'ErrorsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, ErrorsSvc){
 
-		let chatsRef = firebase.database().ref().child('pibxalapa').child('chats');
+		let chatsRef = firebase.database().ref().child(rootFolder).child('chats');
 
 		return {
 			getUserChatMetadataList: function(userid){

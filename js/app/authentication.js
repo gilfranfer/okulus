@@ -124,7 +124,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 
 okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc','AuditSvc',
 	function($scope, $location, $rootScope, AuthenticationSvc,AuditSvc){
-		let usersFolder = firebase.database().ref().child('pibxalapa/users')
+		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
 
 		//If user is logged, reidrect to home
 		if($rootScope.currentSession){
@@ -164,7 +164,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 
 okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope','AuthenticationSvc',
 	function($scope, $location, $rootScope, AuthenticationSvc){
-		let usersFolder = firebase.database().ref().child('pibxalapa/users')
+		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
 
 		//If user is logged, reidrect to home
 		if($rootScope.currentSession){
@@ -225,7 +225,7 @@ okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
 
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
-		let usersFolder = firebase.database().ref().child('pibxalapa/users')
+		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
 		var auth = $firebaseAuth();
 
 		return{

@@ -164,7 +164,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.address = record.address;
 				$scope.schedule = record.schedule;
 				if(record.schedule.time){
-					console.log("Setting Time")
+					//console.log("Setting Time")
 					$scope.schedule.timestamp = new Date();
 					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
 					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
@@ -182,10 +182,10 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let groupsRef = firebase.database().ref().child('pibxalapa/groups');
+		let groupsRef = firebase.database().ref().child(rootFolder).child('groups');
 		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
-		let counterRef = firebase.database().ref().child('pibxalapa/counters/groups');
+		let counterRef = firebase.database().ref().child(rootFolder).child('counters/groups');
 
 		return {
 			getGroupReference: function(groupId){

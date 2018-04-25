@@ -44,9 +44,9 @@ okulusApp.controller('NotificationCntrl', ['$rootScope','$scope','$firebaseAuth'
 
 okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child('pibxalapa');
-		let notificationsRef = firebase.database().ref().child('pibxalapa/notifications');
-		let adminUsersRef = firebase.database().ref().child('pibxalapa/users').orderByChild("type").equalTo("admin");
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let notificationsRef = firebase.database().ref().child(rootFolder).child('notifications');
+		let adminUsersRef = firebase.database().ref().child(rootFolder).child('users').orderByChild("type").equalTo("admin");
 
 		let getNotificationDescription = function (action,onFolder,objectId) {
 				let description = "";

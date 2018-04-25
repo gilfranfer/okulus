@@ -1,6 +1,6 @@
 okulusApp.factory('ErrorsSvc', ['$rootScope',
 	function($rootScope){
-		let baseRef = firebase.database().ref().child("pibxalapa/errors");
+		let baseRef = firebase.database().ref().child(rootFolder).child('errors');
 
 		return {
 			logError: function( error ){

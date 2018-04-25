@@ -9,9 +9,9 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
-						auditRef = firebase.database().ref().child('pibxalapa/audit');
-						usersRef = firebase.database().ref().child('pibxalapa/users');
-						errorsRef = firebase.database().ref().child('pibxalapa/errors');
+						auditRef = firebase.database().ref().child(rootFolder).child('audit');
+						usersRef = firebase.database().ref().child(rootFolder).child('users');
+						errorsRef = firebase.database().ref().child(rootFolder).child('errors');
 						$scope.userRecords = $firebaseArray( usersRef );
 						$scope.errorsRecords = $firebaseArray( errorsRef );
 					}else{
@@ -70,7 +70,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 						WeeksSvc.loadAllWeeks();
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
 
-						let countersRef = firebase.database().ref().child('pibxalapa').child('counters');
+						let countersRef = firebase.database().ref().child(rootFolder).child('counters');
 						$scope.globalCounter = $firebaseObject(countersRef);
 						$scope.globalCounter.$loaded().then(
 							function (counter) {
@@ -95,7 +95,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 
 okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 	function( $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child('pibxalapa');
+		let baseRef = firebase.database().ref().child(rootFolder);
 
 		let updateAudit = function(usersMap, record, folder){
 			let audit = record.audit;

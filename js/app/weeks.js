@@ -66,7 +66,7 @@ okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scop
 okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
 
-		let weeksRef = firebase.database().ref().child('pibxalapa').child('weeks');
+		let weeksRef = firebase.database().ref().child(rootFolder).child('weeks');
 		let activeWeeksRef = weeksRef.orderByChild("status").equalTo("open");
 
 		return {
@@ -88,7 +88,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				return $firebaseObject(weeksRef.child(weekId));
 			},
 			getWeeksFolderRef: function(){
-				return firebase.database().ref().child('pibxalapa').child('weeks');
+				return firebase.database().ref().child(rootFolder).child('weeks');
 			},
 			updateWeekStatus: function (weekId,status) {
 				let record = $rootScope.allWeeks.$getRecord(weekId);

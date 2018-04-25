@@ -1,3 +1,4 @@
+const rootFolder = "okulus";
 // Initialize Firebase
   var config = {
     apiKey: "AIzaSyAERYbnjq6Hu3gFFNBptRvbcvlBt4anwHk",
