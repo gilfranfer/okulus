@@ -261,7 +261,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
-				new: "Nueva"
+				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido"
 			},
 			success:{
 				deleted:{
