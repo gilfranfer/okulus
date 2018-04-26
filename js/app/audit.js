@@ -42,7 +42,13 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 				//For Reports
 				if(on =="reports" ){
-					if(action == 'approved'){
+					if(action == 'create' || action == 'update' ){
+						baseRef.child(on).child(objectId).child("audit").update(
+							{ approvedById: null, approvedBy: null, approvedOn: null,
+								rejectedById: null, rejectedBy: null, rejectedOn: null,
+								reportStatus: 'pending'
+							});
+					}else if(action == 'approved'){
 						baseRef.child(on).child(objectId).child("audit").update(
 							{approvedById:userId, approvedBy:user, approvedOn:firebase.database.ServerValue.TIMESTAMP,
 								rejectedById: null, rejectedBy: null, rejectedOn: null

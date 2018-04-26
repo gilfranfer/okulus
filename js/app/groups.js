@@ -80,10 +80,10 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 					//adding trick below to ensure message is displayed
 					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
 					obj.$loaded().then(function(data) {
-						$scope.groupId = newgroupRef.key;
-						$rootScope.response = { groupMsgOk: "Grupo Creado"};
+						//$scope.groupId = newgroupRef.key;
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
+						$rootScope.response = { groupMsgOk: "Grupo Creado"};
 						$location.path( "/groups");
 					});
 	    	}

@@ -191,6 +191,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					if(error){
 						$scope.response = { reportMsgError: error};
 					}else{
+						$scope.audit.reportStatus = action;
 						$scope.response = response;
 						AuditSvc.recordAudit(repRef.key, action, "reports");
 						$scope.audit.reportStatus = action;
@@ -277,6 +278,9 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					$scope.reportId = repRef.key;
 					$scope.response = { reportMsgOk: successMessage};
 					AuditSvc.recordAudit(repRef.key, action, "reports");
+					if($scope.audit){
+						$scope.audit.reportStatus = "pending";
+					}
 					if(action == "create"){
 						GroupsSvc.addReportReference(obj);
 						ReportsSvc.increasePendingReportCounter();
@@ -488,16 +492,6 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 				$scope.reportWeek = WeeksSvc.getWeekObj( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
 
-				//Report Status
-				if(record.audit){
-					if(record.audit.reportStatus == "pending"){
-						$scope.reportStatusAlert = { color: "primary", message:"Reporte en Revision"};
-					}else if(record.audit.reportStatus == "approved"){
-						$scope.reportStatusAlert = { color: "success", message:"Reporte Aprobado"};
-					}else if(record.audit.reportStatus == "rejected"){
-						$scope.reportStatusAlert = { color: "danger", message:"Reporte Rechazado"};
-					}
-				}
 			}else{
 				$location.path( "/error/norecord" );
 			}

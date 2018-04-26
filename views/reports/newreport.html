@@ -12,8 +12,14 @@
       </div>
     </div>
 
-    <div class="alert alert-{{reportStatusAlert.color}}" role="alert" ng-show="reportStatusAlert">
-      {{reportStatusAlert.message}}
+    <div class="alert alert-danger" role="alert" ng-show="audit.reportStatus == 'rejected'">
+      {{i18n.forms.report.rejectedReport}}
+    </div>
+    <div class="alert alert-success" role="alert" ng-show="audit.reportStatus == 'approved'">
+      {{i18n.forms.report.approvedReport}}
+    </div>
+    <div class="alert alert-primary" role="alert" ng-show="audit.reportStatus == 'pending'">
+      {{i18n.forms.report.pendingReport}}
     </div>
 
     <div class="card h-100 mb-3">
@@ -344,20 +350,22 @@
     </div>
 
     <!-- Buttons rows -->
-    <div class="form-row mt-3">
+    <div class="form-row mt-3" ng-if="reportId && currentSession.user.type == 'admin'">
       <div class="col-sm form-group"
-          ng-if="reportId && !audit.approvedBy &&  currentSession.user.type == 'admin'">
+          ng-if="audit.reportStatus != 'approved'">
         <button type="button" class="btn btn-lg btn-block btn-primary" ng-click="approveReport(true)">
           {{i18n.btns.approveBtn}}
         </button>
       </div>
       <div class="col-sm form-group"
-          ng-if="reportId && audit.approvedBy && currentSession.user.type == 'admin'">
+          ng-if="audit.reportStatus != 'rejected'">
         <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="approveReport(false)">
           {{i18n.btns.rejectBtn}}
         </button>
       </div>
+    </div>
 
+    <div class="form-row mt-3" ng-if="audit.reportStatus != 'approved'">
       <div class="col-sm form-group" >
         <button type="submit" class="btn btn-lg btn-block btn-success" ng-disabled="reportForm.$invalid || reportForm.$pristine">
           {{i18n.btns.saveBtn}}

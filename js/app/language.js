@@ -110,7 +110,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie",
 					noMembersList:"No se ha registrado la asistencia de Miembros",
-					noGuestsList:"No se ha registrado la asistencia de Invitados"
+					noGuestsList:"No se ha registrado la asistencia de Invitados",
+					approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
 				},
 				phone:{
 					phoneLbl:"Teléfono", phoneHint:""

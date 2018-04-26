@@ -27,15 +27,11 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 			}
 		});
 
-
-
 	}
 ]);
 
 okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseAuth','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $location,$firebaseAuth, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc,AuthenticationSvc){
-
-
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -51,8 +47,6 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			}
 		});
 
-
-
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
 			let record = undefined;
@@ -62,7 +56,6 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				record = { member: $scope.member };
 			}
 			record.member.birthdate = UtilsSvc.buildDateJson($scope.member.bday);
-
 
 			/* When a value for memberId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
@@ -103,11 +96,10 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				//adding trick below to ensure message is displayed
 				let obj = MembersSvc.getMember(newmemberRef.key);
 				obj.$loaded().then(function(data) {
-					$scope.memberId = newmemberRef.key;
-					$rootScope.response = { memberMsgOk: "Miembro Creado"};
+					//$scope.memberId = newmemberRef.key;
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
-					//console.log("update counter")
 					MembersSvc.increaseStatusCounter(data.member.status);
+					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					$location.path( "/members");
 				});
 			}
