@@ -203,6 +203,7 @@ okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location'
 				$scope.memberId = record.$id;
 				$scope.member = record.member;
 				$scope.address = record.address;
+				$scope.audit = record.audit;
 
 				if(record.member.birthdate){
 					$scope.member.bday = new Date(record.member.birthdate.year,

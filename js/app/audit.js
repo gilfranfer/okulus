@@ -44,10 +44,14 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				if(on =="reports" ){
 					if(action == 'approved'){
 						baseRef.child(on).child(objectId).child("audit").update(
-							{approvedById:userId, approvedBy:user, approvedOn:firebase.database.ServerValue.TIMESTAMP});
+							{approvedById:userId, approvedBy:user, approvedOn:firebase.database.ServerValue.TIMESTAMP,
+								rejectedById: null, rejectedBy: null, rejectedOn: null
+							});
 					}else if( action == 'rejected'){
 						baseRef.child(on).child(objectId).child("audit").update(
-							{rejectedById:userId, rejectedBy:user, rejectedOn:firebase.database.ServerValue.TIMESTAMP});
+							{rejectedById:userId, rejectedBy:user, rejectedOn:firebase.database.ServerValue.TIMESTAMP,
+								approvedById: null, approvedBy: null, approvedOn: null
+							});
 					}
 				}
 

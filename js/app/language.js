@@ -53,6 +53,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				loading:"Cargando ..."
 			},
 			forms:{
+				audit:{
+					title:"Auditoria", creation:"Creación", update:"Última Actualización",
+					approval:"Aprobación", rejection: "Rechazo",
+					refreshForUpdates: "Refrescar la página para ver actualizaciones de ésta sección."
+				},
 				weeks:{
 					legend: "Semanas",
 					description:"Las Semanas serán los contenedores de los Reportes. Se recomienda cerrar las semanas cuando se hayan recibido todos los reportes. Las semanas cerradas no aparecerán listadas al momento de crear un reporte.",
@@ -86,8 +91,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					active: "Miembro Activo", inactive: "Miembro Inactivo"
 				},
 				report:{
-					newReport: "Nuevo Reporte",
-					basicDataLegend: "Detalles del Reporte para el Grupo",
+					newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
+					basicDataLegend: "Detalles de la Reunión",
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
 					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",

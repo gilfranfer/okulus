@@ -18,6 +18,8 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
+					console.log("AuthSvc - User is Logged");
+					
 					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 						if(user.isRoot){
 							// console.log("Welcome Root");
@@ -254,12 +256,11 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 				if(!$rootScope.currentSession){
 					console.log("AuthSvc - Loading User Data");
 					var user = firebase.auth().currentUser;
-						console.log("AuthSvc - User is Logged");
-						if(!user.emailVerified){
-							$rootScope.emailNotVerifiedError = true;
-						}else{
-							$rootScope.emailNotVerifiedError = false;
-						}
+					if(!user.emailVerified){
+						$rootScope.emailNotVerifiedError = true;
+					}else{
+						$rootScope.emailNotVerifiedError = false;
+					}
 					$rootScope.currentSession = {user: $firebaseObject(usersFolder.child(authUserUid)) };
 				}
 				return $rootScope.currentSession.user;

@@ -36,15 +36,6 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 			}
 		});
 
-		cleanScope = function(){
-	    	$scope.groupId = null;
-	    	$scope.group = null;
-	    	$scope.address = null;
-	    	$scope.schedule = null;
-	    	$scope.response = null;
-				$rootScope.response = null;
-	    };
-
 	    $scope.saveOrUpdateGroup = function() {
 				//$scope.response = null;
 				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
@@ -163,6 +154,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.group = record.group;
 				$scope.address = record.address;
 				$scope.schedule = record.schedule;
+				$scope.audit = record.audit;
 				if(record.schedule.time){
 					//console.log("Setting Time")
 					$scope.schedule.timestamp = new Date();
