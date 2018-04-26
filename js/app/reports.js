@@ -5,7 +5,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		$scope.chartOrientation = 'landscape';
 
 		updateCharts = function(selectedGroupIds,weeksElapsed){
-			// console.log(selectedGroupIds);
+			// console.debug(selectedGroupIds);
 
 			let goodWeekAttendanceIndicator = 8;
 			let excelentWeekAttendanceIndicator = 14;
@@ -27,10 +27,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			if(selectedGroupIds.length == $scope.groupsList.length){
 				//All groups option selected
 				$scope.reportsForSelectedWeek = $scope.reportsArray;
-				// console.log("All Groups Selected");
+				// console.debug("All Groups Selected");
 			}else{
 				//One or more groups selected
-				// console.log("Some groups selected");
+				// console.debug("Some groups selected");
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
 					let found = false;
@@ -118,7 +118,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				the member doesnt have access, so we need to apply some filters before
 			 */
 			reportsArray.$loaded().then( function( reports ) {
-				//console.log("Start to filter Reports");
+				//console.debug("Start to filter Reports");
 				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
 				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
 				reportsArray.$watch(function(event){ notifyReportAdded(event); });
@@ -154,9 +154,9 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 																								+ " del grupo "+report.reunion.groupname;;
 					}
 					$scope.response = { reportAddedMsg:message };
-					// console.log(event);
+					// console.debug(event);
 				}else{
-					// console.log("Update on other week");
+					// console.debug("Update on other week");
 				}
 			});
 		};
@@ -247,7 +247,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 						if(membersAttendanceList){
 							membersAttendanceList.forEach(function(element) {
 								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
-								//console.log(repRef.key);
+								//console.debug(repRef.key);
 								MembersSvc.addReportReference(element.memberId,repRef.key,record);
 							});
 						}
@@ -321,7 +321,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 								$location.path( "/admin/dashboard");
 							}, function(error) {
 								$rootScope.response = { reportMsgError: err};
-								// console.log("Error:", error);
+								// console.debug("Error:", error);
 							});
 					});
 				}
@@ -417,7 +417,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		};
 
 		$scope.showAllMembers = function(){
-			//console.log("Getting all mebers");
+			//console.debug("Getting all mebers");
 			$scope.loadingAllMembers =  true;
 			$scope.groupMembersList = MembersSvc.loadAllMembersList();
 			$scope.groupMembersList.$loaded().then(function() {
@@ -535,7 +535,7 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
 				/*if(groupId){
 					Not possible to combien more than one orderByChild
-					console.log("Try second query for group "+groupId)
+					console.debug("Try second query for group "+groupId)
 					let query2 = query.orderByChild("reunion/groupId").equalTo(groupId);
 					return $firebaseArray(query2);
 				}*/

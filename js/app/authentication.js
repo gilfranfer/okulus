@@ -18,11 +18,11 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
-					console.log("AuthSvc - User is Logged");
-					
+					console.debug("AuthSvc - User is Logged");
+
 					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 						if(user.isRoot){
-							// console.log("Welcome Root");
+							// console.debug("Welcome Root");
 						}else{
 							/* if User already has a Member mapped:
 							// 1. Verify The member still active and Confirm still canBeUser
@@ -95,7 +95,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
-					console.log("AuthSvc - No User Authenticated");
+					console.debug("AuthSvc - No User Authenticated");
 					cleanRootScope();
 					$location.path( "/login" );
 				}
@@ -104,7 +104,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 		var cleanRootScope = function(){
 			for (var prop in $rootScope) {
 			    if (prop.substring(0,1) !== '$') {
-						// console.log("Rootscope Prop: "+prop);
+						// console.debug("Rootscope Prop: "+prop);
 						if( prop!="config" && prop!="i18n")
 			      delete $rootScope[prop];
 			    }
@@ -112,7 +112,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 		};
 
 		$scope.verifyEmail = function() {
-			console.log("verifyEmail");
+			console.debug("verifyEmail");
 			var user = firebase.auth().currentUser;
 			$rootScope.response = { verificationEmailSent: true };
 			user.sendEmailVerification().then(function() {
@@ -157,7 +157,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 							message = "Intente nuevamente." + error.coindíae;
 				}
 				$scope.response = { loginErrorMsg: message};
-				// console.log(error);
+				// console.debug(error);
 			});
 		};
 
@@ -254,7 +254,7 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			},
 			loadSessionData: function(authUserUid){
 				if(!$rootScope.currentSession){
-					console.log("AuthSvc - Loading User Data");
+					console.debug("AuthSvc - Loading User Data");
 					var user = firebase.auth().currentUser;
 					if(!user.emailVerified){
 						$rootScope.emailNotVerifiedError = true;
@@ -263,6 +263,7 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 					}
 					$rootScope.currentSession = {user: $firebaseObject(usersFolder.child(authUserUid)) };
 				}
+				console.debug("AuthSvc - Returning Existing User Data");
 				return $rootScope.currentSession.user;
 			}
 		};//return
