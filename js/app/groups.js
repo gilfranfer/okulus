@@ -3,9 +3,17 @@ okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope'
 	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
+				$scope.loadingGroups = true;
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+						$scope.groupsList.$loaded().then(function(groups) {
+							$scope.loadingGroups = false;
+							if(!groups.length){
+								$scope.response = {noGroupsFound:true};
+							}
+						});
+
 					}else{
 						$location.path("/error/norecord");
 					}
@@ -111,7 +119,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 									$location.path( "/groups");
 								}, function(error) {
 									$rootScope.response = { groupMsgError: err};
-									// console.log("Error:", error);
+									// console.debug("Error:", error);
 								});
 							}else{
 								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
@@ -156,7 +164,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.schedule = record.schedule;
 				$scope.audit = record.audit;
 				if(record.schedule.time){
-					//console.log("Setting Time")
+					//console.debug("Setting Time")
 					$scope.schedule.timestamp = new Date();
 					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
 					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
@@ -239,7 +247,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				if(accessObj){
 					for (const accessRuleId in accessObj) {
 						let groupId = accessObj[accessRuleId].groupId;
-						console.log(accessRuleId);
+						console.debug(accessRuleId);
 						groupsRef.child(groupId).child("access").child(accessRuleId).set(null);
 					}
 				}
@@ -323,7 +331,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					AuditSvc.recordAudit(whichGroup, "access-granted", "groups");
 					//notify the member that got the access
 					MembersSvc.getMember(whichMember).$loaded().then(function(member){
-						console.log(member);
+						console.debug(member);
 						NotificationsSvc.sendNotificationTo(member.user.userId,"access-granted", "groups", whichGroup,null,null);
 					});
 					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };

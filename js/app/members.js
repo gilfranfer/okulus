@@ -129,7 +129,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 							$location.path( "/members");
 						}, function(error) {
 							$rootScope.response = { memberMsgError: err};
-							// console.log("Error:", error);
+							// console.debug("Error:", error);
 						});
 						// }
 					});
@@ -140,22 +140,22 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 		$scope.isHost = function(value){
 			validateMemberObj();
 			$scope.member.isHost = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.isLeader = function(value){
 			validateMemberObj();
 			$scope.member.isLeader = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.isTrainee = function(value){
 			validateMemberObj();
 			$scope.member.isTrainee = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.canBeUser = function(value){
 			validateMemberObj();
 			$scope.member.canBeUser = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 
 		validateMemberObj = function () {
@@ -235,7 +235,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
-					// console.log("Creating firebaseArray for allMembers");
+					// console.debug("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				}
 				return $rootScope.allMembers;
@@ -306,17 +306,16 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			removeReferenceToReport: function(reportId,membersAttendanceList){
 				if(membersAttendanceList){
 					for (const attKey in membersAttendanceList) {
-						// console.log(attKey);
+						// console.debug(attKey);
 						let memberId = membersAttendanceList[attKey].memberId;
 						membersRef.child(memberId).child("attendance").child(reportId).set(null);
 					}
 				}
 			},
 			/* Returns a list of Group records (from $firebaseArray) that are
-			 * present in the Member's acess rules folder. */
+			 * present in the Member's acess rules folder.
 			getMemberGroups: function(whichMember) {
 				return new Promise((resolve, reject) => {
-
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
 					}).then( function(memberRules) {
@@ -327,11 +326,21 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 								myGroups.push( group );
 							}
 						});
-						$rootScope.groupsList = myGroups;
+						//$rootScope.groupsList = myGroups;
 						resolve(myGroups);
 					});
 
 				});
+			},*/
+			filterMemberGroupsFromRules: function(memberRules, allGroups) {
+				let myGroups = [];
+				memberRules.forEach(function(rule) {
+					let group = allGroups.$getRecord(rule.groupId);
+					if( group != null){
+						myGroups.push( group );
+					}
+				});
+				return myGroups;
 			},
 			/*Use the passed Groups List to get all members with those groups as BaseGroup*/
 			getMembersInGroups: function(groups) {
@@ -389,7 +398,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					});
 			},
 			addReportReference: function(memberId,reportId, report){
-				// console.log(memberId,reportId, report);
+				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
 				let ref = membersRef.child(memberId).child("attendance").child(reportId);
 				ref.set({

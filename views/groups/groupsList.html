@@ -2,9 +2,16 @@
 <section id="groupsList">
   <div class="row">
     <!-- Loading Alert -->
-    <div class="col"  ng-show="!groupsList">
+    <div class="col"  ng-show="loadingGroups">
       <div class="alert alert-warning" role="alert">
         {{i18n.alerts.loading}}
+      </div>
+    </div>
+
+    <!-- No Records Alert -->
+    <div class="col"  ng-show="response.noGroupsFound">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.admin.groupsList.noGroupsError}}
       </div>
     </div>
 
@@ -15,7 +22,7 @@
         <div class="card-body">
           <h4 class="card-title">
             <a ng-href="#!/groups/edit/{{g.$id}}">
-              {{g.group.number}} - {{g.group.name}} 
+              {{g.group.number}} - {{g.group.name}}
             </a>
           </h4>
           <hr>
