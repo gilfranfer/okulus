@@ -12,13 +12,5 @@
     </div>
   </div>
 </article>
-<!-- Alert/Error row -->
-<div class="row"  ng-show="membersList && membersList.length == 0">
-  <div class="col">
-    <div class="alert alert-danger" role="alert">
-      {{i18n.user.contactsList.noContactsError}}
-    </div>
-  </div>
-</div>
 
 <article ng-include="'views/members/membersList.html'"></article>

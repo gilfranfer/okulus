@@ -14,7 +14,9 @@
         {{i18n.admin.groupsList.noGroupsError}}
       </div>
     </div>
+  </div>
 
+  <div class="row">
     <!-- Group card -->
     <div ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number'" class="col-md-6 col-lg-4 mb-3" >
       <div class="card h-100" >

@@ -2,6 +2,7 @@
  * It will load the lists (weeks, groups, member rules) required for the view to work */
 okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc', '$location', '$rootScope','$scope','$firebaseAuth','AuthenticationSvc',
 	function(MembersSvc, GroupsSvc, WeeksSvc,$location, $rootScope,$scope,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -16,6 +17,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 					}).then(function (memberRules) {
 						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
 						$scope.groupsList = filteredGroups;
+						$scope.loadingReportSelector = false;
 					});
 					// MembersSvc.getMemberGroups(user.memberId);
 				});
@@ -28,9 +30,9 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
  * It will load the Groups the Current Member has Access to */
 okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc','GroupsSvc', '$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc',
 	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingGroups = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
-				$scope.loadingGroups = true;
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(!user.memberId){
 						$location.path("/error/nomember");
@@ -57,6 +59,8 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc','GroupsSvc', '$rootScope
 
 okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
 	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingMembers = true;
+		console.log("some");
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -72,6 +76,10 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootSc
 						return MembersSvc.getMembersInGroups(filteredGroups)
 					}).then(function(contacts){
 						$scope.membersList = contacts;
+						$scope.loadingMembers = false;
+						if(!$scope.membersList.length){
+							$scope.response = {noMembersFound:true};
+						}
 					});
 
 					// MembersSvc.getMemberGroups(user.memberId).then(function(groups){

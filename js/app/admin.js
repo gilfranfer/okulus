@@ -60,15 +60,18 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
-
+		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
 
 						$scope.adminViewActive = true;
-						WeeksSvc.loadAllWeeks();
+						$scope.weeksList = WeeksSvc.loadAllWeeks();
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+						$scope.groupsList.$loaded().then(function () {
+							$scope.loadingReportSelector = false;
+						});
 
 						let countersRef = firebase.database().ref().child(rootFolder).child('counters');
 						$scope.globalCounter = $firebaseObject(countersRef);

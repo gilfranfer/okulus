@@ -1,6 +1,25 @@
 //Mapping: /members
 okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				$scope.loadingMembers = true;
+				$scope.memberTypeFilter = "all";
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.membersList = MembersSvc.loadAllMembersList();
+						$scope.membersList.$loaded().then(function(members) {
+							$scope.loadingMembers = false;
+							if(!members.length){
+								$scope.response = {noMembersFound:true};
+							}
+						});
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 
 		$scope.loadMemberByType = function () {
 			if($scope.memberTypeFilter=="all"){
@@ -13,19 +32,6 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 				$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
 			}
 		};
-
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				$scope.memberTypeFilter = "all";
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.membersList = MembersSvc.loadAllMembersList();
-					}else{
-						$location.path("/error/norecord");
-					}
-				});
-			}
-		});
 
 	}
 ]);
