@@ -7,22 +7,34 @@
     <div class="row">
       <div class="col" ng-show="audit.createdBy">
         <label class="font-weight-bold">{{i18n.forms.audit.creation}}</label><br>
-        <span><a href="#!/users/edit/{{audit.createdById}}">{{audit.createdBy}}</a></span><br>
+        <span>
+          <a ng-if="audit.createdById" href="#!/users/edit/{{audit.createdById}}">{{audit.createdBy}}</a>
+          <span ng-if="!audit.createdById">{{audit.createdBy}}</span>
+        </span><br>
         <span>{{audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
       <div class="col" ng-show="audit.lastUpdateBy">
         <label class="font-weight-bold">{{i18n.forms.audit.update}}</label><br>
-        <span><a href="#!/users/edit/{{audit.lastUpdateById}}">{{audit.lastUpdateBy}}</a></span><br>
+        <span>
+          <a ng-if="audit.lastUpdateById" href="#!/users/edit/{{audit.lastUpdateById}}">{{audit.lastUpdateBy}}</a>
+          <span ng-if="!audit.lastUpdateById">{{audit.lastUpdateBy}}</span>
+        </span><br>
         <span>{{audit.lastUpdateOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
       <div class="col" ng-show="audit.approvedBy">
         <label class="font-weight-bold">{{i18n.forms.audit.approval}}</label><br>
-        <span><a href="#!/users/edit/{{audit.approvedById}}">{{audit.approvedBy}}</a></span><br>
+        <span>
+          <a ng-if="audit.approvedById" href="#!/users/edit/{{audit.approvedById}}">{{audit.approvedBy}}</a>
+          <span ng-if="!audit.approvedById">{{audit.approvedBy}}</span>
+        </span><br>
         <span>{{audit.approvedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
       <div class="col" ng-show="audit.rejectedBy">
         <label class="font-weight-bold">{{i18n.forms.audit.rejection}}</label><br>
-        <span><a href="#!/users/edit/{{audit.rejectedById}}">{{audit.rejectedBy}}</a></span><br>
+        <span>
+          <a ng-if="audit.rejectedById" href="#!/users/edit/{{audit.rejectedById}}">{{audit.rejectedBy}}</a>
+          <span ng-if="!audit.rejectedById">{{audit.rejectedBy}}</span>
+        </span><br>
         <span>{{audit.rejectedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
     </div>

@@ -229,6 +229,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				users:{
 					title:"Usuarios Registrados",
+					adminLbl: "Administrador", userLbl: "Usuario",
 					table:{
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
 						lastActivity:"Última Actividad", sessionStatus:"Estado"

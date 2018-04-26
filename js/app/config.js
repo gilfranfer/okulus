@@ -131,7 +131,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'MemberDetailsCntrl'
 			})
 			.when('/users/edit/:userId', {
-				templateUrl: 'views/members/newmember.html',
+				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
 			.when('/reports/new/:groupId', {

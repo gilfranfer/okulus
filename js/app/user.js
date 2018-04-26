@@ -56,11 +56,27 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', '$rootScope','$scope'
 ]);
 
 //To redirect from Audit Table
-okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$location','$firebaseObject',
-	function($rootScope,$routeParams,$location,$firebaseObject){
-		let usersFolder = firebase.database().ref().child(rootFolder).child('users');
-		$firebaseObject(usersFolder.child($routeParams.userId)).$loaded().then(function (data) {
-			$location.path("/members/edit/"+data.memberId);
-		});
-	}
-]);
+okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$location','$firebaseObject','$firebaseAuth',
+																				'AuthenticationSvc','MembersSvc',
+	function($rootScope,$routeParams,$scope,$location,$firebaseObject, $firebaseAuth,AuthenticationSvc,MembersSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				if(!user.memberId){
+					$location.path("/error/nomember");
+					return;
+				}
+				let usersFolder = firebase.database().ref().child(rootFolder).child('users');
+				$scope.userDetails = $firebaseObject(usersFolder.child($routeParams.userId));
+				$scope.userDetails.$loaded().then(function (user){
+					if(user && user.memberId){
+						$scope.audit = user.audit;
+						$scope.userMemberDetails =  MembersSvc.getMember(user.memberId);
+					}else{
+						if(user && !user.memberId){
+							$scope.userMemberDetails =  {member:{shortname:"Super Admin"}};
+						}
+					}
+				});
+			});
+		}});
+}]);
