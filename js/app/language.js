@@ -53,6 +53,11 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				loading:"Cargando ..."
 			},
 			forms:{
+				audit:{
+					title:"Auditoria", creation:"Creación", update:"Última Actualización",
+					approval:"Aprobación", rejection: "Rechazo",
+					refreshForUpdates: "Refrescar la página para ver actualizaciones de ésta sección."
+				},
 				weeks:{
 					legend: "Semanas",
 					description:"Las Semanas serán los contenedores de los Reportes. Se recomienda cerrar las semanas cuando se hayan recibido todos los reportes. Las semanas cerradas no aparecerán listadas al momento de crear un reporte.",
@@ -86,8 +91,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					active: "Miembro Activo", inactive: "Miembro Inactivo"
 				},
 				report:{
-					newReport: "Nuevo Reporte",
-					basicDataLegend: "Detalles del Reporte para el Grupo",
+					newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
+					basicDataLegend: "Detalles de la Reunión",
 					title:"Datos generales de la Reunión",
 					groupLbl:"Grupo", leadLbl: "Siervo",
 					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
@@ -105,7 +110,8 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie",
 					noMembersList:"No se ha registrado la asistencia de Miembros",
-					noGuestsList:"No se ha registrado la asistencia de Invitados"
+					noGuestsList:"No se ha registrado la asistencia de Invitados",
+					approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
 				},
 				phone:{
 					phoneLbl:"Teléfono", phoneHint:""
@@ -224,6 +230,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				},
 				users:{
 					title:"Usuarios Registrados",
+					adminLbl: "Administrador", userLbl: "Usuario",
 					table:{
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
 						lastActivity:"Última Actividad", sessionStatus:"Estado"
@@ -261,7 +268,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
-				new: "Nueva"
+				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido"
 			},
 			success:{
 				deleted:{

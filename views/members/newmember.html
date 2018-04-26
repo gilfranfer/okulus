@@ -1,14 +1,22 @@
 <section ng-controller="MemberFormCntrl">
-
   <form class="mt-3" name="memberForm" novalidate ng-submit="saveOrUpdateMember()">
+    <!-- Title -->
+    <div class="card h-100 mb-3">
+      <div class="card-body">
+        <h4 class="card-title" ng-if="memberId">
+           {{member.shortname}}
+        </h4>
+        <h4 class="card-title text-danger" ng-if="!memberId">
+          {{i18n.forms.member.newMember}}
+        </h4>
+      </div>
+    </div>
+
   <div class="card h-100 mb-3">
     <div class="card-body">
       <!-- Card Title -->
-      <h4 class="card-title text-primary" ng-if="memberId">
-        {{i18n.forms.member.basicDataLegend}} {{member.shortname}}
-      </h4>
-      <h4 class="card-title text-danger" ng-if="!memberId">
-        {{i18n.forms.member.newMember}}
+      <h4 class="card-title">
+        {{i18n.forms.member.basicDataLegend}}
       </h4>
       <hr>
 
@@ -95,6 +103,7 @@
       <!-- Membership -->
       <fieldset class="mb-4">
         <legend>{{i18n.forms.member.membership}}</legend>
+        <hr>
         <!-- Group and Status Row -->
         <div class="form-row">
           <div class="col-sm form-group">
@@ -169,6 +178,10 @@
       <span class="text-danger">* {{i18n.forms.group.mandatoryFields}}</span>
     </div>
   </div>
+
+  <!-- Audit -->
+  <article ng-if="memberId" ng-include="'views/fragments/auditDetails.html'"></article>
+
 
   <!-- Alert/Error row -->
   <div class="form-row">

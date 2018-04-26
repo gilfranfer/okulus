@@ -1,317 +1,338 @@
 <section ng-controller="ReportFormCntrl">
-
-  <div class="alert alert-{{reportStatusAlert.color}}" role="alert" ng-show="reportStatusAlert">
-    {{reportStatusAlert.message}}
-  </div>
-
   <form class="mt-3" name="reportForm" novalidate ng-submit="saveOrUpdateReport()">
-  <div class="card h-100 mb-3">
-    <div class="card-body">
-      <!-- Card Title -->
-      <h4 class="card-title text-primary" ng-if="reportId">
-        {{i18n.forms.report.basicDataLegend}} {{reunion.groupname}}
-      </h4>
-      <h4 class="card-title text-danger" ng-if="!reportId">
-        {{i18n.forms.report.newReport}}
-      </h4>
-      <hr>
+    <!-- Title -->
+    <div class="card h-100 mb-3">
+      <div class="card-body">
+        <h4 class="card-title" ng-if="reportId">
+          {{i18n.forms.report.reunionLegend}} {{reunion.groupname}} {{reportWeek.name}}
+        </h4>
+        <h4 class="card-title text-danger" ng-if="!reportId">
+          {{i18n.forms.group.newGroup}}
+        </h4>
+      </div>
+    </div>
 
-      <!-- Basic Group Information -->
-      <fieldset class="mb-4">
-        <legend></legend>
-        <!-- Group and Host -->
-        <div class="form-row">
-          <div class="col-sm form-group">
-            <label for="groupId">
-              {{i18n.forms.report.groupLbl}}
-            </label>
-            <input type="text" disabled id="groupId" class="form-control form-control-lg"
-            	ng-model="reunion.groupname" ng-required="false"/>
-            <input type="text" disabled hidden ng-model="reunion.groupId"/>
-          </div>
-          <div class="col-sm form-group">
-            <label for="hostId">
-              {{i18n.forms.report.hostLbl}}
-            </label>
-            <select id="hostId" name="hostId" class="form-control form-control-lg"
-             	ng-model="reunion.hostId" ng-required="false">
-             	<option ng-repeat="m in hostsList" value="{{m.$id}}">
-            		{{m.member.shortname}}
-            	</option>
-            </select>
-          </div>
-        </div>
-        <!-- Leader and Assitant -->
-        <div class="form-row">
-          <div class="col-sm form-group">
-            <label for="leadId">
-              {{i18n.forms.report.leadLbl}}
-            </label>
-            <select id="leadId" name="leadId" class="form-control form-control-lg"
-             	ng-model="reunion.leadId" ng-required="true">
-             	<option ng-repeat="m in leadsList" value="{{m.$id}}">
-            		{{m.member.shortname}}
-            	</option>
-            </select>
-          </div>
-          <div class="col-sm form-group">
-            <label for="coleadId">
-              {{i18n.forms.report.coLeadLbl}}
-            </label>
-            <select id="coleadId" name="coleadId" class="form-control form-control-lg"
-             	ng-model="reunion.coLeadId" ng-required="false">
-             	<option ng-repeat="m in traineesList" value="{{m.$id}}">
-            		{{m.member.shortname}}
-            	</option>
-            </select>
-          </div>
-        </div>
-        <!-- Week and Date -->
-        <div class="form-row">
-          <div class="col-sm form-group">
-              <label for="week">
-                {{i18n.forms.report.weekLbl}}
-                <span class="text-danger">*</span>
+    <div class="alert alert-danger" role="alert" ng-show="audit.reportStatus == 'rejected'">
+      {{i18n.forms.report.rejectedReport}}
+    </div>
+    <div class="alert alert-success" role="alert" ng-show="audit.reportStatus == 'approved'">
+      {{i18n.forms.report.approvedReport}}
+    </div>
+    <div class="alert alert-primary" role="alert" ng-show="audit.reportStatus == 'pending'">
+      {{i18n.forms.report.pendingReport}}
+    </div>
+
+    <div class="card h-100 mb-3">
+      <div class="card-body">
+        <!-- Card Title -->
+        <h4 class="card-title">
+          {{i18n.forms.report.basicDataLegend}}
+        </h4>
+        <hr>
+
+        <!-- Basic Group Information -->
+        <fieldset class="mb-4">
+          <legend></legend>
+          <!-- Group and Host -->
+          <div class="form-row">
+            <div class="col-sm form-group">
+              <label for="groupId">
+                {{i18n.forms.report.groupLbl}}
               </label>
-              <select id="week" name="week" class="form-control form-control-lg"
-                      ng-model="reunion.weekId" ng-required="true">
-                <option ng-if="reportWeek" value="{{reportWeek.$id}}">
-                  {{reportWeek.$id}} - {{reportWeek.name}}
-                </option>
-                <option ng-repeat="w in allActiveWeeks | orderBy:'w.$id':true" value="{{w.$id}}">
-                  {{w.$id}} - {{w.name}}
-                </option>
+              <input type="text" disabled id="groupId" class="form-control form-control-lg"
+              	ng-model="reunion.groupname" ng-required="false"/>
+              <input type="text" disabled hidden ng-model="reunion.groupId"/>
+            </div>
+            <div class="col-sm form-group">
+              <label for="hostId">
+                {{i18n.forms.report.hostLbl}}
+              </label>
+              <select id="hostId" name="hostId" class="form-control form-control-lg"
+               	ng-model="reunion.hostId" ng-required="false">
+               	<option ng-repeat="m in hostsList" value="{{m.$id}}">
+              		{{m.member.shortname}}
+              	</option>
               </select>
             </div>
-          <div class="col-sm form-group">
-            <label for="date">
-              {{i18n.forms.report.dateLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
-              class="form-control form-control-lg" placeholder="{{i18n.forms.report.dateHint}}"
-              ng-model="reunion.dateObj" ng-required="true">
           </div>
-        </div>
-        <!-- Report Status -->
-        <div class="form-row">
-          <div class="col-sm form-group">
-            <label for="status">
-              {{i18n.forms.report.statusLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <select id="status" class="form-control form-control-lg"
-              ng-model="reunion.status" ng-required="true">
-              <option value="completed">
-                {{i18n.forms.report.okStatusLbl}}
-              </option>
-              <option value="canceled">
-                {{i18n.forms.report.cancelStatusLbl}}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm form-group"></div>
-        </div>
-
-        <div ng-show="reunion.status == 'completed'">
-        <!-- Duration and money -->
-        <div class="form-row">
-          <div class="col-sm form-group">
-            <label for="duration">
-              {{i18n.forms.report.durationLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input id="duration" name="duration" class="form-control form-control-lg"
-              type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
-              ng-model="reunion.duration" ng-required="reunion.status == 'completed'">
-          </div>
-          <div class="col-sm form-group">
-            <label for="money">
-              {{i18n.forms.report.moneyLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <div class="input-group" >
-              <span class="input-group-addon">$</span>
-              <input type="number" id="money" min="0" step=".10" class="form-control form-control-lg"
-                ng-model="reunion.money" ng-required="reunion.status == 'completed'">
+          <!-- Leader and Assitant -->
+          <div class="form-row">
+            <div class="col-sm form-group">
+              <label for="leadId">
+                {{i18n.forms.report.leadLbl}}
+              </label>
+              <select id="leadId" name="leadId" class="form-control form-control-lg"
+               	ng-model="reunion.leadId" ng-required="true">
+               	<option ng-repeat="m in leadsList" value="{{m.$id}}">
+              		{{m.member.shortname}}
+              	</option>
+              </select>
+            </div>
+            <div class="col-sm form-group">
+              <label for="coleadId">
+                {{i18n.forms.report.coLeadLbl}}
+              </label>
+              <select id="coleadId" name="coleadId" class="form-control form-control-lg"
+               	ng-model="reunion.coLeadId" ng-required="false">
+               	<option ng-repeat="m in traineesList" value="{{m.$id}}">
+              		{{m.member.shortname}}
+              	</option>
+              </select>
             </div>
           </div>
-        </div>
-        </div>
-
-      </fieldset>
-
-      <!-- Study Details -->
-      <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
-        <legend>{{i18n.forms.report.studyLegend}}</legend>
-
-        <div class="form-row">
-          <div class="col-md form-group">
-            <label for="study">
-              {{i18n.forms.report.studyLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input type="text" id="study" name="study" class="form-control form-control-lg"
-              placeholder="{{i18n.forms.report.studyHint}}" ng-model="reunion.study" ng-required="reunion.status == 'completed'">
-          </div>
-          <div class="col-md form-group">
-            <label for="series">
-              {{i18n.forms.report.seriesLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input type="text" id="series" name="series" class="form-control form-control-lg"
-              placeholder="{{i18n.forms.report.seriesHint}}" ng-model="reunion.series" ng-required="reunion.status == 'completed'">
-          </div>
-        </div>
-
-      </fieldset>
-
-    	<!-- Attendance -->
-      <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
-        <legend>{{i18n.forms.report.attendanceLegend}}</legend>
-        <div class="row">
-          <!-- Members -->
-          <div class="col-md">
-            <div class="row mt-3">
-              <div class="col-8">
-                <label for="memberSelect">{{i18n.forms.report.membersLbl}}</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-8">
-                <select id="memberSelect" class="form-control form-control-lg"
-                    ng-model="addmemberId" ng-required="false">
-                  <option ng-repeat="m in groupMembersList | orderBy:'member.shortname'" value="{{m.$id}}">
-                    {{m.member.shortname}}
+          <!-- Week and Date -->
+          <div class="form-row">
+            <div class="col-sm form-group">
+                <label for="week">
+                  {{i18n.forms.report.weekLbl}}
+                  <span class="text-danger">*</span>
+                </label>
+                <select id="week" name="week" class="form-control form-control-lg"
+                        ng-model="reunion.weekId" ng-required="true">
+                  <option ng-if="reportWeek" value="{{reportWeek.$id}}">
+                    {{reportWeek.$id}} - {{reportWeek.name}}
+                  </option>
+                  <option ng-repeat="w in allActiveWeeks | orderBy:'w.$id':true" value="{{w.$id}}">
+                    {{w.$id}} - {{w.name}}
                   </option>
                 </select>
               </div>
-              <div class="col-4">
-                <button type="button" ng-click="addMemberAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addmemberId">
-                  {{i18n.btns.addBtn}}
-                </button>
+            <div class="col-sm form-group">
+              <label for="date">
+                {{i18n.forms.report.dateLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
+                class="form-control form-control-lg" placeholder="{{i18n.forms.report.dateHint}}"
+                ng-model="reunion.dateObj" ng-required="true">
+            </div>
+          </div>
+          <!-- Report Status -->
+          <div class="form-row">
+            <div class="col-sm form-group">
+              <label for="status">
+                {{i18n.forms.report.statusLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <select id="status" class="form-control form-control-lg"
+                ng-model="reunion.status" ng-required="true">
+                <option value="completed">
+                  {{i18n.forms.report.okStatusLbl}}
+                </option>
+                <option value="canceled">
+                  {{i18n.forms.report.cancelStatusLbl}}
+                </option>
+              </select>
+            </div>
+            <div class="col-sm form-group"></div>
+          </div>
+
+          <div ng-show="reunion.status == 'completed'">
+          <!-- Duration and money -->
+          <div class="form-row">
+            <div class="col-sm form-group">
+              <label for="duration">
+                {{i18n.forms.report.durationLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input id="duration" name="duration" class="form-control form-control-lg"
+                type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
+                ng-model="reunion.duration" ng-required="reunion.status == 'completed'">
+            </div>
+            <div class="col-sm form-group">
+              <label for="money">
+                {{i18n.forms.report.moneyLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <div class="input-group" >
+                <span class="input-group-addon">$</span>
+                <input type="number" id="money" min="0" step=".10" class="form-control form-control-lg"
+                  ng-model="reunion.money" ng-required="reunion.status == 'completed'">
               </div>
             </div>
-            <div class="row">
-              <div class="col">
-                <label id="" class="font-weight-light text-info" ng-click="showAllMembers()">{{i18n.forms.report.allMembersLbl}}</label>
-                <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
-                  {{i18n.alerts.loading}}
+          </div>
+          </div>
+
+        </fieldset>
+
+        <!-- Study Details -->
+        <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
+          <legend>{{i18n.forms.report.studyLegend}}</legend>
+          <hr>
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label for="study">
+                {{i18n.forms.report.studyLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="study" name="study" class="form-control form-control-lg"
+                placeholder="{{i18n.forms.report.studyHint}}" ng-model="reunion.study" ng-required="reunion.status == 'completed'">
+            </div>
+            <div class="col-md form-group">
+              <label for="series">
+                {{i18n.forms.report.seriesLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="series" name="series" class="form-control form-control-lg"
+                placeholder="{{i18n.forms.report.seriesHint}}" ng-model="reunion.series" ng-required="reunion.status == 'completed'">
+            </div>
+          </div>
+
+        </fieldset>
+
+      	<!-- Attendance -->
+        <fieldset class="mt-3"  ng-show="reunion.status == 'completed'">
+          <legend>{{i18n.forms.report.attendanceLegend}}</legend>
+          <hr>
+          <div class="row">
+            <!-- Members -->
+            <div class="col-md">
+              <div class="row mt-3">
+                <div class="col-8">
+                  <label for="memberSelect">{{i18n.forms.report.membersLbl}}</label>
                 </div>
               </div>
+              <div class="row">
+                <div class="col-8">
+                  <select id="memberSelect" class="form-control form-control-lg"
+                      ng-model="addmemberId" ng-required="false">
+                    <option ng-repeat="m in groupMembersList | orderBy:'member.shortname'" value="{{m.$id}}">
+                      {{m.member.shortname}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-4">
+                  <button type="button" ng-click="addMemberAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addmemberId">
+                    {{i18n.btns.addBtn}}
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label id="" class="font-weight-light text-info" ng-click="showAllMembers()">{{i18n.forms.report.allMembersLbl}}</label>
+                  <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
+                    {{i18n.alerts.loading}}
+                  </div>
+                </div>
+              </div>
+              <!-- Alerts -->
+              <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+                {{response.membersListError}}
+              </div>
+              <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+                {{response.membersListOk}}
+              </div>
+              <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
+                {{i18n.forms.report.noMembersList}}
+              </div>
+              <!-- Members Table -->
+              <div class="pre-scrollable mt-3" ng-if="attendance.members.list && attendance.members.list.length > 0">
+                <table class="table table-md table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{i18n.forms.report.attendanceList}}</th>
+                      <th scope="col">&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="element in attendance.members.list">
+                      <td scope="row">
+                        {{element.memberName}}
+                      </td>
+                      <td scope="row">
+                        <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
+                          {{i18n.btns.deleteBtn}}
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <!-- Alerts -->
-            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
-              {{response.membersListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
-              {{response.membersListOk}}
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="!attendance.members.list || (attendance.members.list && attendance.members.list.length == 0)">
-              {{i18n.forms.report.noMembersList}}
-            </div>
-            <!-- Members Table -->
-            <div class="pre-scrollable mt-3" ng-if="attendance.members.list && attendance.members.list.length > 0">
-              <table class="table table-md table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">{{i18n.forms.report.attendanceList}}</th>
-                    <th scope="col">&nbsp;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="element in attendance.members.list">
-                    <td scope="row">
-                      {{element.memberName}}
-                    </td>
-                    <td scope="row">
-                      <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
-                        {{i18n.btns.deleteBtn}}
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Guests -->
+            <div class="col-md">
+              <div class="row mt-3">
+                <div class="col-8">
+                  <label>{{i18n.forms.report.guestsLbl}}</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-8">
+                  <input type="text" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/>
+                  <!-- <input type="number" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/> -->
+                </div>
+                <div class="col-4">
+                  <button type="button" ng-click="addGuestAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addGuestName">
+                    {{i18n.btns.addBtn}}
+                  </button>
+                  <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
+                    {{i18n.btns.addBtn}}
+                  </button> -->
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label>&nbsp;</label>
+                </div>
+              </div>
+              <!-- Alerts -->
+              <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
+                {{i18n.forms.report.noGuestsList}}
+              </div>
+              <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+                {{response.guestsListError}}
+              </div>
+              <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+                {{response.guestsListOk}}
+              </div>
+              <!-- Guests Table -->
+              <div class="pre-scrollable mt-3" ng-if="attendance.guests.list && attendance.guests.list.length > 0">
+                <table class="table table-md table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">{{i18n.forms.report.attendanceList}}</th>
+                      <th scope="col">&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="element in attendance.guests.list">
+                      <td scope="row">
+                        {{element.guestName}}
+                      </td>
+                      <td scope="row">
+                        <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
+                          {{i18n.btns.deleteBtn}}
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <!-- Guests -->
-          <div class="col-md">
-            <div class="row mt-3">
-              <div class="col-8">
-                <label>{{i18n.forms.report.guestsLbl}}</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-8">
-                <input type="text" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/>
-                <!-- <input type="number" class="form-control form-control-lg" ng-model="addGuestName" ng-required="false"/> -->
-              </div>
-              <div class="col-4">
-                <button type="button" ng-click="addGuestAttendance()" class="btn btn-lg btn-block btn-success" ng-disabled="!addGuestName">
-                  {{i18n.btns.addBtn}}
-                </button>
-                <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
-                  {{i18n.btns.addBtn}}
-                </button> -->
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <label>&nbsp;</label>
-              </div>
-            </div>
-            <!-- Alerts -->
-            <div class="alert alert-danger" role="alert" ng-show="!attendance.guests.list || (attendance.guests.list && attendance.guests.list.length == 0)">
-              {{i18n.forms.report.noGuestsList}}
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
-              {{response.guestsListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
-              {{response.guestsListOk}}
-            </div>
-            <!-- Guests Table -->
-            <div class="pre-scrollable mt-3" ng-if="attendance.guests.list && attendance.guests.list.length > 0">
-              <table class="table table-md table-striped">
-                <thead>
-                  <tr>
-                    <th scope="col">{{i18n.forms.report.attendanceList}}</th>
-                    <th scope="col">&nbsp;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="element in attendance.guests.list">
-                    <td scope="row">
-                      {{element.guestName}}
-                    </td>
-                    <td scope="row">
-                      <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
-                        {{i18n.btns.deleteBtn}}
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <!-- Notes and Comments -->
-      <fieldset class="mt-3">
-        <legend>{{i18n.forms.report.notesLegend}}
-                <span ng-if="reunion.status == 'canceled'" class="text-danger">*</span></legend>
-        <div class="form-row">
-          <div class="col-md form-group">
-            <textarea id="notes" name="notes" class="form-control form-control-lg"
-            placeholder="{{i18n.forms.report.notesHint}}" ng-model="reunion.notes" ng-required="reunion.status == 'canceled'">
-            </textarea>
+        <!-- Notes and Comments -->
+        <fieldset class="mt-3">
+          <legend>
+            {{i18n.forms.report.notesLegend}}
+            <span ng-if="reunion.status == 'canceled'" class="text-danger">*</span>
+          </legend>
+          <hr>
+          <div class="form-row">
+            <div class="col-md form-group">
+              <textarea id="notes" name="notes" class="form-control form-control-lg"
+              placeholder="{{i18n.forms.report.notesHint}}" ng-model="reunion.notes" ng-required="reunion.status == 'canceled'">
+              </textarea>
+            </div>
           </div>
-        </div>
-      </fieldset>
-      <span class="text-danger">* {{i18n.forms.group.mandatoryFields}}</span>
+        </fieldset>
+        <span class="text-danger">* {{i18n.forms.group.mandatoryFields}}</span>
+      </div>
     </div>
-  </div>
+
+    <!-- Audit -->
+    <article ng-if="reportId" ng-include="'views/fragments/auditDetails.html'"></article>
 
     <!-- Alert/Error row -->
     <div class="form-row">
@@ -329,7 +350,22 @@
     </div>
 
     <!-- Buttons rows -->
-    <div class="form-row mt-3">
+    <div class="form-row mt-3" ng-if="reportId && currentSession.user.type == 'admin'">
+      <div class="col-sm form-group"
+          ng-if="audit.reportStatus != 'approved'">
+        <button type="button" class="btn btn-lg btn-block btn-primary" ng-click="approveReport(true)">
+          {{i18n.btns.approveBtn}}
+        </button>
+      </div>
+      <div class="col-sm form-group"
+          ng-if="audit.reportStatus != 'rejected'">
+        <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="approveReport(false)">
+          {{i18n.btns.rejectBtn}}
+        </button>
+      </div>
+    </div>
+
+    <div class="form-row mt-3" ng-if="audit.reportStatus != 'approved'">
       <div class="col-sm form-group" >
         <button type="submit" class="btn btn-lg btn-block btn-success" ng-disabled="reportForm.$invalid || reportForm.$pristine">
           {{i18n.btns.saveBtn}}
@@ -353,19 +389,5 @@
         </div>
       </div>
     </div>
-    <div class="form-row" ng-if="reportId && currentSession.user.type == 'admin'">
-      <div class="col-sm-6 form-group">
-        <button type="button" class="btn btn-lg btn-block btn-success" ng-click="approveReport(true)">
-          {{i18n.btns.approveBtn}}
-        </button>
-      </div>
-      <div class="col-sm-6 form-group">
-        <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="approveReport(false)">
-          {{i18n.btns.rejectBtn}}
-        </button>
-      </div>
-    </div>
-
-
   </form>
 </section>

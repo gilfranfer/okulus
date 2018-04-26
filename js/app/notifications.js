@@ -39,6 +39,15 @@ okulusApp.controller('NotificationCntrl', ['$rootScope','$scope','$firebaseAuth'
 			NotificationsSvc.deleteNotification(loggedUserId, notificationId);
 		};
 
+		$scope.deleteAllNotifications = function() {
+			let loggedUserId = $rootScope.currentSession.user.$id;
+			NotificationsSvc.deleteAllNotifications(loggedUserId);
+		}
+
+		$scope.markReadedAllNotifications = function() {
+			let loggedUserId = $rootScope.currentSession.user.$id;
+			NotificationsSvc.markReadedAllNotifications(loggedUserId);
+		}
 
 }]);
 
@@ -99,7 +108,10 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		};
 
 		let getAdminUsers = function() {
-			return $firebaseArray(adminUsersRef);
+			if(!$rootScope.allAdmins){
+				$rootScope.allAdmins = $firebaseArray(adminUsersRef);
+			}
+			return $rootScope.allAdmins;
 		};
 
 		let createNotification = function (notificationFor, notification){
@@ -178,6 +190,21 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 			deleteNotification: function(userid,notificationId){
 				notificationsRef.child("list").child(userid).child(notificationId).set({});
 				notificationsRef.child("metadata").child(userid).child(notificationId).set({});
+			},
+			markReadedAllNotifications: function(userid,notificationId){
+				let ref = notificationsRef.child("list").child(userid).orderByChild("readed").equalTo(false);
+				let list = $firebaseArray(ref);
+				list.$loaded().then(function(){
+					list.forEach(function(notification) {
+						notification.readed = true;
+						list.$save(notification);
+					});
+				});
+				notificationsRef.child("metadata").child(userid).set({});
+			},
+			deleteAllNotifications: function(userid,notificationId){
+				notificationsRef.child("list").child(userid).set({});
+				notificationsRef.child("metadata").child(userid).set({});
 			}
 
 		};
