@@ -8,7 +8,11 @@ okulusApp.controller('NotificationCntrl', ['$rootScope','$scope','$firebaseAuth'
 					$location.path("/error/nomember");
 					return;
 				}
+				$scope.loading = true;
 				$scope.allNotifications = NotificationsSvc.getNotificationsForUser(authUser.uid);
+				$scope.allNotifications.$loaded().then(function(notifications) {
+					$scope.loading = false;
+				});
 			});
 
 		}});

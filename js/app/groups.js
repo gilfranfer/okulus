@@ -45,7 +45,8 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 		});
 
 	    $scope.saveOrUpdateGroup = function() {
-				//$scope.response = null;
+				$scope.response = null;
+				$scope.working = true;
 				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
 				record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.timestamp);
 
@@ -60,6 +61,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 							});
 
 						gRef.update(record, function(error) {
+							$scope.working = false;
 							if(error){
 								$scope.response = { groupMsgError: error};
 							}else{
@@ -78,6 +80,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 	    		var newgroupRef = GroupsSvc.getNewGroupReference();
 					newgroupRef.set(record, function(error) {
 						if(error){
+							$scope.working = false;
 							$scope.response = { groupMsgError: error};
 						}else{
 							//For some reason the message is not displayed until
@@ -92,6 +95,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
 						$rootScope.response = { groupMsgOk: "Grupo Creado"};
+						$scope.working = false;
 						$location.path( "/groups");
 					});
 	    	}
@@ -106,6 +110,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 				if($rootScope.currentSession.user.type == 'user'){
 					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
 				}else{
+					$scope.working = true;
 		    	if( $scope.groupId ){
 						GroupsSvc.getGroupObj($scope.groupId).$loaded().then( function (groupObj) {
 							let status = groupObj.group.status;
@@ -116,8 +121,10 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 									AuditSvc.recordAudit(ref.key, "delete", "groups");
 									GroupsSvc.decreaseGroupsStatusCounter(status);
 									MembersSvc.deleteMembersAccess(accessList);
+									$scope.working = false;
 									$location.path( "/groups");
 								}, function(error) {
+									$scope.working = false;
 									$rootScope.response = { groupMsgError: err};
 									// console.debug("Error:", error);
 								});

@@ -50,13 +50,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
 				confirmDelete: "Seguro que deseas eliminar este registro?",
-				loading:"Cargando ..."
+				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ..."
 			},
 			forms:{
 				audit:{
 					title:"Auditoria", creation:"Creación", update:"Última Actualización",
 					approval:"Aprobación", rejection: "Rechazo",
-					refreshForUpdates: "Refrescar la página para ver actualizaciones de ésta sección."
+					refreshForUpdates: "Para ver actualizaciones de ésta sección, debes refrescar la página "
 				},
 				weeks:{
 					legend: "Semanas",

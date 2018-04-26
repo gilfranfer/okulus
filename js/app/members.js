@@ -55,6 +55,8 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
+			$scope.working = true;
+
 			let record = undefined;
 			if($scope.provideAddress){
 				record = { member: $scope.member, address: $scope.address };
@@ -66,23 +68,24 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			/* When a value for memberId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.memberId ){
-	    		let mRef = MembersSvc.getMemberReference($scope.memberId);
+	    	let mRef = MembersSvc.getMemberReference($scope.memberId);
 				let orgiStatus = undefined;
 				mRef.child("member/status").once('value').then(
 					function(snapshot) {
 						orgiStatus = snapshot.val();
-					});
+				});
 
-			    mRef.update(record, function(error) {
+			  mRef.update(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { memberMsgError: error};
 					}else{
-						$scope.response = { memberMsgOk: "Miembro Actualizado"};
 					  AuditSvc.recordAudit(mRef.key, "update", "members");
-
 					  if(orgiStatus != record.member.status){
 							MembersSvc.updateStatusCounter(record.member.status);
 						}
+						$scope.response = { memberMsgOk: "Miembro Actualizado"};
+						$scope.working = false;
 					}
 				});
 			}
@@ -92,6 +95,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				var newmemberRef = MembersSvc.getNewMemberReference();
 				newmemberRef.set(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { memberMsgError: error};
 					}else{
 						//For some reason the message is not displayed until
@@ -105,6 +109,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					//$scope.memberId = newmemberRef.key;
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 					MembersSvc.increaseStatusCounter(data.member.status);
+					$scope.working = false;
 					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					$location.path( "/members");
 				});
@@ -120,11 +125,9 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
 			}else{
+				$scope.working = true;
 				if( $scope.memberId ){
 					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
-						// if( memberObj.reports ){
-						// 	$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
-						// }else{
 						let status = memberObj.member.status;
 						let accessList = memberObj.access;
 						memberObj.$remove().then(function(ref) {
@@ -132,12 +135,12 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					    AuditSvc.recordAudit(ref.key, "delete", "members");
 							MembersSvc.decreaseStatusCounter(status);
 							GroupsSvc.deleteAccessToGroups(accessList);
+							$scope.working = false;
 							$location.path( "/members");
 						}, function(error) {
+							$scope.working = false;
 							$rootScope.response = { memberMsgError: err};
-							// console.debug("Error:", error);
 						});
-						// }
 					});
 				}
 			}

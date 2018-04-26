@@ -175,6 +175,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 
 		$scope.approveReport = function (approved){
 			if ($scope.reportId){
+				$scope.working = true;
+
 				repRef = ReportsSvc.getReportReference($scope.reportId);
 				let response = undefined;
 				let action = undefined;
@@ -195,6 +197,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 						$scope.response = response;
 						AuditSvc.recordAudit(repRef.key, action, "reports");
 						$scope.audit.reportStatus = action;
+						$scope.working = false;
 						/*For some reason the message is not displayed until you interact with any form element*/
 					}
 				});
@@ -207,6 +210,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.response = { reportMsgError: "No se puede modificar el reporte porque ya ha sido aprobado"};
 			}
 			else{
+				$scope.working = true;
+
 				if($scope.reunion.status == "canceled"){
 					$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 					$scope.reunion.duration = 0;
@@ -242,6 +247,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 
 				repRef.update(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { reportMsgError: error};
 					}else{
 						if(membersAttendanceList){
@@ -276,6 +282,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					}
 
 					$scope.reportId = repRef.key;
+					$scope.working = false;
 					$scope.response = { reportMsgOk: successMessage};
 					AuditSvc.recordAudit(repRef.key, action, "reports");
 					if($scope.audit){
@@ -306,6 +313,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.response = { reportMsgError: "No se puede eliminar el reporte porque ya ha sido aprobado"};
 			}else{
 				if($scope.reportId){
+					$scope.working = true;
+
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
 							let reportId = reportObj.$id;
 							let groupId = reportObj.reunion.groupId;
@@ -318,8 +327,10 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 								//remove the report reference from the group
 								GroupsSvc.removeReportReference(reportId,groupId);
 								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+								$scope.working = true;
 								$location.path( "/admin/dashboard");
 							}, function(error) {
+								$scope.working = false;
 								$rootScope.response = { reportMsgError: err};
 								// console.debug("Error:", error);
 							});
