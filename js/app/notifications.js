@@ -108,7 +108,10 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		};
 
 		let getAdminUsers = function() {
-			return $firebaseArray(adminUsersRef);
+			if(!$rootScope.allAdmins){
+				$rootScope.allAdmins = $firebaseArray(adminUsersRef);
+			}
+			return $rootScope.allAdmins;
 		};
 
 		let createNotification = function (notificationFor, notification){
