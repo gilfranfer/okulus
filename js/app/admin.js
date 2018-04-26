@@ -136,6 +136,8 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 				allusers.$loaded().then(function(users){
 					console.log("loading Email - User ID map");
 					var userMap = new Map();
+					userMap.set("Root", null);
+					userMap.set("System", null);
 					allusers.forEach(function(user) {
 						userMap.set(user.email, user.$id);
 					});
@@ -147,35 +149,43 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 					let allreports = $firebaseArray(baseRef.child("reports"));
 
 					console.log("Migrating Groups");
-					allgroups.$loaded().then(function(groups){
-						allgroups.forEach(function(group){
-							let record = allgroups.$getRecord(group.$id);
+					allgroups.$loaded().then(function(){
+						allgroups.forEach(function(element){
+							let record = allgroups.$getRecord(element.$id);
 							updateAudit(userMap, record, "groups");
 							allgroups.$save(record);
 						});
 					});
 					console.log("Migrating Weeks");
-					allweeks.$loaded().then(function(groups){
-						allweeks.forEach(function(group){
-							let record = allweeks.$getRecord(group.$id);
+					allweeks.$loaded().then(function(){
+						allweeks.forEach(function(element){
+							let record = allweeks.$getRecord(element.$id);
 							updateAudit(userMap, record, "weeks");
 							allweeks.$save(record);
 						});
 					});
 					console.log("Migrating Members");
-					allmembers.$loaded().then(function(groups){
-						allmembers.forEach(function(group){
-							let record = allmembers.$getRecord(group.$id);
+					allmembers.$loaded().then(function(){
+						allmembers.forEach(function(element){
+							let record = allmembers.$getRecord(element.$id);
 							updateAudit(userMap, record, "members");
 							allmembers.$save(record);
 						});
 					});
 					console.log("Migrating Reports");
-					allreports.$loaded().then(function(groups){
-						allreports.forEach(function(group){
-							let record = allreports.$getRecord(group.$id);
+					allreports.$loaded().then(function(){
+						allreports.forEach(function(element){
+							let record = allreports.$getRecord(element.$id);
 							updateAudit(userMap, record, "reports");
 							allreports.$save(record);
+						});
+					});
+					console.log("Migrating Users");
+					allusers.$loaded().then(function(){
+						allusers.forEach(function(element){
+							let record = allusers.$getRecord(element.$id);
+							updateAudit(userMap, record, "users");
+							allusers.$save(record);
 						});
 					});
 				});
