@@ -8,7 +8,11 @@ okulusApp.controller('NotificationCntrl', ['$rootScope','$scope','$firebaseAuth'
 					$location.path("/error/nomember");
 					return;
 				}
+				$scope.loading = true;
 				$scope.allNotifications = NotificationsSvc.getNotificationsForUser(authUser.uid);
+				$scope.allNotifications.$loaded().then(function(notifications) {
+					$scope.loading = false;
+				});
 			});
 
 		}});
@@ -115,9 +119,9 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		};
 
 		let createNotification = function (notificationFor, notification){
-			// console.log("Creating notification for",notificationFor, notification.fromId);
+			// console.debug("Creating notification for",notificationFor, notification.fromId);
 			if(notificationFor != notification.fromId){
-				//Do not send notification to the user performin the action
+				//Do not send notification to the user performing the action
 				let notKey = notificationsRef.child("list").child(notificationFor).push();
 				notKey.set(notification);
 				notificationsRef.child("metadata").child(notificationFor).child(notKey.key).set({readed:false});

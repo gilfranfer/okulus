@@ -5,10 +5,6 @@
       <div class="card-body">
         <h4 class="card-title">{{i18n.admin.dashboard.titles.reportsSummary}}</h4>
         <hr>
-        <h5><span class="badge badge-primary">
-          {{reunionSummary.pendingReports}}</span>
-          {{i18n.admin.dashboard.counters.pending}}
-        </h5>
         <h5><span class="badge badge-success">
           {{reunionSummary.approvedReports}}</span>
           {{i18n.admin.dashboard.counters.approved}}
@@ -16,6 +12,10 @@
         <h5><span class="badge badge-danger">
           {{reunionSummary.rejectedReports}}</span>
           {{i18n.admin.dashboard.counters.rejected}}
+        </h5>
+        <h5><span class="badge badge-primary">
+          {{reunionSummary.pendingReports}}</span>
+          {{i18n.admin.dashboard.counters.pending}}
         </h5>
       </div>
     </div>
@@ -26,10 +26,6 @@
       <div class="card-body">
         <h4 class="card-title">{{i18n.admin.dashboard.titles.reunionsSummary}}</h4>
         <hr>
-        <h5><span class="badge badge-primary">
-          {{reunionSummary.completedReunions + reunionSummary.canceledReunions}}</span>
-          {{i18n.admin.dashboard.counters.total}}
-        </h5>
         <h5><span class="badge badge-success">
           {{reunionSummary.completedReunions}}</span>
           {{i18n.admin.dashboard.counters.successReunions}}
@@ -37,6 +33,10 @@
         <h5><span class="badge badge-danger">
           {{reunionSummary.canceledReunions}}</span>
           {{i18n.admin.dashboard.counters.canceledReunions}}
+        </h5>
+        <h5><span class="badge badge-primary">
+          {{reunionSummary.completedReunions + reunionSummary.canceledReunions}}</span>
+          {{i18n.admin.dashboard.counters.total}}
         </h5>
       </div>
     </div>
@@ -47,15 +47,15 @@
       <div class="card-body">
         <h4 class="card-title">{{i18n.admin.dashboard.titles.attendanceSummary}}</h4>
         <hr>
-        <h5><span class="badge badge-primary">
-          {{reunionSummary.totalGuests}}</span>
-          {{i18n.admin.dashboard.counters.totalGuests}}
-        </h5>
         <h5><span class="badge badge-success">
           {{reunionSummary.totalMembers}}</span>
           {{i18n.admin.dashboard.counters.totalMembers}}
         </h5>
         <h5><span class="badge badge-danger">
+          {{reunionSummary.totalGuests}}</span>
+          {{i18n.admin.dashboard.counters.totalGuests}}
+        </h5>
+        <h5><span class="badge badge-primary">
           {{reunionSummary.totalGuests+reunionSummary.totalMembers}}</span>
           {{i18n.admin.dashboard.counters.total}}
         </h5>

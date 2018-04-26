@@ -22,7 +22,7 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 				// $scope.userChatsList.$loaded().then(function(chatsList) {
 				// 	allMembersWithUser = MembersSvc.getMembersWithUser();
 				// 	allMembersWithUser.$watch(function(e) {
-				// 		// console.log(e);
+				// 		// console.debug(e);
 				// 		let member = allMembersWithUser.$getRecord(e.key)
 				// 		if( e.event === "child_added" && !chatsList.$getRecord(member.user.userId) ){
 				// 			$scope.usersList.push(member);
@@ -123,7 +123,7 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 			//Do we already have a conversation with this user?
 			let conversation = $scope.userChatsList.$getRecord(chatWithUserId);
 			if(!conversation){
-				console.log("Creating Chat Initial Metadata")
+				console.debug("Creating Chat Initial Metadata")
 				/* If there is no a conversation with that user already,
 				then we need to created the metadata folder for both Users*/
 				ChatService.createBaseMetadata( $rootScope.currentSession.user.$id, chatWithUserId, chatWithUserShortname);
@@ -170,14 +170,14 @@ okulusApp.factory('ChatService', ['$rootScope', '$firebaseArray', '$firebaseObje
 				chatsRef.child("conversations").child(userFrom).child(userTo).child("messages").push().set( record,
 					function(error) {
 						if(error){
-							console.log(error);
+							console.debug(error);
 						}
 					});
 				//Updates in the User receiving the message
 				chatsRef.child("conversations").child(userTo).child(userFrom).child("messages").push().set(record,
 					function(error) {
 						if(error){
-							console.log(error);
+							console.debug(error);
 						}
 					});
 			}

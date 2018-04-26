@@ -45,12 +45,6 @@
   <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
     {{response.memberMsgError}}
   </div>
-  <!-- No Records Alert -->
-  <div class="col"  ng-show="membersList && membersList.length == 0">
-    <div class="alert alert-danger" role="alert">
-      {{i18n.admin.membersList.noMembersError}}
-    </div>
-  </div>
 
   <article ng-include="'views/members/membersList.html'"></article>
 

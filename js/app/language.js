@@ -50,13 +50,13 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
 				confirmDelete: "Seguro que deseas eliminar este registro?",
-				loading:"Cargando ..."
+				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ..."
 			},
 			forms:{
 				audit:{
 					title:"Auditoria", creation:"Creación", update:"Última Actualización",
 					approval:"Aprobación", rejection: "Rechazo",
-					refreshForUpdates: "Refrescar la página para ver actualizaciones de ésta sección."
+					refreshForUpdates: "Para ver actualizaciones de ésta sección, debes refrescar la página "
 				},
 				weeks:{
 					legend: "Semanas",
@@ -162,12 +162,12 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				groupsList:{
 					title:"Administrar Grupos Familiares",
 					description: "A countinuación se muestran todos los Grupos Familiares registrados, incluyendo los inactivos.",
-					noGroupsError: "No se han creado Grupos"
+					noGroupsError: "No se encontraron Grupos"
 				},
 				membersList:{
 					title:"Administrar Miembros del Grupo de Siervos",
 					description: "A countinuación se muestran todos los Miembros registrados, incluyendo los inactivos, que forman parte del Grupo de Siervos.",
-					noMembersError: "No se han creado Miembros",
+					noMembersError: "No se encontraron Miembros",
 					allMembersLabel:"Todos", hostLabel: "Anfitriones", leadLabel:"Líderes", traineeLabel: "Aprendíces"
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
@@ -247,8 +247,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 				//For User Views
 				groupsList:{
 					title:"Mis Grupos Familiares",
-					description: "Infromación sobre mis Grupos Familiares activos.",
-					noGroupsError: "No tienes Grupos asiganos."
+					description: "Infromación sobre mis Grupos Familiares activos."
 				},
 				contactsList:{
 					title:"Miembros de mis Grupos Familiares",

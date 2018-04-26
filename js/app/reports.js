@@ -5,7 +5,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		$scope.chartOrientation = 'landscape';
 
 		updateCharts = function(selectedGroupIds,weeksElapsed){
-			// console.log(selectedGroupIds);
+			// console.debug(selectedGroupIds);
 
 			let goodWeekAttendanceIndicator = 8;
 			let excelentWeekAttendanceIndicator = 14;
@@ -27,10 +27,10 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			if(selectedGroupIds.length == $scope.groupsList.length){
 				//All groups option selected
 				$scope.reportsForSelectedWeek = $scope.reportsArray;
-				// console.log("All Groups Selected");
+				// console.debug("All Groups Selected");
 			}else{
 				//One or more groups selected
-				// console.log("Some groups selected");
+				// console.debug("Some groups selected");
 				let reportsList = [];
 				$scope.reportsArray.forEach( function(report){
 					let found = false;
@@ -118,7 +118,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				the member doesnt have access, so we need to apply some filters before
 			 */
 			reportsArray.$loaded().then( function( reports ) {
-				//console.log("Start to filter Reports");
+				//console.debug("Start to filter Reports");
 				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
 				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
 				reportsArray.$watch(function(event){ notifyReportAdded(event); });
@@ -154,9 +154,9 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 																								+ " del grupo "+report.reunion.groupname;;
 					}
 					$scope.response = { reportAddedMsg:message };
-					// console.log(event);
+					// console.debug(event);
 				}else{
-					// console.log("Update on other week");
+					// console.debug("Update on other week");
 				}
 			});
 		};
@@ -175,6 +175,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 
 		$scope.approveReport = function (approved){
 			if ($scope.reportId){
+				$scope.working = true;
+
 				repRef = ReportsSvc.getReportReference($scope.reportId);
 				let response = undefined;
 				let action = undefined;
@@ -195,6 +197,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 						$scope.response = response;
 						AuditSvc.recordAudit(repRef.key, action, "reports");
 						$scope.audit.reportStatus = action;
+						$scope.working = false;
 						/*For some reason the message is not displayed until you interact with any form element*/
 					}
 				});
@@ -207,6 +210,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.response = { reportMsgError: "No se puede modificar el reporte porque ya ha sido aprobado"};
 			}
 			else{
+				$scope.working = true;
+
 				if($scope.reunion.status == "canceled"){
 					$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 					$scope.reunion.duration = 0;
@@ -242,12 +247,13 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 
 				repRef.update(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { reportMsgError: error};
 					}else{
 						if(membersAttendanceList){
 							membersAttendanceList.forEach(function(element) {
 								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
-								//console.log(repRef.key);
+								//console.debug(repRef.key);
 								MembersSvc.addReportReference(element.memberId,repRef.key,record);
 							});
 						}
@@ -276,6 +282,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					}
 
 					$scope.reportId = repRef.key;
+					$scope.working = false;
 					$scope.response = { reportMsgOk: successMessage};
 					AuditSvc.recordAudit(repRef.key, action, "reports");
 					if($scope.audit){
@@ -306,6 +313,8 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.response = { reportMsgError: "No se puede eliminar el reporte porque ya ha sido aprobado"};
 			}else{
 				if($scope.reportId){
+					$scope.working = true;
+
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
 							let reportId = reportObj.$id;
 							let groupId = reportObj.reunion.groupId;
@@ -318,10 +327,12 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 								//remove the report reference from the group
 								GroupsSvc.removeReportReference(reportId,groupId);
 								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+								$scope.working = true;
 								$location.path( "/admin/dashboard");
 							}, function(error) {
+								$scope.working = false;
 								$rootScope.response = { reportMsgError: err};
-								// console.log("Error:", error);
+								// console.debug("Error:", error);
 							});
 					});
 				}
@@ -417,7 +428,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		};
 
 		$scope.showAllMembers = function(){
-			//console.log("Getting all mebers");
+			//console.debug("Getting all mebers");
 			$scope.loadingAllMembers =  true;
 			$scope.groupMembersList = MembersSvc.loadAllMembersList();
 			$scope.groupMembersList.$loaded().then(function() {
@@ -535,7 +546,7 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
 				/*if(groupId){
 					Not possible to combien more than one orderByChild
-					console.log("Try second query for group "+groupId)
+					console.debug("Try second query for group "+groupId)
 					let query2 = query.orderByChild("reunion/groupId").equalTo(groupId);
 					return $firebaseArray(query2);
 				}*/

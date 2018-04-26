@@ -30,12 +30,6 @@
   <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
     {{response.groupMsgError}}
   </div>
-  <!-- No Records Alert -->
-  <div class="col"  ng-show="groupsList && groupsList.length == 0">
-    <div class="alert alert-danger" role="alert">
-      {{i18n.admin.groupsList.noGroupsError}}
-    </div>
-  </div>
 
   <article ng-include="'views/groups/groupsList.html'"></article>
 

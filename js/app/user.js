@@ -1,7 +1,8 @@
 /* Controller linked to /myreports
  * It will load the lists (weeks, groups, member rules) required for the view to work */
-okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'WeeksSvc', '$location', '$rootScope','$scope','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, WeeksSvc,$location, $rootScope,$scope,$firebaseAuth,AuthenticationSvc){
+okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc', '$location', '$rootScope','$scope','$firebaseAuth','AuthenticationSvc',
+	function(MembersSvc, GroupsSvc, WeeksSvc,$location, $rootScope,$scope,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -10,7 +11,15 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'WeeksSvc', '$location
 						return;
 					}
 					$scope.weeksList = WeeksSvc.loadAllWeeks();
-					MembersSvc.getMemberGroups(user.memberId);
+					//Get the Groups the user has access to
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					}).then(function (memberRules) {
+						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+						$scope.groupsList = filteredGroups;
+						$scope.loadingReportSelector = false;
+					});
+					// MembersSvc.getMemberGroups(user.memberId);
 				});
 			}
 		});
@@ -19,8 +28,9 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'WeeksSvc', '$location
 
 /* Controller linked to /mygroups
  * It will load the Groups the Current Member has Access to */
-okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', '$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc','GroupsSvc', '$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc',
+	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingGroups = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -28,15 +38,29 @@ okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc', '$rootScope','$scope', 
 						$location.path("/error/nomember");
 						return;
 					}
-					MembersSvc.getMemberGroups(user.memberId);
+
+					//Get the Groups the user has access to
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					}).then(function (memberRules) {
+						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+						$scope.groupsList = filteredGroups;
+						$scope.loadingGroups = false;
+						if(!filteredGroups.length){
+							$scope.response = {noGroupsFound:true};
+						}
+					});
+
 				});
 			}
 		});
 	}
 ]);
 
-okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
+	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
+		$scope.loadingMembers = true;
+		console.log("some");
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
@@ -44,11 +68,25 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', '$rootScope','$scope'
 						$location.path("/error/nomember");
 						return;
 					}
-					MembersSvc.getMemberGroups(user.memberId).then(function(groups){
-						return MembersSvc.getMembersInGroups(groups)
+					//Get the Members that are in the same group the user has access to
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					}).then(function (memberRules) {
+						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+						return MembersSvc.getMembersInGroups(filteredGroups)
 					}).then(function(contacts){
 						$scope.membersList = contacts;
+						$scope.loadingMembers = false;
+						if(!$scope.membersList.length){
+							$scope.response = {noMembersFound:true};
+						}
 					});
+
+					// MembersSvc.getMemberGroups(user.memberId).then(function(groups){
+					// 	return MembersSvc.getMembersInGroups(groups)
+					// }).then(function(contacts){
+					// 	$scope.membersList = contacts;
+					// });
 				});
 			}
 		});
