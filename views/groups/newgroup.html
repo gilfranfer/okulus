@@ -166,6 +166,10 @@
         <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid && groupForm.$dirty">
           {{i18n.alerts.invalidForm}}
         </div>
+        <!-- Loading Alert -->
+        <div class="alert alert-warning" role="alert" ng-show="working">
+          {{i18n.alerts.working}}
+        </div>
         <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
           {{response.groupMsgOk}}
         </div>

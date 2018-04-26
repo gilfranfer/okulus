@@ -3,9 +3,17 @@ okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope'
 	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
+				$scope.loadingGroups = true;
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+						$scope.groupsList.$loaded().then(function(groups) {
+							$scope.loadingGroups = false;
+							if(!groups.length){
+								$scope.response = {noGroupsFound:true};
+							}
+						});
+
 					}else{
 						$location.path("/error/norecord");
 					}
@@ -37,7 +45,8 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 		});
 
 	    $scope.saveOrUpdateGroup = function() {
-				//$scope.response = null;
+				$scope.response = null;
+				$scope.working = true;
 				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
 				record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.timestamp);
 
@@ -52,6 +61,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 							});
 
 						gRef.update(record, function(error) {
+							$scope.working = false;
 							if(error){
 								$scope.response = { groupMsgError: error};
 							}else{
@@ -70,6 +80,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 	    		var newgroupRef = GroupsSvc.getNewGroupReference();
 					newgroupRef.set(record, function(error) {
 						if(error){
+							$scope.working = false;
 							$scope.response = { groupMsgError: error};
 						}else{
 							//For some reason the message is not displayed until
@@ -84,6 +95,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
 						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
 						$rootScope.response = { groupMsgOk: "Grupo Creado"};
+						$scope.working = false;
 						$location.path( "/groups");
 					});
 	    	}
@@ -98,6 +110,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 				if($rootScope.currentSession.user.type == 'user'){
 					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
 				}else{
+					$scope.working = true;
 		    	if( $scope.groupId ){
 						GroupsSvc.getGroupObj($scope.groupId).$loaded().then( function (groupObj) {
 							let status = groupObj.group.status;
@@ -108,10 +121,12 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 									AuditSvc.recordAudit(ref.key, "delete", "groups");
 									GroupsSvc.decreaseGroupsStatusCounter(status);
 									MembersSvc.deleteMembersAccess(accessList);
+									$scope.working = false;
 									$location.path( "/groups");
 								}, function(error) {
+									$scope.working = false;
 									$rootScope.response = { groupMsgError: err};
-									// console.log("Error:", error);
+									// console.debug("Error:", error);
 								});
 							}else{
 								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
@@ -156,7 +171,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 				$scope.schedule = record.schedule;
 				$scope.audit = record.audit;
 				if(record.schedule.time){
-					//console.log("Setting Time")
+					//console.debug("Setting Time")
 					$scope.schedule.timestamp = new Date();
 					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
 					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
@@ -239,7 +254,7 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				if(accessObj){
 					for (const accessRuleId in accessObj) {
 						let groupId = accessObj[accessRuleId].groupId;
-						console.log(accessRuleId);
+						console.debug(accessRuleId);
 						groupsRef.child(groupId).child("access").child(accessRuleId).set(null);
 					}
 				}
@@ -323,7 +338,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					AuditSvc.recordAudit(whichGroup, "access-granted", "groups");
 					//notify the member that got the access
 					MembersSvc.getMember(whichMember).$loaded().then(function(member){
-						console.log(member);
+						console.debug(member);
 						NotificationsSvc.sendNotificationTo(member.user.userId,"access-granted", "groups", whichGroup,null,null);
 					});
 					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };

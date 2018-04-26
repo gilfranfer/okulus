@@ -1,6 +1,25 @@
 //Mapping: /members
 okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
 	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+    	if(authUser){
+				$scope.loadingMembers = true;
+				$scope.memberTypeFilter = "all";
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
+					if($rootScope.currentSession.user.type == 'admin'){
+						$scope.membersList = MembersSvc.loadAllMembersList();
+						$scope.membersList.$loaded().then(function(members) {
+							$scope.loadingMembers = false;
+							if(!members.length){
+								$scope.response = {noMembersFound:true};
+							}
+						});
+					}else{
+						$location.path("/error/norecord");
+					}
+				});
+			}
+		});
 
 		$scope.loadMemberByType = function () {
 			if($scope.memberTypeFilter=="all"){
@@ -13,19 +32,6 @@ okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scop
 				$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
 			}
 		};
-
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				$scope.memberTypeFilter = "all";
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.membersList = MembersSvc.loadAllMembersList();
-					}else{
-						$location.path("/error/norecord");
-					}
-				});
-			}
-		});
 
 	}
 ]);
@@ -49,6 +55,8 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 
 		$scope.saveOrUpdateMember = function() {
 			$scope.response = null;
+			$scope.working = true;
+
 			let record = undefined;
 			if($scope.provideAddress){
 				record = { member: $scope.member, address: $scope.address };
@@ -60,23 +68,24 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			/* When a value for memberId is present in the scope, the user is on Edit
 				mode and we have to perform an UPDATE.*/
 			if( $scope.memberId ){
-	    		let mRef = MembersSvc.getMemberReference($scope.memberId);
+	    	let mRef = MembersSvc.getMemberReference($scope.memberId);
 				let orgiStatus = undefined;
 				mRef.child("member/status").once('value').then(
 					function(snapshot) {
 						orgiStatus = snapshot.val();
-					});
+				});
 
-			    mRef.update(record, function(error) {
+			  mRef.update(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { memberMsgError: error};
 					}else{
-						$scope.response = { memberMsgOk: "Miembro Actualizado"};
 					  AuditSvc.recordAudit(mRef.key, "update", "members");
-
 					  if(orgiStatus != record.member.status){
 							MembersSvc.updateStatusCounter(record.member.status);
 						}
+						$scope.response = { memberMsgOk: "Miembro Actualizado"};
+						$scope.working = false;
 					}
 				});
 			}
@@ -86,6 +95,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 				var newmemberRef = MembersSvc.getNewMemberReference();
 				newmemberRef.set(record, function(error) {
 					if(error){
+						$scope.working = false;
 						$scope.response = { memberMsgError: error};
 					}else{
 						//For some reason the message is not displayed until
@@ -99,6 +109,7 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					//$scope.memberId = newmemberRef.key;
 					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
 					MembersSvc.increaseStatusCounter(data.member.status);
+					$scope.working = false;
 					$rootScope.response = { memberMsgOk: "Miembro Creado"};
 					$location.path( "/members");
 				});
@@ -114,11 +125,9 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
 			}else{
+				$scope.working = true;
 				if( $scope.memberId ){
 					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
-						// if( memberObj.reports ){
-						// 	$scope.response = { memberMsgError: "No se puede elminar el Mimebro porque tiene Reportes asociados"};
-						// }else{
 						let status = memberObj.member.status;
 						let accessList = memberObj.access;
 						memberObj.$remove().then(function(ref) {
@@ -126,12 +135,12 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 					    AuditSvc.recordAudit(ref.key, "delete", "members");
 							MembersSvc.decreaseStatusCounter(status);
 							GroupsSvc.deleteAccessToGroups(accessList);
+							$scope.working = false;
 							$location.path( "/members");
 						}, function(error) {
+							$scope.working = false;
 							$rootScope.response = { memberMsgError: err};
-							// console.log("Error:", error);
 						});
-						// }
 					});
 				}
 			}
@@ -140,22 +149,22 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 		$scope.isHost = function(value){
 			validateMemberObj();
 			$scope.member.isHost = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.isLeader = function(value){
 			validateMemberObj();
 			$scope.member.isLeader = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.isTrainee = function(value){
 			validateMemberObj();
 			$scope.member.isTrainee = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 		$scope.canBeUser = function(value){
 			validateMemberObj();
 			$scope.member.canBeUser = value;
-			//console.log($scope.member);
+			//console.debug($scope.member);
 		};
 
 		validateMemberObj = function () {
@@ -235,7 +244,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			loadAllMembersList: function(){
 				if(!$rootScope.allMembers){
-					// console.log("Creating firebaseArray for allMembers");
+					// console.debug("Creating firebaseArray for allMembers");
 					$rootScope.allMembers = $firebaseArray(membersRef);
 				}
 				return $rootScope.allMembers;
@@ -306,17 +315,16 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			removeReferenceToReport: function(reportId,membersAttendanceList){
 				if(membersAttendanceList){
 					for (const attKey in membersAttendanceList) {
-						// console.log(attKey);
+						// console.debug(attKey);
 						let memberId = membersAttendanceList[attKey].memberId;
 						membersRef.child(memberId).child("attendance").child(reportId).set(null);
 					}
 				}
 			},
 			/* Returns a list of Group records (from $firebaseArray) that are
-			 * present in the Member's acess rules folder. */
+			 * present in the Member's acess rules folder.
 			getMemberGroups: function(whichMember) {
 				return new Promise((resolve, reject) => {
-
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
 					}).then( function(memberRules) {
@@ -327,11 +335,21 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 								myGroups.push( group );
 							}
 						});
-						$rootScope.groupsList = myGroups;
+						//$rootScope.groupsList = myGroups;
 						resolve(myGroups);
 					});
 
 				});
+			},*/
+			filterMemberGroupsFromRules: function(memberRules, allGroups) {
+				let myGroups = [];
+				memberRules.forEach(function(rule) {
+					let group = allGroups.$getRecord(rule.groupId);
+					if( group != null){
+						myGroups.push( group );
+					}
+				});
+				return myGroups;
 			},
 			/*Use the passed Groups List to get all members with those groups as BaseGroup*/
 			getMembersInGroups: function(groups) {
@@ -389,7 +407,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					});
 			},
 			addReportReference: function(memberId,reportId, report){
-				// console.log(memberId,reportId, report);
+				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
 				let ref = membersRef.child(memberId).child("attendance").child(reportId);
 				ref.set({

@@ -2,12 +2,21 @@
 <section id="membersList">
   <div class="row">
     <!-- Loading Alert -->
-    <div class="col"  ng-show="!membersList">
+    <div class="col"  ng-show="loadingMembers">
       <div class="alert alert-warning" role="alert">
         {{i18n.alerts.loading}}
       </div>
     </div>
 
+    <!-- No Records Alert -->
+    <div class="col"  ng-show="response.noMembersFound && !membersList">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.admin.membersList.noMembersError}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
     <!-- Member card -->
     <div class="col-md-6 col-lg-4 mb-3" ng-repeat="m in membersList | filter:searchText | orderBy:'member.shortname'">
       <div class="card h-100">

@@ -12,8 +12,12 @@
           {{i18n.notifications.deleateAll}}
         </button>
       </div>
+      <!-- Loading Alert -->
+      <div class="alert alert-warning" role="alert" ng-show="loading">
+        {{i18n.alerts.loading}}
+      </div>
       <!-- No Records Alert -->
-      <div ng-if="!allNotifications || allNotifications.length <= 0" class="alert alert-danger" role="alert">
+      <div ng-if="!loading && allNotifications && !allNotifications.length" class="alert alert-danger" role="alert">
         {{i18n.notifications.noRecords}}
       </div>
       <div ng-repeat="notification in allNotifications | orderBy:'-time'" >

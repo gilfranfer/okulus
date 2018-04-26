@@ -60,21 +60,24 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
-
+		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
 
 						$scope.adminViewActive = true;
-						WeeksSvc.loadAllWeeks();
+						$scope.weeksList = WeeksSvc.loadAllWeeks();
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+						$scope.groupsList.$loaded().then(function () {
+							$scope.loadingReportSelector = false;
+						});
 
 						let countersRef = firebase.database().ref().child(rootFolder).child('counters');
 						$scope.globalCounter = $firebaseObject(countersRef);
 						$scope.globalCounter.$loaded().then(
 							function (counter) {
-								// console.log(counter);
+								// console.debug(counter);
 								if(!counter || !counter.members){
 									counter.members = {active:0,inactive:0};
 									counter.groups = {active:0,inactive:0};
@@ -132,9 +135,9 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 		return {
 			migrateAudit: function(){
 				let allusers = $firebaseArray(baseRef.child("users"));
-				console.log("Initiating Migration");
+				console.debug("Initiating Migration");
 				allusers.$loaded().then(function(users){
-					console.log("loading Email - User ID map");
+					console.debug("loading Email - User ID map");
 					var userMap = new Map();
 					userMap.set("Root", null);
 					userMap.set("System", null);
@@ -142,13 +145,13 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 						userMap.set(user.email, user.$id);
 					});
 
-					console.log("Migrating Folders");
+					console.debug("Migrating Folders");
 					let allweeks = $firebaseArray(baseRef.child("weeks"));
 					let allgroups = $firebaseArray(baseRef.child("groups"));
 					let allmembers = $firebaseArray(baseRef.child("members"));
 					let allreports = $firebaseArray(baseRef.child("reports"));
 
-					console.log("Migrating Groups");
+					console.debug("Migrating Groups");
 					allgroups.$loaded().then(function(){
 						allgroups.forEach(function(element){
 							let record = allgroups.$getRecord(element.$id);
@@ -156,7 +159,7 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 							allgroups.$save(record);
 						});
 					});
-					console.log("Migrating Weeks");
+					console.debug("Migrating Weeks");
 					allweeks.$loaded().then(function(){
 						allweeks.forEach(function(element){
 							let record = allweeks.$getRecord(element.$id);
@@ -164,7 +167,7 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 							allweeks.$save(record);
 						});
 					});
-					console.log("Migrating Members");
+					console.debug("Migrating Members");
 					allmembers.$loaded().then(function(){
 						allmembers.forEach(function(element){
 							let record = allmembers.$getRecord(element.$id);
@@ -172,7 +175,7 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 							allmembers.$save(record);
 						});
 					});
-					console.log("Migrating Reports");
+					console.debug("Migrating Reports");
 					allreports.$loaded().then(function(){
 						allreports.forEach(function(element){
 							let record = allreports.$getRecord(element.$id);
@@ -180,7 +183,7 @@ okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
 							allreports.$save(record);
 						});
 					});
-					console.log("Migrating Users");
+					console.debug("Migrating Users");
 					allusers.$loaded().then(function(){
 						allusers.forEach(function(element){
 							let record = allusers.$getRecord(element.$id);

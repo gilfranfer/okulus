@@ -7,14 +7,17 @@
           {{i18n.navigation.admin.groups}}
         </h4>
         <hr>
-        <div ng-if="globalCounter.groups">
-          <!-- <h3><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span>
-            {{i18n.admin.dashboard.counters.total}} </h3> -->
+        <div class="mb-3" ng-if="globalCounter.groups">
           <h4><span class="badge badge-success">{{globalCounter.groups.active}}</span>
             {{i18n.admin.dashboard.counters.active}} </h4>
           <h4><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span>
             {{i18n.admin.dashboard.counters.inactive}} </h4>
+          <h4><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span>
+            {{i18n.admin.dashboard.counters.total}} </h4>
         </div>
+        <a href="#!/groups/new" class="btn btn-success btn-lg btn-block">
+          {{i18n.btns.newBtn}}
+        </a>
         <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
           {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
         </a>
@@ -29,16 +32,19 @@
           {{i18n.navigation.admin.members}}
         </h4>
         <hr>
-        <div ng-if="globalCounter.members">
-          <!-- <h4><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span>
-          {{i18n.admin.dashboard.counters.total}} </h4> -->
+        <div class="mb-3" ng-if="globalCounter.members">
           <h4><span class="badge badge-success">{{globalCounter.members.active}}</span>
           {{i18n.admin.dashboard.counters.active}} </h4>
           <h4><span class="badge badge-danger">{{globalCounter.members.inactive}}</span>
           {{i18n.admin.dashboard.counters.inactive}} </h4>
+          <h4><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span>
+            {{i18n.admin.dashboard.counters.total}} </h4>
         </div>
+        <a href="#!/members/new" class="btn btn-success btn-lg btn-block">
+          {{i18n.btns.newBtn}}
+        </a>
         <a href="#!/members" class="btn btn-primary btn-lg btn-block">
-          {{i18n.btns.viewBtn}} {{i18n.navigation.admin.members}}
+          {{i18n.btns.ewBtn}} {{i18n.navigation.admin.members}}
         </a>
       </div>
     </div>
