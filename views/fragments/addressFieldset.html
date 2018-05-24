@@ -1,7 +1,7 @@
 <fieldset class="mb-4">
   <legend>{{i18n.forms.address.legend}}</legend>
   <hr>
-  
+
   <!-- Street and number -->
   <div class="form-row">
     <div class="col-12 col-md-6 form-group">
@@ -17,7 +17,7 @@
         {{i18n.forms.address.extNumberLbl}}
         <span class="text-danger">*</span>
       </label>
-      <input ng-disabled="!provideAddress" type="number" min="0" name="extNumber" id="extNumber" class="form-control form-control-lg"
+      <input ng-disabled="!provideAddress" type="text" name="extNumber" id="extNumber" class="form-control form-control-lg"
         placeholder="{{i18n.forms.address.extNumberHint}}" ng-model="$parent.address.extNumber" ng-required="provideAddress">
     </div>
     <div class="col-4 col-md-2 form-group">
