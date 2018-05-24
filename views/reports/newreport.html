@@ -7,7 +7,7 @@
           {{i18n.forms.report.reunionLegend}} {{reunion.groupname}} {{reportWeek.name}}
         </h4>
         <h4 class="card-title text-danger" ng-if="!reportId">
-          {{i18n.forms.group.newGroup}}
+          {{i18n.forms.report.newReport}}
         </h4>
       </div>
     </div>
@@ -60,6 +60,7 @@
             <div class="col-sm form-group">
               <label for="leadId">
                 {{i18n.forms.report.leadLbl}}
+                <span class="text-danger">*</span>
               </label>
               <select id="leadId" name="leadId" class="form-control form-control-lg"
                	ng-model="reunion.leadId" ng-required="true">

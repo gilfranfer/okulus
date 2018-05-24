@@ -364,20 +364,20 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			}
 		};
 
-		// $scope.addGuests = function () {
-		// 	let guestNumber = Number($scope.addGuestName);
-		// 	let guestName = "Invitado ";
-		// 	if(!$scope.attendance.guests.list){
-		// 		$scope.attendance.guests.list = [];
-		// 	}
-		// 	while(guestNumber>0){
-		// 		let name = guestName + guestNumber;
-		// 		$scope.attendance.guests.list.push({guestName:name});
-		// 		guestNumber --;
-		// 	}
-		// 	$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
-		// 	$scope.addGuestName = "";
-		// };
+		$scope.addGuests = function () {
+			let guestNumber = Number($scope.addGuestName);
+			let guestName = "Invitado ";
+			if(!$scope.attendance.guests.list){
+				$scope.attendance.guests.list = [];
+			}
+			while(guestNumber>0){
+				let name = guestName + guestNumber;
+				$scope.attendance.guests.list.push({guestName:name});
+				guestNumber --;
+			}
+			$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
+			$scope.addGuestName = "";
+		};
 
 		$scope.addGuestAttendance = function () {
 			let guestName = $scope.addGuestName;
