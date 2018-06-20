@@ -131,7 +131,7 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 													        	}]
                       },
                 legend: { reversed: true },
-                plotOptions: { series: { stacking: 'normal' } },
+								plotOptions: { series: {stacking: 'normal'} },
                 series: [ { name: 'Invitados', color: 'rgba(40,167,69,.8)', data: totalGuestsByReport },
                           { name: 'Miembros', color: 'rgba(0,123,255,.8)', data: totalMembersByReport }
                         ]
@@ -210,15 +210,21 @@ okulusApp.factory('ChartsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 						if( chartOrientation == 'landscape'){
 							attendanceByGroupOptions.chart =  { type: 'column', height:600};
 							attendanceByGroupOptions.yAxis.opposite =  false;
+							attendanceByGroupOptions.xAxis.labels =  {rotation: -90};
+
 							durationByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
 							durationByGroupOptions.yAxis.opposite =  false;
+
 							moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
 							moneyByGroupOptions.yAxis.opposite =  false;
 						}else{ //portrait
 							attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(groups*15)) };
 							attendanceByGroupOptions.yAxis.opposite =  true;
+							attendanceByGroupOptions.xAxis.labels =  {rotation: 0};
+
 							durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
 							durationByGroupOptions.yAxis.opposite =  true;
+
 							moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
 							moneyByGroupOptions.yAxis.opposite =  true;
 						}
