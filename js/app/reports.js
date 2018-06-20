@@ -428,12 +428,22 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		};
 
 		$scope.showAllMembers = function(){
-			//console.debug("Getting all mebers");
 			$scope.loadingAllMembers =  true;
+			$scope.groupOnlyMembersList = $scope.groupMembersList;
 			$scope.groupMembersList = MembersSvc.loadAllMembersList();
 			$scope.groupMembersList.$loaded().then(function() {
 				$scope.loadingAllMembers =  false;
 			});
+			$scope.showingAllMembers = true;
+		};
+
+		$scope.showGroupMembers = function(){
+			$scope.loadingAllMembers =  true;
+			$scope.groupMembersList = $scope.groupOnlyMembersList;
+			$scope.groupMembersList.$loaded().then(function() {
+				$scope.loadingAllMembers =  false;
+			});
+			$scope.showingAllMembers = false;
 		};
 
 	}
