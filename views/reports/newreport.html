@@ -210,7 +210,8 @@
               </div>
               <div class="row">
                 <div class="col">
-                  <label id="" class="font-weight-light text-info" ng-click="showAllMembers()">{{i18n.forms.report.allMembersLbl}}</label>
+                  <button class="mt-1 mb-1 btn btn-info" ng-show="!showingAllMembers" ng-click="showAllMembers()">{{i18n.forms.report.allMembersLbl}}</button>
+                  <button class="mt-1 mb-1 btn btn-info" ng-show="showingAllMembers" ng-click="showGroupMembers()">{{i18n.forms.report.groupMembersLbl}}</button>
                   <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
                     {{i18n.alerts.loading}}
                   </div>
