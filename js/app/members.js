@@ -116,7 +116,8 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			}
 		};
 
-		/* A membe can be deleted by Admin
+		/* A member can be deleted by Admin.
+			If a memeber is deleted, his attendance to reunions still recorded on every Reunion Report
 			When deleting a Member:
 			1. Decrease the Member Status counter
 			2. Delete all references to this member from group/access

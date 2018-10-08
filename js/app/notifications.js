@@ -140,6 +140,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 														from: actionByUser, fromId: actionByUserId, readed: false,
 														description: desc, time: firebase.database.ServerValue.TIMESTAMP }
 
+					//Send the notification after the audit record is created/updated
 					$firebaseObject(baseRef.child(onFolder).child(objectId).child("audit")).$loaded().then(function(audit) {
 
 						if(audit.createdById && audit.createdById != "System"){
@@ -160,7 +161,10 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 						  Add notification according to their Preferences */
 						getAdminUsers().$loaded().then(function(admins){
 							admins.forEach(function(admin) { if(admin.memberId){
-									let notifyAdmin = admin.$id != audit.createdById && admin.$id != audit.lastUpdateById && admin.$id != audit.approvedById && admin.$id != audit.rejectedById;
+									let notifyAdmin = admin.$id != audit.createdById
+																	&& admin.$id != audit.lastUpdateById
+																	&& admin.$id != audit.approvedById
+																	&& admin.$id != audit.rejectedById;
 									//let notifyAdmin = ; //TO-DO: check in user notification preferences
 									if(notifyAdmin){
 										createNotification(admin.$id, notification);

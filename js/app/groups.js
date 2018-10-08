@@ -129,6 +129,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 									// console.debug("Error:", error);
 								});
 							}else{
+								$scope.working = false;
 								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
 							}
 						});

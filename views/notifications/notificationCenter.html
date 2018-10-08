@@ -22,9 +22,9 @@
       </div>
       <div ng-repeat="notification in allNotifications | orderBy:'-time'" >
         <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <span class="mr-auto badge badge-danger" ng-if="!notification.readed" ng-click="markNotificacionReaded(notification)">
-              {{i18n.notifications.new}}
-            </span>
+          <span class="mr-auto badge badge-danger" ng-if="!notification.readed" ng-click="markNotificacionReaded(notification)">
+            {{i18n.notifications.new}}
+          </span>
           <div class="d-flex w-100">
             <p class="w-100 mb-0">
               <button type="button" class="clickable btn btn-link p-0" name="button" ng-click="openNotification(notification)">
