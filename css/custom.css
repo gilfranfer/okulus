@@ -7,12 +7,20 @@ html {
   position: relative;
   min-height: 100%;
 }
+
+/** NAVIGATION BAR **/
+.bg-darkblue{
+	background-color: #013282;
+}
+
 .clickable{
 	cursor: pointer;
 }
+
 .badge-text{
 	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 }
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -37,12 +45,6 @@ html {
 	border-color: #ced4da!important	;
 }
 
-/* .highcharts-color-0{
-	fill:#7cb5ec;
-}
-.highcharts-color-1{
-	fill:#7CECAB;
-} */
 .sortorder:after {
   content: '\25b2';   // BLACK UP-POINTING TRIANGLE
 }

@@ -211,23 +211,15 @@ okulusApp.run(function($rootScope) {
 
 		$rootScope.i18n = {
 			navigation:{
-				brand:"Grupos PIB Xalapa",
-				register:"Registrarse",
-				login:"Iniciar Sesión",
-				logout:"Cerrar Sesión",
-				chat:"Conversaciones",
-				notifications:"Notificaciones",
-				home:"Inicio",
+				brand:"Grupos PIB Xalapa", home:"Inicio",
+				register:"Registrarse", login:"Iniciar Sesión", logout:"Cerrar Sesión",
+				chat:"Conversaciones", notifications:"Notificaciones",
+				groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos",
 				admin:{
-					menu: "Administrador",
-					dashboard:"Dashboard",
-					groups: "Todos los Grupos",
-					members: "Todos los Miembros",
-					weeks: "Semanas",
-					reports: "Reportes",
-					monitor:"Monitor"
-				},
-				user:{groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos"
+					menu: "Administrador", dashboard:"Escritorio",
+					groups: "Grupos", members: "Miembros",
+					weeks: "Semanas", reports: "Reportes",
+					monitor:"Monitor", config:"Configuración"
 				}
 			},
 			chat:{
