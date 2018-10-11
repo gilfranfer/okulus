@@ -11,12 +11,12 @@ okulusApp.config(['$routeProvider',
 			.when('/login',{
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
-			}).
-			when('/register',{
+			})
+			.when('/register',{
 				controller: 'RegistrationCntrl',
 				templateUrl: 'views/auth/register.html'
-			}).
-			when('/pwdreset',{
+			})
+			.when('/pwdreset',{
 				controller: 'PwdResetCntrl',
 				templateUrl: 'views/auth/pwdReset.html'
 			})

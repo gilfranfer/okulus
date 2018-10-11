@@ -46,9 +46,9 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 								setMemberToUser(user);
 							}
 							/* Update lastlogin, and sessionStatus*/
+							AuthenticationSvc.updateUserLastActivity(authUser.uid, onlineStatus);
 							$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
 							$rootScope.notifications = NotificationsSvc.getNotificationsMetadata(authUser.uid);
-							AuthenticationSvc.updateUserLastActivity(authUser.uid, onlineStatus);
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
@@ -136,12 +136,13 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			});
 		};
 
+		/* Delete all properties from rootScope (except for config and i18n)*/
 		var cleanRootScope = function(){
 			for (var prop in $rootScope) {
 			    if (prop.substring(0,1) !== '$') {
-						// console.debug("Rootscope Prop: "+prop);
-						if( prop!="config" && prop!="i18n")
-			      delete $rootScope[prop];
+						if( prop!="config" && prop!="i18n"){
+							delete $rootScope[prop];
+						}
 			    }
 			}
 		};
@@ -155,7 +156,51 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			});
 		};
 
+		$scope.logout = function(){
+			let userId = $rootScope.currentSession.user.$id;
+			AuthenticationSvc.updateUserLastActivity(userId,"offline");
+			AuthenticationSvc.logout(userId);
+		};
 	}]//function
+);
+
+okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'AuthenticationSvc',
+	function($scope, $rootScope, $location, AuthenticationSvc){
+
+		let homePage ="/home";
+		let onlineStatus = "online";
+		let errorMsg = {
+			incorrectCredentials: "Usuario o Contraseña Incorrectos",
+			tryAgain: "Intente nuevamente"
+		};
+		/* When navigating to "#!/login", but the user is already logged-in
+		 we better redirect him to Home Page, instead of showing the login page */
+		if($rootScope.currentSession && $rootScope.currentSession.user ){
+			$location.path(homePage);
+		}
+		$scope.response = null;
+
+		$scope.login = function(){
+			AuthenticationSvc.loginUser($scope.user).then( function (user){
+				AuthenticationSvc.updateUserLastLogin(user.uid);
+				$location.path(homePage);
+			})
+			/* Catching unsuccessful login attempts */
+			.catch( function(error){
+				let message = undefined;
+				switch(error.code) {
+						case "auth/wrong-password":
+						case "auth/user-not-found":
+								message = errorMsg.incorrectCredentials;
+								//AuthenticationSvc.increaseFailedLoginAttemptCount(user.uid);
+								break;
+						default:
+							message = errorMsg.tryAgain;
+				}
+				$scope.response = { loginErrorMsg: message};
+			});
+		};
+	}]
 );
 
 okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc','AuditSvc',
@@ -198,40 +243,6 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 	}]
 );
 
-okulusApp.controller('LoginCntrl', ['$scope','$location', '$rootScope','AuthenticationSvc',
-	function($scope, $location, $rootScope, AuthenticationSvc){
-		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
-
-		//If user is logged, reidrect to home
-		if($rootScope.currentSession){
-			$location.path("/home");
-		}
-
-		$scope.response = null;
-
-		$scope.login = function(){
-			AuthenticationSvc.loginUser($scope.user).then( function (user){
-				AuthenticationSvc.updateUserLastLogin(user.uid);
-				AuthenticationSvc.updateUserLastActivity(user.uid,"online");
-				$location.path( "/home" );
-			}).catch( function(error){
-				let message = undefined;
-				switch(error.code) {
-						case "auth/wrong-password":
-						case "auth/user-not-found":
-								message = "Usuario o Contraseña Incorrectos";
-								break;
-						default:
-							message = "Intente nuevamente";
-				}
-				$scope.response = { loginErrorMsg: message};
-				console.error( error ) ;
-			});
-		};
-
-	}]
-);
-
 okulusApp.controller('PwdResetCntrl', ['$scope','$location', '$rootScope', '$firebaseAuth',
 	function($scope, $location, $rootScope, $firebaseAuth){
 		$scope.resetPwd = function() {
@@ -248,16 +259,6 @@ okulusApp.controller('PwdResetCntrl', ['$scope','$location', '$rootScope', '$fir
 			});
 		};
 }]);
-
-okulusApp.controller('LogoutCntrl', ['$rootScope','$scope', 'AuthenticationSvc',
-	function($rootScope,$scope, AuthenticationSvc){
-		$scope.logout = function(){
-			let userId = $rootScope.currentSession.user.$id;
-			AuthenticationSvc.updateUserLastActivity(userId,"offline");
-			AuthenticationSvc.logout(userId);
-		};
-	}]
-);
 
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
@@ -276,13 +277,19 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 				return $rootScope.currentSession.user;
 			},
 			updateUserLastActivity: function(userid,sessionStatus){
-				usersFolder.child(userid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP, sessionStatus:sessionStatus});
+				usersFolder.child(userid).update(
+					{lastActivityOn: firebase.database.ServerValue.TIMESTAMP, sessionStatus:sessionStatus});
 			},
 			updateUserLastLogin: function(userid){
-				usersFolder.child(userid).update({lastLogin: firebase.database.ServerValue.TIMESTAMP});
+				//lastLogin: old value. setting null to remove from DB
+				let record = { lastLogin:null,
+							//loginAttemptCount:null,
+							lastLoginOn:firebase.database.ServerValue.TIMESTAMP
+						};
+				usersFolder.child(userid).update(record);
 			},
 			loginUser: function(user){
-				return auth.$signInWithEmailAndPassword(user.email,user.pwd)
+				return auth.$signInWithEmailAndPassword(user.email,user.pwd);
 			},
 			logout: function(userId){
 				return auth.$signOut();
@@ -302,8 +309,8 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 
 okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
 	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
-
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
+			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(user.isRoot){
 					$location.path("/admin/monitor");

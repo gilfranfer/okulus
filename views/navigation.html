@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-darkblue" ng-controller="LogoutCntrl">
+<nav class="navbar navbar-expand-md navbar-dark bg-darkblue">
   <a class="navbar-brand" href="#!/home" data-toggle="tooltip">{{i18n.navigation.brand}}</a>
 
   <!--  Collapsable button -->
@@ -89,8 +89,8 @@
         </a>
       </li>
       <li class="nav-item" ng-if="currentSession.user">
-        <a class="d-md-none nav-link" href="#!/login" ng-click="logout()">{{i18n.navigation.logout}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" href="#!/login" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
+        <a class="d-md-none nav-link" ng-click="logout()">{{i18n.navigation.logout}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
       </li>
     </ul>
   </div>
