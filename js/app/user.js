@@ -118,3 +118,18 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 			});
 		}});
 }]);
+
+okulusApp.factory('UsersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+
+		let usersRef = firebase.database().ref().child(rootFolder).child('users');
+
+		return {
+			updateMemberInUserObject: function(memberId, userType, userObj){
+				userObj.memberId = memberId;
+				userObj.type = userType; //in case it was admin
+				userObj.$save();
+			}
+		};
+	}
+]);

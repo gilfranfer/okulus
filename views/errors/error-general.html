@@ -1,0 +1,17 @@
+<section>
+	<div class="jumbotron">
+		<h1 class="display-3">{{i18n.error.title}}</h1>
+		<hr class="my-4"/>
+		<p class="lead"></p>
+		<div class="alert alert-info" role="alert" ng-if="currentSession.user && response">
+			<p>{{currentSession.user.email}}</p>
+			<p>{{i18n.error.genericMessage}}</p>
+		</div>
+		<div class="alert alert-danger" role="alert" ng-if="response.errorMsg">
+			{{response.errorMsg}}
+		</div>
+		<a class="btn btn-link" href="#!/home">
+			{{i18n.navigation.backToHome}}
+		</a>
+	</div>
+</section>

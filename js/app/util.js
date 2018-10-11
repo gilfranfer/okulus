@@ -1,3 +1,20 @@
+okulusApp.factory('ErrorsSvc', ['$rootScope',
+	function($rootScope){
+		let baseRef = firebase.database().ref().child(rootFolder).child('errors');
+
+		return {
+			logError: function(errorMessage){
+				console.error(errorMessage);
+				let record = { error: errorMessage, date: firebase.database.ServerValue.TIMESTAMP,
+											impactedUserId: $rootScope.currentSession.user.$id,
+											impactedUserEmail: $rootScope.currentSession.user.email
+										 };
+		    baseRef.push().set(record);
+			},
+		};
+	}
+]);
+
 okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject',
 	function( $firebaseArray, $firebaseObject){
 

@@ -234,6 +234,15 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			getMemberFromArray: function(memberId){
 				return $rootScope.allMembers.$getRecord(memberId);
 			},
+			/* Get member Personal data from firebase and return as object */
+			getMemberDataObject: function(memberId){
+				return $firebaseObject(membersRef.child(memberId).child("member"));
+			},
+			/* Get member from firebase and return as object */
+			getMemberObject: function(memberId){
+				return $firebaseObject(membersRef.child(memberId));
+			},
+			//Deprecated
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));
 			},
@@ -368,9 +377,20 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					resolve(contacts);
 				});
 			},
-			findMemberByEmail: function(email){
+			/* Return a list with all members having the email passed */
+			getMembersByEmail: function(email){
 				let ref = membersRef.orderByChild("member/email").equalTo(email);
 				return $firebaseArray(ref);
+			},
+			/* Called from AuthenticationSvc to update the User reference in the Member Object*/
+			updateUserInMemberObject: function(isUser, userId, memberDataObj){
+				memberDataObj.isUser = isUser;
+				memberDataObj.userId = userId;
+				memberDataObj.$save();
+			},
+			/* Same method than above, but using different aproach.*/
+			updateUserInMember: function(isUser, userId, memberId){
+				membersRef.child(memberId).child("member").update({isUser:isUser, userId:userId});
 			},
 			increaseStatusCounter(status){
 				$firebaseObject(counterRef).$loaded().then(

@@ -184,6 +184,9 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/notifications/notificationCenter.html',
 				controller: "NotificationCntrl"
 			})
+			.when('/error/', {
+				templateUrl: 'views/errors/error-general.html'
+			})
 			.when('/error/norecord', {
 				templateUrl: 'views/errors/error-norecord.html'
 			})
@@ -215,12 +218,29 @@ okulusApp.run(function($rootScope) {
 				register:"Registrarse", login:"Iniciar Sesión", logout:"Cerrar Sesión",
 				chat:"Conversaciones", notifications:"Notificaciones",
 				groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos",
+				backToHome: "Regresar a la Página de Inicio",
 				admin:{
 					menu: "Administrador", dashboard:"Escritorio",
 					groups: "Grupos", members: "Miembros",
 					weeks: "Semanas", reports: "Reportes",
 					monitor:"Monitor", config:"Configuración"
 				}
+			},
+			profile:{
+				lastLogin: "Última sesión:",
+				lastActivity: "Última actividad:",
+				viewProfileBtn: "Ver Perfil"
+			},
+			msgCenter:{
+				title: "Mensajes del Administrador",
+				instruction: "Escribe un mensaje y envialo",
+				importanMsg: "Mensaje Importante",
+				deleteMsg: "X Eliminar Mensaje"
+			},
+			emailValidation:{
+				errorMessage: "Tu correo electrónico no ha sido verificado:",
+				reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
+				verify: "Mandar correo de verificación."
 			},
 			chat:{
 				emptyChat:"No hay mensajes en esta conversación",
@@ -340,13 +360,7 @@ okulusApp.run(function($rootScope) {
 					alert:{ invalidEmail:"Ese no es un correo válido",
 								pwdSize:"La contraseña debe contener al menos 8 caracteres",
 								pwdMatch:"Las contraseñas deben coincidir"
-
 					}
-				},
-				verification:{
-					emailNotVerifiedError: "Tu correo electrónico no ha sido verificado",
-					reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
-					verify: "Mandar correo de verificación."
 				}
 			},
 			admin:{
@@ -451,12 +465,6 @@ okulusApp.run(function($rootScope) {
 				basicInfo: "Información Básica",
 				address: "Dirección"
 			},
-			msgCenter:{
-				messageCenter: "Mensajes del Administrador",
-				messageCenterInstruction: "Escribe un mensaje y envialo",
-				importanMsg: "Mensaje Importante",
-				deleteMsg: "X Eliminar Mensaje"
-			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
 				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido"
@@ -467,11 +475,11 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			error:{
-				title:"Oooops!!",
+				title:"Houston, Tenemos Problemas!!",
+				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				recordDoesntExist: "Información no Disponible",
-				nologin: "Necesitas iniciar sesión para ver este contenido",
-				message:"Houston, Tenemos Problemas!",
-				nomemberAssociated:"Haz iniciado sesión correctamente, pero tu usuario no se encuentra asociado a ningún miembro activo. Ponte en contacto con el administrador.",
+				nologin: "Necesitas iniciar sesión para ver este contenido.",
+				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{
 				status:{

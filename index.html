@@ -12,15 +12,22 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
 	</head>
 	<body ng-controller="AuthenticationCntrl">
-    <section class="mb-5">
-      <header ng-include="'views/navigation.html'"></header>
-      <!-- Main Bootstrap container -->
-  		<div class="container mt-4 mb-4">
-        <main id="main" ng-view></main>
-  		</div>
-      <!-- Main Bootstrap container  -->
-    </section>
-    <footer class="mt-4 footer text-center text-light">
+    <header ng-include="'views/navigation.html'"></header>
+    <!-- Message when User has not validated his email -->
+    <div class="alert alert-danger" role="alert" ng-show="emailNotVerifiedError">
+      <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
+      <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
+        {{i18n.emailValidation.verify}}
+      </button>
+      <p ng-if="response.emailSent">
+        {{i18n.emailValidation.reviewEmail}}
+      </p>
+    </div>
+    <!-- Main Bootstrap container -->
+  	<div class="container mt-4 mb-4">
+      <main id="main" ng-view></main>
+  	</div>
+    <footer class="footer text-center text-light">
       &copy; GilLab 2018
     </footer>
 
@@ -51,7 +58,6 @@
     <script src="js/app/user.js"></script>
     <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
-    <script src="js/app/errors.js"></script>
     <script src="js/app/audit.js"></script>
     <script src="js/app/notifications.js"></script>
     <script src="js/app/messageCenter.js"></script>
