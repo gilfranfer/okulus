@@ -17,7 +17,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/auth/register.html'
 			})
 			.when('/pwdreset',{
-				controller: 'PwdResetCntrl',
 				templateUrl: 'views/auth/pwdReset.html'
 			})
 			.when('/home', {

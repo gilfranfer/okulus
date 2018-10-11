@@ -1,5 +1,5 @@
 <section id="">
-	<form class="mt3" name="restForm" novalidate ng-submit="resetPwd()">
+	<form class="mt3" name="restForm" novalidate ng-submit="resetPwd(this.restForm)">
 		<div class="card mb-3">
 			<div class="card-body">
 				<h4 class="card-title">{{i18n.forms.pwdReset.title}}</h4>
@@ -22,11 +22,11 @@
 		<div class="alert alert-danger" role="alert" ng-show="response.errorMsg" >
 			{{response.errorMsg}}
 		</div>
-		<div class="alert alert-success" role="alert" ng-show="response.okMsg" >
-			{{response.okMsg}}
+		<div class="alert alert-success" role="alert" ng-show="response.successMsg" >
+			{{response.successMsg}}
 		</div>
 
-		<div class="form-row" ng-if="!response.success">
+		<div class="form-row" ng-if="!response.successMsg">
     	<div class="form-group col-md">
     		<button type="submit" class="btn btn-success btn-lg btn-block" ng-disabled="restForm.$invalid">
 					{{i18n.btns.sendBtn}}

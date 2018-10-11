@@ -27,7 +27,11 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			referenceRemoved: "Se ha borrado la referencia entre el Usuario y el Miembro.",
 			contactAdmin: "Contacta al Administrador del Sistema.",
 			noMemberFound: "No se encontró un Miembro con el correo electrónico:",
-			moreThanOneMemberFound: "Existe mas de un Miembro con el correo electrónico:"
+			moreThanOneMemberFound: "Existe mas de un Miembro con el correo electrónico:",
+			pwdResetEmailError: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador."
+		};
+		let successMsg = {
+			pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!"
 		};
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
@@ -156,6 +160,21 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			});
 		};
 
+		$scope.resetPwd = function(form) {
+			let email = form.email.$modelValue;
+			$scope.response = null;
+			$scope.loading = true;
+
+			$firebaseAuth().$sendPasswordResetEmail(email).then(function() {
+				$scope.loading = false;
+				$scope.response = { successMsg: successMsg.pwdResetEmailSent};
+			}).catch(function(error) {
+				$scope.loading = false;
+				$scope.response = { errorMsg: errorMsg.pwdResetEmailError};
+				//console.error("Error: ", error);
+			});
+		};
+
 		$scope.logout = function(){
 			let userId = $rootScope.currentSession.user.$id;
 			AuthenticationSvc.updateUserLastActivity(userId,"offline");
@@ -242,23 +261,6 @@ okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', '
 
 	}]
 );
-
-okulusApp.controller('PwdResetCntrl', ['$scope','$location', '$rootScope', '$firebaseAuth',
-	function($scope, $location, $rootScope, $firebaseAuth){
-		$scope.resetPwd = function() {
-			$scope.loading = true;
-			$firebaseAuth().$sendPasswordResetEmail($scope.user.email).then(function() {
-				$scope.loading = false;
-				$scope.loading = false;
-				$scope.response = { success:true, okMsg: "Hemos enviado un correo para restablecer tu contraseña."
-																	+" Revisa tu bandeja de entrada.!"};
-			}).catch(function(error) {
-				$scope.loading = false;
-				$scope.response = { errorMsg: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador."};
-				//console.error("Error: ", error);
-			});
-		};
-}]);
 
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
