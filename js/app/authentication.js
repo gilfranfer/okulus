@@ -222,39 +222,40 @@ okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'Authen
 	}]
 );
 
-okulusApp.controller('RegistrationCntrl', ['$scope','$location', '$rootScope', 'AuthenticationSvc','AuditSvc',
-	function($scope, $location, $rootScope, AuthenticationSvc,AuditSvc){
-		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
+okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 'AuthenticationSvc',
+																	'AuditSvc', 'UsersSvc',
+	function($scope, $rootScope, $location, AuthenticationSvc, AuditSvc, UsersSvc){
+		let homePage ="/home";
+		let typeUser = "user";
+		let errorMsg = {
+			emailExist: "El correo electrónico ya está en uso",
+			tryAgain: "Intente nuevamente"
+		};
 
-		//If user is logged, reidrect to home
-		if($rootScope.currentSession){
-			$location.path("/home");
+		/* When navigating to "#!/register", but the user is already logged-in
+		 we better redirect him to Home Page, instead of showing the login page */
+		if($rootScope.currentSession && $rootScope.currentSession.user ){
+			$location.path(homePage);
 		}
-
 		$scope.response = null;
+
 		$scope.register = function(){
 			AuthenticationSvc.register($scope.newUser).then(
 				function(regUser){
-					usersFolder.child(regUser.uid).set({
-						email: $scope.newUser.email,
-						type:"user",
-						lastLogin: firebase.database.ServerValue.TIMESTAMP,
-						lastActivityOn: firebase.database.ServerValue.TIMESTAMP,
-						sessionStatus: "online"
-					});
+					UsersSvc.createUser(regUser.uid, $scope.newUser.email, typeUser);
 					AuditSvc.recordAudit(regUser.uid, "create", "users");
-					$location.path( "/home" );
+					$location.path(homePage);
 				}
 			).catch( function(error){
 				let message = undefined;
 				switch(error.code) {
 						case "auth/email-already-in-use":
-								message = "El correo electrónico ya está en uso";
+								message = errorMsg.emailExist;
 								break;
 						default:
-							message = "Intente nuevamente." + error.coindíae;
+							message = errorMsg.tryAgain;
 				}
-				$scope.response = { loginErrorMsg: message};
+				$scope.response = { regisErrorMsg: message};
 				// console.debug(error);
 			});
 		};

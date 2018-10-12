@@ -129,6 +129,15 @@ okulusApp.factory('UsersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				userObj.memberId = memberId;
 				userObj.type = userType; //in case it was admin
 				userObj.$save();
+			},
+			createUser: function(userId, userEmail, userType){
+				let record = {
+					email: userEmail, type: userType,
+					lastLoginOn: firebase.database.ServerValue.TIMESTAMP,
+					lastActivityOn: firebase.database.ServerValue.TIMESTAMP,
+					sessionStatus: "online"
+				};
+				usersRef.child(userId).set(record);
 			}
 		};
 	}
