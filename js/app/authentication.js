@@ -279,16 +279,16 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 				}
 				return $rootScope.currentSession.user;
 			},
+			/* Update the date when User was "active" for last time, and make sure to
+			update his session status (online or offline) */
 			updateUserLastActivity: function(userid,sessionStatus){
 				usersFolder.child(userid).update(
 					{lastActivityOn: firebase.database.ServerValue.TIMESTAMP, sessionStatus:sessionStatus});
 			},
+			/* Only called after a successful login */
 			updateUserLastLogin: function(userid){
-				//lastLogin: old value. setting null to remove from DB
-				let record = { lastLogin:null,
-							//loginAttemptCount:null,
-							lastLoginOn:firebase.database.ServerValue.TIMESTAMP
-						};
+				//TODO: Remove lastLogin: old value. setting null to remove from DB
+				let record = { lastLoginOn:firebase.database.ServerValue.TIMESTAMP, lastLogin:null};
 				usersFolder.child(userid).update(record);
 			},
 			loginUser: function(user){
@@ -300,29 +300,9 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			isUserLoggedIn: function(){
 				return auth.$requireSignIn();
 			},
-			loadUserProfileData: function(uid){
-				return $firebaseObject(usersFolder.child(uid));
-			},
 			register: function(user){
 				return auth.$createUserWithEmailAndPassword(user.email, user.pwd);
 			}
 		};//return
 	}
 ]);
-
-okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
-	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-			if(!authUser) return;
-			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(user.isRoot){
-					$location.path("/admin/monitor");
-				}else if(!user.memberId){
-					$location.path("/error/nomember");
-				}else{
-					//continue to Home
-				}
-			});
-		});
-	}]
-);

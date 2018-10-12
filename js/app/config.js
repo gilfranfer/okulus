@@ -201,6 +201,23 @@ okulusApp.config(['$routeProvider',
 	}
 ]);
 
+okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
+	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+			if(!authUser) return;
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+				if(user.isRoot){
+					$location.path("/admin/monitor");
+				}else if(!user.memberId){
+					$location.path("/error/nomember");
+				}else{
+					//continue to Home
+				}
+			});
+		});
+	}]
+);
+
 okulusApp.run(function($rootScope) {
     $rootScope.config ={
 			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
@@ -211,6 +228,7 @@ okulusApp.run(function($rootScope) {
 					}
 		};
 
+		//Caption for Frontend
 		$rootScope.i18n = {
 			navigation:{
 				brand:"Grupos PIB Xalapa", home:"Inicio",
