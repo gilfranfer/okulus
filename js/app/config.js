@@ -250,9 +250,17 @@ okulusApp.run(function($rootScope) {
 			},
 			msgCenter:{
 				title: "Mensajes del Administrador",
-				instruction: "Escribe un mensaje y envialo",
-				importanMsg: "Mensaje Importante",
-				deleteMsg: "X Eliminar Mensaje"
+				instruction: "Usa el cuadro de texto para redactar un mensaje a los usuarios:",
+				importanMsg: "Mensaje Importante", deleteMsg: "X Eliminar Mensaje",
+				loadingMessages: "Cargando mensajes ...",
+				loadingError: "Error al cargar los mensajes. Intentelo más tarde.",
+				noMessages: "No hay mensajes.",
+				createInProgress: "Publicando mensaje ...",
+				createSuccess: "El mensaje ha sido publicado.",
+				createError: "Error al crear el mensaje. Intentelo más tarde.",
+				deleteInProgress: "Eliminando mensaje ...",
+				deleteSuccess: "El mensaje ha sido eliminado.",
+				deleteError: "Error al eliminar el mensaje. Intentelo más tarde."
 			},
 			emailValidation:{
 				errorMessage: "Tu correo electrónico no ha sido verificado:",
