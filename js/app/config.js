@@ -260,7 +260,8 @@ okulusApp.run(function($rootScope) {
 				createError: "Error al crear el mensaje. Intentelo más tarde.",
 				deleteInProgress: "Eliminando mensaje ...",
 				deleteSuccess: "El mensaje ha sido eliminado.",
-				deleteError: "Error al eliminar el mensaje. Intentelo más tarde."
+				deleteError: "Error al eliminar el mensaje. Intentelo más tarde.",
+				onlyAdmin: "Debes ser administrador."
 			},
 			login:{
 				title:"Inicia Sesión",

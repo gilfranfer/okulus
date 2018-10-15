@@ -44,6 +44,8 @@ okulusApp.controller('MessageCenterCntrl', ['$rootScope','$scope','$location','$
 					console.error(error);
 				});
 				$scope.message = null;
+			}else{
+				$scope.response = { error: true, message: $rootScope.i18n.msgCenter.onlyAdmin };
 			}
 		};
 
@@ -59,7 +61,8 @@ okulusApp.controller('MessageCenterCntrl', ['$rootScope','$scope','$location','$
 					$scope.response = { error: true, message: $rootScope.i18n.msgCenter.deleteError };
 					console.error(error);
 				});
-
+			}else{
+				$scope.response = { error: true, message: $rootScope.i18n.msgCenter.onlyAdmin };
 			}
 		};
 
