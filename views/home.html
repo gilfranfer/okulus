@@ -46,15 +46,7 @@
             </div>
           </div>
           <!-- Alerts -->
-          <div class="alert alert-warning" role="alert" ng-show="response.working || response.loading" >
-            {{response.message}}
-          </div>
-          <div class="alert alert-success" role="alert" ng-show="response.success" >
-            {{response.message}}
-          </div>
-          <div class="alert alert-danger" role="alert" ng-show="response.error" >
-            {{response.message}}
-          </div>
+          <div ng-include="'views/alerts.html'"></div>
           <!-- Create Messages -->
           <div class="mt-4" ng-show="currentSession.user.type == 'admin'">
             <p class="card-text">
