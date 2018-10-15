@@ -181,7 +181,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/notifications/notificationCenter.html',
-				controller: "NotificationCntrl"
+				controller: "NotificationCenterCntrl"
 			})
 			.when('/error/', {
 				templateUrl: 'views/errors/error-general.html'
@@ -262,6 +262,12 @@ okulusApp.run(function($rootScope) {
 				deleteSuccess: "El mensaje ha sido eliminado.",
 				deleteError: "Error al eliminar el mensaje. Intentelo más tarde.",
 				onlyAdmin: "Debes ser administrador."
+			},
+			notifications:{
+				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
+				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido",
+				loading: "Cargando Notificaciones...", loadingSuccess: "Notificaciones Cargadas.",
+				loadingError: "Error al cargar las notificaciones. Intentelo más tarde."
 			},
 			login:{
 				title:"Inicia Sesión",
@@ -493,10 +499,6 @@ okulusApp.run(function($rootScope) {
 				title:"Inicio", welcome:"Hola",
 				basicInfo: "Información Básica",
 				address: "Dirección"
-			},
-			notifications:{
-				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
-				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido"
 			},
 			success:{
 				deleted:{

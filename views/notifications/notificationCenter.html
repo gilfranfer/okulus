@@ -1,7 +1,9 @@
-<div class="card">
+<article class="card">
   <div class="card-body">
     <h4 class="card-title">{{i18n.notifications.title}}</h4>
     <hr>
+    <div ng-include="'views/alerts.html'"></div>
+
     <!-- Notificat List -->
     <div class="list-group">
       <div class="row mb-3">
@@ -48,4 +50,4 @@
 
     </div>
   </div>
-</div>
+</article>
