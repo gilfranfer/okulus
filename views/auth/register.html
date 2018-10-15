@@ -2,50 +2,57 @@
   <form class="mt-3" name="registerForm" novalidate ng-submit="register()">
     <div class="card mb-3">
       <div class="card-body">
-        <h4 class="card-title">{{i18n.forms.register.title}}</h4>
+        <h4 class="card-title">{{i18n.register.title}}</h4>
     		<hr>
         <!-- Email row -->
         <div class="form-row">
           <div class="col-md form-group">
-            <label for="email">{{i18n.forms.register.email}}</label>
+            <label for="email">{{i18n.register.email}}</label>
             <input id="email" type="email" name="email" aria-describedby="emailHelp"
-              class="form-control form-control-lg" placeholder="{{i18n.forms.register.emailHint}}"
+              class="form-control form-control-lg" placeholder="{{i18n.register.emailHint}}"
               ng-model="newUser.email" ng-required="true"/>
-            <small id="emailHelp" class="form-text text-muted">{{i18n.forms.register.emailDisclosure}}</small>
+            <small id="emailHelp" class="form-text text-muted">{{i18n.register.emailDisclosure}}</small>
             <div class="alert alert-danger" role="alert" ng-show="registerForm.email.$invalid && registerForm.email.$dirty">
-              {{i18n.forms.register.alert.invalidEmail}}
+              {{i18n.register.alert.invalidEmail}}
             </div>
           </div>
         </div>
         <!-- Password row -->
         <div class="form-row">
           <div class="col-md form-group">
-            <label for="pwd">{{i18n.forms.register.password}}</label>
+            <label for="pwd">{{i18n.register.password}}</label>
             <input type="password" name="password" id="pwd" aria-describedby="pwdHelp" class="form-control form-control-lg" placeholder="Shhh" ng-model="newUser.pwd" ng-required="true" ng-minlength="8"/>
-            <small id="pwdHelp" class="form-text text-muted">{{i18n.forms.register.pwdSize}}</small>
+            <small id="pwdHelp" class="form-text text-muted">{{i18n.register.pwdSize}}</small>
             <div class="alert alert-danger" role="alert"
               ng-show="registerForm.password.$invalid && registerForm.password.$dirty">
-              {{i18n.forms.register.alert.pwdSize}}
+              {{i18n.register.alert.pwdSize}}
             </div>
           </div>
           <div class="col-md form-group">
-            <label for="cpwd">{{i18n.forms.register.confirmPassword}}</label>
+            <label for="cpwd">{{i18n.register.confirmPassword}}</label>
             <input type="password" name="passwordConfirm" id="cpwd"
               class="form-control form-control-lg" placeholder="Say it again"
               ng-model="newUser.pwdconf" ng-required="true" ng-pattern="newUser.pwd"/>
             <div class="alert alert-danger" role="alert"
               ng-show="registerForm.passwordConfirm.$invalid && registerForm.passwordConfirm.$dirty">
-              {{i18n.forms.register.alert.pwdMatch}}
+              {{i18n.register.alert.pwdMatch}}
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Error row -->
-    <div class="alert alert-danger" role="alert" ng-show="response.regisErrorMsg" >
-      {{response.regisErrorMsg}}
+    <!-- Alerts -->
+    <div class="alert alert-warning" role="alert" ng-show="response.working || response.loading" >
+      {{response.message}}
     </div>
+    <div class="alert alert-success" role="alert" ng-show="response.success" >
+      {{response.message}}
+    </div>
+    <div class="alert alert-danger" role="alert" ng-show="response.error" >
+      {{response.message}}
+    </div>
+
     <!-- Buttons row -->
     <div class="form-row">
         <div class="form-group col-md-6">

@@ -224,25 +224,25 @@ okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 
 		let homePage ="/home";
 		let typeUser = "user";
 		let errorMsg = {
-			emailExist: "El correo electrónico ya está en uso",
-			tryAgain: "Intente nuevamente"
+			emailExist: "El correo electrónico ya está en uso.",
+			tryAgain: "Error al crear el usuario. Intente más tarde."
 		};
 
 		/* When navigating to "#!/register", but the user is already logged-in
 		 we better redirect him to Home Page, instead of showing the login page */
-		if($rootScope.currentSession && $rootScope.currentSession.user ){
+		if($rootScope.currentSession && $rootScope.currentSession.user){
 			$location.path(homePage);
 		}
-		$scope.response = null;
 
 		$scope.register = function(){
-			AuthenticationSvc.register($scope.newUser).then(
-				function(regUser){
-					UsersSvc.createUser(regUser.uid, $scope.newUser.email, typeUser);
-					AuditSvc.recordAudit(regUser.uid, "create", "users");
-					$location.path(homePage);
-				}
-			).catch( function(error){
+			$scope.response = {working: true, message: $rootScope.i18n.register.registerInProgress };
+			AuthenticationSvc.register($scope.newUser).then(function(regUser){
+				$scope.response = {success: true, message: $rootScope.i18n.register.registerSuccess };
+				UsersSvc.createUser(regUser.uid, $scope.newUser.email, typeUser);
+				AuditSvc.recordAudit(regUser.uid, "create", "users");
+				$location.path(homePage);
+			})
+			.catch( function(error){
 				let message = undefined;
 				switch(error.code) {
 						case "auth/email-already-in-use":
@@ -251,8 +251,8 @@ okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 
 						default:
 							message = errorMsg.tryAgain;
 				}
-				$scope.response = { regisErrorMsg: message};
-				// console.debug(error);
+				$scope.response = { error: true, message: message };
+				console.error(error);
 			});
 		};
 

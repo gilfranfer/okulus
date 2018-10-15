@@ -273,6 +273,18 @@ okulusApp.run(function($rootScope) {
 				pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
 				loginInProgress: "Inicindo sesión..."
 			},
+			register:{
+				title:"Regístrate",
+				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
+				password: "Contraseña", passwordHint: "Tus palabras secretas",
+				pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
+				registerInProgress: "Registrando Usuario...",
+				registerSuccess: "Usuario Creado",
+				alert:{ invalidEmail:"Ese no es un correo válido",
+							pwdSize:"La contraseña debe contener al menos 8 caracteres",
+							pwdMatch:"Las contraseñas deben coincidir"
+				}
+			},
 			emailValidation:{
 				errorMessage: "Tu correo electrónico no ha sido verificado:",
 				reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
@@ -377,16 +389,6 @@ okulusApp.run(function($rootScope) {
 					neighborhoodLbl: "Colonia", neighborhoodHint: "",
 					stateLbl: "Estado", stateHint: "",
 					countryLbl: "Pais", countryHint: ""
-				},
-				register:{
-					title:"Regístrate",
-					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
-					password: "Contraseña", passwordHint: "Tus palabras secretas",
-					pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
-					alert:{ invalidEmail:"Ese no es un correo válido",
-								pwdSize:"La contraseña debe contener al menos 8 caracteres",
-								pwdMatch:"Las contraseñas deben coincidir"
-					}
 				}
 			},
 			admin:{
