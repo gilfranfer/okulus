@@ -262,6 +262,17 @@ okulusApp.run(function($rootScope) {
 				deleteSuccess: "El mensaje ha sido eliminado.",
 				deleteError: "Error al eliminar el mensaje. Intentelo más tarde."
 			},
+			login:{
+				title:"Inicia Sesión",
+				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
+				invalidEmail:"Ese no es un correo válido",
+				password: "Contraseña", passwordHint: "Tus palabras secretas",
+				pwdRequired:"La contraseña es requerida", forgotPwd: "Olvidé mi contraseña",
+				resetPwd: "Restablecer contraseña",
+				resetPwdInProgress:"Enviando Correo...",
+				pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
+				loginInProgress: "Inicindo sesión..."
+			},
 			emailValidation:{
 				errorMessage: "Tu correo electrónico no ha sido verificado:",
 				reviewEmail:"Hemos mandado un mensaje de verificación a tu correo electrónico.",
@@ -366,16 +377,6 @@ okulusApp.run(function($rootScope) {
 					neighborhoodLbl: "Colonia", neighborhoodHint: "",
 					stateLbl: "Estado", stateHint: "",
 					countryLbl: "Pais", countryHint: ""
-				},
-				pwdReset:{
-					title:"Restablecer contraseña",
-				},
-				login:{
-					title:"Inicia sesión",
-					email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
-					password: "Contraseña", passwordHint: "Tus palabras secretas",
-					forgotPwd: "Restablecer mi contraseña",
-					alert:{ invalidEmail:"Ese no es un correo válido", pwdRequired:"La contraseña es requerida" }
 				},
 				register:{
 					title:"Regístrate",

@@ -2,28 +2,28 @@
 	<form class="mt3" name="restForm" novalidate ng-submit="resetPwd(this.restForm)">
 		<div class="card mb-3">
 			<div class="card-body">
-				<h4 class="card-title">{{i18n.forms.pwdReset.title}}</h4>
+				<h4 class="card-title">{{i18n.login.resetPwd}}</h4>
 				<hr>
 				<div class="form-group">
-			    <label for="loginemail">{{i18n.forms.login.email}}</label>
+			    <label for="loginemail">{{i18n.login.email}}</label>
 			    <input id="loginemail" type="email" name="email"
-			    	class="form-control form-control-lg" placeholder="{{i18n.forms.login.emailHint}}"
+			    	class="form-control form-control-lg" placeholder="{{i18n.login.emailHint}}"
 			    	ng-model="user.email" ng-required="true">
 					<div class="alert alert-danger" role="alert" ng-show="restForm.email.$invalid && restForm.email.$dirty">
-						{{i18n.forms.login.alert.invalidEmail}}
+						{{i18n.login.invalidEmail}}
 					</div>
 		  	</div>
 		  </div>
 	  </div>
 
-		<div class="alert alert-warning" role="alert" ng-show="loading" >
-			{{i18n.alerts.loading}}
+		<div class="alert alert-warning" role="alert" ng-show="response.working" >
+			{{response.message}}
 		</div>
-		<div class="alert alert-danger" role="alert" ng-show="response.errorMsg" >
-			{{response.errorMsg}}
+		<div class="alert alert-success" role="alert" ng-show="response.success" >
+			{{response.message}}
 		</div>
-		<div class="alert alert-success" role="alert" ng-show="response.successMsg" >
-			{{response.successMsg}}
+		<div class="alert alert-danger" role="alert" ng-show="response.error" >
+			{{response.message}}
 		</div>
 
 		<div class="form-row" ng-if="!response.successMsg">

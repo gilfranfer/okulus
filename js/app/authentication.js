@@ -30,9 +30,6 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 			moreThanOneMemberFound: "Existe mas de un Miembro con el correo electrónico:",
 			pwdResetEmailError: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador."
 		};
-		let successMsg = {
-			pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!"
-		};
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 				if(authUser){
@@ -161,16 +158,13 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 		};
 
 		$scope.resetPwd = function(form) {
+			$scope.response = {working: true, message: $rootScope.i18n.login.resetPwdInProgress };
 			let email = form.email.$modelValue;
-			$scope.response = null;
-			$scope.loading = true;
 
 			$firebaseAuth().$sendPasswordResetEmail(email).then(function() {
-				$scope.loading = false;
-				$scope.response = { successMsg: successMsg.pwdResetEmailSent};
+				$scope.response = {success: true, message: $rootScope.i18n.login.pwdResetEmailSent };
 			}).catch(function(error) {
-				$scope.loading = false;
-				$scope.response = { errorMsg: errorMsg.pwdResetEmailError};
+				$scope.response = { error: true, message: errorMsg.pwdResetEmailError};
 				//console.error("Error: ", error);
 			});
 		};
@@ -200,7 +194,9 @@ okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'Authen
 		$scope.response = null;
 
 		$scope.login = function(){
+			$scope.response = {working: true, message: $rootScope.i18n.login.loginInProgress };
 			AuthenticationSvc.loginUser($scope.user).then( function (user){
+				$scope.response = null;
 				AuthenticationSvc.updateUserLastLogin(user.uid);
 				$location.path(homePage);
 			})
@@ -216,7 +212,7 @@ okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'Authen
 						default:
 							message = errorMsg.tryAgain;
 				}
-				$scope.response = { loginErrorMsg: message};
+				$scope.response = { error: true, message: message };
 			});
 		};
 	}]
