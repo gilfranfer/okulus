@@ -7,8 +7,8 @@
       aria-controls="appMenu" aria-expanded="false" aria-label="Navigation">
     <span class="navbar-toggler-icon">
     </span>
-    <span ng-show="notifications.length || unreadChats.length" class="badge badge-danger badge-text">
-      {{notifications.length + unreadChats.length}}
+    <span ng-show="currentSession.user.counters.notifications || unreadChats.length" class="badge badge-danger badge-text">
+      {{currentSession.user.counters.notifications + unreadChats.length}}
     </span>
   </button>
 
@@ -78,13 +78,13 @@
       </li>
       <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}
-          <span ng-show="notifications.length" class="badge badge-danger badge-text">
-            {{notifications.length}}
+          <span ng-show="currentSession.user.counters.notifications" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.notifications}}
           </span>
         </a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-bell" href="#!/notifications" data-toggle="tooltip" title="{{i18n.navigation.notifications}}">
-          <span ng-show="notifications.length" class="badge badge-danger badge-text">
-            {{notifications.length}}
+          <span ng-show="currentSession.user.counters.notifications" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.notifications}}
           </span>
         </a>
       </li>

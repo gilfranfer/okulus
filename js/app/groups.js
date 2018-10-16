@@ -340,7 +340,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					//notify the member that got the access
 					MembersSvc.getMember(whichMember).$loaded().then(function(member){
 						console.debug(member);
-						NotificationsSvc.sendNotificationTo(member.user.userId,"access-granted", "groups", whichGroup,null,null);
+						NotificationsSvc.notifySpecificUser(member.user.userId,"access-granted", "groups", whichGroup,null,null);
 					});
 					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };
 					//update record. Now to point to the Group
@@ -370,7 +370,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			  AuditSvc.recordAudit(whichGroup, "access-deleted", "groups");
 				//notify the member that got the access
 				MembersSvc.getMember(whichMember).$loaded().then(function(member){
-					NotificationsSvc.sendNotificationTo(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
+					NotificationsSvc.notifySpecificUser(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
 				});
 				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
 					if(error){

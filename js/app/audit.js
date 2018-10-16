@@ -62,7 +62,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Notifications get Triggered from same places as audit
-        NotificationsSvc.sendNotification(action, on, objectId, user, userId);
+        NotificationsSvc.notifyInterestedUsers(action, on, objectId, user, userId);
 				return baseRef.child(on).child(objectId).child("audit");
 			}
 		};

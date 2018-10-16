@@ -3,37 +3,41 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 	function($rootScope, $scope, $firebaseAuth, $location, AuthenticationSvc, NotificationsSvc){
 
 		let noMemberPath = "/error/nomember"
-		//Executed everytime whe enter to Notification Center
+
+		/*Executed everytime whe enter to Notification Center*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.memberId){
-					$location.path(noMemberPath);
-				}else{
+				if(user.memberId){
 					//Show notifications only when the user has a member assigned
 					$scope.allNotifications = NotificationsSvc.getNotificationsForUser(authUser.uid);
 					$scope.allNotifications.$loaded().then(function(notifications) {
-						let message = notifications.length + " " + $rootScope.i18n.notifications.loadingSuccess;
-						$scope.response = { success:true, message: message};
+						$scope.response = null;
 					})
 					.catch( function(error){
 						$scope.response = { error: true, message: $rootScope.i18n.notifications.loadingError };
 						console.error(error);
 					});
+				}else{
+					$location.path(noMemberPath);
 				}
 			});
 		});
 
-		$scope.markNotificacionReaded = function(notification){
-			if(!notification.readed){
+		/*Update the notification's "readed" value. For security, before any update,
+		confirm the notification current "readed" value is different than the new one */
+		$scope.readNotification = function(markReaded, notification){
+			if(notification.readed != markReaded){
 				let loggedUserId = $rootScope.currentSession.user.$id;
-				NotificationsSvc.markNotificacionReaded(loggedUserId,notification.$id);
+				NotificationsSvc.updateNotificationReadedStatus(loggedUserId,notification.$id,markReaded);
 			}
 		};
 
+		/* Redirect the user to the correct location, according to the notification.
+		  Update the notification's "readed" status to true*/
 		$scope.openNotification = function(notification){
-			$scope.markNotificacionReaded(notification);
+			$scope.readNotification(true,notification);
 			if(notification.onFolder == "weeks"){
 				$location.path("/weeks");
 			}else{
@@ -41,11 +45,7 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			}
 		};
 
-		$scope.openMemberByUserId = function(notification){
-			$scope.markNotificacionReaded(notification);
-			$location.path("/users/edit/"+notification.fromId);
-		};
-
+		/* Remove the notification from db */
 		$scope.deleteNotification = function(notificationId){
 			let loggedUserId = $rootScope.currentSession.user.$id;
 			NotificationsSvc.deleteNotification(loggedUserId, notificationId);
@@ -56,9 +56,9 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			NotificationsSvc.deleteAllNotifications(loggedUserId);
 		}
 
-		$scope.markReadedAllNotifications = function() {
+		$scope.clearAllNotifications = function() {
 			let loggedUserId = $rootScope.currentSession.user.$id;
-			NotificationsSvc.markReadedAllNotifications(loggedUserId);
+			NotificationsSvc.clearAllNotifications(loggedUserId);
 		}
 
 }]);
@@ -67,7 +67,8 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 	function($rootScope, $firebaseArray, $firebaseObject){
 		let baseRef = firebase.database().ref().child(rootFolder);
 		let notificationsRef = firebase.database().ref().child(rootFolder).child('notifications');
-		let adminUsersRef = firebase.database().ref().child(rootFolder).child('users').orderByChild("type").equalTo("admin");
+		let usersRef = firebase.database().ref().child(rootFolder).child('users');
+		let adminUsersRef = usersRef.orderByChild("type").equalTo("admin");
 
 		/* Map with valida actions */
 		let actionsDescMap = new Map([ ["create","creado"], ["update","actualizado"],	["delete","eliminado"],
@@ -120,27 +121,52 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		/*This is for the actual notification creation in the DB*/
 		let pushNotification = function (userIdToNotify, notificationRecord){
 			//Avoid sending notification to the user performing the action
-			if(userIdToNotify != notificationRecord.fromId){
-				let notKey = notificationsRef.child("list").child(userIdToNotify).push();
-				notKey.set(notification);
-				//TODO: Replace to Update Counter
-				notificationsRef.child("metadata").child(userIdToNotify).child(notKey.key).set({readed:false});
-			}
+			if(userIdToNotify == notificationRecord.fromId) return;
+			let notKey = notificationsRef.child("list").child(userIdToNotify).push();
+			notKey.set(notificationRecord);
+			increaseUnreadNotificationCounter(userIdToNotify);
+		};
+
+		/*returns the notification object to be persisted in DB*/
+		let buildNotificationRecord = function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId) {
+			let desc = getNotificationDescription(actionPerformed, onFolder, objectId);
+			let notification = { action: actionPerformed, onFolder: onFolder, onObject: objectId,
+												from: actionByUser, fromId: actionByUserId, readed: false,
+												description: desc, time: firebase.database.ServerValue.TIMESTAMP }
+			return notification;
+		};
+
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseUnreadNotificationCounter = function(userid){
+			let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+			notifCounterRef.transaction(function(currentUnread) {
+				if(currentUnread>0)
+					return currentUnread - 1;
+				return currentUnread;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseUnreadNotificationCounter = function(userid){
+			let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+			notifCounterRef.transaction(function(currentUnread) {
+				// If counters/notifications has never been set, currentUnread will be null.
+			  return currentUnread + 1;
+			});
 		};
 
 		return {
-			/* Main method used to send notifications. Currently is called only from Audit Service
+			/* Main method used to send notifications. Currently is called only from Audit Service.
 			This notification is sent to all admins and to all parties with some interest
-			in the element modified (creator, updator, approver, etc)
+			in the element modified (creator, updator, approver, etc).
+
 			actionPerformed: create, update, delete, approved, rejected
-			onFolder: groups, members, reports, weeks, users, etc. */
-			sendNotification: function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId){
+			onFolder: groups, members, reports, weeks, users, etc.
+			objectId: DB Refernce Id */
+			notifyInterestedUsers: function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId){
 				var notifiableElement = notifiableElements.has(onFolder);
 				if( notifiableElement ){
-					let desc = getNotificationDescription(actionPerformed, onFolder, objectId);
-					let notification = { action: actionPerformed, onFolder: onFolder, onObject: objectId,
-														from: actionByUser, fromId: actionByUserId, readed: false,
-														description: desc, time: firebase.database.ServerValue.TIMESTAMP }
+					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
 
 					/* Send the notification only after the audit record is created/updated in the elment itself
 						This is because the audit folder will help us to identify the parties we need to notify*/
@@ -171,6 +197,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 						  TODO:Add notification according to their Preferences */
 						getAdminUsers().$loaded().then(function(admins){
 							admins.forEach(function(admin) {
+								console.log("notifying admins");
 								if(admin.memberId && notifiedUsers.indexOf(admin.$id) < 0){
 									pushNotification(admin.$id, notification);
 								}
@@ -181,30 +208,39 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 				}
 			},
-			//Sends notification to the specific receiver
-			sendNotificationTo: function(receiver, action, onFolder, objectId, actionByUser, actionByUserId){
-					let desc = getNotificationDescription(action,onFolder,objectId);
-					let notification = { action: action, onFolder: onFolder, onObject: objectId,
-														from: actionByUser, fromId: actionByUserId, readed: false,
-														description: desc, time: firebase.database.ServerValue.TIMESTAMP }
-
-					pushNotification(receiver, notification);
+			/*Used when we want to notify someone that is not part of the audit folder of an element
+			For Example, when granting a user access to a gorup, we want to notify the user.*/
+			notifySpecificUser: function(receiver, actionPerformed, onFolder, objectId, actionByUser, actionByUserId){
+				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
+				pushNotification(receiver, notification);
 			},
-			getNotificationsMetadata: function(userid) {
-				return $firebaseArray(notificationsRef.child("metadata").child(userid));
-			},
+			/*Return the list of notifications for specific user*/
 			getNotificationsForUser: function(userid) {
 				return $firebaseArray(notificationsRef.child("list").child(userid));
 			},
-			markNotificacionReaded: function(userid,notificationId){
-				notificationsRef.child("list").child(userid).child(notificationId).update({readed:true});
-				notificationsRef.child("metadata").child(userid).child(notificationId).set({});
+			/*Update the notification's "readed" value, and the User´s unreaded notifications counter */
+			updateNotificationReadedStatus: function(userid, notificationId, isReaded){
+				notificationsRef.child("list").child(userid).child(notificationId).update({readed:isReaded});
+				if(isReaded){
+					decreaseUnreadNotificationCounter(userid);
+				}else{
+					increaseUnreadNotificationCounter(userid);
+				}
 			},
+			/*Delete the notification element, and reduce the counter*/
 			deleteNotification: function(userid,notificationId){
 				notificationsRef.child("list").child(userid).child(notificationId).set({});
-				notificationsRef.child("metadata").child(userid).child(notificationId).set({});
+				decreaseUnreadNotificationCounter(userid);
 			},
-			markReadedAllNotifications: function(userid,notificationId){
+			deleteAllNotifications: function(userid){
+				notificationsRef.child("list").child(userid).set({});
+				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+				notifCounterRef.transaction(function(currentUnread){ return 0; });
+			},
+			/*Set all notifications' "readed" value as true, and set the User's unreaded
+				notifications counter to 0.*/
+			clearAllNotifications: function(userid){
+				//get only the notifications that are not readed
 				let ref = notificationsRef.child("list").child(userid).orderByChild("readed").equalTo(false);
 				let list = $firebaseArray(ref);
 				list.$loaded().then(function(){
@@ -213,13 +249,10 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 						list.$save(notification);
 					});
 				});
-				notificationsRef.child("metadata").child(userid).set({});
-			},
-			deleteAllNotifications: function(userid,notificationId){
-				notificationsRef.child("list").child(userid).set({});
-				notificationsRef.child("metadata").child(userid).set({});
-			}
 
+				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+				notifCounterRef.transaction(function(currentUnread){ return 0; });
+			}
 		};
 	}
 ]);

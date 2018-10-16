@@ -48,8 +48,8 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 							}
 							/* Update lastlogin, and sessionStatus*/
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, onlineStatus);
+							//TODO: Move to counter to reduce data traffic
 							$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
-							$rootScope.notifications = NotificationsSvc.getNotificationsMetadata(authUser.uid);
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{

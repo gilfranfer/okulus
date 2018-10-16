@@ -264,10 +264,12 @@ okulusApp.run(function($rootScope) {
 				onlyAdmin: "Debes ser administrador."
 			},
 			notifications:{
-				title:"Centro de Notificaciones", by:"por", noRecords:"No tienes ninguna notificación",
-				new: "Nueva", deleateAll: "Eliminar Todo", cleanAll:"Marcar Todo como Leido",
-				loading: "Cargando Notificaciones...", loadingSuccess: "Notificaciones Cargadas.",
-				loadingError: "Error al cargar las notificaciones. Intentelo más tarde."
+				title:"Centro de Notificaciones", by:"Por:", noRecords:"No tienes ninguna notificación",
+				unreaded:"Notificación sin Leer", deleteAll: "Eliminar Todo", cleanAll:"Marcar Todo Leido",
+				loading:"Cargando Notificaciones...", loadingSuccess: "Notificaciones Cargadas.",
+				loadingError: "Error al cargar las notificaciones. Intentelo más tarde.",
+				deleteBtn:"Eliminar Notificación", readBtn:"Marcar leida",
+				unreadBtn:"Marcar No leida"
 			},
 			login:{
 				title:"Inicia Sesión",

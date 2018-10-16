@@ -2,52 +2,50 @@
   <div class="card-body">
     <h4 class="card-title">{{i18n.notifications.title}}</h4>
     <hr>
-    <div ng-include="'views/alerts.html'"></div>
-
-    <!-- Notificat List -->
-    <div class="list-group">
-      <div class="row mb-3">
-        <button type="button" class="clickable btn btn-link" ng-click="markReadedAllNotifications()">
+    <div class="row mb-3" ng-if="allNotifications.length">
+      <div class="col text-right">
+        <span class="btn btn-link clickable" ng-click="clearAllNotifications()">
           {{i18n.notifications.cleanAll}}
-        </button>
-        <button type="button" class="clickable btn btn-link" ng-click="deleteAllNotifications()">
-          {{i18n.notifications.deleateAll}}
-        </button>
+        </span>
+        <span>|</span>
+        <span class="btn btn-link clickable" ng-click="deleteAllNotifications()">
+          {{i18n.notifications.deleteAll}}
+        </span>
       </div>
-      <!-- Loading Alert -->
-      <div class="alert alert-warning" role="alert" ng-show="loading">
-        {{i18n.alerts.loading}}
-      </div>
-      <!-- No Records Alert -->
-      <div ng-if="!loading && allNotifications && !allNotifications.length" class="alert alert-danger" role="alert">
-        {{i18n.notifications.noRecords}}
-      </div>
-      <div ng-repeat="notification in allNotifications | orderBy:'-time'" >
-        <div class="list-group-item list-group-item-action flex-column align-items-start">
-          <span class="mr-auto badge badge-danger" ng-if="!notification.readed" ng-click="markNotificacionReaded(notification)">
-            {{i18n.notifications.new}}
-          </span>
-          <div class="d-flex w-100">
-            <p class="w-100 mb-0">
-              <button type="button" class="clickable btn btn-link p-0" name="button" ng-click="openNotification(notification)">
-                {{notification.description}}
-              </button>
-              <button type="button" class="clickable btn btn-link p-0" name="button"
-                ng-if="notification.from" ng-click="openMemberByUserId(notification)">
-                {{i18n.notifications.by}} {{notification.from}}
-              </button>
-             <br>
-             <small>{{notification.time | date: 'MMM dd yyyy hh:mm a' }}</small>
-            </p>
-            <small class="ml-auto">
-              <button type="button" class="close" aria-label="{{i18n.btns.deleteBtn}}" title="{{i18n.btns.deleteBtn}}" ng-click="deleteNotification(notification.$id)">
-                <span class="clickable" aria-hidden="true">&times;</span>
-              </button>
-            </small>
+    </div>
+    <div ng-include="'views/alerts.html'"></div>
+    <!-- No Records Alert -->
+    <div ng-if="!response.loading && allNotifications && !allNotifications.length" class="alert alert-danger" role="alert">
+      {{i18n.notifications.noRecords}}
+    </div>
+    <!-- Notifications List -->
+    <div class="list-group">
+      <div class="list-group-item list-group-item-action flex-column align-items-start"
+          ng-repeat="notification in allNotifications | orderBy:'-time' track by notification.$id">
+        <div class="d-flex w-100">
+          <p class="clickable mb-0 w-100" ng-click="openNotification(notification)">
+            <span class="badge badge-danger" ng-if="!notification.readed">
+              {{i18n.notifications.unreaded}}
+            </span>
+            <br ng-if="!notification.readed">
+            <span class="text-primary">{{notification.description}}</span><br>
+            <small>{{i18n.notifications.by}} {{notification.from}},
+             {{notification.time | date: 'MMM dd yyyy hh:mm a' }}</small>
+          </p>
+          <div class="ml-auto">
+            <!-- Mark as readed -->
+            <i class="clickable pr-2 fas fa-lg fa-eye" title="{{i18n.notifications.readBtn}}"
+                ng-click="readNotification(true,notification)" ng-if="!notification.readed"></i>
+            <!-- Mark as unreaded -->
+            <i class="clickable pr-2 fas fa-lg fa-eye-slash" title="{{i18n.notifications.unreadBtn}}"
+                ng-click="readNotification(false,notification)" ng-if="notification.readed"></i>
+            <!-- Delete Notification -->
+            <i class="clickable pr-2 fas fa-lg fa-trash-alt" title="{{i18n.notifications.deleteBtn}}"
+                ng-click="deleteNotification(notification.$id)"></i>
           </div>
         </div>
       </div>
-
     </div>
+
   </div>
 </article>
