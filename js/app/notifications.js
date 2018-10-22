@@ -13,6 +13,7 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 					//Show notifications only when the user has a member assigned
 					$scope.allNotifications = NotificationsSvc.getNotificationsForUser(authUser.uid);
 					$scope.allNotifications.$loaded().then(function(notifications) {
+						//console.log(notifications);
 						$scope.response = null;
 					})
 					.catch( function(error){
@@ -216,6 +217,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 			},
 			/*Return the list of notifications for specific user*/
 			getNotificationsForUser: function(userid) {
+				//console.log(userid);
 				return $firebaseArray(notificationsRef.child("list").child(userid));
 			},
 			/*Update the notification's "readed" value, and the User´s unreaded notifications counter */
@@ -232,6 +234,8 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				notificationsRef.child("list").child(userid).child(notificationId).set({});
 				decreaseUnreadNotificationCounter(userid);
 			},
+			/*Delete all notifications, and set the User's unreaded
+				notifications counter to 0.*/
 			deleteAllNotifications: function(userid){
 				notificationsRef.child("list").child(userid).set({});
 				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
@@ -252,6 +256,13 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
 				notifCounterRef.transaction(function(currentUnread){ return 0; });
+			},
+			/*Used for migration. Assign specific number to the notification counter and
+			Removing the metadata folder.*/
+			setTotalUnreadNotifications: function(userid, total){
+				notificationsRef.child("metadata").child(userid).set({});
+				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+				notifCounterRef.transaction(function(currentUnread){ return total; });
 			}
 		};
 	}

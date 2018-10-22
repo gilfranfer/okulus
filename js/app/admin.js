@@ -1,5 +1,7 @@
-okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject','AuditSvc', 'MigrationSvc','$firebaseAuth','$location','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc,MigrationSvc,$firebaseAuth,$location,AuthenticationSvc){
+okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject',
+					'AuditSvc', 'MigrationSvc','$firebaseAuth','$location','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc,MigrationSvc,
+					$firebaseAuth,$location,AuthenticationSvc){
 
 		let auditRef = undefined;
 		let usersRef = undefined;
@@ -52,13 +54,15 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 			}
 		}
 
-		$scope.migrateAudit = function () {
-			MigrationSvc.migrateAudit()
+		$scope.migrateNotifications = function () {
+			MigrationSvc.migrateNotifications()
 		}
+
 	}
 ]);
 
-okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
+okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
+							'WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
 		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
@@ -96,103 +100,32 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 
 }]);
 
-okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
-	function( $firebaseArray, $firebaseObject){
+okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject', 'NotificationsSvc',
+	function($firebaseArray, $firebaseObject, NotificationsSvc){
 		let baseRef = firebase.database().ref().child(rootFolder);
 
-		let updateAudit = function(usersMap, record, folder){
-			let audit = record.audit;
-			if(audit){
-				if(audit.createdBy){
-					audit.createdById = usersMap.get(audit.createdBy);
-				}else if(record.createdBy){
-					audit.createdOn = record.createdOn;
-					record.createdOn = null;
-					audit.createdBy = record.createdBy;
-					record.createdBy = null;
-					audit.createdById = usersMap.get(audit.createdBy);
-				}
-				if (audit.lastUpdateBy) {
-					audit.lastUpdateById = usersMap.get(audit.lastUpdateBy);
-				}else if(record.lastUpdateBy){
-					audit.lastUpdateOn = record.lastUpdateOn;
-					record.lastUpdateOn = null;
-					audit.lastUpdateBy = record.lastUpdateBy;
-					record.lastUpdateBy = null;
-					audit.lastUpdateById = usersMap.get(audit.lastUpdateBy);
-				}
-				if (audit.rejectedBy) {
-					audit.rejectedById = usersMap.get(audit.rejectedBy);
-				}
-				if (audit.approvedBy) {
-					audit.approvedById = usersMap.get(audit.approvedBy);
-				}
-			}else {
-				console.error("No Audit Folder on ", folder,record.$id);
-			}
-		}
-
 		return {
-			migrateAudit: function(){
-				let allusers = $firebaseArray(baseRef.child("users"));
-				console.debug("Initiating Migration");
-				allusers.$loaded().then(function(users){
-					console.debug("loading Email - User ID map");
-					var userMap = new Map();
-					userMap.set("Root", null);
-					userMap.set("System", null);
-					allusers.forEach(function(user) {
-						userMap.set(user.email, user.$id);
-					});
-
-					console.debug("Migrating Folders");
-					let allweeks = $firebaseArray(baseRef.child("weeks"));
-					let allgroups = $firebaseArray(baseRef.child("groups"));
-					let allmembers = $firebaseArray(baseRef.child("members"));
-					let allreports = $firebaseArray(baseRef.child("reports"));
-
-					console.debug("Migrating Groups");
-					allgroups.$loaded().then(function(){
-						allgroups.forEach(function(element){
-							let record = allgroups.$getRecord(element.$id);
-							updateAudit(userMap, record, "groups");
-							allgroups.$save(record);
+			migrateNotifications: function(){
+				//Get all Users
+				$firebaseArray(baseRef.child("users")).$loaded().then(
+					function(usersList) {
+						/*For each User, Remove the Notifications metadata
+						 and use the Notifications List to count the unread*/
+						usersList.forEach(function(user){
+							console.log(user);
+							// $firebaseArray(baseRef.child("notifications/list").child(user.$id).orderByChild("readed").equalTo(false)).$loaded().then(
+							// 	function(list){console.log("User: "+user.$id+" Notifications List: "+list.length);}
+							// );
+							$firebaseArray(baseRef.child("notifications/metadata").child(user.$id)).$loaded().then(
+								function(list){
+									//Use the length to set the User's notification Counter
+									console.log("User: "+user.$id+" Notifications Meta: "+list.length);
+									NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
+								}
+							);
 						});
-					});
-					console.debug("Migrating Weeks");
-					allweeks.$loaded().then(function(){
-						allweeks.forEach(function(element){
-							let record = allweeks.$getRecord(element.$id);
-							updateAudit(userMap, record, "weeks");
-							allweeks.$save(record);
-						});
-					});
-					console.debug("Migrating Members");
-					allmembers.$loaded().then(function(){
-						allmembers.forEach(function(element){
-							let record = allmembers.$getRecord(element.$id);
-							updateAudit(userMap, record, "members");
-							allmembers.$save(record);
-						});
-					});
-					console.debug("Migrating Reports");
-					allreports.$loaded().then(function(){
-						allreports.forEach(function(element){
-							let record = allreports.$getRecord(element.$id);
-							updateAudit(userMap, record, "reports");
-							allreports.$save(record);
-						});
-					});
-					console.debug("Migrating Users");
-					allusers.$loaded().then(function(){
-						allusers.forEach(function(element){
-							let record = allusers.$getRecord(element.$id);
-							updateAudit(userMap, record, "users");
-							allusers.$save(record);
-						});
-					});
-				});
-
+					}
+				);
 			}
 		};
 	}
