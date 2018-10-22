@@ -1,6 +1,6 @@
 <section ng-show="currentSession.memberData">
-  <!-- Profile Summary -->
   <article class="row">
+    <!-- Profile Summary -->
     <div class="col-md-6 mb-3">
       <div class="card h-100">
         <div class="card-body">
@@ -11,8 +11,19 @@
             <span>{{currentSession.user.lastLoginOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
             <span class="font-weight-bold">{{i18n.profile.lastActivity}}</span>
             <span>{{currentSession.user.lastActivityOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
-            <a ng-href="#!/profile" class="btn btn-warning float-right">{{i18n.profile.viewProfileBtn}}</a>
+            <!-- <a ng-href="#!/profile" class="btn btn-warning float-right">{{i18n.profile.viewProfileBtn}}</a> -->
           </p>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.launchpad.title}}</h4>
+          <hr>
+          <a ng-href="#!/profile" class="btn btn-lg btn-block btn-warning">
+            {{i18n.launchpad.createReport}}</a>
         </div>
       </div>
     </div>

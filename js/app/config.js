@@ -248,6 +248,9 @@ okulusApp.run(function($rootScope) {
 				lastActivity: "Última actividad:",
 				viewProfileBtn: "Ver Perfil"
 			},
+			launchpad:{
+				title:"Acciones rápidas", createReport:"Crear Reporte"
+			},
 			msgCenter:{
 				title: "Mensajes del Administrador",
 				instruction: "Usa el cuadro de texto para redactar un mensaje a los usuarios:",
@@ -280,7 +283,7 @@ okulusApp.run(function($rootScope) {
 				resetPwd: "Restablecer contraseña",
 				resetPwdInProgress:"Enviando Correo...",
 				pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
-				loginInProgress: "Inicindo sesión..."
+				loginInProgress: "Iniciando sesión..."
 			},
 			register:{
 				title:"Regístrate",
