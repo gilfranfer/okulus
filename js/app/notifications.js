@@ -47,9 +47,9 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 		};
 
 		/* Remove the notification from db */
-		$scope.deleteNotification = function(notificationId){
+		$scope.deleteNotification = function(notification){
 			let loggedUserId = $rootScope.currentSession.user.$id;
-			NotificationsSvc.deleteNotification(loggedUserId, notificationId);
+			NotificationsSvc.deleteNotification(loggedUserId, notification);
 		};
 
 		$scope.deleteAllNotifications = function() {
@@ -230,9 +230,11 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				}
 			},
 			/*Delete the notification element, and reduce the counter*/
-			deleteNotification: function(userid,notificationId){
-				notificationsRef.child("list").child(userid).child(notificationId).set({});
-				decreaseUnreadNotificationCounter(userid);
+			deleteNotification: function(userid,notification){
+				if(!notification.readed){
+					decreaseUnreadNotificationCounter(userid);
+				}
+				notificationsRef.child("list").child(userid).child(notification.$id).set({});
 			},
 			/*Delete all notifications, and set the User's unreaded
 				notifications counter to 0.*/
@@ -257,7 +259,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
 				notifCounterRef.transaction(function(currentUnread){ return 0; });
 			},
-			/*Used for migration. Assign specific number to the notification counter and
+			/*TODO: Remove after migration. Assign specific number to the notification counter and
 			Removing the metadata folder.*/
 			setTotalUnreadNotifications: function(userid, total){
 				notificationsRef.child("metadata").child(userid).set({});
