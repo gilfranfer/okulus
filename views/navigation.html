@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-darkblue">
+<nav class="navbar navbar-expand-md navbar-dark bg-darkblue pl-4 pr-4">
   <a class="navbar-brand" href="#!/home" data-toggle="tooltip">{{i18n.navigation.brand}}</a>
 
   <!--  Collapsable button -->
@@ -7,8 +7,12 @@
       aria-controls="appMenu" aria-expanded="false" aria-label="Navigation">
     <span class="navbar-toggler-icon">
     </span>
-    <span ng-show="currentSession.user.counters.notifications || unreadChats.length" class="badge badge-danger badge-text">
-      {{currentSession.user.counters.notifications + unreadChats.length}}
+    <span class="badge badge-danger badge-text"
+    ng-show="currentSession.user.counters.notifications
+          || currentSession.systemCounters.errors.systemErrors
+          || unreadChats.length">
+      {{currentSession.user.counters.notifications +
+        currentSession.systemCounters.errors.systemErrors + unreadChats.length}}
     </span>
   </button>
 
@@ -35,10 +39,17 @@
       <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
-          role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+          role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{currentSession.systemCounters.errors.systemErrors}}
+          </span>
+        </a>
         <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
+          <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{currentSession.systemCounters.errors.systemErrors}}
+          </span>
         </a>
 
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -47,7 +58,12 @@
           <a class="dropdown-item" href="#!/members">{{i18n.navigation.admin.members}}</a>
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
+          <a class="dropdown-item" href="#!/admin/monitor">
+            {{i18n.navigation.admin.monitor}}
+            <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+              {{currentSession.systemCounters.errors.systemErrors}}
+            </span>
+          </a>
           <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>
         </div>
       </li>

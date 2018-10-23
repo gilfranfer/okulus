@@ -50,6 +50,9 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, onlineStatus);
 							//TODO: Move to counter to reduce data traffic
 							$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
+							if(user.type == "admin"){
+								AuthenticationSvc.loadSystemCounter();
+							}
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
@@ -88,6 +91,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 				}
 
 				if(error){
+					console.log(error);
 					UsersSvc.updateMemberInUserObject(null, typeUser, user);
 					if(memberDataObj){
 						MembersSvc.updateUserInMemberObject(false, null, memberDataObj);
@@ -262,6 +266,7 @@ okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
 		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
+		let countersRef = firebase.database().ref().child(rootFolder).child('counters');
 		var auth = $firebaseAuth();
 
 		return{
@@ -274,6 +279,12 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 					$rootScope.currentSession = { user: userObject, emailVerified: emailVerified };
 				}
 				return $rootScope.currentSession.user;
+			},
+			/* Builds a firebase Object representing the global counters */
+			loadSystemCounter: function(){
+				if(!$rootScope.currentSession.systemCounters){
+					$rootScope.currentSession.systemCounters = $firebaseObject(countersRef);
+				}
 			},
 			/* Update the date when User was "active" for last time, and make sure to
 			update his session status (online or offline) */

@@ -183,7 +183,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/notifications/notificationCenter.html',
 				controller: "NotificationCenterCntrl"
 			})
-			.when('/error/', {
+			.when('/error', {
 				templateUrl: 'views/errors/error-general.html'
 			})
 			.when('/error/norecord', {
@@ -391,6 +391,9 @@ okulusApp.run(function($rootScope) {
 				search:{
 					hint:"Buscar ..."
 				},
+				filter:{
+					hint:"Filtrar resultados..."
+				},
 				address:{
 					legend: "Dirección",
 					streetLbl:"Calle", streetHint:"",
@@ -461,29 +464,38 @@ okulusApp.run(function($rootScope) {
 					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
 				},
 				audit:{
-					title: "Auditoria de Movimientos",
-					select: "Revisar Movimientos en ",
-					groupsOptn:"Grupos",
-					membersOptn:"Miembros",
-					reportsOptn:"Reportes",
-					weeksOptn:"Semanas",
-					usersOptn:"Usuarios",
-					messagesOptn:"Mensajes",
-					norecords: "No hay registros disponibles",
+					title: "Auditoria de la Información", select: "Seleccionar Área a Auditar:",
+					groupsOptn:"Grupos", membersOptn:"Miembros", reportsOptn:"Reportes",
+					weeksOptn:"Semanas", usersOptn:"Usuarios", messagesOptn:"Mensajes",
+					loadAudit: "Mostrar Movimientos",
+					loading: "Cargando Registros ...",
+					loadingError: "Error al cargar los registros. Intentelo más tarde.",
+					loadingSuccess: "Registros cargados.",
+					noRecords: "No hay registros disponibles.",
 					table:{
 						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
 					}
 				},
 				users:{
-					title:"Usuarios Registrados",
-					adminLbl: "Administrador", userLbl: "Usuario",
+					title:"Usuarios Registrados", adminLbl: "Administrador", userLbl: "Usuario",
+					loadUsers: "Mostrar Lista de Usuarios",
+					loading: "Cargando Usuarios ...",
+					loadingError: "Error al cargar los usuarios. Intentelo más tarde.",
+					loadingSuccess: "Usuarios cargados.",
+					noRecords: "No se encontraron Usuarios.",
 					table:{
 						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
 						lastActivity:"Última Actividad", sessionStatus:"Estado"
 					}
 				},
 				errors:{
-					title:"Errores Recientes",
+					title:"Errores Importantes",
+					loadErrors: "Mostrar Lista de Errores",
+					loading: "Cargando Errores ...",
+					loadingError: "Error al cargar los registros. Intentelo más tarde.",
+					loadingSuccess: "Errores cargados.",
+					noRecords: "No se encontraron Errores.",
+					deleteBtn: "Eliminar Error", readBtn:"Marcar Leído", unreadBtn:"Marcar No Leído",
 					table:{
 						user: "Usuario Impactado", error:"Error", date:"Fecha"
 					}
