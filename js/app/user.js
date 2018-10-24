@@ -26,37 +26,6 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 	}
 ]);
 
-/* Controller linked to /mygroups
- * It will load the Groups the Current Member has Access to */
-okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc','GroupsSvc', '$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
-		$scope.loadingGroups = true;
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
-						$location.path("/error/nomember");
-						return;
-					}
-
-					//Get the Groups the user has access to
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						$scope.groupsList = filteredGroups;
-						$scope.loadingGroups = false;
-						if(!filteredGroups.length){
-							$scope.response = {noGroupsFound:true};
-						}
-					});
-
-				});
-			}
-		});
-	}
-]);
-
 okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
 	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
 		$scope.loadingMembers = true;

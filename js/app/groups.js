@@ -1,13 +1,14 @@
-//mappgin: /groups
+/* Controller linked to /groups
+ * It will load the Groups the Current Member has Access to */
 okulusApp.controller('GroupsAdminCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc','UtilsSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc,UtilsSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 
 		/* Executed everytime we enter to /groups
 		  This function is used to confirm the user is Admin */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){
 			if(authUser){
-				$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
 					function(user){
 						if(user.type == 'admin'){
@@ -36,6 +37,43 @@ okulusApp.controller('GroupsAdminCntrl',
 			});
 		};
 
+	}
+]);
+
+/* Controller linked to /mygroups
+ * It will load the Groups the Current Member has Access to */
+okulusApp.controller('GroupsUserCntrl',
+	['$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc', 'MembersSvc','GroupsSvc',
+	function($rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc,MembersSvc, GroupsSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+
+		/* Executed everytime we enter to /mygroups
+		  This function is used to confirm the user has an associated Member */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(!user.memberId){
+						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$location.path("/error");
+						return;
+					}
+
+					//TODO: Get groups from new db folder to reduce data load
+					//Get the Groups the user has access to
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					}).then(function (memberRules) {
+						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+						$rootScope.myGroupsList = filteredGroups;
+						$scope.loadingGroups = false;
+						if(!filteredGroups.length){
+							$scope.response = {noGroupsFound:true};
+						}
+					});
+
+				});
+			}
+		});
 	}
 ]);
 

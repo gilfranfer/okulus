@@ -34,8 +34,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/user/myGroups.html',
-				controller: 'UserMyGroupsCntrl'
+				templateUrl: 'views/groups/groups-user.html',
+				controller: 'GroupsUserCntrl'
 			})
 			.when('/mycontacts', {
 				resolve: {
@@ -216,7 +216,8 @@ okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$f
 );
 
 okulusApp.run(function($rootScope) {
-    $rootScope.config ={
+
+		$rootScope.config ={
 			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{
@@ -514,10 +515,9 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			user:{
-				//For User Views
-				groupsList:{
+				groups:{
 					title:"Mis Grupos Familiares",
-					description: "Infromación sobre mis Grupos Familiares activos."
+					description: "Grupos familiares a los que tengo acceso."
 				},
 				contactsList:{
 					title:"Miembros de mis Grupos Familiares",
@@ -541,6 +541,7 @@ okulusApp.run(function($rootScope) {
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido.",
 				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
+				noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{

@@ -1,0 +1,44 @@
+<section id="userGroupsList" ng-show="currentSession.user.memberId">
+
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.user.groups.title}}</h4>
+      <hr>
+      <div class="card-text">
+        <!-- <p>{{i18n.user.groups.description}}</p> -->
+      </div>
+      <div class="mb-3">
+        <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+      </div>
+    </div>
+  </article>
+
+  <article id="groupsList">
+    <div class="row">
+      <div class="col-md-6 mb-3"
+        ng-repeat="g in myGroupsList | filter:searchText | orderBy:'group.number' track by g.$id">
+        <!-- Group card -->
+        <div class="card h-100">
+          <div class="card-body">
+            <h4 class="card-title">
+              <a ng-href="#!/groups/edit/{{g.$id}}">
+                {{g.group.number}} - {{g.group.name}}
+              </a>
+            </h4>
+            <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.forms.group.inactive}}</span>
+            <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.forms.group.active}}</span>
+            <hr>
+            <!-- Buttons -->
+            <div class="row">
+              <div class="col mb-2" ng-if="g.group.status == 'active'">
+                <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-warning">
+                  {{i18n.btns.addReport}}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </article>
