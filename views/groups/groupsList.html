@@ -1,59 +1,56 @@
-<!-- Groups List -->
-<section id="groupsList">
-  <div class="row">
-    <!-- Loading Alert -->
+<article id="groupsList">
+  <!-- <div class="row">
     <div class="col"  ng-show="loadingGroups">
       <div class="alert alert-warning" role="alert">
         {{i18n.alerts.loading}}
       </div>
     </div>
 
-    <!-- No Records Alert -->
     <div class="col"  ng-show="response.noGroupsFound">
       <div class="alert alert-danger" role="alert">
         {{i18n.admin.groupsList.noGroupsError}}
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="row">
-    <!-- Group card -->
-    <div ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number'" class="col-md-6 col-lg-4 mb-3" >
-      <div class="card h-100" >
-        <!-- <h4 class="card-header"></h4> -->
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number' track by g.$id">
+      <!-- Group card -->
+      <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">
             <a ng-href="#!/groups/edit/{{g.$id}}">
               {{g.group.number}} - {{g.group.name}}
             </a>
           </h4>
-          <hr>
+          <!-- <hr> -->
           <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.forms.group.inactive}}</span>
           <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.forms.group.active}}</span>
+          <!-- address -->
           <p class="card-text mt-2" ng-if="g.address">
-            <span class="font-weight-bold">
-              {{i18n.forms.address.legend}}:
-            </span><br>
+            <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span><br>
             {{g.address.street}} #{{g.address.extNumber}}
-            <span ng-if="g.address.intNumber">Int {{g.address.intNumber}}</span>
-            {{i18n.forms.address.neighborhoodLbl}}  {{g.address.neighborhood}}.<br>
-            <span ng-if="g.address.zip">{{i18n.forms.address.zipLbl}} {{g.address.zip}}</span><br>
-            {{g.address.city}} {{g.address.state}}, {{g.address.country}}
+            <span ng-if="g.address.intNumber"> - {{g.address.intNumber}}</span>,
+            {{g.address.neighborhood}}. {{g.address.city}} {{g.address.state}}, {{g.address.country}}.
+            <span ng-if="g.address.zip">{{i18n.forms.address.zipLbl}} {{g.address.zip}}</span>
           </p>
-          <p class="card-text">
+          <!-- phone -->
+          <p class="card-text" ng-if="g.group.phone">
             <span class="font-weight-bold">
               {{i18n.forms.phone.phoneLbl}}:
             </span><br>
             <a href="tel:{{g.group.phone}}">{{g.group.phone}}</a>
           </p>
-          <p class="card-text">
+          <!-- email -->
+          <p class="card-text" ng-if="g.group.email">
             <span class="font-weight-bold">
               {{i18n.forms.group.emailLbl}}:
             </span><br>
             <a href="mailto:{{g.group.email}}">{{g.group.email}}</a>
           </p>
           <!-- Schedule -->
-          <p class="card-text">
+          <!-- <p class="card-text" ng-if="g.schedule">
             <span class="font-weight-bold">
               {{i18n.forms.group.shcLegend}}:
             </span><br>
@@ -64,29 +61,36 @@
               {{i18n.forms.group.typeLegend}}:
             </span><br>
             {{g.group.type}}
-          </p>
-          <!-- Card Buttons -->
+          </p> -->
           <hr>
-          <!-- Add Report -->
-          <div class="row" ng-if="g.group.status == 'active'">
-            <div class="col mb-3">
-              <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-success">{{i18n.btns.addReport}}</a>
+          <!-- Buttons -->
+          <div class="row">
+            <div class="col mb-2" ng-if="g.group.status == 'active'">
+              <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.addReport}}
+              </a>
             </div>
           </div>
-          <div class="row" ng-if="g.group.status == 'inactive'">
+          <div class="row">
+            <div class="col" >
+              <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.accessRules}}
+              </a>
+            </div>
+          </div>
+          <!-- <div class="row" ng-if="g.group.status == 'inactive'">
             <div class="col mb-3">
               <button class="btn btn-block btn-secondary">{{i18n.btns.addReport}}</button>
             </div>
-          </div>
-          <div class="row" ng-if="currentSession.user.type == 'admin'" >
+          </div> -->
+          <!-- <div class="row" ng-if="currentSession.user.type == 'admin'" >
             <div class="col mb-3" >
               <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-danger">{{i18n.btns.accessRules}}</a>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
-
   </div>
 
-</section>
+</article>

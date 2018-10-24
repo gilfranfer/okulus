@@ -4,7 +4,7 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 
 		let noMemberPath = "/error/nomember"
 
-		/*Executed everytime whe enter to Notification Center*/
+		/*Executed everytime we enter to Notification Center*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};

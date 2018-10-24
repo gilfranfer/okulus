@@ -1,25 +1,41 @@
 //mappgin: /groups
-okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
-	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				$scope.loadingGroups = true;
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.groupsList = GroupsSvc.loadAllGroupsList();
-						$scope.groupsList.$loaded().then(function(groups) {
-							$scope.loadingGroups = false;
-							if(!groups.length){
-								$scope.response = {noGroupsFound:true};
-							}
-						});
+okulusApp.controller('GroupsAdminCntrl',
+	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc','UtilsSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc,UtilsSvc){
 
-					}else{
-						$location.path("/error/norecord");
-					}
+		/* Executed everytime we enter to /groups
+		  This function is used to confirm the user is Admin */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+			if(authUser){
+				$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
+					function(user){
+						if(user.type == 'admin'){
+							UtilsSvc.loadSystemCounter();
+							$rootScope.systemCounters.$loaded().then(function(counters) {
+								$scope.response = undefined;
+							});
+						}else{
+							$rootScope.response = {error:true, showHomeButton: true,
+																			message:$rootScope.i18n.error.noAdmin};
+							$location.path("/error");
+						}
 				});
 			}
 		});
+
+		$scope.loadGroupList = function functionName() {
+			$scope.response = {loading: true, message: $rootScope.i18n.admin.groups.loading };
+			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+			$rootScope.groupsList.$loaded().then(function(groups) {
+				$scope.response = {success:true, message:groups.length+" "+$rootScope.i18n.admin.groups.loadingSuccess };
+			})
+			.catch( function(error){
+				$scope.response = { error: true, message: $rootScope.i18n.admin.groups.loadingError };
+				console.error(error);
+			});
+		};
+
 	}
 ]);
 

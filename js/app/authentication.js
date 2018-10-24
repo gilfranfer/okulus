@@ -2,18 +2,21 @@
 okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 	$rootScope.$on('$routeChangeError', function( event, next, previous, error){
 		if(error == 'AUTH_REQUIRED'){
-			$location.path('/error/login');
+			$rootScope.response = {error:true, message: $rootScope.i18n.error.nologin, showLoginButton:true };
+			$location.path('/error');
 		}else{
+			$rootScope.response = {error:true, message: error};
 			console.error(error);
 			$location.path('/error');
 		}
 	});
 }]);
 
-okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseAuth','$location',
-											'AuthenticationSvc','ChatService', 'NotificationsSvc', 'MembersSvc', 'UsersSvc', 'ErrorsSvc',
-	function($scope, $rootScope, $firebaseAuth, $location,
-						AuthenticationSvc, ChatService, NotificationsSvc, MembersSvc, UsersSvc,ErrorsSvc){
+okulusApp.controller('AuthenticationCntrl',
+	['$scope', '$rootScope', '$firebaseAuth','$location', 'AuthenticationSvc','ChatService',
+		'NotificationsSvc', 'MembersSvc', 'UsersSvc', 'ErrorsSvc','UtilsSvc',
+	function($scope, $rootScope, $firebaseAuth, $location, AuthenticationSvc, ChatService,
+						NotificationsSvc, MembersSvc, UsersSvc,ErrorsSvc,UtilsSvc){
 
 		let onlineStatus = "online";
 		let activeStatus = "active";
@@ -51,7 +54,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 							//TODO: Move to counter to reduce data traffic
 							$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
 							if(user.type == "admin"){
-								AuthenticationSvc.loadSystemCounter();
+								UtilsSvc.loadSystemCounter();
 							}
 					});
 					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
@@ -97,7 +100,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 						MembersSvc.updateUserInMemberObject(false, null, memberDataObj);
 					}
 					ErrorsSvc.logError(error + " " + errorMsg.referenceRemoved);
-					$rootScope.response = { errorMsg: error + " " + errorMsg.contactAdmin};
+					$rootScope.response = { error:true, message: error + " " + errorMsg.contactAdmin};
 					$location.path( errorPage );
 				}
 			});
@@ -134,7 +137,7 @@ okulusApp.controller('AuthenticationCntrl', ['$scope', '$rootScope', '$firebaseA
 
 				if(error){
 					ErrorsSvc.logError(error);
-					$rootScope.response = { errorMsg: error + " " + errorMsg.contactAdmin};
+					$rootScope.response = { error:true, message: error + " " + errorMsg.contactAdmin};
 					$location.path( errorPage );
 				}
 
@@ -266,7 +269,6 @@ okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
 	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
 		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
-		let countersRef = firebase.database().ref().child(rootFolder).child('counters');
 		var auth = $firebaseAuth();
 
 		return{
@@ -279,12 +281,6 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 					$rootScope.currentSession = { user: userObject, emailVerified: emailVerified };
 				}
 				return $rootScope.currentSession.user;
-			},
-			/* Builds a firebase Object representing the global counters */
-			loadSystemCounter: function(){
-				if(!$rootScope.currentSession.systemCounters){
-					$rootScope.currentSession.systemCounters = $firebaseObject(countersRef);
-				}
 			},
 			/* Update the date when User was "active" for last time, and make sure to
 			update his session status (online or offline) */

@@ -79,8 +79,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/admin/groups.html',
-				controller: 'GroupsAdminListCntrl'
+				templateUrl: 'views/groups/groups-admin.html',
+				controller: 'GroupsAdminCntrl'
 			})
 			.when('/groups/new', {
 				resolve: {
@@ -192,9 +192,6 @@ okulusApp.config(['$routeProvider',
 			.when('/error/nomember', {
 				templateUrl: 'views/errors/error-nomember.html'
 			})
-			.when('/error/login', {
-				templateUrl: 'views/errors/error-login.html'
-			})
 			.otherwise({
 				redirectTo: '/home'
 			});
@@ -209,7 +206,7 @@ okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$f
 				if(user.isRoot){
 					$location.path("/admin/monitor");
 				}else if(!user.memberId){
-					$location.path("/error/nomember");
+					$location.path("/error");
 				}else{
 					//continue to Home
 				}
@@ -312,7 +309,7 @@ okulusApp.run(function($rootScope) {
 				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
 				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
 				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
-				addReport: "+ Reporte", accessRules:"Accesos", analytics: "Analizar",
+				addReport: "Crear Reporte", accessRules:"Reglas de Accesos", analytics: "Analizar",
 				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
 				login:"Iniciar Sesión", register:"Registrarse",
 				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización",
@@ -408,6 +405,18 @@ okulusApp.run(function($rootScope) {
 			},
 			admin:{
 				//For Admin Views
+				groups:{
+					title:"Grupos Familiares - Administrador",
+					activeGroups:"Grupos Activos",
+					inactiveGroups:"Grupos Inactivos",
+					totalGroups:"Grupos Existentes",
+					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
+					loading:"Cargando Grupos...", loadingSuccess: "Grupos Cargados.",
+					loadingError: "Error al cargar los grupos. Intentelo más tarde.",
+					noGroupsError: "No se encontraron Grupos.",
+					loadBtn:"Mostrar Grupos",
+					newBtn:"Crear Grupo"
+				},
 				groupsList:{
 					title:"Administrar Grupos Familiares",
 					description: "A countinuación se muestran todos los Grupos Familiares registrados, incluyendo los inactivos.",
@@ -523,10 +532,12 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			error:{
-				title:"Houston, Tenemos Problemas!!",
+				title: "Houston, Tenemos Problemas!",
+				lead: "Lo sentimos, pero algo salió mal.",
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				recordDoesntExist: "Información no Disponible",
 				nologin: "Necesitas iniciar sesión para ver este contenido.",
+				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{

@@ -1,17 +1,25 @@
-<section>
+<article>
 	<div class="jumbotron">
-		<h1 class="display-3">{{i18n.error.title}}</h1>
+		<h1 class="display-3">
+			{{i18n.error.title}}
+		</h1>
 		<hr class="my-4"/>
-		<p class="lead"></p>
-		<div class="alert alert-info" role="alert" ng-if="currentSession.user && response">
-			<p>{{currentSession.user.email}}</p>
-			<p>{{i18n.error.genericMessage}}</p>
+		<p class="lead">
+			{{i18n.error.lead}}
+		</p>
+
+		<!-- Alert for error message -->
+		<div class="alert alert-danger" role="alert" ng-if="response.error">
+			<p ng-if="currentSession.user">{{currentSession.user.email}}:</p>
+			<p>{{response.message}}</p>
 		</div>
-		<div class="alert alert-danger" role="alert" ng-if="response.errorMsg">
-			{{response.errorMsg}}
-		</div>
-		<a class="btn btn-link" href="#!/home">
+
+		<a class="btn btn-lg btn-primary" href="#!/home" ng-if="response.showHomeButton || !response">
 			{{i18n.navigation.backToHome}}
 		</a>
+		<a class="btn btn-lg btn-warning" href="#!/login" ng-if="response.showLoginButton">
+			{{i18n.navigation.login}}
+		</a>
+
 	</div>
-</section>
+</article>

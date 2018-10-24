@@ -9,10 +9,10 @@
     </span>
     <span class="badge badge-danger badge-text"
     ng-show="currentSession.user.counters.notifications
-          || currentSession.systemCounters.errors.systemErrors
+          || systemCounters.errors.systemErrors
           || unreadChats.length">
       {{currentSession.user.counters.notifications +
-        currentSession.systemCounters.errors.systemErrors + unreadChats.length}}
+        systemCounters.errors.systemErrors + unreadChats.length}}
     </span>
   </button>
 
@@ -40,15 +40,15 @@
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
-            {{currentSession.systemCounters.errors.systemErrors}}
+          <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{systemCounters.errors.systemErrors}}
           </span>
         </a>
         <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
-          <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
-            {{currentSession.systemCounters.errors.systemErrors}}
+          <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{systemCounters.errors.systemErrors}}
           </span>
         </a>
 
@@ -60,8 +60,8 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#!/admin/monitor">
             {{i18n.navigation.admin.monitor}}
-            <span ng-show="currentSession.systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
-              {{currentSession.systemCounters.errors.systemErrors}}
+            <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+              {{systemCounters.errors.systemErrors}}
             </span>
           </a>
           <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>

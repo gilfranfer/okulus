@@ -1,0 +1,68 @@
+
+<!-- Admin Groups List View -->
+<section id="adminGroupsList" ng-show="currentSession.user.type == 'admin'">
+
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.admin.groups.title}}</h4>
+      <hr>
+      <div class="row">
+        <h4 class="col">
+          <span class="badge badge-primary">
+            {{systemCounters.groups.active + systemCounters.groups.inactive}}
+          </span>
+          <span>{{i18n.admin.groups.totalGroups}}</span>
+        </h4>
+        <h4 class="col">
+          <span class="badge badge-success">{{systemCounters.groups.active}}</span>
+          <span>{{i18n.admin.groups.activeGroups}}</span>
+        </h4>
+        <h4 class="col">
+          <span class="badge badge-danger">{{systemCounters.groups.inactive}}</span>
+          <span>{{i18n.admin.groups.inactiveGroups}}</span>
+        </h4>
+      </div>
+    </div>
+  </article>
+
+  <!-- Buttons -->
+  <div class="row mb-3">
+    <div class="col">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadGroupList()">
+        {{i18n.admin.groups.loadBtn}}
+      </a>
+    </div>
+    <div class="col">
+      <a href="#!/groups/new" class="btn btn-lg btn-block btn-primary">
+        {{i18n.admin.groups.newBtn}}
+      </a>
+    </div>
+  </div>
+
+  <div ng-include="'views/alerts.html'"></div>
+  <!-- Alerts to show Response Message (Used after redirect from Group Delete) -->
+  <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
+    {{response.groupMsgOk}}
+  </div>
+  <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
+    {{response.groupMsgError}}
+  </div>
+
+  <article id="filterCard" class="card mb-3" ng-show="groupsList">
+    <div class="card-body">
+      <!-- <h4 class="card-title">{{i18n.admin.groupsList.title}}</h4>
+      <hr>-->
+      <div class="card-text">
+        <p>{{i18n.admin.groups.filterDescription}}</p>
+      </div>
+      <div class="row">
+        <div class="col">
+          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article ng-include="'views/groups/groupsList.html'"></article>
+
+</section>
