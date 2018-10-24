@@ -1,37 +1,53 @@
 //Mapping: /members
-okulusApp.controller('AdminMembersListCntrl', ['MembersSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
-	function(MembersSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				$scope.loadingMembers = true;
-				$scope.memberTypeFilter = "all";
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.membersList = MembersSvc.loadAllMembersList();
-						$scope.membersList.$loaded().then(function(members) {
-							$scope.loadingMembers = false;
-							if(!members.length){
-								$scope.response = {noMembersFound:true};
-							}
-						});
-					}else{
-						$location.path("/error/norecord");
-					}
-				});
-			}
-		});
+okulusApp.controller('MembersAdminCntrl',
+	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc', 'MembersSvc', 'UtilsSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UtilsSvc){
 
-		$scope.loadMemberByType = function () {
-			if($scope.memberTypeFilter=="all"){
-				$scope.membersList = MembersSvc.loadAllMembersList();
-			}else if($scope.memberTypeFilter=="host"){
-				$scope.membersList = MembersSvc.filterActiveHosts($rootScope.allMembers);
-			}else if($scope.memberTypeFilter=="lead"){
-				$scope.membersList = MembersSvc.filterActiveLeads($rootScope.allMembers);
-			}else if($scope.memberTypeFilter=="trainee"){
-				$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
-			}
-		};
+		/*Executed everytime we enter to /members
+		  This function is used to confirm the user is Admin */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+		if(authUser){
+			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
+				function(user){
+					if(user.type == 'admin'){
+						UtilsSvc.loadSystemCounter();
+						$rootScope.systemCounters.$loaded().then(function(counters) {
+							$scope.response = undefined;
+						});
+				}else{
+					$rootScope.response = {error:true, showHomeButton: true,
+																	message:$rootScope.i18n.error.noAdmin};
+					$location.path("/error");
+				}
+			});
+		}
+	});
+
+	$scope.loadMembersList = function functionName() {
+		$scope.memberTypeFilter = "all";
+		$scope.response = {loading: true, message: $rootScope.i18n.admin.members.loading };
+		$rootScope.membersList = MembersSvc.loadAllMembersList();
+		$rootScope.membersList.$loaded().then(function(members) {
+			$scope.response = {success:true, message:members.length+" "+$rootScope.i18n.admin.members.loadingSuccess };
+		})
+		.catch( function(error){
+			$scope.response = { error: true, message: $rootScope.i18n.admin.members.loadingError };
+			console.error(error);
+		});
+	};
+
+	$scope.filterMembersByType = function () {
+		if($scope.memberTypeFilter=="all"){
+			$scope.membersList = MembersSvc.loadAllMembersList();
+		}else if($scope.memberTypeFilter=="host"){
+			$scope.membersList = MembersSvc.filterActiveHosts($rootScope.allMembers);
+		}else if($scope.memberTypeFilter=="lead"){
+			$scope.membersList = MembersSvc.filterActiveLeads($rootScope.allMembers);
+		}else if($scope.memberTypeFilter=="trainee"){
+			$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
+		}
+	};
 
 	}
 ]);

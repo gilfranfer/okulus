@@ -114,8 +114,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/admin/members.html',
-				controller: 'AdminMembersListCntrl'
+				templateUrl: 'views/members/members-admin.html',
+				controller: 'MembersAdminCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
@@ -417,16 +417,19 @@ okulusApp.run(function($rootScope) {
 					loadBtn:"Mostrar Grupos",
 					newBtn:"Crear Grupo"
 				},
-				groupsList:{
-					title:"Administrar Grupos Familiares",
-					description: "A countinuación se muestran todos los Grupos Familiares registrados, incluyendo los inactivos.",
-					noGroupsError: "No se encontraron Grupos"
-				},
-				membersList:{
-					title:"Administrar Miembros del Grupo de Siervos",
-					description: "A countinuación se muestran todos los Miembros registrados, incluyendo los inactivos, que forman parte del Grupo de Siervos.",
-					noMembersError: "No se encontraron Miembros",
-					allMembersLabel:"Todos", hostLabel: "Anfitriones", leadLabel:"Líderes", traineeLabel: "Aprendíces"
+				members:{
+					title:"Miembros de la Iglesia - Administrador",
+					activeMembers:"Miembros Activos",
+					inactiveMembers:"Miembros Inactivos",
+					totalMembers:"Miembros Existentes",
+					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
+					loading:"Cargando Mimebros...", loadingSuccess: "Mimebros Cargados.",
+					loadingError: "Error al cargar los miembros. Intentelo más tarde.",
+					noMembersError: "No se encontraron Miembros.",
+					loadBtn:"Mostrar Miembros",
+					newBtn:"Crear Miembro",
+					filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
+					leadLabel:"Líderes", traineeLabel: "Aprendíces"
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
