@@ -26,17 +26,25 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 	}
 ]);
 
-okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
-		$scope.loadingMembers = true;
-		console.log("some");
+/* Controller linked to /mycontacts
+ * It will load all the Members that are part of the Groups the Current Member has Access to */
+okulusApp.controller('UserMyContactsCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
+	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+
+		/* Executed everytime we enter to /mycontacts
+		  This function is used to confirm the user has an associated Member */
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
 					if(!user.memberId){
-						$location.path("/error/nomember");
+						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$location.path("/error");
 						return;
 					}
+
+					//TODO: Update this to a less data consuming approach
 					//Get the Members that are in the same group the user has access to
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
@@ -51,11 +59,6 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootSc
 						}
 					});
 
-					// MembersSvc.getMemberGroups(user.memberId).then(function(groups){
-					// 	return MembersSvc.getMembersInGroups(groups)
-					// }).then(function(contacts){
-					// 	$scope.membersList = contacts;
-					// });
 				});
 			}
 		});
