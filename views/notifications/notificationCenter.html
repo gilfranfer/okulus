@@ -2,9 +2,15 @@
   <div class="card-body">
     <h4 class="card-title">{{i18n.notifications.title}}</h4>
     <hr>
+    <!-- alerts -->
+    <div ng-include="'views/alerts.html'"></div>
+    <!-- No Records Alert -->
+    <div ng-if="!response.loading && allNotifications && !allNotifications.length" class="alert alert-danger" role="alert">
+      {{i18n.notifications.noRecords}}
+    </div>
     <div class="row mb-3" ng-if="allNotifications.length">
       <div class="col text-right">
-        <span class="btn btn-link clickable" ng-click="clearAllNotifications()">
+        <span class="btn btn-link clickable" ng-click="readAllNotifications()">
           {{i18n.notifications.cleanAll}}
         </span>
         <span>|</span>
@@ -13,13 +19,8 @@
         </span>
       </div>
     </div>
-    <div ng-include="'views/alerts.html'"></div>
-    <!-- No Records Alert -->
-    <div ng-if="!response.loading && allNotifications && !allNotifications.length" class="alert alert-danger" role="alert">
-      {{i18n.notifications.noRecords}}
-    </div>
     <!-- Notifications List -->
-    <div class="list-group">
+    <div class="list-group mb-3" ng-show="allNotifications.length">
       <div class="list-group-item list-group-item-action flex-column align-items-start"
           ng-repeat="notification in allNotifications | orderBy:'-time' track by notification.$id">
         <div class="d-flex w-100">
@@ -46,6 +47,16 @@
         </div>
       </div>
     </div>
-
+    <!-- Load all button -->
+    <div class="row mb-3" ng-show="allNotifications.length && !allNotificationsLoaded">
+      <div class="col text-center">
+        <p class="text-primary clickable" ng-click="loadAllNotifications()">
+          {{config.maxInitialNotifications}} {{i18n.notifications.loadedNotifications}} <br>
+          {{i18n.notifications.loadPending1}}
+          {{currentSession.user.counters.notifications.total - config.maxInitialNotifications}}
+          {{i18n.notifications.loadPending2}}
+        </p>
+      </div>
+    </div>
   </div>
 </article>

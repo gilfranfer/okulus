@@ -10,8 +10,8 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if(user.memberId){
-					//Show notifications only when the user has a member assigned
-					$scope.allNotifications = NotificationsSvc.getNotificationsForUser(authUser.uid);
+					/*Show notifications only when the user has a member assigned*/
+					$scope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxInitialNotifications);
 					$scope.allNotifications.$loaded().then(function(notifications) {
 						//console.log(notifications);
 						$scope.response = null;
@@ -39,11 +39,7 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 		  Update the notification's "readed" status to true*/
 		$scope.openNotification = function(notification){
 			$scope.readNotification(true,notification);
-			if(notification.onFolder == "weeks"){
-				$location.path("/weeks");
-			}else{
-				$location.path("/"+notification.onFolder+"/edit/"+notification.onObject);
-			}
+			$location.path("/"+notification.onFolder+"/details/"+notification.onObject);
 		};
 
 		/* Remove the notification from db */
@@ -57,9 +53,23 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			NotificationsSvc.deleteAllNotifications(loggedUserId);
 		}
 
-		$scope.clearAllNotifications = function() {
+		$scope.readAllNotifications = function() {
 			let loggedUserId = $rootScope.currentSession.user.$id;
-			NotificationsSvc.clearAllNotifications(loggedUserId);
+			NotificationsSvc.readAllNotifications(loggedUserId);
+		}
+
+		$scope.loadAllNotifications = function() {
+			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
+			let loggedUserId = $rootScope.currentSession.user.$id;
+			$scope.allNotifications = NotificationsSvc.getAllNotificationsForUser(loggedUserId);
+			$scope.allNotifications.$loaded().then(function(notifications) {
+				$scope.response = null;
+				$scope.allNotificationsLoaded = true;
+			})
+			.catch( function(error){
+				$scope.response = { error: true, message: $rootScope.i18n.notifications.loadingError };
+				console.error(error);
+			});
 		}
 
 }]);
@@ -70,6 +80,8 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		let notificationsRef = firebase.database().ref().child(rootFolder).child('notifications');
 		let usersRef = firebase.database().ref().child(rootFolder).child('users');
 		let adminUsersRef = usersRef.orderByChild("type").equalTo("admin");
+		let unreadNotificationsCounter = "counters/notifications/unreaded";
+		let totalNotificationsCounter = "counters/notifications/total";
 
 		/* Map with valida actions */
 		let actionsDescMap = new Map([ ["create","creado"], ["update","actualizado"],	["delete","eliminado"],
@@ -126,6 +138,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 			let notKey = notificationsRef.child("list").child(userIdToNotify).push();
 			notKey.set(notificationRecord);
 			increaseUnreadNotificationCounter(userIdToNotify);
+			increaseTotalNotificationCounter(userIdToNotify);
 		};
 
 		/*returns the notification object to be persisted in DB*/
@@ -139,7 +152,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseUnreadNotificationCounter = function(userid){
-			let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+			let notifCounterRef = usersRef.child(userid).child(unreadNotificationsCounter);
 			notifCounterRef.transaction(function(currentUnread) {
 				if(currentUnread>0)
 					return currentUnread - 1;
@@ -149,10 +162,27 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 		/*Using a Transaction with an update function to increase the counter by 1 */
 		let increaseUnreadNotificationCounter = function(userid){
-			let notifCounterRef = usersRef.child(userid).child("counters/notifications");
-			notifCounterRef.transaction(function(currentUnread) {
+			let unreadNotifCounterRef = usersRef.child(userid).child(unreadNotificationsCounter);
+			unreadNotifCounterRef.transaction(function(currentUnread) {
 				// If counters/notifications has never been set, currentUnread will be null.
 			  return currentUnread + 1;
+			});
+		};
+
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseTotalNotificationCounter = function(userid){
+			let totalNotifCounterRef = usersRef.child(userid).child(totalNotificationsCounter);
+			totalNotifCounterRef.transaction(function(currentTotal) {
+				if(currentTotal>0)
+					return currentTotal - 1;
+				return currentTotal;
+			});
+		};
+
+		let increaseTotalNotificationCounter = function(userid){
+			let totalNotifCounterRef = usersRef.child(userid).child(totalNotificationsCounter);
+			totalNotifCounterRef.transaction(function(currentTotal) {
+			  return currentTotal + 1;
 			});
 		};
 
@@ -216,9 +246,14 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				pushNotification(receiver, notification);
 			},
 			/*Return the list of notifications for specific user*/
-			getNotificationsForUser: function(userid) {
-				//console.log(userid);
+			getAllNotificationsForUser: function(userid) {
 				return $firebaseArray(notificationsRef.child("list").child(userid));
+			},
+			/*Return only the first notifications for specific user. The number is determined by count param*/
+			getFirstNotificationsForUser: function(userid,count) {
+				//console.log(userid);
+				let reference = notificationsRef.child("list").child(userid).orderByKey().limitToLast(count);
+				return $firebaseArray(reference);
 			},
 			/*Update the notification's "readed" value, and the User´s unreaded notifications counter */
 			updateNotificationReadedStatus: function(userid, notificationId, isReaded){
@@ -234,18 +269,21 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 				if(!notification.readed){
 					decreaseUnreadNotificationCounter(userid);
 				}
+				decreaseTotalNotificationCounter(userid);
 				notificationsRef.child("list").child(userid).child(notification.$id).set({});
 			},
 			/*Delete all notifications, and set the User's unreaded
 				notifications counter to 0.*/
 			deleteAllNotifications: function(userid){
 				notificationsRef.child("list").child(userid).set({});
-				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
-				notifCounterRef.transaction(function(currentUnread){ return 0; });
+				let notifUnreadRef = usersRef.child(userid).child(unreadNotificationsCounter);
+				notifUnreadRef.transaction(function(currentUnread){ return 0; });
+				let notifTotalRef = usersRef.child(userid).child("counters/notifications/total");
+				notifTotalRef.transaction(function(currentTotal){ return 0; });
 			},
 			/*Set all notifications' "readed" value as true, and set the User's unreaded
 				notifications counter to 0.*/
-			clearAllNotifications: function(userid){
+			readAllNotifications: function(userid){
 				//get only the notifications that are not readed
 				let ref = notificationsRef.child("list").child(userid).orderByChild("readed").equalTo(false);
 				let list = $firebaseArray(ref);
@@ -256,15 +294,19 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 					});
 				});
 
-				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+				let notifCounterRef = usersRef.child(userid).child(unreadNotificationsCounter);
 				notifCounterRef.transaction(function(currentUnread){ return 0; });
 			},
 			/*TODO: Remove after migration. Assign specific number to the notification counter and
 			Removing the metadata folder.*/
 			setTotalUnreadNotifications: function(userid, total){
 				notificationsRef.child("metadata").child(userid).set({});
-				let notifCounterRef = usersRef.child(userid).child("counters/notifications");
+				let notifCounterRef = usersRef.child(userid).child(unreadNotificationsCounter);
 				notifCounterRef.transaction(function(currentUnread){ return total; });
+			},
+			setTotalNotifications: function(userid, total){
+				let notifTotalRef = usersRef.child(userid).child(totalNotificationsCounter);
+				notifTotalRef.transaction(function(currentTotal){ return total; });
 			}
 		};
 	}

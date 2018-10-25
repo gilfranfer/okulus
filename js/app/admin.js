@@ -102,6 +102,7 @@ okulusApp.controller('MonitorCntrl',
 
 			let baseRef = firebase.database().ref().child(rootFolder);
 			let metaRef = baseRef.child("notifications/metadata");
+			let listRef = baseRef.child("notifications/list");
 
 			//Get all System Users
 			$firebaseArray(baseRef.child("users")).$loaded().then( function(usersList) {
@@ -110,8 +111,13 @@ okulusApp.controller('MonitorCntrl',
 				usersList.forEach(function(user){
 					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
 						//Use the length to set the User's notification Counter
-						console.log("User: "+user.$id+" Notifications Meta: "+list.length);
+						console.log("User: "+user.$id+" Unread Notifications: "+list.length);
 						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
+					});
+					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
+						//Use the length to set the User's notification Counter
+						console.log("User: "+user.$id+" Total Notifications: "+list.length);
+						NotificationsSvc.setTotalNotifications(user.$id,list.length);
 					});
 				});
 			});
