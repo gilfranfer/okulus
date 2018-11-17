@@ -51,12 +51,50 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
 
 		let weeksRef = firebase.database().ref().child(rootFolder).child('weeks');
-		let activeWeeksRef = weeksRef.orderByChild("status").equalTo("open");
+		let openWeeksRef = weeksRef.orderByChild("isOpen").equalTo(true);
+		let openWeeksCounterRef = firebase.database().ref().child(rootFolder).child('counters/weeks/open');
+		let visibleWeeksCounterRef = firebase.database().ref().child(rootFolder).child('counters/weeks/visible');
+
+		let updateOpenStatusCounterAndAudit = function (isWeekOpen, weekId) {
+			if(isWeekOpen){
+				AuditSvc.recordAudit(weekId, "open", "weeks");
+				increaseCounter(openWeeksCounterRef);
+			}else{
+				AuditSvc.recordAudit(weekId, "closed", "weeks");
+				decreaseCounter(openWeeksCounterRef);
+			}
+		};
+
+		let updateVisibilityCounterAndAudit = function (isWeekVisible, weekId) {
+			if(isWeekVisible){
+				AuditSvc.recordAudit(weekId, "show", "weeks");
+				increaseCounter(visibleWeeksCounterRef);
+			}else{
+				AuditSvc.recordAudit(weekId, "hide", "weeks");
+				decreaseCounter(visibleWeeksCounterRef);
+			}
+		};
+
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				if(currentCount>0)
+					return currentCount - 1;
+				return currentCount;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				return currentCount + 1;
+			});
+		};
 
 		return {
 			loadActiveWeeks: function(){
 				if(!$rootScope.allActiveWeeks){
-					$rootScope.allActiveWeeks = $firebaseArray(activeWeeksRef);
+					$rootScope.allActiveWeeks = $firebaseArray(openWeeksRef);
 				}
 			},
 			loadAllWeeks: function(){
@@ -81,11 +119,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
 				weekRecord.isOpen = isOpen;
 				$rootScope.allWeeks.$save(weekRecord).then(function(){
-					if(isOpen){
-						AuditSvc.recordAudit(weekId, "open", "weeks");
-					}else{
-						AuditSvc.recordAudit(weekId, "closed", "weeks");
-					}
+					updateOpenStatusCounterAndAudit(isOpen,weekId);
 				});
 			},
 			/* When updating status from Week-Edit, we receive the Week Object,
@@ -94,11 +128,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			updateWeekStatusInObject: function (weekObject, isOpen) {
 				weekObject.isOpen = isOpen;
 				weekObject.$save().then(function(ref) {
-					if(isOpen){
-						AuditSvc.recordAudit(weekObject.$id, "open", "weeks");
-					}else{
-						AuditSvc.recordAudit(weekObject.$id, "closed", "weeks");
-					}
+					updateOpenStatusCounterAndAudit(isOpen, weekObject.$id);
 				}, function(error) {
 					console.log("Error:", error);
 				});
@@ -111,11 +141,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
 				weekRecord.isVisible = isVisible;
 				$rootScope.allWeeks.$save(weekRecord).then(function(){
-					if(isVisible){
-						AuditSvc.recordAudit(weekId, "show", "weeks");
-					}else{
-						AuditSvc.recordAudit(weekId, "hide", "weeks");
-					}
+					updateVisibilityCounterAndAudit(isVisible, weekId);
 				});
 			},
 			/* When updating visibility from Week-Edit, we receive the Week Object,
@@ -124,11 +150,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			updateWeekVisibilityInObject: function (weekObject, isVisible) {
 				weekObject.isVisible = isVisible;
 				weekObject.$save().then(function(ref) {
-					if(isVisible){
-						AuditSvc.recordAudit(weekObject.$id, "show", "weeks");
-					}else{
-						AuditSvc.recordAudit(weekObject.$id, "hide", "weeks");
-					}
+					updateVisibilityCounterAndAudit(isVisible, weekObject.$id);
 				}, function(error) {
 					console.log("Error:", error);
 				});

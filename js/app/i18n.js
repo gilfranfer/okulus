@@ -102,6 +102,7 @@ okulusApp.run(function($rootScope) {
           "Tambíen es posbile ocultar las semanas del buscador de reportes.",
         /* Counter Section */
         totalWeeks:"Semanas Existentes", openWeeks: "Semanas Abiertas", closedWeeks:"Semanas Cerradas",
+        visibleWeeks: "Semanas Visibles", hiddenWeeks:"Semanas Ocultas",
         /* Badges */
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",

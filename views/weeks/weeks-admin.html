@@ -6,19 +6,29 @@
       <h4 class="card-title">{{i18n.weeks.title}}</h4>
       <hr>
       <div class="row">
-        <h4 class="col">
+        <!-- <h4 class="col">
           <span class="badge badge-primary">
-            {{systemCounters.weeks.open + systemCounters.weeks.closed}}
+            {{systemCounters.weeks.total}}
           </span>
           <span>{{i18n.weeks.totalWeeks}}</span>
-        </h4>
+        </h4> -->
         <h4 class="col">
           <span class="badge badge-success">{{systemCounters.weeks.open}}</span>
           <span>{{i18n.weeks.openWeeks}}</span>
         </h4>
         <h4 class="col">
-          <span class="badge badge-danger">{{systemCounters.weeks.closed}}</span>
+          <span class="badge badge-danger">{{systemCounters.weeks.total-systemCounters.weeks.open}}</span>
           <span>{{i18n.weeks.closedWeeks}}</span>
+        </h4>
+      </div>
+      <div class="row">
+        <h4 class="col">
+          <span class="badge badge-primary">{{systemCounters.weeks.visible}}</span>
+          <span>{{i18n.weeks.visibleWeeks}}</span>
+        </h4>
+        <h4 class="col">
+          <span class="badge badge-dark">{{systemCounters.weeks.total-systemCounters.weeks.visible}}</span>
+          <span>{{i18n.weeks.hiddenWeeks}}</span>
         </h4>
       </div>
     </div>
