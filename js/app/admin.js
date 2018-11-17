@@ -128,6 +128,8 @@ okulusApp.controller('MonitorCntrl',
 			//Updates in Week Object
 			WeeksSvc.loadAllWeeks();
 			$rootScope.allWeeks.$loaded().then(function (weeks) {
+				let total = weeks.length;
+				let open = 0;
 				weeks.forEach(function(week){
 					//Add year and weekNumber to the DB, from the week id
 					let index = $rootScope.allWeeks.$indexFor(week.$id);
@@ -140,10 +142,16 @@ okulusApp.controller('MonitorCntrl',
 					if(week.status == "open"){
 						week.isOpen = true;
 						week.isVisible = true;
+						open++;
 					}
 					week.status = null;
 					$rootScope.allWeeks.$save(index);
 				});
+				$rootScope.systemCounters.weeks = {};
+				$rootScope.systemCounters.weeks.total = total;
+				$rootScope.systemCounters.weeks.open = open;
+				$rootScope.systemCounters.weeks.closed = total - open;
+				$rootScope.systemCounters.$save();
 			});
 		};
 
