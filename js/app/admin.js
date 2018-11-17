@@ -150,7 +150,7 @@ okulusApp.controller('MonitorCntrl',
 				$rootScope.systemCounters.weeks = {};
 				$rootScope.systemCounters.weeks.total = total;
 				$rootScope.systemCounters.weeks.open = open;
-				$rootScope.systemCounters.weeks.closed = total - open;
+				$rootScope.systemCounters.weeks.visible = open;
 				$rootScope.systemCounters.$save();
 			});
 		};
