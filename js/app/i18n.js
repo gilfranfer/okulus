@@ -1,4 +1,4 @@
-/** Using a run function to set the language and sttings **/
+/** Using a run function to set the language and settings **/
 okulusApp.run(function($rootScope) {
 
 		$rootScope.config ={
@@ -58,7 +58,7 @@ okulusApp.run(function($rootScope) {
 				deleteBtn:"Eliminar Notificación", readBtn:"Marcar leida",
 				unreadBtn:"Marcar No leida",
 				loadedNotifications: "Notificaciones fueron cargadas.",
-				loadPending1: "Clic auquí para mostrar ",
+				loadPending1: "Clic aquí para mostrar ",
 				loadPending2: "Notificaciones restantes."
 			},
 			login:{
