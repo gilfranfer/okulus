@@ -238,13 +238,16 @@
     </div>
   </article>
 
-  <article id="migration" ng-show="currentSession.user.isRoot">
+  <article id="migration" ng-show="true">
     <div class="card h-100">
       <div class="card-body">
         <h4 class="card-title">Migration</h4>
         <hr>
         <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateNotifications()">
           Migrate Notifications
+        </button>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateWeeks()">
+          Migrate Weeks
         </button>
       </div>
     </div>

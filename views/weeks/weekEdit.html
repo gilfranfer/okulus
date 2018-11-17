@@ -1,0 +1,116 @@
+<section id="weekEdit" ng-show="currentSession.user.type == 'admin'">
+  <!-- Title Section -->
+  <div class="card h-100 mb-3" ng-show="!response.loading">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{weekParams.actionLbl}} {{i18n.weeks.weekLbl}} {{weekDetails.$id}}
+        <div class="d-inline" ng-if="weekParams.showBadges">
+          <span class="ml-4 badge badge-success" ng-if="weekDetails.isOpen">
+            {{i18n.weeks.openLbl}}
+          </span>
+          <span class="ml-4 badge badge-danger" ng-if="!weekDetails.isOpen">
+            {{i18n.weeks.closedLbl}}
+          </span>
+          <span class="ml-4 badge badge-primary" ng-if="weekDetails.isVisible">
+            {{i18n.weeks.showLbl}}
+          </span>
+          <span class="ml-4 badge badge-dark" ng-if="!weekDetails.isVisible">
+            {{i18n.weeks.hideLbl}}
+          </span>
+        </div>
+      </h4>
+    </div>
+  </div>
+
+  <!-- Week Form -->
+  <div class="card h-100 mb-3" ng-show="!response.loading">
+    <div class="card-body">
+      <form name="weekForm" novalidate ng-submit="">
+        <!-- Week name -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="weekName">
+              {{i18n.weeks.nameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="weekName" type="text" class="form-control form-control-lg"
+              placeholder="{{i18n.weeks.nameHint}}" ng-model="weekDetails.name" ng-required="true">
+          </div>
+        </div>
+        <!-- Week Code -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="weekDate">
+              {{i18n.weeks.weekDateLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="week" id="weekDate" class="form-control form-control-lg"
+                placeholder="" ng-required="true" ng-model="weekParams.date">
+          </div>
+        </div>
+        <!-- Notes -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="weekNotes">
+              {{i18n.weeks.notesLbl}}
+            </label>
+            <textarea id="weekNotes" name="notes" class="form-control form-control-lg"
+              placeholder="{{i18n.weeks.notesHint}}" ng-model="weekDetails.notes">
+            </textarea>
+          </div>
+        </div>
+        <!--  Actions available only after Week creation -->
+        <div class="form-row"  ng-if="weekDetails.$id">
+          <!-- Open / Close -->
+          <div class="col-sm-6 form-group">
+            <label class="font-weight-bold" for="weekStatus">
+              {{i18n.weeks.statusLbl}}
+            </label><br/>
+            <button id ="weekStatus" class="btn btn-success clickable"
+              ng-show="!weekDetails.isOpen" ng-click="setWeekOpenStatus(true)">
+              {{i18n.weeks.openStatusLbl}}
+            </button>
+            <button id ="weekStatus" class="btn btn-danger clickable"
+              ng-show="weekDetails.isOpen" ng-click="setWeekOpenStatus(false)">
+              {{i18n.weeks.closedStatusLbl}}
+            </button>
+          </div>
+          <!-- Show / Hide -->
+          <div class="col-sm-6 form-group">
+            <label class="font-weight-bold" for="weekVisibility">
+              {{i18n.weeks.visibilityLbl}}
+            </label><br/>
+            <button id ="weekVisibility" class="btn btn-primary clickable"
+              ng-show="!weekDetails.isVisible" ng-click="setWeekVisibility(true)">
+              {{i18n.weeks.showStatusLbl}}
+            </button>
+            <button id ="weekVisibility" class="btn btn-dark clickable"
+              ng-show="weekDetails.isVisible" ng-click="setWeekVisibility(false)">
+              {{i18n.weeks.hideStatusLbl}}
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3"  ng-show="!response.loading">
+    <div class="col">
+      <button class="btn btn-lg btn-block btn-warning clickable" ng-click="save()">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+    <div class="col" ng-if="weekDetails.$id">
+      <button class="btn btn-lg btn-block btn-warning clickable" ng-click="delete()">
+        {{i18n.btns.deleteBtn}}
+      </button>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <article ng-show="!response.loading && audit" ng-include="'views/fragments/auditDetails.html'"></article>
+</section>

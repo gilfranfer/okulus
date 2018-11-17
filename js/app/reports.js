@@ -510,7 +510,7 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 				if($scope.attendance.guests.list){
 					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);
 				}
-				$scope.reportWeek = WeeksSvc.getWeekObj( record.reunion.weekId );
+				$scope.reportWeek = WeeksSvc.getWeekObject( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
 
 			}else{
@@ -550,6 +550,11 @@ okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 			},
 			getReportsForWeek: function(weekId){
 				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);
+				return $firebaseArray(ref);
+			},
+			/*Returns firebaseArray with the Reports for the given week, but limited to a specified amount */
+			getReportsForWeekWithLimit: function(weekId, limit){
+				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId).limitToLast(limit);
 				return $firebaseArray(ref);
 			},
 			getReportsforWeeksPeriod: function(fromWeek, toWeek){

@@ -1,0 +1,46 @@
+<section id="weekDetails">
+  <!-- Title Section -->
+  <div class="card h-100 mb-3" ng-show="!response.loading">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{i18n.weeks.weekLbl}} {{weekDetails.$id}}
+        <span class="ml-4 badge badge-success" ng-if="weekDetails.isOpen">
+          {{i18n.weeks.openLbl}}
+        </span>
+        <span class="ml-4 badge badge-danger" ng-if="!weekDetails.isOpen">
+          {{i18n.weeks.closedLbl}}
+        </span>
+        <span class="ml-4 badge badge-primary" ng-if="weekDetails.isVisible">
+          {{i18n.weeks.showLbl}}
+        </span>
+        <span class="ml-4 badge badge-dark" ng-if="!weekDetails.isVisible">
+          {{i18n.weeks.hideLbl}}
+        </span>
+      </h4>
+    </div>
+  </div>
+
+  <!-- Details Card -->
+  <div class="card h-100 mb-3" ng-show="!response.loading">
+    <div class="card-body">
+      <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{weekDetails.name}} <br>
+      <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{weekDetails.year}}
+      <span class="ml-3 font-weight-bold">{{i18n.weeks.weekLbl}}:</span> #{{weekDetails.weekNumber}} <br>
+      <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span> {{weekDetails.notes}}
+    </div>
+  </div>
+
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="!response.loading && currentSession.user.type =='admin'">
+    <div class="col">
+      <a href="#!/weeks/edit/{{weekDetails.$id}}" class="btn btn-lg btn-block btn-warning">
+        {{i18n.weeks.editBtn}}
+      </a>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <article ng-show="!response.loading && audit" ng-include="'views/fragments/auditDetails.html'"></article>
+</section>

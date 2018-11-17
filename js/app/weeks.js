@@ -1,65 +1,49 @@
-okulusApp.controller('WeeksCntrl', ['WeeksSvc', 'AuditSvc', '$rootScope', '$scope','$firebaseAuth','$location','AuthenticationSvc',
-	function(WeeksSvc, AuditSvc, $rootScope, $scope,$firebaseAuth,$location,AuthenticationSvc){
+/* Controller linked to the Admin view of Weeks (/weeks) */
+okulusApp.controller('WeeksCntrl',
+	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'AuditSvc', 'UtilsSvc','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuditSvc, UtilsSvc, AuthenticationSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.weekid = new Date();
-						WeeksSvc.loadAllWeeks();
+		/* Executed everytime we enter to /weeks
+		  This function is used to confirm the user is Admin and prepare some initial values */
+		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(user.type == 'admin'){
+						UtilsSvc.loadSystemCounter();
+						$rootScope.systemCounters.$loaded().then(function(counters) {
+							$scope.response = undefined;
+						});
 					}else{
-						$location.path("/error/norecord");
+						$rootScope.response = {error:true, showHomeButton: true,
+																	message:$rootScope.i18n.error.noAdmin};
+						$location.path("/error");
 					}
 				});
-			}
-		});
+		}});
 
-		
-
-		$scope.addWeek = function () {
-			$scope.response = null;
-			let weekId = document.querySelector("#weekId").value;
-			let weekName = document.querySelector("#weekName").value;
-			//if(!WeeksSvc.getWeekRecord(weekId)){
-				let idSplit = weekId.split("-W");
-				let code = (idSplit[0]+idSplit[1]);
-
-				weeksRef = WeeksSvc.getWeeksFolderRef();
-				let record = {status:"open", name:weekName};
-
-				weeksRef.child(code).set(record, function(error) {
-					if(error){
-						$scope.response = {weekMsgError: error };
-					}else{
-						//For some reason the message is not displayed until
-						//you interact with any form element
-					}
-				});
-				//adding trick below to ensure message is displayed
-				let obj = WeeksSvc.getWeekObj(weekId);
-				obj.$loaded().then(function() {
-					AuditSvc.recordAudit(code, "create", "weeks");
-					$scope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
-				});
-
-			/*}else{
-				$scope.response = {weekMsgError: "La Semana "+weekId+" ya existe" };
-			}*/
-		};
-
-		$scope.openWeek = function (weekId) {
-			WeeksSvc.updateWeekStatus(weekId,"open").then(function(){
-				AuditSvc.recordAudit(weekId, "open", "weeks");
-				$scope.response = {weekMsgOk: "Semana "+weekId+" Abierta" };
+		/*On demand load of all Weeks in the system*/
+		$scope.loadWeeksList = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading };
+			$rootScope.weeksList = WeeksSvc.loadAllWeeks();
+			$rootScope.weeksList.$loaded().then(function(weeks) {
+				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
+			})
+			.catch( function(error){
+				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
+				console.error(error);
 			});
 		};
 
-		$scope.closeWeek = function (weekId) {
-			WeeksSvc.updateWeekStatus(weekId,"closed").then(function(){
-				AuditSvc.recordAudit(weekId, "closed", "weeks");
-				$scope.response = {weekMsgOk: "Semana "+weekId+" Cerrada" };
-			});
+		/*Toogle the Week Status (isOpen=true/false) */
+		$scope.setWeekOpenStatus = function (weekId, setOpen) {
+			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
 		};
+
+		/*Toogle the Week visibility (isVisible=true/false) */
+		$scope.setWeekVisibility = function (weekId, setVisible) {
+			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
+		};
+
 	}
 ]);
 
@@ -81,20 +65,196 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				}
 				return $rootScope.allWeeks;
 			},
-			getWeekRecord: function(weekId){
-				return $rootScope.allWeeks.$getRecord(weekId);
-			},
-			getWeekObj: function(weekId){
-				return $firebaseObject(weeksRef.child(weekId));
-			},
+			//REMOVE?
 			getWeeksFolderRef: function(){
 				return firebase.database().ref().child(rootFolder).child('weeks');
 			},
-			updateWeekStatus: function (weekId,status) {
-				let record = $rootScope.allWeeks.$getRecord(weekId);
-				record.status = status;
-				return $rootScope.allWeeks.$save(record);
+			/*Return Week Firebase Object*/
+			getWeekObject: function(weekId){
+				return $firebaseObject(weeksRef.child(weekId));
+			},
+			/* Get the Week Object from the firebaseArray in the rootScope
+			(when updating status from Weeks List), update the isOpen value (boolean),
+			update global counters,	update the Week's Audit details,
+			and generate the notification (triggered from recordAudit).*/
+			updateWeekStatusInArray: function (weekId, isOpen){
+				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
+				weekRecord.isOpen = isOpen;
+				$rootScope.allWeeks.$save(weekRecord).then(function(){
+					if(isOpen){
+						AuditSvc.recordAudit(weekId, "open", "weeks");
+					}else{
+						AuditSvc.recordAudit(weekId, "closed", "weeks");
+					}
+				});
+			},
+			/* When updating status from Week-Edit, we receive the Week Object,
+		  update the isOpen value (boolean), update global counters,
+			update the Week's Audit details, and generate the notification (triggered from recordAudit).*/
+			updateWeekStatusInObject: function (weekObject, isOpen) {
+				weekObject.isOpen = isOpen;
+				weekObject.$save().then(function(ref) {
+					if(isOpen){
+						AuditSvc.recordAudit(weekObject.$id, "open", "weeks");
+					}else{
+						AuditSvc.recordAudit(weekObject.$id, "closed", "weeks");
+					}
+				}, function(error) {
+					console.log("Error:", error);
+				});
+			},
+			/* Get the Week Object from the firebaseArray in the rootScope
+			(when updating visibility from Weeks List), update the isVisible value (boolean),
+			update global counters,	update the Week's Audit details,
+			and generate the notification (triggered from recordAudit).*/
+			updateWeekVisibilityInArray: function (weekId, isVisible) {
+				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
+				weekRecord.isVisible = isVisible;
+				$rootScope.allWeeks.$save(weekRecord).then(function(){
+					if(isVisible){
+						AuditSvc.recordAudit(weekId, "show", "weeks");
+					}else{
+						AuditSvc.recordAudit(weekId, "hide", "weeks");
+					}
+				});
+			},
+			/* When updating visibility from Week-Edit, we receive the Week Object,
+		  update the isVisible value (boolean), update global counters,
+			update the Week's Audit details, and generate the notification (triggered from recordAudit). */
+			updateWeekVisibilityInObject: function (weekObject, isVisible) {
+				weekObject.isVisible = isVisible;
+				weekObject.$save().then(function(ref) {
+					if(isVisible){
+						AuditSvc.recordAudit(weekObject.$id, "show", "weeks");
+					}else{
+						AuditSvc.recordAudit(weekObject.$id, "hide", "weeks");
+					}
+				}, function(error) {
+					console.log("Error:", error);
+				});
 			}
-		};
+
+		};//return end
 	}
 ]);
+
+/* Controller linked to /weeks/details/:weekId and /weeks/edit/:weekId
+ * It will load the Week for the id passed */
+okulusApp.controller('WeekDetailsCntrl',
+	['$rootScope','$routeParams','$scope','$location','$firebaseAuth','AuthenticationSvc','WeeksSvc', 'ReportsSvc',
+	function($rootScope, $routeParams, $scope, $location, $firebaseAuth, AuthenticationSvc, WeeksSvc, ReportsSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+
+		/* Iniit. Executed everytime we enter to /weeks/details/:weekId or /weeks/edit/:weekId */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+				$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+				//Container for Aditional Parameters, used when building the view
+				$scope.weekParams = {};
+
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					/* Confirm the user has an associated Member */
+					if(!user.memberId){
+						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$location.path("/error");
+						return;
+					}
+					/* Edit or View Details of Existing Week */
+					if($routeParams.weekId){
+						$scope.weekDetails = WeeksSvc.getWeekObject($routeParams.weekId);
+						$scope.weekDetails.$loaded().then(function(week){
+							if(!week.name){
+								$rootScope.response = {error: true, message: $rootScope.i18n.error.recordDoesntExist };
+								$location.path("/error");
+							}
+							let weekInput = document.querySelector("#weekDate")
+							if(weekInput){
+								/*On Edit view, disable the week selector because date shouldn't be modified
+								after week is created (beacuse the weekNumber is the week $id), and
+								populate the week selector with the Week Object date. */
+								weekInput.disabled = true;
+								let weekCode = week.year + "-W" + week.weekNumber;
+								document.querySelector("#weekDate").value = weekCode;
+							}
+							$scope.audit = week.audit;//Set audit object for Reusable Audit View
+							$scope.weekParams.actionLbl = "Modificar";
+							$scope.weekParams.showBadges = true;
+							$scope.response = undefined;
+						}).catch( function(error){
+							$rootScope.response = { error: true, message: error };
+							$location.path("/error");
+						});
+					}
+					/* New Week Creation */
+					else{
+						$scope.weekParams.actionLbl = "Nueva";
+						$scope.weekParams.date = new Date();
+						$scope.response = undefined;
+					}
+				});
+		}});
+
+		/* Toogle the Week Status (isOpen=true/false) */
+		$scope.setWeekOpenStatus = function (setOpen) {
+			WeeksSvc.updateWeekStatusInObject($scope.weekDetails,setOpen);
+			$scope.audit = $scope.weekDetails.audit;
+		};
+
+		/* Toogle the Week visibility (isVisible=true/false) */
+		$scope.setWeekVisibility = function (setVisible) {
+			WeeksSvc.updateWeekVisibilityInObject($scope.weekDetails, setVisible);
+			$scope.audit = $scope.weekDetails.audit;
+		};
+
+		$scope.addWeek = function () {
+			$scope.response = null;
+			let weekId = document.querySelector("#weekId").value;
+			let weekName = document.querySelector("#weekName").value;
+			//if(!WeeksSvc.getWeekRecord(weekId)){
+				let idSplit = weekId.split("-W");
+				let code = (idSplit[0]+idSplit[1]);
+
+				weeksRef = WeeksSvc.getWeeksFolderRef();
+				let record = {status:"open", name:weekName};
+
+				weeksRef.child(code).set(record, function(error) {
+					if(error){
+						$scope.response = {weekMsgError: error };
+					}else{
+						//For some reason the message is not displayed until
+						//you interact with any form element
+					}
+				});
+				//adding trick below to ensure message is displayed
+				let obj = WeeksSvc.getWeekObject(weekId);
+				obj.$loaded().then(function() {
+					AuditSvc.recordAudit(code, "create", "weeks");
+					$scope.response = {weekMsgOk: "Semana "+weekId+" Creada" };
+				});
+
+			/*}else{
+				$scope.response = {weekMsgError: "La Semana "+weekId+" ya existe" };
+			}*/
+		};
+
+		/* Save or Update Week */
+		$scope.save = function() {
+			let weekId = document.querySelector("#weekDate").value;
+			console.log("Save week:",$scope.weekDetails);
+		};
+
+		/* Delete Week */
+		$scope.delete = function() {
+			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
+			let weekReports = ReportsSvc.getReportsForWeekWithLimit($scope.weekDetails.$id, 1);
+			weekReports.$loaded().then(function (reportsList) {
+				console.log(reportsList.length);
+				$scope.response = undefined;
+			});
+			// WeeksSvc.deleteWeek().then(function() {
+			// 	console.log("Delete week:",weekId);
+			//
+			// });
+			// let weekId = document.querySelector("#weekDate").value;
+		};
+
+}]);

@@ -84,11 +84,13 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		let totalNotificationsCounter = "counters/notifications/total";
 
 		/* Map with valida actions */
-		let actionsDescMap = new Map([ ["create","creado"], ["update","actualizado"],	["delete","eliminado"],
-															["approved","aprobado"], ["rejected","rechazado"],
-															["access-granted","Acceso Concedido a"], ["access-deleted","Acceso Removido a"],
-															["type-update","Tipo de Usuario Modificado"],
-															["open","aberta"], ["closed","cerrada"] ]);
+		let actionsDescMap = new Map([
+						["create","creado"], ["update","actualizado"], ["delete","eliminado"],
+						["approved","aprobado"], ["rejected","rechazado"],
+						["access-granted","Acceso Concedido a"], ["access-deleted","Acceso Removido a"],
+						["type-update","Tipo de Usuario Modificado"],
+						["open","aberta"], ["closed","cerrada"], ["show","visible"], ["hide","oculta"],
+					]);
 		/*Actions performed on the following elements can trigger notificaions
 		 Key: is used to validate an element can trigger a notificaciones
 		 Value: will be used to build the Notification description*/
@@ -107,7 +109,8 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 				//Some messages have a different order in the description components
 				if(action == "create" || action == "update" || action == "delete" ||
-						action == "approved" || action == "rejected" || action == "open" || action == "closed"){
+						action == "approved" || action == "rejected" ||
+						action == "open" || action == "closed" || action == "show" || action == "hide"){
 					//Ej. Grupo creado., Reporte Aprobado., Semana abierta.
 					description = element + actionsDescMap.get(action)+".";
 				}
@@ -133,8 +136,8 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 
 		/*This is for the actual notification creation in the DB*/
 		let pushNotification = function (userIdToNotify, notificationRecord){
-			//Avoid sending notification to the user performing the action
-			if(userIdToNotify == notificationRecord.fromId) return;
+			//In Prod, Avoid sending notification to the user performing the action
+			if($rootScope.config.isProdEnv && userIdToNotify == notificationRecord.fromId) return;
 			let notKey = notificationsRef.child("list").child(userIdToNotify).push();
 			notKey.set(notificationRecord);
 			increaseUnreadNotificationCounter(userIdToNotify);
@@ -228,7 +231,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 						  TODO:Add notification according to their Preferences */
 						getAdminUsers().$loaded().then(function(admins){
 							admins.forEach(function(admin) {
-								console.log("notifying admins");
+								// console.log("notifying admins");
 								if(admin.memberId && notifiedUsers.indexOf(admin.$id) < 0){
 									pushNotification(admin.$id, notification);
 								}

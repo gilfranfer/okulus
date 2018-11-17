@@ -1,8 +1,8 @@
 okulusApp.controller('MonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc){
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let auditRef = firebase.database().ref().child(rootFolder).child('audit');
@@ -98,27 +98,51 @@ okulusApp.controller('MonitorCntrl',
 		}
 
 		/* MIGRATION FUNCTIONS */
-		$scope.migrateNotifications = function () {
 
+		/* The metadata folder under contains the id of all unread Notifications.
+		Is better to remove this folder, and keep only the list folder.
+		The totals will be maintaint in the global counters */
+		$scope.migrateNotifications = function () {
 			let baseRef = firebase.database().ref().child(rootFolder);
 			let metaRef = baseRef.child("notifications/metadata");
 			let listRef = baseRef.child("notifications/list");
 
 			//Get all System Users
 			$firebaseArray(baseRef.child("users")).$loaded().then( function(usersList) {
-				/*For each User, Remove the Notifications metadata
-				 and use the Notifications List to count the unread*/
 				usersList.forEach(function(user){
+					//Use the notifications/metadata length to set the User's unread Count
 					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
-						//Use the length to set the User's notification Counter
 						console.log("User: "+user.$id+" Unread Notifications: "+list.length);
 						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
 					});
+					//Use the notifications/list length to set the User's total Count
 					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
-						//Use the length to set the User's notification Counter
 						console.log("User: "+user.$id+" Total Notifications: "+list.length);
 						NotificationsSvc.setTotalNotifications(user.$id,list.length);
 					});
+				});
+			});
+		};
+
+		$scope.migrateWeeks = function () {
+			//Updates in Week Object
+			WeeksSvc.loadAllWeeks();
+			$rootScope.allWeeks.$loaded().then(function (weeks) {
+				weeks.forEach(function(week){
+					//Add year and weekNumber to the DB, from the week id
+					let index = $rootScope.allWeeks.$indexFor(week.$id);
+					let idtxt = week.$id + "";
+					let yearStr = idtxt.substring(0,4);
+					let weekStr = idtxt.substring(4);
+					week.year = Number(yearStr);
+					week.weekNumber = Number(weekStr);
+					//Add isOpen and isVisible from week status
+					if(week.status == "open"){
+						week.isOpen = true;
+						week.isVisible = true;
+					}
+					week.status = null;
+					$rootScope.allWeeks.$save(index);
 				});
 			});
 		};

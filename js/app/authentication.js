@@ -309,3 +309,20 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 		};//return
 	}
 ]);
+
+okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
+	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){
+			if(!authUser) return;
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+				if(user.isRoot){
+					$location.path("/admin/monitor");
+				}else if(!user.memberId){
+					//TODO: Add Error Message to the Scope
+					//$scope.response = { error: true, message: "No Member ID" };
+					$location.path("/error");
+				}
+			});
+		});
+	}]
+);

@@ -25,7 +25,7 @@ okulusApp.controller('GroupsAdminCntrl',
 			}
 		});
 
-		$scope.loadGroupList = function functionName() {
+		$scope.loadGroupList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.admin.groups.loading };
 			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
 			$rootScope.groupsList.$loaded().then(function(groups) {
