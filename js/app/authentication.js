@@ -44,20 +44,19 @@ okulusApp.controller('AuthenticationCntrl',
 							if(user.memberId && !user.isRoot ){
 								validateMemberFromUser(user);
 							}
-							/* If the User doesnt have a Member linked, we will use the User's email
+							/* If the User doesn't have a Member linked, we will use the User's email
 							to find a matching member and link it*/
 							else if(!user.memberId && !user.isRoot ){
 								setMemberToUser(user);
 							}
-							/* Update lastlogin, and sessionStatus*/
+							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, onlineStatus);
-							//TODO: Move to counter to reduce data traffic
+							//TODO: Move Chat counter to reduce data traffic
 							$rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
 							if(user.type == "admin"){
 								UtilsSvc.loadSystemCounter();
 							}
 					});
-					// usersFolder.child(authUser.uid).update({lastActivityOn: firebase.database.ServerValue.TIMESTAMP});
 				}else{
 					cleanRootScope();
 					$location.path( loginPage );
