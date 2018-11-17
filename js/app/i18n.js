@@ -110,20 +110,21 @@ okulusApp.run(function($rootScope) {
         loadBtn:"Mostrar Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
         showBtn:"Mostrar", hideBtn:"Ocultar",
+				editBtn:"Editar Semana",
         /*Alert Messages*/
         loading:"Cargando Semanas...", loadingSuccess: "Semanas Cargadas.",
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
         noWeeksError: "No se encontraron Semanas.",
+				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
-
 				statusLbl:"Se pueden agregar reportes? (Estado)",
 				openStatusLbl:"Si / Semana Abierta", closedStatusLbl:"No / Semana Cerrada",
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
 				showStatusLbl:"Si / Semana Visible", hideStatusLbl:"No / Semana Oculta",
-				editBtn:"Editar Semana"
+				modifyLbl:"Modificar", newLbl: "Nueva"
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",

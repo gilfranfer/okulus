@@ -2,13 +2,13 @@
 okulusApp.controller('WeeksCntrl',
 	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'AuditSvc', 'UtilsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuditSvc, UtilsSvc, AuthenticationSvc){
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 
 		/* Executed everytime we enter to /weeks
 		  This function is used to confirm the user is Admin and prepare some initial values */
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type == 'admin'){
+					if(user.type == constants.roles.admin){
 						UtilsSvc.loadSystemCounter();
 						$rootScope.systemCounters.$loaded().then(function(counters) {
 							$scope.response = undefined;
@@ -16,7 +16,7 @@ okulusApp.controller('WeeksCntrl',
 					}else{
 						$rootScope.response = {error:true, showHomeButton: true,
 																	message:$rootScope.i18n.error.noAdmin};
-						$location.path("/error");
+						$location.path(constants.pages.error);
 					}
 				});
 		}});
@@ -49,6 +49,8 @@ okulusApp.controller('WeeksCntrl',
 
 okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+		// let openStatus = constants.status.open;
+		// let closedSatus = constants.status.closed;
 
 		let weeksRef = firebase.database().ref().child(rootFolder).child('weeks');
 		let openWeeksRef = weeksRef.orderByChild("isOpen").equalTo(true);
@@ -177,7 +179,7 @@ okulusApp.controller('WeekDetailsCntrl',
 					/* Confirm the user has an associated Member */
 					if(!user.memberId){
 						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
-						$location.path("/error");
+						$location.path(constants.pages.error);
 						return;
 					}
 					/* Edit or View Details of Existing Week */
@@ -186,7 +188,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.weekDetails.$loaded().then(function(week){
 							if(!week.name){
 								$rootScope.response = {error: true, message: $rootScope.i18n.error.recordDoesntExist };
-								$location.path("/error");
+								$location.path(constants.pages.error);
 							}
 							let weekInput = document.querySelector("#weekDate")
 							if(weekInput){
@@ -198,17 +200,17 @@ okulusApp.controller('WeekDetailsCntrl',
 								document.querySelector("#weekDate").value = weekCode;
 							}
 							$scope.audit = week.audit;//Set audit object for Reusable Audit View
-							$scope.weekParams.actionLbl = "Modificar";
+							$scope.weekParams.actionLbl = $rootScope.i18n.weeks.modifyLbl;
 							$scope.weekParams.showBadges = true;
 							$scope.response = undefined;
 						}).catch( function(error){
 							$rootScope.response = { error: true, message: error };
-							$location.path("/error");
+							$location.path(constants.pages.error);
 						});
 					}
 					/* New Week Creation */
 					else{
-						$scope.weekParams.actionLbl = "Nueva";
+						$scope.weekParams.actionLbl = $rootScope.i18n.weeks.newLbl;
 						$scope.weekParams.date = new Date();
 						$scope.response = undefined;
 					}
@@ -264,19 +266,21 @@ okulusApp.controller('WeekDetailsCntrl',
 			console.log("Save week:",$scope.weekDetails);
 		};
 
-		/* Delete Week */
+		/* Delete Week, only when no report is associated to this week */
 		$scope.delete = function() {
 			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
 			let weekReports = ReportsSvc.getReportsForWeekWithLimit($scope.weekDetails.$id, 1);
 			weekReports.$loaded().then(function (reportsList) {
-				console.log(reportsList.length);
-				$scope.response = undefined;
+				if(reportsList.length>0){
+					$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
+				}else{
+					$scope.weekDetails.$remove().then(function(ref) {
+						$location.path(constants.pages.adminWeeks);
+					}, function(error) {
+					  console.log("Error:", error);
+					});
+				}
 			});
-			// WeeksSvc.deleteWeek().then(function() {
-			// 	console.log("Delete week:",weekId);
-			//
-			// });
-			// let weekId = document.querySelector("#weekDate").value;
 		};
 
 }]);

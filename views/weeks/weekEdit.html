@@ -61,11 +61,20 @@
         </div>
         <!--  Actions available only after Week creation -->
         <div class="form-row"  ng-if="weekDetails.$id">
-          <!-- Open / Close -->
           <div class="col-sm-6 form-group">
             <label class="font-weight-bold" for="weekStatus">
               {{i18n.weeks.statusLbl}}
-            </label><br/>
+            </label>
+          </div>
+          <div class="col-sm-6 form-group">
+            <label class="font-weight-bold" for="weekVisibility">
+              {{i18n.weeks.visibilityLbl}}
+            </label>
+          </div>
+        </div>
+        <div class="form-row"  ng-if="weekDetails.$id">
+          <!-- Open / Close -->
+          <div class="col-sm-6 form-group">
             <button id ="weekStatus" class="btn btn-success clickable"
               ng-show="!weekDetails.isOpen" ng-click="setWeekOpenStatus(true)">
               {{i18n.weeks.openStatusLbl}}
@@ -77,9 +86,6 @@
           </div>
           <!-- Show / Hide -->
           <div class="col-sm-6 form-group">
-            <label class="font-weight-bold" for="weekVisibility">
-              {{i18n.weeks.visibilityLbl}}
-            </label><br/>
             <button id ="weekVisibility" class="btn btn-primary clickable"
               ng-show="!weekDetails.isVisible" ng-click="setWeekVisibility(true)">
               {{i18n.weeks.showStatusLbl}}
@@ -104,10 +110,26 @@
         {{i18n.btns.saveBtn}}
       </button>
     </div>
+    <!-- Delete Button -->
     <div class="col" ng-if="weekDetails.$id">
-      <button class="btn btn-lg btn-block btn-warning clickable" ng-click="delete()">
+      <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          data-toggle="collapse" data-target="#collapseDelete"
+          aria-expanded="false" aria-controls="collapseDelete">
         {{i18n.btns.deleteBtn}}
       </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="delete()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-success"
+           data-toggle="collapse" data-target="#collapseDelete"
+           aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
