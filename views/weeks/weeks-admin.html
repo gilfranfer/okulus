@@ -49,13 +49,10 @@
   </div>
 
   <div ng-include="'views/alerts.html'"></div>
-  <!-- Alerts to show Response Message (Used after redirect from Weeks Delete)
-  <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
-    {{response.groupMsgOk}}
+  <!-- Alerts to show Response Message (Used after redirect from Weeks Delete) -->
+  <div class="alert alert-danger" role="alert" ng-show="weekResponse.deleted" >
+    {{weekResponse.message}}
   </div>
-  <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
-    {{response.groupMsgError}}
-  </div>-->
 
   <article id="filterCard" class="card mb-3" ng-show="weeksList">
     <div class="card-body">

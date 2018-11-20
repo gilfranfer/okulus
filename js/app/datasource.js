@@ -1,4 +1,3 @@
-const rootFolder = "okulus";
 var config = {
   apiKey: "AIzaSyAERYbnjq6Hu3gFFNBptRvbcvlBt4anwHk",
   authDomain: "dev-sandbox-b557a.firebaseapp.com",

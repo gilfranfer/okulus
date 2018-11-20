@@ -4,6 +4,24 @@
 **/
 var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 
+//Db Root Folder
+const rootFolder = "okulusTest";
+const constants = {
+	roles: {
+		user:"user", admin: "admin"
+	},
+	status: {
+		online:"online", offline:"offline",
+		active:"active", inactive:"inactive",
+		open:"open", closed:"closed",
+		visible:"show", hidden:"hide"
+	},
+	pages: {
+		error: "/error", login:"/login",
+		adminWeeks:"/weeks"
+	}
+};
+
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
