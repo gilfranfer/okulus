@@ -190,8 +190,8 @@ okulusApp.controller('WeekDetailsCntrl',
 					}
 					/* Edit or View Details of Existing Week */
 					if($routeParams.weekId){
-						$scope.weekDetails = WeeksSvc.getWeekObject($routeParams.weekId);
-						$scope.weekDetails.$loaded().then(function(week){
+						$scope.objectDetails = WeeksSvc.getWeekObject($routeParams.weekId);
+						$scope.objectDetails.$loaded().then(function(week){
 							if(!week.name){ //If week from DB hasnt name, is because no week was found
 								$rootScope.response = {error: true, message: $rootScope.i18n.error.recordDoesntExist };
 								$location.path(constants.pages.error); return;
@@ -217,7 +217,7 @@ okulusApp.controller('WeekDetailsCntrl',
 			$scope.weekParams.actionLbl = $rootScope.i18n.weeks.modifyLbl;
 			$scope.weekParams.dateRequired = false;
 			$scope.weekParams.showBadges = true;
-			$scope.audit = weekObject.audit;
+			//$scope.audit = weekObject.audit;
 
 			let weekInput = document.querySelector("#weekDate")
 			if(weekInput){
@@ -234,23 +234,23 @@ okulusApp.controller('WeekDetailsCntrl',
 		/* Toogle the Week Status (isOpen=true/false) */
 		$scope.setWeekOpenStatus = function (setOpen) {
 			$rootScope.weekResponse = null;
-			WeeksSvc.updateWeekStatusInObject($scope.weekDetails,setOpen);
+			WeeksSvc.updateWeekStatusInObject($scope.objectDetails,setOpen);
 			$scope.response = {success:true, message: "Estado de la Semana actualizado." };
-			$scope.audit = $scope.weekDetails.audit;
+			//$scope.audit = $scope.objectDetails.audit;
 		};
 
 		/* Toogle the Week visibility (isVisible=true/false) */
 		$scope.setWeekVisibility = function (setVisible) {
 			$rootScope.weekResponse = null;
-			WeeksSvc.updateWeekVisibilityInObject($scope.weekDetails, setVisible);
+			WeeksSvc.updateWeekVisibilityInObject($scope.objectDetails, setVisible);
 			$scope.response = {success:true, message: "Visibilidad de la Semana actualizada." };
-			$scope.audit = $scope.weekDetails.audit;
+			//$scope.audit = $scope.objectDetails.audit;
 		};
 
 		/* Save or Update Week */
 		$scope.save = function() {
 			$rootScope.weekResponse = null;
-			if(!$scope.weekDetails){ return; }
+			if(!$scope.objectDetails){ return; }
 
 			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
 			//Build week Id from the selected Week in the input
@@ -259,8 +259,8 @@ okulusApp.controller('WeekDetailsCntrl',
 			let weekId = (codeSplit[0]+codeSplit[1]);
 
 			//Update existing Week
-			if($scope.weekDetails.$id){
-				$scope.weekDetails.$save().then(function(ref) {
+			if($scope.objectDetails.$id){
+				$scope.objectDetails.$save().then(function(ref) {
 					AuditSvc.recordAudit(weekId, "update", "weeks");
 					$scope.response = {success:true, message: "Se ha actualizado la Semana "+weekId };
 				},function(error){
@@ -274,7 +274,7 @@ okulusApp.controller('WeekDetailsCntrl',
 					if(week.name){
 						$scope.response = {error:true, message: "Ya existe la Semana "+weekId };
 					}else{
-						week.name = $scope.weekDetails.name;
+						week.name = $scope.objectDetails.name;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
 
@@ -296,15 +296,15 @@ okulusApp.controller('WeekDetailsCntrl',
 		$scope.delete = function() {
 			$rootScope.weekResponse = null;
 			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
-			let weekId = $scope.weekDetails.$id;
+			let weekId = $scope.objectDetails.$id;
 			/*In future all weeks should have a counter with the number of Existing
 			reports associated to this week */
-			if($scope.weekDetails.reportsCount >= 0){ //Remove "if" once all weeks have reportsCount
-				if($scope.weekDetails.reportsCount > 0){
+			if($scope.objectDetails.reportsCount >= 0){ //Remove "if" once all weeks have reportsCount
+				if($scope.objectDetails.reportsCount > 0){
 					$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
 				}else{
 					//proceed with delete
-					$scope.weekDetails.$remove().then(function(ref) {
+					$scope.objectDetails.$remove().then(function(ref) {
 						AuditSvc.recordAudit(weekId, "delete", "weeks");
 						$rootScope.weekResponse = {deleted:true, message:"Se ha eliminado la semana "+weekId};
 						$location.path("/weeks");
@@ -321,7 +321,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
 					}else{
 						//proceed with delete
-						$scope.weekDetails.$remove().then(function(ref) {
+						$scope.objectDetails.$remove().then(function(ref) {
 							AuditSvc.recordAudit(weekId, "delete", "weeks");
 							$rootScope.weekResponse = {deleted:true, message:"Se ha eliminado la semana "+weekId};
 							$location.path("/weeks");

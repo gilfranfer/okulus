@@ -8,18 +8,18 @@
   <div class="card h-100 mb-3" ng-show="!response.loading">
     <div class="card-body">
       <h4 class="card-title">
-        {{weekParams.actionLbl}} {{i18n.weeks.weekLbl}} {{weekDetails.$id}}
+        {{weekParams.actionLbl}} {{i18n.weeks.weekLbl}} {{objectDetails.$id}}
         <div class="d-inline" ng-if="weekParams.showBadges">
-          <span class="ml-4 badge badge-success" ng-if="weekDetails.isOpen">
+          <span class="ml-4 badge badge-success" ng-if="objectDetails.isOpen">
             {{i18n.weeks.openLbl}}
           </span>
-          <span class="ml-4 badge badge-danger" ng-if="!weekDetails.isOpen">
+          <span class="ml-4 badge badge-danger" ng-if="!objectDetails.isOpen">
             {{i18n.weeks.closedLbl}}
           </span>
-          <span class="ml-4 badge badge-primary" ng-if="weekDetails.isVisible">
+          <span class="ml-4 badge badge-primary" ng-if="objectDetails.isVisible">
             {{i18n.weeks.showLbl}}
           </span>
-          <span class="ml-4 badge badge-dark" ng-if="!weekDetails.isVisible">
+          <span class="ml-4 badge badge-dark" ng-if="!objectDetails.isVisible">
             {{i18n.weeks.hideLbl}}
           </span>
         </div>
@@ -39,7 +39,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="weekName" type="text" class="form-control form-control-lg"
-              placeholder="{{i18n.weeks.nameHint}}" ng-model="weekDetails.name" ng-required="true">
+              placeholder="{{i18n.weeks.nameHint}}" ng-model="objectDetails.name" ng-required="true">
           </div>
         </div>
         <!-- Week Code -->
@@ -60,12 +60,12 @@
               {{i18n.weeks.notesLbl}}
             </label>
             <textarea id="weekNotes" name="notes" class="form-control form-control-lg"
-              placeholder="{{i18n.weeks.notesHint}}" ng-model="weekDetails.notes">
+              placeholder="{{i18n.weeks.notesHint}}" ng-model="objectDetails.notes">
             </textarea>
           </div>
         </div>
         <!--  Actions available only after Week creation -->
-        <div class="form-row"  ng-if="weekDetails.$id">
+        <div class="form-row"  ng-if="objectDetails.$id">
           <div class="col-sm-6 form-group">
             <label class="font-weight-bold" for="weekStatus">
               {{i18n.weeks.statusLbl}}
@@ -77,26 +77,26 @@
             </label>
           </div>
         </div>
-        <div class="form-row"  ng-if="weekDetails.$id">
+        <div class="form-row"  ng-if="objectDetails.$id">
           <!-- Open / Close -->
           <div class="col-sm-6 form-group">
             <button type="button" id ="weekStatus" class="btn btn-success clickable"
-              ng-show="!weekDetails.isOpen" ng-click="setWeekOpenStatus(true)">
+              ng-show="!objectDetails.isOpen" ng-click="setWeekOpenStatus(true)">
               {{i18n.weeks.openStatusLbl}}
             </button>
             <button type="button" id ="weekStatus" class="btn btn-danger clickable"
-              ng-show="weekDetails.isOpen" ng-click="setWeekOpenStatus(false)">
+              ng-show="objectDetails.isOpen" ng-click="setWeekOpenStatus(false)">
               {{i18n.weeks.closedStatusLbl}}
             </button>
           </div>
           <!-- Show / Hide -->
           <div class="col-sm-6 form-group">
             <button type="button" id ="weekVisibility" class="btn btn-primary clickable"
-              ng-show="!weekDetails.isVisible" ng-click="setWeekVisibility(true)">
+              ng-show="!objectDetails.isVisible" ng-click="setWeekVisibility(true)">
               {{i18n.weeks.showStatusLbl}}
             </button>
             <button type="button" id ="weekVisibility" class="btn btn-dark clickable"
-              ng-show="weekDetails.isVisible" ng-click="setWeekVisibility(false)">
+              ng-show="objectDetails.isVisible" ng-click="setWeekVisibility(false)">
               {{i18n.weeks.hideStatusLbl}}
             </button>
           </div>
@@ -115,7 +115,7 @@
         </button>
       </div>
       <!-- Delete Button -->
-      <div class="col" ng-if="weekDetails.$id">
+      <div class="col" ng-if="objectDetails.$id">
         <button type="button" class="btn btn-lg btn-block btn-warning clickable"
             data-toggle="collapse" data-target="#collapseDelete"
             aria-expanded="false" aria-controls="collapseDelete">
@@ -140,5 +140,5 @@
 
 
   <!-- Audit -->
-  <article ng-show="!response.loading && audit" ng-include="'views/fragments/auditDetails.html'"></article>
+  <article ng-show="!response.loading && objectDetails.audit" ng-include="'views/fragments/auditDetails0.html'"></article>
 </section>
