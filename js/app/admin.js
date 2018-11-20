@@ -1,8 +1,8 @@
 okulusApp.controller('MonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc){
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let auditRef = firebase.database().ref().child(rootFolder).child('audit');
@@ -129,8 +129,10 @@ okulusApp.controller('MonitorCntrl',
 			//Updates in Week Object
 			WeeksSvc.loadAllWeeks();
 			$rootScope.allWeeks.$loaded().then(function (weeks) {
-				let total = weeks.length;
-				let open = 0;
+				let totalReports = 0;
+				let totalWeeks = weeks.length;
+				let openWeeks = 0;
+
 				weeks.forEach(function(week){
 					//Add year and weekNumber to the DB, from the week id
 					let index = $rootScope.allWeeks.$indexFor(week.$id);
@@ -143,20 +145,29 @@ okulusApp.controller('MonitorCntrl',
 					if(week.status == "open"){
 						week.isOpen = true;
 						week.isVisible = true;
-						open++;
+						openWeeks++;
 					}else{
 						week.isOpen = false;
 						week.isVisible = false;
 					}
-					week.status = null;
-					$rootScope.allWeeks.$save(index);
+					//week.status = null;
+
+					//Get Reports for the week to update week's reportsCount
+					ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+						week.reportsCount = reports.length;
+						console.log(week.$id+" has "+reports.length+" reports");
+						$rootScope.allWeeks.$save(index);
+					});
+
 				});
+
+				//Update Global System Counters
 				$rootScope.systemCounters.weeks = {};
-				$rootScope.systemCounters.weeks.total = total;
-				$rootScope.systemCounters.weeks.open = open;
-				$rootScope.systemCounters.weeks.visible = open;
+				$rootScope.systemCounters.weeks.total = totalWeeks;
+				$rootScope.systemCounters.weeks.open = openWeeks;
+				$rootScope.systemCounters.weeks.visible = openWeeks;
 				$rootScope.systemCounters.$save();
-				console.log("End Weeks Migration");
+				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
 			});
 		};
 

@@ -304,7 +304,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 			/*TODO: Remove after migration. Assign specific number to the notification counter and
 			Removing the metadata folder.*/
 			setTotalUnreadNotifications: function(userid, total){
-				notificationsRef.child("metadata").child(userid).set({});
+				//notificationsRef.child("metadata").child(userid).set({});
 				let notifCounterRef = usersRef.child(userid).child(unreadNotificationsCounter);
 				notifCounterRef.transaction(function(currentUnread){ return total; });
 			},
