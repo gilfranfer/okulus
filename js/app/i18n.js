@@ -4,7 +4,7 @@ okulusApp.run(function($rootScope) {
 		$rootScope.config ={
       isProdEnv: false,
 			maxInitialNotifications: 50,
-			maxQueryResults: 50,
+			maxQueryResults: 5,
 			minResultsToshowFilter: 5,
 			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
@@ -109,7 +109,7 @@ okulusApp.run(function($rootScope) {
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",
         /*Buttons*/
-        loadBtn:"Mostrar Semanas", newBtn:"Crear Semana",
+        loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
         showBtn:"Mostrar", hideBtn:"Ocultar",
 				editBtn:"Editar Semana",
@@ -123,6 +123,7 @@ okulusApp.run(function($rootScope) {
 				weekUpdated:"Se ha actualizado la Semana",
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
+				weekExists:"Ya existe la Semana",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",

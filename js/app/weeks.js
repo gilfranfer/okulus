@@ -21,29 +21,57 @@ okulusApp.controller('WeeksCntrl',
 				});
 		}});
 
-		/*On demand load of all Weeks in the system*/
-		$scope.loadWeeksList = function () {
-			$rootScope.weekResponse = null;
-			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading };
-			//$rootScope.weeksList = WeeksSvc.loadAllWeeks();
-			$rootScope.weeksList = WeeksSvc.loadWeeksLimitTo($rootScope.config.maxQueryResults);
+		weekListLoaded = function () {
 			$rootScope.weeksList.$loaded().then(function(weeks) {
+				$rootScope.weekResponse = null;
 				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
-			})
-			.catch( function(error){
+			}).catch( function(error){
 				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
 				console.error(error);
 			});
 		};
 
+		/* On demand load of all Weeks in the system */
+		$scope.loadWeeksList = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading };
+			$rootScope.weeksList = WeeksSvc.getWeeksLimitToLast($rootScope.config.maxQueryResults);
+			weekListLoaded();
+		};
+
+		$scope.loadOpenWeeks = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$rootScope.weeksList = WeeksSvc.getOpenWeeks();
+			weekListLoaded();
+		};
+
+		$scope.loadClosedWeeks = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$rootScope.weeksList = WeeksSvc.getClosedWeeks();
+			weekListLoaded();
+		};
+
+		$scope.loadVisibleWeeks = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$rootScope.weeksList = WeeksSvc.getVisibleWeeks();
+			weekListLoaded();
+		};
+
+		$scope.loadHiddenWeeks = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$rootScope.weeksList = WeeksSvc.getHiddenWeeks();
+			weekListLoaded();
+		};
+
 		/*Toogle the Week Status (isOpen=true/false) */
 		$scope.setWeekOpenStatus = function (weekId, setOpen) {
 			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
 		};
 
 		/*Toogle the Week visibility (isVisible=true/false) */
 		$scope.setWeekVisibility = function (weekId, setVisible) {
 			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
 		};
 
 	}
@@ -53,11 +81,13 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
 		// let openStatus = constants.status.open;
 		// let closedSatus = constants.status.closed;
-
-		let weeksRef = firebase.database().ref().child(rootFolder).child('weeks');
-		let openWeeksRef = weeksRef.orderByChild("isOpen").equalTo(true);
-		let openWeeksCounterRef = firebase.database().ref().child(rootFolder).child('counters/weeks/open');
-		let visibleWeeksCounterRef = firebase.database().ref().child(rootFolder).child('counters/weeks/visible');
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let weeksRef = baseRef.child('weeks');
+		let isOpenWeekRef = weeksRef.orderByChild("isOpen");
+		let isVisibleWeekRef = weeksRef.orderByChild("isVisible");
+		let openWeeksCounterRef = baseRef.child('counters/weeks/open');
+		let visibleWeeksCounterRef = baseRef.child('counters/weeks/visible');
+		let totalWeeksCounterRef = baseRef.child('counters/weeks/total');
 
 		let updateOpenStatusCounterAndAudit = function (isWeekOpen, weekId) {
 			if(isWeekOpen){
@@ -96,23 +126,33 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 		};
 
 		return {
+			//Remove
 			loadActiveWeeks: function(){
 				if(!$rootScope.allActiveWeeks){
-					$rootScope.allActiveWeeks = $firebaseArray(openWeeksRef);
+					$rootScope.allActiveWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
 				}
 			},
+			//Remove
 			loadAllWeeks: function(){
 				if(!$rootScope.allWeeks){
 					$rootScope.allWeeks = $firebaseArray(weeksRef);
 				}
 				return $rootScope.allWeeks;
 			},
-			loadWeeksLimitTo: function(limit){
-				return $firebaseArray(weeksRef.orderByKey().limitToLast(limit));
+			getOpenWeeks: function(){
+				return $firebaseArray(isOpenWeekRef.equalTo(true));
 			},
-			//REMOVE?
-			getWeeksFolderRef: function(){
-				return firebase.database().ref().child(rootFolder).child('weeks');
+			getClosedWeeks: function(){
+				return $firebaseArray(isOpenWeekRef.equalTo(false));
+			},
+			getVisibleWeeks: function(){
+				return $firebaseArray(isVisibleWeekRef.equalTo(true));
+			},
+			getHiddenWeeks: function(){
+				return $firebaseArray(isVisibleWeekRef.equalTo(false));
+			},
+			getWeeksLimitToLast: function(limit){
+				return $firebaseArray(weeksRef.orderByKey().limitToLast(limit));
 			},
 			/*Return Week Firebase Object*/
 			getWeekObject: function(weekId){
@@ -161,8 +201,23 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				}, function(error) {
 					console.log("Error:", error);
 				});
+			},
+			/*Used when creating a Week*/
+			increaseTotalWeeksCounter: function () {
+				increaseCounter(totalWeeksCounterRef);
+			},
+			/*Used when deleting a Week*/
+			decreaseTotalWeeksCounter: function () {
+				decreaseCounter(totalWeeksCounterRef);
+			},
+			/*Used when deleting a Week with Open Status*/
+			decreaseOpenWeeksCounter: function () {
+				decreaseCounter(openWeeksCounterRef);
+			},
+			/*Used when deleting a Week with Visible Status*/
+			decreaseVisibleWeeksCounter: function () {
+				decreaseCounter(visibleWeeksCounterRef);
 			}
-
 		};//return end
 	}
 ]);
@@ -235,19 +290,17 @@ okulusApp.controller('WeekDetailsCntrl',
 		$scope.setWeekOpenStatus = function (setOpen) {
 			$rootScope.weekResponse = null;
 			WeeksSvc.updateWeekStatusInObject($scope.objectDetails,setOpen);
-			$scope.response = {success:true, message: $i18n.weeks.statusUpdated };
-			//$scope.audit = $scope.objectDetails.audit;
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.statusUpdated };
 		};
 
 		/* Toogle the Week visibility (isVisible=true/false) */
 		$scope.setWeekVisibility = function (setVisible) {
 			$rootScope.weekResponse = null;
 			WeeksSvc.updateWeekVisibilityInObject($scope.objectDetails, setVisible);
-			$scope.response = {success:true, message: $i18n.weeks.visibilityUpdated };
-			//$scope.audit = $scope.objectDetails.audit;
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.visibilityUpdated };
 		};
 
-		/* Save or Update Week */
+		/* Save or Update Week data (Name and Description) */
 		$scope.save = function() {
 			$rootScope.weekResponse = null;
 			if(!$scope.objectDetails){ return; }
@@ -262,7 +315,7 @@ okulusApp.controller('WeekDetailsCntrl',
 			if($scope.objectDetails.$id){
 				$scope.objectDetails.$save().then(function(ref) {
 					AuditSvc.recordAudit(weekId, "update", "weeks");
-					$scope.response = {success:true, message: $i18n.weeks.weekUpdated+" "+weekId };
+					$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
 				},function(error){
 					console.log("Error:", error);
 					$scope.response = { error:true, message: error };
@@ -272,15 +325,18 @@ okulusApp.controller('WeekDetailsCntrl',
 			else{
 				WeeksSvc.getWeekObject(weekId).$loaded().then(function(week) {
 					if(week.name){
-						$scope.response = {error:true, message: "Ya existe la Semana "+weekId };
+						$scope.response = {error:true, message: $rootScope.i18n.weeks.weekExists+" "+weekId };
 					}else{
 						week.name = $scope.objectDetails.name;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
+						week.isOpen = false;
+						week.isVisible = false;
 
 						week.$save().then(function(ref) {
+							WeeksSvc.increaseTotalWeeksCounter();
 							AuditSvc.recordAudit(weekId, "create", "weeks");
-							$rootScope.weekResponse = { created:true, message: $i18n.weeks.weekCreated+" "+weekId };
+							$rootScope.weekResponse = { created:true, message: $rootScope.i18n.weeks.weekCreated+" "+weekId };
 							$location.path("/weeks/edit/"+weekId);
 						},function(error){
 						  console.log("Error:", error);
@@ -303,10 +359,19 @@ okulusApp.controller('WeekDetailsCntrl',
 				if($scope.objectDetails.reportsCount > 0){
 					$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
 				}else{
+					let isWeekOpen = $scope.objectDetails.isOpen;
+					let isWeekVisible = $scope.objectDetails.isVisible;
 					//proceed with delete
 					$scope.objectDetails.$remove().then(function(ref) {
+						if(isWeekOpen){
+							WeeksSvc.decreaseOpenWeeksCounter();
+						}
+						if(isWeekVisible){
+							WeeksSvc.decreaseVisibleWeeksCounter();
+						}
+						WeeksSvc.decreaseTotalWeeksCounter();
 						AuditSvc.recordAudit(weekId, "delete", "weeks");
-						$rootScope.weekResponse = {deleted:true, message: $i18n.weeks.weekDeleted+" "+weekId};
+						$rootScope.weekResponse = {deleted:true, message: $rootScope.i18n.weeks.weekDeleted+" "+weekId};
 						$location.path("/weeks");
 					}, function(error) {
 						console.log("Error:", error);
@@ -320,10 +385,19 @@ okulusApp.controller('WeekDetailsCntrl',
 					if(reportsList.length>0){
 						$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
 					}else{
+						let isWeekOpen = $scope.objectDetails.isOpen;
+						let isWeekVisible = $scope.objectDetails.isVisible;
 						//proceed with delete
 						$scope.objectDetails.$remove().then(function(ref) {
+							if(isWeekOpen){
+								WeeksSvc.decreaseOpenWeeksCounter();
+							}
+							if(isWeekVisible){
+								WeeksSvc.decreaseVisibleWeeksCounter();
+							}
+							WeeksSvc.decreaseTotalWeeksCounter();
 							AuditSvc.recordAudit(weekId, "delete", "weeks");
-							$rootScope.weekResponse = {deleted:true, message:$i18n.weeks.weekDeleted+" "+weekId};
+							$rootScope.weekResponse = {deleted:true, message:$rootScope.i18n.weeks.weekDeleted+" "+weekId};
 							$location.path("/weeks");
 						}, function(error) {
 							console.log("Error:", error);

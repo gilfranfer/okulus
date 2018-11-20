@@ -19,11 +19,11 @@
           </h4> -->
           <h4>
             <span class="badge badge-success">{{systemCounters.weeks.open}}</span>
-            <span>{{i18n.weeks.openWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadOpenWeeks()">{{i18n.weeks.openWeeks}}</span>
           </h4>
           <h4>
             <span class="badge badge-danger">{{systemCounters.weeks.total-systemCounters.weeks.open}}</span>
-            <span>{{i18n.weeks.closedWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadClosedWeeks()">{{i18n.weeks.closedWeeks}}</span>
           </h4>
         </div>
       </article>
@@ -33,11 +33,11 @@
         <div class="card-body">
           <h4>
             <span class="badge badge-primary">{{systemCounters.weeks.visible}}</span>
-            <span>{{i18n.weeks.visibleWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadVisibleWeeks()">{{i18n.weeks.visibleWeeks}}</span>
           </h4>
           <h4>
             <span class="badge badge-dark">{{systemCounters.weeks.total-systemCounters.weeks.visible}}</span>
-            <span>{{i18n.weeks.hiddenWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadHiddenWeeks()">{{i18n.weeks.hiddenWeeks}}</span>
           </h4>
         </div>
       </article>
