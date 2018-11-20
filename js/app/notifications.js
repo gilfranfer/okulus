@@ -11,9 +11,10 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if(user.memberId){
 					/*Show notifications only when the user has a member assigned*/
-					$scope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxInitialNotifications);
-					$scope.allNotifications.$loaded().then(function(notifications) {
-						//console.log(notifications);
+					if(!$rootScope.allNotifications){
+						$rootScope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxInitialNotifications);
+					}
+					$rootScope.allNotifications.$loaded().then(function(notifications) {
 						$scope.response = null;
 					})
 					.catch( function(error){
@@ -61,10 +62,10 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 		$scope.loadAllNotifications = function() {
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			let loggedUserId = $rootScope.currentSession.user.$id;
-			$scope.allNotifications = NotificationsSvc.getAllNotificationsForUser(loggedUserId);
-			$scope.allNotifications.$loaded().then(function(notifications) {
+			$rootScope.allNotifications = NotificationsSvc.getAllNotificationsForUser(loggedUserId);
+			$rootScope.allNotifications.$loaded().then(function(notifications) {
 				$scope.response = null;
-				$scope.allNotificationsLoaded = true;
+				$rootScope.allNotificationsLoaded = true;
 			})
 			.catch( function(error){
 				$scope.response = { error: true, message: $rootScope.i18n.notifications.loadingError };
