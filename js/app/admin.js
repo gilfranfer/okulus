@@ -125,6 +125,7 @@ okulusApp.controller('MonitorCntrl',
 		};
 
 		$scope.migrateWeeks = function () {
+			console.log("Init Weeks Migration");
 			//Updates in Week Object
 			WeeksSvc.loadAllWeeks();
 			$rootScope.allWeeks.$loaded().then(function (weeks) {
@@ -143,6 +144,9 @@ okulusApp.controller('MonitorCntrl',
 						week.isOpen = true;
 						week.isVisible = true;
 						open++;
+					}else{
+						week.isOpen = false;
+						week.isVisible = false;
 					}
 					week.status = null;
 					$rootScope.allWeeks.$save(index);
@@ -152,6 +156,7 @@ okulusApp.controller('MonitorCntrl',
 				$rootScope.systemCounters.weeks.open = open;
 				$rootScope.systemCounters.weeks.visible = open;
 				$rootScope.systemCounters.$save();
+				console.log("End Weeks Migration");
 			});
 		};
 
