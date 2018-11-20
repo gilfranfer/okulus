@@ -2,14 +2,16 @@
 okulusApp.run(function($rootScope) {
 
 		$rootScope.config ={
-      isProdEnv: false,
-			maxInitialNotifications: 50,
-			maxQueryResults: 5,
-			minResultsToshowFilter: 5,
-			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
-			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
+			isProdEnv: false,
+			/*The Max lenght a firebaseArray should have in the initial request*/
+			maxQueryListResults: 20,
+			/*After this number of records, the Filter box will be visible*/
+			minResultsToshowFilter: 3,
+			/*Date range limits*/
+			bday:{maxDate:"2019-12-31",minDate:"1900-01-01"},
+			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
 			reports:{
-						maxDate:"2018-12-31",minDate:"2018-01-01",
+						maxDate:"2019-12-31",minDate:"2018-01-01",
 						minDuration:"0", maxDuration:"300"
 					}
 		};
@@ -124,6 +126,9 @@ okulusApp.run(function($rootScope) {
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
 				weekExists:"Ya existe la Semana",
+				loadedWeeks: "Semanas fueron cargadas.",
+				loadPending1: "Clic aquí para mostrar ",
+				loadPending2: "Semanas restantes.",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",

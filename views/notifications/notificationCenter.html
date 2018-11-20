@@ -50,15 +50,15 @@
     <!-- Load all button -->
     <div class="row mb-3" ng-show="allNotifications.length && !allNotificationsLoaded">
       <div class="col text-center">
-        <p class="text-primary">
+        <span class="text-primary">
           {{allNotifications.length}} {{i18n.notifications.loadedNotifications}}
-        </p>
-        <p class="text-primary clickable"
-          ng-if="currentSession.user.counters.notifications.total > allNotifications.length " ng-click="loadAllNotifications()">
+        </span><br>
+        <span class="text-primary clickable"
+          ng-if="currentSession.user.counters.notifications.total > allNotifications.length" ng-click="loadAllNotifications()">
           {{i18n.notifications.loadPending1}}
-          {{currentSession.user.counters.notifications.total - config.maxInitialNotifications}}
+          {{currentSession.user.counters.notifications.total - allNotifications.length}}
           {{i18n.notifications.loadPending2}}
-        </p>
+        </span>
       </div>
     </div>
   </div>

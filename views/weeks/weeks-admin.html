@@ -19,11 +19,11 @@
           </h4> -->
           <h4>
             <span class="badge badge-success">{{systemCounters.weeks.open}}</span>
-            <span class="btn-link clickable" ng-click="loadOpenWeeks()">{{i18n.weeks.openWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadOpenWeeksList()">{{i18n.weeks.openWeeks}}</span>
           </h4>
           <h4>
             <span class="badge badge-danger">{{systemCounters.weeks.total-systemCounters.weeks.open}}</span>
-            <span class="btn-link clickable" ng-click="loadClosedWeeks()">{{i18n.weeks.closedWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadClosedWeeksList()">{{i18n.weeks.closedWeeks}}</span>
           </h4>
         </div>
       </article>
@@ -33,11 +33,11 @@
         <div class="card-body">
           <h4>
             <span class="badge badge-primary">{{systemCounters.weeks.visible}}</span>
-            <span class="btn-link clickable" ng-click="loadVisibleWeeks()">{{i18n.weeks.visibleWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadVisibleWeeksList()">{{i18n.weeks.visibleWeeks}}</span>
           </h4>
           <h4>
             <span class="badge badge-dark">{{systemCounters.weeks.total-systemCounters.weeks.visible}}</span>
-            <span class="btn-link clickable" ng-click="loadHiddenWeeks()">{{i18n.weeks.hiddenWeeks}}</span>
+            <span class="btn-link clickable" ng-click="loadHiddenWeeksList()">{{i18n.weeks.hiddenWeeks}}</span>
           </h4>
         </div>
       </article>
@@ -47,7 +47,7 @@
   <!-- Buttons -->
   <div class="row">
     <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadWeeksList()">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllWeeksList()">
         {{i18n.weeks.loadBtn}}
       </a>
     </div>
@@ -65,7 +65,7 @@
   <div ng-include="'views/alerts.html'"></div>
 
   <article id="filterCard" class="card mb-3"
-    ng-show="weeksList && weeksList.length > config.minResultsToshowFilter">
+    ng-show="weeksList.length > config.minResultsToshowFilter">
     <div class="card-body">
       <!-- <div class="card-text">
         <p>{{i18n.admin.groups.filterDescription}}</p>
@@ -128,4 +128,18 @@
     </div>
   </article>
 
+  <!-- Load all pending weeks  -->
+  <div class="row mb-3" ng-show="weeksList.length && !allWeeksListLoaded">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{weeksList.length}} {{i18n.weeks.loadedWeeks}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingWeeks()"
+        ng-if="(weeksList.length < weekListParams.maxPossible)" >
+        {{i18n.weeks.loadPending1}}
+        {{weekListParams.maxPossible - weeksList.length}}
+        {{i18n.weeks.loadPending2}}
+      </span>
+    </div>
+  </div>
 </section>

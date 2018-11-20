@@ -8,8 +8,8 @@
   <div class="card h-100 mb-3" ng-show="!response.loading">
     <div class="card-body">
       <h4 class="card-title">
-        {{weekParams.actionLbl}} {{i18n.weeks.weekLbl}} {{objectDetails.$id}}
-        <div class="d-inline" ng-if="weekParams.showBadges">
+        {{weekEditParams.actionLbl}} {{i18n.weeks.weekLbl}} {{objectDetails.$id}}
+        <div class="d-inline" ng-if="weekEditParams.showBadges">
           <span class="ml-4 badge badge-success" ng-if="objectDetails.isOpen">
             {{i18n.weeks.openLbl}}
           </span>
@@ -50,7 +50,7 @@
               <span class="text-danger">*</span>
             </label>
             <input type="week" id="weekDate" class="form-control form-control-lg"
-                placeholder="" ng-required="{{weekParams.dateRequired}}" ng-model="weekParams.date">
+                placeholder="" ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
           </div>
         </div>
         <!-- Notes -->

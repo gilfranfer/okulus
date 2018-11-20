@@ -12,7 +12,7 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 				if(user.memberId){
 					/*Show notifications only when the user has a member assigned*/
 					if(!$rootScope.allNotifications){
-						$rootScope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxInitialNotifications);
+						$rootScope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxQueryListResults);
 					}
 					$rootScope.allNotifications.$loaded().then(function(notifications) {
 						$scope.response = null;
