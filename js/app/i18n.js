@@ -118,6 +118,11 @@ okulusApp.run(function($rootScope) {
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
         noWeeksError: "No se encontraron Semanas.",
 				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
+				statusUpdated:"Estado de la Semana actualizado.",
+				visibilityUpdated:"Visibilidad de la Semana actualizada.",
+				weekUpdated:"Se ha actualizado la Semana",
+				weekCreated:"Se ha creado la Semana",
+				weekDeleted:"Se ha eliminado la semana",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
