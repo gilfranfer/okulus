@@ -4,6 +4,8 @@ okulusApp.run(function($rootScope) {
 		$rootScope.config ={
       isProdEnv: false,
 			maxInitialNotifications: 50,
+			maxQueryResults: 50,
+			minResultsToshowFilter: 5,
 			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
 			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
 			reports:{

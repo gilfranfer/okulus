@@ -25,7 +25,8 @@ okulusApp.controller('WeeksCntrl',
 		$scope.loadWeeksList = function () {
 			$rootScope.weekResponse = null;
 			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading };
-			$rootScope.weeksList = WeeksSvc.loadAllWeeks();
+			//$rootScope.weeksList = WeeksSvc.loadAllWeeks();
+			$rootScope.weeksList = WeeksSvc.loadWeeksLimitTo($rootScope.config.maxQueryResults);
 			$rootScope.weeksList.$loaded().then(function(weeks) {
 				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
 			})
@@ -106,6 +107,9 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 				}
 				return $rootScope.allWeeks;
 			},
+			loadWeeksLimitTo: function(limit){
+				return $firebaseArray(weeksRef.orderByKey().limitToLast(limit));
+			},
 			//REMOVE?
 			getWeeksFolderRef: function(){
 				return firebase.database().ref().child(rootFolder).child('weeks');
@@ -119,9 +123,9 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			update global counters,	update the Week's Audit details,
 			and generate the notification (triggered from recordAudit).*/
 			updateWeekStatusInArray: function (weekId, isOpen){
-				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
+				let weekRecord = $rootScope.weeksList.$getRecord(weekId);
 				weekRecord.isOpen = isOpen;
-				$rootScope.allWeeks.$save(weekRecord).then(function(){
+				$rootScope.weeksList.$save(weekRecord).then(function(){
 					updateOpenStatusCounterAndAudit(isOpen,weekId);
 				});
 			},
@@ -141,9 +145,9 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			update global counters,	update the Week's Audit details,
 			and generate the notification (triggered from recordAudit).*/
 			updateWeekVisibilityInArray: function (weekId, isVisible) {
-				let weekRecord = $rootScope.allWeeks.$getRecord(weekId);
+				let weekRecord = $rootScope.weeksList.$getRecord(weekId);
 				weekRecord.isVisible = isVisible;
-				$rootScope.allWeeks.$save(weekRecord).then(function(){
+				$rootScope.weeksList.$save(weekRecord).then(function(){
 					updateVisibilityCounterAndAudit(isVisible, weekId);
 				});
 			},
