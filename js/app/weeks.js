@@ -132,7 +132,6 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 					$rootScope.allActiveWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
 				}
 			},
-			//Remove
 			loadAllWeeks: function(){
 				if(!$rootScope.allWeeks){
 					$rootScope.allWeeks = $firebaseArray(weeksRef);
@@ -355,56 +354,27 @@ okulusApp.controller('WeekDetailsCntrl',
 			let weekId = $scope.objectDetails.$id;
 			/*In future all weeks should have a counter with the number of Existing
 			reports associated to this week */
-			if($scope.objectDetails.reportsCount >= 0){ //Remove "if" once all weeks have reportsCount
-				if($scope.objectDetails.reportsCount > 0){
-					$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
-				}else{
-					let isWeekOpen = $scope.objectDetails.isOpen;
-					let isWeekVisible = $scope.objectDetails.isVisible;
-					//proceed with delete
-					$scope.objectDetails.$remove().then(function(ref) {
-						if(isWeekOpen){
-							WeeksSvc.decreaseOpenWeeksCounter();
-						}
-						if(isWeekVisible){
-							WeeksSvc.decreaseVisibleWeeksCounter();
-						}
-						WeeksSvc.decreaseTotalWeeksCounter();
-						AuditSvc.recordAudit(weekId, "delete", "weeks");
-						$rootScope.weekResponse = {deleted:true, message: $rootScope.i18n.weeks.weekDeleted+" "+weekId};
-						$location.path("/weeks");
-					}, function(error) {
-						console.log("Error:", error);
-					});
-				}
-			}
-			//This will be removed once all weeks have reportsCount
-			else{
-				let weekReports = ReportsSvc.getReportsForWeekWithLimit(weekId, 1);
-				weekReports.$loaded().then(function (reportsList) {
-					if(reportsList.length>0){
-						$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
-					}else{
-						let isWeekOpen = $scope.objectDetails.isOpen;
-						let isWeekVisible = $scope.objectDetails.isVisible;
-						//proceed with delete
-						$scope.objectDetails.$remove().then(function(ref) {
-							if(isWeekOpen){
-								WeeksSvc.decreaseOpenWeeksCounter();
-							}
-							if(isWeekVisible){
-								WeeksSvc.decreaseVisibleWeeksCounter();
-							}
-							WeeksSvc.decreaseTotalWeeksCounter();
-							AuditSvc.recordAudit(weekId, "delete", "weeks");
-							$rootScope.weekResponse = {deleted:true, message:$rootScope.i18n.weeks.weekDeleted+" "+weekId};
-							$location.path("/weeks");
-						}, function(error) {
-							console.log("Error:", error);
-						});
+			if($scope.objectDetails.reportsCount > 0){
+				$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
+			}else{
+				let isWeekOpen = $scope.objectDetails.isOpen;
+				let isWeekVisible = $scope.objectDetails.isVisible;
+				//proceed with delete
+				$scope.objectDetails.$remove().then(function(ref) {
+					if(isWeekOpen){
+						WeeksSvc.decreaseOpenWeeksCounter();
 					}
+					if(isWeekVisible){
+						WeeksSvc.decreaseVisibleWeeksCounter();
+					}
+					WeeksSvc.decreaseTotalWeeksCounter();
+					AuditSvc.recordAudit(weekId, "delete", "weeks");
+					$rootScope.weekResponse = {deleted:true, message: $rootScope.i18n.weeks.weekDeleted+" "+weekId};
+					$location.path("/weeks");
+				}, function(error) {
+					console.log("Error:", error);
 				});
-			}
+			}	
 		};
 
 }]);
