@@ -1,13 +1,15 @@
 <!-- Admin Weeks List View -->
 <section id="adminWeeksList" ng-show="currentSession.user.type == 'admin'">
 
+  <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
       <h4 class="card-title">{{i18n.weeks.title}}</h4>
     </div>
   </article>
 
-  <div class="row">
+  <!-- Badges -->
+  <article class="row">
     <div class="col mb-3">
       <article id="badgesCard" class="card h-100">
         <div class="card-body">
@@ -42,10 +44,10 @@
         </div>
       </article>
     </div>
-  </div>
+  </article>
 
   <!-- Buttons -->
-  <div class="row">
+  <article class="row">
     <div class="col mb-3">
       <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllWeeksList()">
         {{i18n.weeks.loadBtn}}
@@ -56,7 +58,7 @@
         {{i18n.weeks.newBtn}}
       </a>
     </div>
-  </div>
+  </article>
 
   <!-- Alerts to show Response Message (Used after redirect from Weeks Delete) -->
   <div class="alert alert-danger" role="alert" ng-show="weekResponse.deleted" >
@@ -64,13 +66,16 @@
   </div>
   <div ng-include="'views/alerts.html'"></div>
 
-  <article id="filterCard" class="card mb-3"
-    ng-show="weeksList.length > config.minResultsToshowFilter">
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="weeksList.length">
     <div class="card-body">
+      <p class="lead">
+  			{{weekListParams.title}}
+  		</p>
       <!-- <div class="card-text">
         <p>{{i18n.admin.groups.filterDescription}}</p>
       </div> -->
-      <div class="row">
+      <div class="row" ng-show="weeksList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
         </div>
@@ -78,6 +83,7 @@
     </div>
   </article>
 
+  <!-- Week Cards -->
   <article id="weeksList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="week in weeksList | filter:searchText | orderBy:'-$id' track by week.$id">

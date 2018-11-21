@@ -27,40 +27,35 @@ okulusApp.controller('WeeksCntrl',
 		 the max possible records to display. */
 		$scope.loadAllWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading};
-			$rootScope.weekListParams = { activeWeekLoader:"loadAllWeeksList",
-		 															maxPossible: $rootScope.systemCounters.weeks.total };
+			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
 			$rootScope.weeksList = WeeksSvc.getWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadOpenWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-			$rootScope.weekListParams = { activeWeekLoader:"loadOpenWeeksList",
-		 															maxPossible: $rootScope.systemCounters.weeks.open };
+			$rootScope.weekListParams = getweekListParams("loadOpenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getOpenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadClosedWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-			$rootScope.weekListParams = { activeWeekLoader:"loadClosedWeeksList",
-		 															maxPossible: ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.open) };
+			$rootScope.weekListParams = getweekListParams("loadClosedWeeksList");
 			$rootScope.weeksList = WeeksSvc.getClosedWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadVisibleWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-			$rootScope.weekListParams = { activeWeekLoader:"loadVisibleWeeksList",
-		 															maxPossible: $rootScope.systemCounters.weeks.visible };
+			$rootScope.weekListParams = getweekListParams("loadVisibleWeeksList");
 			$rootScope.weeksList = WeeksSvc.getVisibleWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadHiddenWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-			$rootScope.weekListParams = { activeWeekLoader:"loadHiddenWeeksList",
-		 															maxPossible: ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.visible) };
+			$rootScope.weekListParams = getweekListParams("loadHiddenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getHiddenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
@@ -96,11 +91,44 @@ okulusApp.controller('WeeksCntrl',
 			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
 		};
 
+		getweekListParams = function (weekLoader) {
+			let weekListParams = {activeWeekLoader:weekLoader};
+			if(weekLoader == "loadAllWeeksList"){
+				weekListParams.title= $rootScope.i18n.weeks.totalWeeks;
+				weekListParams.maxPossible = $rootScope.systemCounters.weeks.total;
+			} else if(weekLoader == "loadOpenWeeksList"){
+				weekListParams.title= $rootScope.i18n.weeks.openWeeks;
+				weekListParams.maxPossible = $rootScope.systemCounters.weeks.open;
+			} else if(weekLoader == "loadClosedWeeksList"){
+				weekListParams.title= $rootScope.i18n.weeks.closedWeeks;
+				weekListParams.maxPossible = ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.open);
+			} else if(weekLoader == "loadVisibleWeeksList"){
+				weekListParams.title= $rootScope.i18n.weeks.visibleWeeks;
+				weekListParams.maxPossible = $rootScope.systemCounters.weeks.visible;
+			} else if(weekLoader == "loadHiddenWeeksList"){
+				weekListParams.title= $rootScope.i18n.weeks.hiddenWeeks;
+				weekListParams.maxPossible = ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.visible);
+			}
+			return weekListParams;
+		};
+
+		let unwatch  = undefined;
 		/*Prepares the response after the weeksList is loaded */
 		weekListLoaded = function () {
 			$rootScope.weeksList.$loaded().then(function(weeks) {
 				$rootScope.weekResponse = null;
 				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
+				//TODO: What about watch on the systemCounters??
+				/* Adding a Watch to the weekList to detect changes in the array.
+				The idea is to update the weekListParams, so the maxPossible value is updated.
+				If a previous watch exists, unwatch.*/
+				if(unwatch){ unwatch(); }
+				unwatch = $rootScope.weeksList.$watch( function(data){
+					/* Sometimes the weekListParams.maxPossible will not be updated, because
+					 we are using the $rootScope.systemCounters, and it is async */
+					$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
+				} );
+
 			}).catch( function(error){
 				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
 				console.error(error);
