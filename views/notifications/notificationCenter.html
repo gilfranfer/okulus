@@ -24,7 +24,8 @@
       <div class="list-group-item list-group-item-action flex-column align-items-start"
           ng-repeat="notification in allNotifications | orderBy:'-time' track by notification.$id">
         <div class="d-flex w-100">
-          <p class="clickable mb-0 w-100" ng-click="openNotification(notification)">
+          <a class="clickable mb-0 w-100 noUnderline" ng-href="#!/{{notification.onFolder}}/details/{{notification.onObject}}"
+            ng-click="readNotification(true,notification)">
             <span class="badge badge-danger" ng-if="!notification.readed">
               {{i18n.notifications.unreaded}}
             </span>
@@ -32,7 +33,7 @@
             <span class="text-primary">{{notification.description}}</span><br>
             <small>{{i18n.notifications.by}} {{notification.from}},
              {{notification.time | date: 'MMM dd yyyy hh:mm a' }}</small>
-          </p>
+          </a>
           <div class="ml-auto">
             <!-- Mark as readed -->
             <i class="clickable pr-2 fas fa-lg fa-eye" title="{{i18n.notifications.readBtn}}"

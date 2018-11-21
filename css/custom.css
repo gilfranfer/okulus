@@ -8,6 +8,10 @@ html {
   min-height: 100%;
 }
 
+.noUnderline, .noUnderline:hover{
+	text-decoration: none;
+}
+
 /** NAVIGATION BAR **/
 .bg-darkblue{
 	background-color: #013282;

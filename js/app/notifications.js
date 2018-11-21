@@ -36,13 +36,6 @@ okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebas
 			}
 		};
 
-		/* Redirect the user to the correct location, according to the notification.
-		  Update the notification's "readed" status to true*/
-		$scope.openNotification = function(notification){
-			$scope.readNotification(true,notification);
-			$location.path("/"+notification.onFolder+"/details/"+notification.onObject);
-		};
-
 		/* Remove the notification from db */
 		$scope.deleteNotification = function(notification){
 			let loggedUserId = $rootScope.currentSession.user.$id;
