@@ -18,8 +18,10 @@ okulusApp.controller('WeeksCntrl',
 								The idea is to update the maxPossible value from weekListParams.*/
 								if(unwatch){ unwatch(); }
 								unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
-									$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
-									console.log("Update!", data, $rootScope.weekListParams);
+									if($rootScope.weekListParams){
+										$scope.response = undefined;
+										$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
+									}
 								} );
 						});
 					}else{
@@ -124,8 +126,11 @@ okulusApp.controller('WeeksCntrl',
 		/*Prepares the response after the weeksList is loaded */
 		weekListLoaded = function () {
 			$rootScope.weeksList.$loaded().then(function(weeks) {
+				$scope.response = undefined;
 				$rootScope.weekResponse = null;
-				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
+				if(!weeks.length){
+					$scope.response = { error: true, message: $rootScope.i18n.weeks.noWeeksError };
+				}
 			}).catch( function(error){
 				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
 				console.error(error);

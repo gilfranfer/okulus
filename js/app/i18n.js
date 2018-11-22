@@ -127,8 +127,7 @@ okulusApp.run(function($rootScope) {
 				weekDeleted:"Se ha eliminado la semana",
 				weekExists:"Ya existe la Semana",
 				loadedWeeks: "Semanas fueron cargadas.",
-				loadPending1: "Clic aquí para mostrar ",
-				loadPending2: "Semanas restantes.",
+				loadPending1: "Mostar ", loadPending2: "Semanas restantes.",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",

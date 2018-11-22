@@ -83,6 +83,18 @@
     </div>
   </article>
 
+  <!-- Show number of loaded Weeks -->
+  <div class="alert alert-info" role="alert" ng-show="weeksList.length" >
+    {{weeksList.length}} {{i18n.weeks.loadingSuccess}}
+    <!-- Load all pending weeks  -->
+    <span class="btn-link clickable" ng-click="loadPendingWeeks()"
+      ng-if="(weeksList.length < weekListParams.maxPossible)" >
+      {{i18n.weeks.loadPending1}}
+      {{weekListParams.maxPossible - weeksList.length}}
+      {{i18n.weeks.loadPending2}}
+    </span>
+  </div>
+
   <!-- Week Cards -->
   <article id="weeksList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
