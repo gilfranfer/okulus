@@ -1,33 +1,78 @@
-okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$firebaseObject','AuditSvc', 'MigrationSvc','$firebaseAuth','$location','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseArray, $firebaseObject,AuditSvc,MigrationSvc,$firebaseAuth,$location,AuthenticationSvc){
+okulusApp.controller('MonitorCntrl',
+	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc', 'ReportsSvc',
+	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,ReportsSvc){
 
-		let auditRef = undefined;
-		let usersRef = undefined;
-		let errorsRef = undefined;
+		let noAdminErrorMsg = "Área solo para Administradores.";
+		let auditRef = firebase.database().ref().child(rootFolder).child('audit');
+		let usersRef = firebase.database().ref().child(rootFolder).child('users');
+		let errorsRef = firebase.database().ref().child(rootFolder).child('errors');
 
+		/*Executed when accessing to /admin/monitor, to confirm the user still admin*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						auditRef = firebase.database().ref().child(rootFolder).child('audit');
-						usersRef = firebase.database().ref().child(rootFolder).child('users');
-						errorsRef = firebase.database().ref().child(rootFolder).child('errors');
-						$scope.userRecords = $firebaseArray( usersRef );
-						$scope.errorsRecords = $firebaseArray( errorsRef );
-					}else{
-						$location.path("/error/norecord");
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(user.type != 'admin'){
+						$rootScope.response = {errorMsg: noAdminErrorMsg};
+						$location.path("/error");
 					}
 				});
 			}
 		});
 
-		getAuditRecords = function(selectObj){
-			// get the index of the selected option
-			var idx = selectObj.selectedIndex;
-			// get the value of the selected option
-			var auditOn = selectObj.options[idx].value;
-			$scope.auditOn = auditOn;
-			$scope.auditRecords = $firebaseArray( auditRef.child(auditOn) );
+		$scope.loadSystemErrors = function(){
+			$scope.response = {errorsLoading: true, message: $rootScope.i18n.admin.errors.loading};
+			if(!$scope.errorRecords){
+				$scope.errorRecords = $firebaseArray( errorsRef );
+				$scope.errorRecords.$loaded().then(function(list) {
+					$scope.response = {errorsSuccess: true, message: list.length + " " + $rootScope.i18n.admin.errors.loadingSuccess};
+				})
+				.catch( function(error){
+					$scope.response = {errorsError: true, message: $rootScope.i18n.notifications.loadingError};
+					console.error(error);
+				});
+			}
+		};
+
+		/*Update the error record's "readed" value. For security, before any update,
+		confirm the error's current "readed" value is different than the new one */
+		$scope.readErrorRecord = function(markReaded, error){
+			if(error.readed != markReaded){
+				ErrorsSvc.updateErrorReadedStatus(error.$id, markReaded);
+			}
+		};
+
+		/* Remove the error from db */
+		$scope.deleteErrorRecord = function(error){
+			ErrorsSvc.deleteErrorRecord(error);
+		};
+
+		$scope.loadSystemUsers = function(){
+			$scope.response = {usersLoading: true, message: $rootScope.i18n.admin.users.loading};
+			if(!$scope.userRecords){
+				$scope.userRecords = $firebaseArray(usersRef);
+				$scope.userRecords.$loaded().then(function(list) {
+					$scope.response = {usersSuccess: true, message: list.length + " " + $rootScope.i18n.admin.users.loadingSuccess};
+				})
+				.catch( function(error){
+					$scope.response = {usersError: true, message: $rootScope.i18n.notifications.loadingError};
+					console.error(error);
+				});
+			}
+		};
+
+		$scope.loadAuditRecords = function(){
+			$scope.response = {auditLoading: true, message: $rootScope.i18n.admin.audit.loading};
+			$scope.currentAuditOn = $scope.auditInFolder;
+			$scope.auditRecords = $firebaseArray( auditRef.child($scope.currentAuditOn) );
+			$scope.auditRecords.$loaded().then(function(list) {
+				$scope.response = {auditSuccess: true, message: list.length + " " + $rootScope.i18n.admin.audit.loadingSuccess};
+			})
+			.catch( function(error){
+				$scope.response = {auditError: true, message: $rootScope.i18n.notifications.loadingError};
+				console.error(error);
+			});
 		};
 
 		$scope.updateUserType = function (userId, type) {
@@ -52,13 +97,84 @@ okulusApp.controller('MonitorCntrl', ['$rootScope','$scope','$firebaseArray','$f
 			}
 		}
 
-		$scope.migrateAudit = function () {
-			MigrationSvc.migrateAudit()
-		}
-	}
-]);
+		/* MIGRATION FUNCTIONS */
 
-okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject','WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
+		/* The metadata folder under contains the id of all unread Notifications.
+		Is better to remove this folder, and keep only the list folder.
+		The totals will be maintaint in the global counters */
+		$scope.migrateNotifications = function () {
+			let baseRef = firebase.database().ref().child(rootFolder);
+			let metaRef = baseRef.child("notifications/metadata");
+			let listRef = baseRef.child("notifications/list");
+
+			//Get all System Users
+			$firebaseArray(baseRef.child("users")).$loaded().then( function(usersList) {
+				usersList.forEach(function(user){
+					//Use the notifications/metadata length to set the User's unread Count
+					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
+						console.log("User: "+user.$id+" Unread Notifications: "+list.length);
+						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
+					});
+					//Use the notifications/list length to set the User's total Count
+					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
+						console.log("User: "+user.$id+" Total Notifications: "+list.length);
+						NotificationsSvc.setTotalNotifications(user.$id,list.length);
+					});
+				});
+			});
+		};
+
+		$scope.migrateWeeks = function () {
+			console.log("Init Weeks Migration");
+			//Updates in Week Object
+			WeeksSvc.loadAllWeeks();
+			$rootScope.allWeeks.$loaded().then(function (weeks) {
+				let totalReports = 0;
+				let totalWeeks = weeks.length;
+				let openWeeks = 0;
+
+				weeks.forEach(function(week){
+					//Add year and weekNumber to the DB, from the week id
+					let index = $rootScope.allWeeks.$indexFor(week.$id);
+					let idtxt = week.$id + "";
+					let yearStr = idtxt.substring(0,4);
+					let weekStr = idtxt.substring(4);
+					week.year = Number(yearStr);
+					week.weekNumber = Number(weekStr);
+					//Add isOpen and isVisible from week status
+					if(week.status == "open"){
+						week.isOpen = true;
+						week.isVisible = true;
+						openWeeks++;
+					}else{
+						week.isOpen = false;
+						week.isVisible = false;
+					}
+					//week.status = null;
+
+					//Get Reports for the week to update week's reportsCount
+					ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+						week.reportsCount = reports.length;
+						console.log(week.$id+" has "+reports.length+" reports");
+						$rootScope.allWeeks.$save(index);
+					});
+
+				});
+
+				//Update Global System Counters
+				$rootScope.systemCounters.weeks = {};
+				$rootScope.systemCounters.weeks.total = totalWeeks;
+				$rootScope.systemCounters.weeks.open = openWeeks;
+				$rootScope.systemCounters.weeks.visible = openWeeks;
+				$rootScope.systemCounters.$save();
+				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
+			});
+		};
+
+}]);
+
+okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
+							'WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
 		$scope.loadingReportSelector = true;
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
@@ -95,105 +211,3 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 		});
 
 }]);
-
-okulusApp.factory('MigrationSvc', ['$firebaseArray', '$firebaseObject',
-	function( $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(rootFolder);
-
-		let updateAudit = function(usersMap, record, folder){
-			let audit = record.audit;
-			if(audit){
-				if(audit.createdBy){
-					audit.createdById = usersMap.get(audit.createdBy);
-				}else if(record.createdBy){
-					audit.createdOn = record.createdOn;
-					record.createdOn = null;
-					audit.createdBy = record.createdBy;
-					record.createdBy = null;
-					audit.createdById = usersMap.get(audit.createdBy);
-				}
-				if (audit.lastUpdateBy) {
-					audit.lastUpdateById = usersMap.get(audit.lastUpdateBy);
-				}else if(record.lastUpdateBy){
-					audit.lastUpdateOn = record.lastUpdateOn;
-					record.lastUpdateOn = null;
-					audit.lastUpdateBy = record.lastUpdateBy;
-					record.lastUpdateBy = null;
-					audit.lastUpdateById = usersMap.get(audit.lastUpdateBy);
-				}
-				if (audit.rejectedBy) {
-					audit.rejectedById = usersMap.get(audit.rejectedBy);
-				}
-				if (audit.approvedBy) {
-					audit.approvedById = usersMap.get(audit.approvedBy);
-				}
-			}else {
-				console.error("No Audit Folder on ", folder,record.$id);
-			}
-		}
-
-		return {
-			migrateAudit: function(){
-				let allusers = $firebaseArray(baseRef.child("users"));
-				console.debug("Initiating Migration");
-				allusers.$loaded().then(function(users){
-					console.debug("loading Email - User ID map");
-					var userMap = new Map();
-					userMap.set("Root", null);
-					userMap.set("System", null);
-					allusers.forEach(function(user) {
-						userMap.set(user.email, user.$id);
-					});
-
-					console.debug("Migrating Folders");
-					let allweeks = $firebaseArray(baseRef.child("weeks"));
-					let allgroups = $firebaseArray(baseRef.child("groups"));
-					let allmembers = $firebaseArray(baseRef.child("members"));
-					let allreports = $firebaseArray(baseRef.child("reports"));
-
-					console.debug("Migrating Groups");
-					allgroups.$loaded().then(function(){
-						allgroups.forEach(function(element){
-							let record = allgroups.$getRecord(element.$id);
-							updateAudit(userMap, record, "groups");
-							allgroups.$save(record);
-						});
-					});
-					console.debug("Migrating Weeks");
-					allweeks.$loaded().then(function(){
-						allweeks.forEach(function(element){
-							let record = allweeks.$getRecord(element.$id);
-							updateAudit(userMap, record, "weeks");
-							allweeks.$save(record);
-						});
-					});
-					console.debug("Migrating Members");
-					allmembers.$loaded().then(function(){
-						allmembers.forEach(function(element){
-							let record = allmembers.$getRecord(element.$id);
-							updateAudit(userMap, record, "members");
-							allmembers.$save(record);
-						});
-					});
-					console.debug("Migrating Reports");
-					allreports.$loaded().then(function(){
-						allreports.forEach(function(element){
-							let record = allreports.$getRecord(element.$id);
-							updateAudit(userMap, record, "reports");
-							allreports.$save(record);
-						});
-					});
-					console.debug("Migrating Users");
-					allusers.$loaded().then(function(){
-						allusers.forEach(function(element){
-							let record = allusers.$getRecord(element.$id);
-							updateAudit(userMap, record, "users");
-							allusers.$save(record);
-						});
-					});
-				});
-
-			}
-		};
-	}
-]);

@@ -1,0 +1,163 @@
+<!-- Admin Weeks List View -->
+<section id="adminWeeksList" ng-show="currentSession.user.type == 'admin'">
+
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.weeks.title}}</h4>
+    </div>
+  </article>
+
+  <!-- Badges -->
+  <article class="row">
+    <div class="col mb-3">
+      <article id="badgesCard" class="card h-100">
+        <div class="card-body">
+          <!-- <h4>
+            <span class="badge badge-primary">
+              {{weeksGlobalCounter.total}}
+            </span>
+            <span>{{i18n.weeks.totalWeeks}}</span>
+          </h4> -->
+          <h4>
+            <span class="badge badge-success">{{weeksGlobalCounter.open}}</span>
+            <span class="btn-link clickable" ng-click="loadOpenWeeksList()">{{i18n.weeks.openWeeks}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-danger">{{weeksGlobalCounter.total-weeksGlobalCounter.open}}</span>
+            <span class="btn-link clickable" ng-click="loadClosedWeeksList()">{{i18n.weeks.closedWeeks}}</span>
+          </h4>
+        </div>
+      </article>
+    </div>
+    <div class="col mb-3">
+      <article id="" class="card h-100">
+        <div class="card-body">
+          <h4>
+            <span class="badge badge-primary">{{weeksGlobalCounter.visible}}</span>
+            <span class="btn-link clickable" ng-click="loadVisibleWeeksList()">{{i18n.weeks.visibleWeeks}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-dark">{{weeksGlobalCounter.total-weeksGlobalCounter.visible}}</span>
+            <span class="btn-link clickable" ng-click="loadHiddenWeeksList()">{{i18n.weeks.hiddenWeeks}}</span>
+          </h4>
+        </div>
+      </article>
+    </div>
+  </article>
+
+  <!-- Buttons -->
+  <article class="row">
+    <div class="col mb-3">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllWeeksList()">
+        {{i18n.weeks.loadBtn}}
+      </a>
+    </div>
+    <div class="col mb-3">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" href="#!/weeks/new" >
+        {{i18n.weeks.newBtn}}
+      </a>
+    </div>
+  </article>
+
+  <!-- Alerts to show Response Message (Used after redirect from Weeks Delete) -->
+  <div class="alert alert-danger" role="alert" ng-show="weekResponse.deleted" >
+    {{weekResponse.message}}
+  </div>
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="weeksList.length">
+    <div class="card-body">
+      <p class="lead">
+  			{{weekListParams.title}}
+  		</p>
+      <!-- <div class="card-text">
+        <p>{{i18n.admin.groups.filterDescription}}</p>
+      </div> -->
+      <div class="row" ng-show="weeksList.length > config.minResultsToshowFilter">
+        <div class="col">
+          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Show number of loaded Weeks -->
+  <div class="alert alert-info" role="alert" ng-show="weeksList.length" >
+    {{weeksList.length}} {{i18n.weeks.loadingSuccess}}
+    <!-- Load all pending weeks  -->
+    <span class="btn-link clickable" ng-click="loadPendingWeeks()"
+      ng-if="(weeksList.length < weekListParams.maxPossible)" >
+      {{i18n.weeks.loadPending1}}
+      {{weekListParams.maxPossible - weeksList.length}}
+      {{i18n.weeks.loadPending2}}
+    </span>
+  </div>
+
+  <!-- Week Cards -->
+  <article id="weeksList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="week in weeksList | filter:searchText | orderBy:'-$id' track by week.$id">
+      <!-- Group card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/weeks/edit/{{week.$id}}">
+              {{week.$id}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="week.isOpen">{{i18n.weeks.openLbl}}</span>
+          <span class="badge badge-danger"  ng-if="!week.isOpen">{{i18n.weeks.closedLbl}}</span>
+          <span class="badge badge-primary" ng-if="week.isVisible">{{i18n.weeks.showLbl}}</span>
+          <span class="badge badge-dark"    ng-if="!week.isVisible">{{i18n.weeks.hideLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{week.name}} <br>
+            <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{week.year}} <br>
+            <span class="font-weight-bold">{{i18n.weeks.weekLbl}}:</span> {{week.weekNumber}}
+          </p>
+          <!-- Buttons -->
+          <div class="row">
+            <div class="col mb-2" ng-show="!week.isOpen">
+              <button class="btn btn-block btn-warning clickable" ng-click="setWeekOpenStatus(week.$id,true)">
+                {{i18n.weeks.openBtn}}
+              </button>
+            </div>
+            <div class="col mb-2" ng-show="week.isOpen">
+              <button class="btn btn-block btn-warning clickable" ng-click="setWeekOpenStatus(week.$id,false)">
+                {{i18n.weeks.closeBtn}}
+              </button>
+            </div>
+            <div class="col mb-2" ng-show="!week.isVisible">
+              <button class="btn btn-block btn-warning clickable" ng-click="setWeekVisibility(week.$id,true)">
+                {{i18n.weeks.showBtn}}
+              </button>
+            </div>
+            <div class="col mb-2" ng-show="week.isVisible">
+              <button class="btn btn-block btn-warning clickable" ng-click="setWeekVisibility(week.$id,false)">
+                {{i18n.weeks.hideBtn}}
+              </button>
+            </div>
+          </div>
+          <!-- Buttons end -->
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Load all pending weeks  -->
+  <div class="row mb-3" ng-show="weeksList.length && !allWeeksListLoaded">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{weeksList.length}} {{i18n.weeks.loadedWeeks}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingWeeks()"
+        ng-if="(weeksList.length < weekListParams.maxPossible)" >
+        {{i18n.weeks.loadPending1}}
+        {{weekListParams.maxPossible - weeksList.length}}
+        {{i18n.weeks.loadPending2}}
+      </span>
+    </div>
+  </div>
+</section>

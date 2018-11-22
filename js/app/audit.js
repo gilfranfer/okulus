@@ -10,6 +10,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 			 * use its Id to create a couple of Audit records:
 			 * 1. Record in the object itself (actions: creation,update)
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)
+			 * Returns a reference to the audit folder created in the object
 			 */
 			recordAudit: function( objectId, action, on){
 				//Determine who is doing the action
@@ -62,7 +63,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Notifications get Triggered from same places as audit
-        NotificationsSvc.sendNotification(action, on, objectId, user, userId);
+        NotificationsSvc.notifyInterestedUsers(action, on, objectId, user, userId);
 				return baseRef.child(on).child(objectId).child("audit");
 			}
 		};

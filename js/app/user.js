@@ -26,48 +26,25 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 	}
 ]);
 
-/* Controller linked to /mygroups
- * It will load the Groups the Current Member has Access to */
-okulusApp.controller('UserMyGroupsCntrl', ['MembersSvc','GroupsSvc', '$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
-		$scope.loadingGroups = true;
+/* Controller linked to /mycontacts
+ * It will load all the Members that are part of the Groups the Current Member has Access to */
+okulusApp.controller('UserMyContactsCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
+	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+
+		/* Executed everytime we enter to /mycontacts
+		  This function is used to confirm the user has an associated Member */
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
 					if(!user.memberId){
-						$location.path("/error/nomember");
+						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$location.path("/error");
 						return;
 					}
 
-					//Get the Groups the user has access to
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						$scope.groupsList = filteredGroups;
-						$scope.loadingGroups = false;
-						if(!filteredGroups.length){
-							$scope.response = {noGroupsFound:true};
-						}
-					});
-
-				});
-			}
-		});
-	}
-]);
-
-okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootScope','$scope','$location','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, GroupsSvc, $rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc){
-		$scope.loadingMembers = true;
-		console.log("some");
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
-						$location.path("/error/nomember");
-						return;
-					}
+					//TODO: Update this to a less data consuming approach
 					//Get the Members that are in the same group the user has access to
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
@@ -82,11 +59,6 @@ okulusApp.controller('UserMyContactsCntrl', ['MembersSvc', 'GroupsSvc', '$rootSc
 						}
 					});
 
-					// MembersSvc.getMemberGroups(user.memberId).then(function(groups){
-					// 	return MembersSvc.getMembersInGroups(groups)
-					// }).then(function(contacts){
-					// 	$scope.membersList = contacts;
-					// });
 				});
 			}
 		});
@@ -118,3 +90,27 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 			});
 		}});
 }]);
+
+okulusApp.factory('UsersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+
+		let usersRef = firebase.database().ref().child(rootFolder).child('users');
+
+		return {
+			updateMemberInUserObject: function(memberId, userType, userObj){
+				userObj.memberId = memberId;
+				userObj.type = userType; //in case it was admin
+				userObj.$save();
+			},
+			createUser: function(userId, userEmail, userType){
+				let record = {
+					email: userEmail, type: userType,
+					lastLoginOn: firebase.database.ServerValue.TIMESTAMP,
+					lastActivityOn: firebase.database.ServerValue.TIMESTAMP,
+					sessionStatus: "online"
+				};
+				usersRef.child(userId).set(record);
+			}
+		};
+	}
+]);

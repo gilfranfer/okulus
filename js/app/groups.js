@@ -1,22 +1,76 @@
-//mappgin: /groups
-okulusApp.controller('GroupsAdminListCntrl', ['GroupsSvc', '$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc',
-	function(GroupsSvc, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				$scope.loadingGroups = true;
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.groupsList = GroupsSvc.loadAllGroupsList();
-						$scope.groupsList.$loaded().then(function(groups) {
-							$scope.loadingGroups = false;
-							if(!groups.length){
-								$scope.response = {noGroupsFound:true};
-							}
-						});
+/* Controller linked to /groups
+ * It will load the Groups the Current Member has Access to */
+okulusApp.controller('GroupsAdminCntrl',
+	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc','UtilsSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc,UtilsSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 
-					}else{
-						$location.path("/error/norecord");
+		/* Executed everytime we enter to /groups
+		  This function is used to confirm the user is Admin */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+			if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
+					function(user){
+						if(user.type == 'admin'){
+							UtilsSvc.loadSystemCounter();
+							$rootScope.systemCounters.$loaded().then(function(counters) {
+								$scope.response = undefined;
+							});
+						}else{
+							$rootScope.response = {error:true, showHomeButton: true,
+																			message:$rootScope.i18n.error.noAdmin};
+							$location.path("/error");
+						}
+				});
+			}
+		});
+
+		$scope.loadGroupList = function () {
+			$scope.response = {loading: true, message: $rootScope.i18n.admin.groups.loading };
+			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
+			$rootScope.groupsList.$loaded().then(function(groups) {
+				$scope.response = {success:true, message:groups.length+" "+$rootScope.i18n.admin.groups.loadingSuccess };
+			})
+			.catch( function(error){
+				$scope.response = { error: true, message: $rootScope.i18n.admin.groups.loadingError };
+				console.error(error);
+			});
+		};
+
+	}
+]);
+
+/* Controller linked to /mygroups
+ * It will load the Groups the Current Member has Access to */
+okulusApp.controller('GroupsUserCntrl',
+	['$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc', 'MembersSvc','GroupsSvc',
+	function($rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc,MembersSvc, GroupsSvc){
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+
+		/* Executed everytime we enter to /mygroups
+		  This function is used to confirm the user has an associated Member */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+    	if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+					if(!user.memberId){
+						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$location.path("/error");
+						return;
 					}
+
+					//TODO: Get groups from new db folder to reduce data load
+					//Get the Groups the user has access to
+					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					}).then(function (memberRules) {
+						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+						$rootScope.myGroupsList = filteredGroups;
+						$scope.loadingGroups = false;
+						if(!filteredGroups.length){
+							$scope.response = {noGroupsFound:true};
+						}
+					});
+
 				});
 			}
 		});
@@ -129,6 +183,7 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 									// console.debug("Error:", error);
 								});
 							}else{
+								$scope.working = false;
 								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
 							}
 						});
@@ -339,7 +394,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					//notify the member that got the access
 					MembersSvc.getMember(whichMember).$loaded().then(function(member){
 						console.debug(member);
-						NotificationsSvc.sendNotificationTo(member.user.userId,"access-granted", "groups", whichGroup,null,null);
+						NotificationsSvc.notifySpecificUser(member.user.userId,"access-granted", "groups", whichGroup,null,null);
 					});
 					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };
 					//update record. Now to point to the Group
@@ -369,7 +424,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			  AuditSvc.recordAudit(whichGroup, "access-deleted", "groups");
 				//notify the member that got the access
 				MembersSvc.getMember(whichMember).$loaded().then(function(member){
-					NotificationsSvc.sendNotificationTo(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
+					NotificationsSvc.notifySpecificUser(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
 				});
 				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
 					if(error){

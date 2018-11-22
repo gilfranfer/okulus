@@ -9,31 +9,27 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <!-- Font awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
-
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
 	</head>
 	<body ng-controller="AuthenticationCntrl">
-    <section class="mb-5" ng-controller="LanguageCntrl">
-      <header ng-include="'views/navigation.html'"></header>
-      <!-- Main Bootstrap container -->
-  		<div class="container mt-4 mb-4">
-  			<main id="main" ng-view></main>
-  		</div>
-      <!-- Main Bootstrap container  -->
-    </section>
-
-    <footer class="mt-4 footer text-center text-light">
+    <header ng-include="'views/navigation.html'"></header>
+    <!-- Message when User has not validated his email -->
+    <div class="alert alert-danger" role="alert" ng-show="emailNotVerifiedError">
+      <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
+      <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
+        {{i18n.emailValidation.verify}}
+      </button>
+      <p ng-if="response.emailSent">
+        {{i18n.emailValidation.reviewEmail}}
+      </p>
+    </div>
+    <!-- Main Bootstrap container -->
+  	<div class="container mt-4 mb-4">
+      <main id="main" ng-view></main>
+  	</div>
+    <footer class="footer text-center text-light mt-4">
       &copy; GilLab 2018
     </footer>
-  	<!-- Bootstrap, jQuery, and Popper.js -->
-  	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <script src="https://code.highcharts.com/6.0.7/highcharts.js"></script>
-    <script src="https://code.highcharts.com/highcharts-more.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
 
     <!-- Angular -->
   	<script src="js/lib/angular.min.js"></script>
@@ -44,10 +40,10 @@
     <script src="js/app/datasource.js"></script>
     <script src="https://cdn.firebase.com/libs/angularfire/2.3.0/angularfire.min.js"></script>
 
-
     <!-- Application Specific -->
     <script src="js/app/config.js"></script>
-    <script src="js/app/language.js"></script>
+    <script src="js/app/i18n.js"></script>
+    <script src="js/app/authentication.js"></script>
     <script src="js/app/groups.js"></script>
     <script src="js/app/members.js"></script>
     <script src="js/app/reports.js"></script>
@@ -56,11 +52,17 @@
     <script src="js/app/user.js"></script>
     <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
-    <script src="js/app/errors.js"></script>
     <script src="js/app/audit.js"></script>
     <script src="js/app/notifications.js"></script>
     <script src="js/app/messageCenter.js"></script>
-    <script src="js/app/authentication.js"></script>
     <script src="js/app/chat.js"></script>
+
+    <!-- Bootstrap, jQuery, and Popper -->
+  	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="https://code.highcharts.com/6.0.7/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
   </body>
 </html>

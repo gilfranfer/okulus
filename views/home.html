@@ -1,110 +1,91 @@
-<section ng-show="emailNotVerifiedError" class="row">
-    <div class="col alert alert-danger" role="alert">
-      <h2>{{i18n.forms.verification.emailNotVerifiedError}}</h2>
-      <h4>{{currentSession.user.email}}</h4>
-      <p ng-if="response.verificationEmailSent">
-        {{i18n.forms.verification.reviewEmail}}
-      </p>
-      <p ng-if="!response.verificationEmailSent">
-        <button class="btn btn-link" ng-click="verifyEmail()">{{i18n.forms.verification.verify}}</button>
-      </p>
-    </div>
-</section>
-
-<section ng-show="currentSession.member">
-
-  <article id="welcomeMessage" class="row mb-3">
-      <div class="col alert alert-success" role="alert">
-        <h1>{{i18n.home.welcome}}
-          {{currentSession.member.member.shortname}}</h1>
-      </div>
-  </article>
-
-  <article id="basicInfo" class="row">
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <!-- <div class="card-header">
-            {{i18n.home.basicInfo}}
-          </div> -->
-          <div class="card-body">
-            <h4 class="card-title">{{i18n.home.basicInfo}}</h4>
-            <hr>
-            <p class="card-text">
-              {{currentSession.member.member.firstname}}
-              {{currentSession.member.member.lastname}} <br>
-              {{currentSession.member.member.email}} <br>
-              {{currentSession.member.member.phone}}
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 mb-3">
-        <div class="card h-100">
-          <!-- <div class="card-header">
-            {{i18n.home.address}}
-          </div> -->
-          <div class="card-body">
-            <h4 class="card-title">{{i18n.home.address}}</h4>
-            <hr>
-            <p class="card-text" ng-if="currentSession.member.address">
-              {{currentSession.member.address.street}}
-              #{{currentSession.member.address.extNumber}}<span ng-if="currentSession.member.address.intNumber">, Int {{currentSession.member.address.intNumber}}</span><br>
-              {{currentSession.member.address.city}} {{currentSession.member.address.state}}, {{currentSession.member.address.country}}<br>
-              {{i18n.forms.address.zipLbl}} {{m.address.zip}}
-            </p>
-          </div>
-        </div>
-      </div>
- </article>
-
-  <article id="messageCenter" class="row" ng-controller="MessageCenterCntrl">
-    <div class="col mb-3">
-      <div class="card">
-        <!-- <div class="card-header"></div> -->
+<section ng-show="currentSession.memberData">
+  <article class="row">
+    <!-- Profile Summary -->
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
         <div class="card-body">
-          <h4 class="card-title">{{i18n.msgCenter.messageCenter}}</h4>
+          <h4 class="card-title">{{currentSession.memberData.shortname}}</h4>
           <hr>
-          <div class="pre-scrollable">
-            <div class="row" ng-repeat="m in messages | orderBy:'audit.createdOn':true">
+          <p class="card-text">
+            <span class="font-weight-bold">{{i18n.profile.lastLogin}}</span>
+            <span>{{currentSession.user.lastLoginOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
+            <span class="font-weight-bold">{{i18n.profile.lastActivity}}</span>
+            <span>{{currentSession.user.lastActivityOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
+            <!-- <a ng-href="#!/profile" class="btn btn-warning float-right">{{i18n.profile.viewProfileBtn}}</a> -->
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.launchpad.title}}</h4>
+          <hr>
+          <a ng-href="#!/profile" class="btn btn-lg btn-block btn-warning">
+            {{i18n.launchpad.createReport}}</a>
+        </div>
+      </div>
+    </div>
+  </article>
+  <!-- Message Center -->
+  <article class="row" ng-controller="MessageCenterCntrl">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.msgCenter.title}}</h4>
+          <hr>
+          <div class="pre-scrollable mb-4">
+            <div class="row" ng-repeat="m in messages | orderBy:'audit.createdOn':true track by m.$id" >
                 <div class="alert alert-{{m.type}} ml-4 mr-4">
                   {{m.message}}
+                  <br>
                   <hr style="margin-bottom: 0;">
                   <span class="small font-weight-light">
-                  {{m.audit.createdBy}} - {{m.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}
+                    {{m.audit.createdBy}} -
+                    {{m.audit.createdOn | date: "HH:mm dd/MM/yy"}}
                   </span>
-                  <div class="" ng-if="(m.audit.createdBy == currentSession.user.email) || (currentSession.user.type == 'admin') ">
-                    <span class="small font-weight-light" style="cursor:pointer" ng-click="deleteMessage(m.$id)">
-                      {{i18n.msgCenter.deleteMsg}}
-                    </span>
-                  </div>
+                  <br>
+                  <!-- Show Delete option when message was created by current User -->
+                  <span class="small font-weight-light clickable"
+                      ng-click="removeMessage(m.$id)"
+                      ng-if="(m.audit.createdBy == currentSession.user.email) || (
+                              currentSession.user.type == 'admin')">
+                    {{i18n.msgCenter.deleteMsg}}
+                  </span>
                 </div>
             </div>
           </div>
-          <h4 class="card-title"></h4>
-          <p class="card-text"></p>
-          <form name="messageForm" novalidate ng-submit="saveMessage()"  ng-show="currentSession.user.type == 'admin'">
-            <div class="row mt-3">
-              <div class="col-sm-10">
-                <textarea  class="form-control" placeholder="{{i18n.msgCenter.messageCenterInstruction}}"
-                  ng-required="true" ng-model="newmessage"></textarea>
+          <!-- Alerts -->
+          <div ng-include="'views/alerts.html'"></div>
+          <!-- Create Messages -->
+          <div class="mt-4" ng-show="currentSession.user.type == 'admin'">
+            <p class="card-text">
+              {{i18n.msgCenter.instruction}}
+            </p>
+            <form name="messageForm" novalidate ng-submit="postMessage()">
+              <div class="row mt-3">
+                <div class="col-sm-10">
+                  <textarea class="form-control" ng-required="true" ng-model="message.content"></textarea>
+                </div>
+                <div class="col-sm-2">
+                  <button type="submit" class="btn btn-block btn-success h-100"
+                      ng-disabled="messageForm.$invalid || messageForm.$pristine">
+                    {{i18n.btns.sendBtn}}
+                  </button>
+                </div>
               </div>
-              <div class="col-sm-2">
-                <button type="submit" class="btn btn-block btn-success h-100"
-                    ng-disabled="messageForm.$invalid || messageForm.$pristine">
-                  {{i18n.btns.sendBtn}}
-                </button>
+              <div class="row">
+                <div class="col-sm-10">
+                  <input id="importantMsgCheck" type="checkbox" ng-model="message.isImportant">
+                  <label for="importantMsgCheck">{{i18n.msgCenter.importanMsg}}</label>
+                </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-10">
-                <input type="checkbox" id="importantMsgCheck" ng-model="importantMessage">
-                <label for="importantMsgCheck">{{i18n.msgCenter.importanMsg}}</label>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
+      <!-- Card End -->
     </div>
   </article>
-
 </section>

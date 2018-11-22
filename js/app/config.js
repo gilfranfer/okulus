@@ -1,4 +1,26 @@
+/** Application entry point. In this is the configuration file we:
+1. Create the Angular module
+2. Prepare the URL routing in the config function
+**/
 var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
+
+//Db Root Folder
+const rootFolder = "okulusTest";
+const constants = {
+	roles: {
+		user:"user", admin: "admin"
+	},
+	status: {
+		online:"online", offline:"offline",
+		active:"active", inactive:"inactive",
+		open:"open", closed:"closed",
+		visible:"show", hidden:"hide"
+	},
+	pages: {
+		error: "/error", login:"/login",
+		adminWeeks:"/weeks"
+	}
+};
 
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
@@ -6,13 +28,12 @@ okulusApp.config(['$routeProvider',
 			.when('/login',{
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
-			}).
-			when('/register',{
+			})
+			.when('/register',{
 				controller: 'RegistrationCntrl',
 				templateUrl: 'views/auth/register.html'
-			}).
-			when('/pwdreset',{
-				controller: 'PwdResetCntrl',
+			})
+			.when('/pwdreset',{
 				templateUrl: 'views/auth/pwdReset.html'
 			})
 			.when('/home', {
@@ -30,8 +51,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/user/myGroups.html',
-				controller: 'UserMyGroupsCntrl'
+				templateUrl: 'views/groups/groups-user.html',
+				controller: 'GroupsUserCntrl'
 			})
 			.when('/mycontacts', {
 				resolve: {
@@ -75,8 +96,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/admin/groups.html',
-				controller: 'GroupsAdminListCntrl'
+				templateUrl: 'views/groups/groups-admin.html',
+				controller: 'GroupsAdminCntrl'
 			})
 			.when('/groups/new', {
 				resolve: {
@@ -87,6 +108,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html'
 			})
 			.when('/groups/edit/:groupId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/groups/newgroup.html',
+				controller: 'GroupDetailsCntrl'
+			})
+			.when('/groups/details/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -110,8 +140,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/admin/members.html',
-				controller: 'AdminMembersListCntrl'
+				templateUrl: 'views/members/members-admin.html',
+				controller: 'MembersAdminCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
@@ -130,7 +160,20 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/newmember.html',
 				controller: 'MemberDetailsCntrl'
 			})
+			.when('/members/details/:memberId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/members/newmember.html',
+				controller: 'MemberDetailsCntrl'
+			})
 			.when('/users/edit/:userId', {
+				templateUrl: 'views/user/userDetails.html',
+				controller: 'UserEditCntrl'
+			})
+			.when('/users/details/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
@@ -152,14 +195,35 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/reports/newreport.html',
 				controller: 'ReportDetailsCntrl'
 			})
+			.when('/reports/details/:reportId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/reports/newreport.html',
+				controller: 'ReportDetailsCntrl'
+			})
 			.when('/weeks', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/weeks/weeks.html',
+				templateUrl: 'views/weeks/weeks-admin.html',
 				controller: "WeeksCntrl"
+			})
+			.when('/weeks/new', {
+				templateUrl: 'views/weeks/weekEdit.html',
+				controller: 'WeekDetailsCntrl'
+			})
+			.when('/weeks/edit/:weekId', {
+				templateUrl: 'views/weeks/weekEdit.html',
+				controller: 'WeekDetailsCntrl'
+			})
+			.when('/weeks/details/:weekId', {
+				templateUrl: 'views/weeks/weekDetails.html',
+				controller: 'WeekDetailsCntrl'
 			})
 			.when('/chats', {
 				resolve: {
@@ -177,16 +241,16 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/notifications/notificationCenter.html',
-				controller: "NotificationCntrl"
+				controller: "NotificationCenterCntrl"
+			})
+			.when('/error', {
+				templateUrl: 'views/errors/error-general.html'
 			})
 			.when('/error/norecord', {
 				templateUrl: 'views/errors/error-norecord.html'
 			})
 			.when('/error/nomember', {
 				templateUrl: 'views/errors/error-nomember.html'
-			})
-			.when('/error/login', {
-				templateUrl: 'views/errors/error-login.html'
 			})
 			.otherwise({
 				redirectTo: '/home'

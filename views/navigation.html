@@ -1,34 +1,56 @@
-<nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
-  <!-- Brand -->
-  <a class="navbar-brand  fas fa-home fa-lg" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
-  <a class="navbar-brand" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}">{{i18n.navigation.brand}}</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-darkblue pl-4 pr-4">
+  <a class="navbar-brand" href="#!/home" data-toggle="tooltip">{{i18n.navigation.brand}}</a>
 
   <!--  Collapsable button -->
   <button class="navbar-toggler" type="button"
-      data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-    <span ng-show="notifications.unread+unreadChats.length"class="badge badge-danger badge-text">
-      {{notifications.length + unreadChats.length}}
+      data-toggle="collapse" data-target="#appMenu"
+      aria-controls="appMenu" aria-expanded="false" aria-label="Navigation">
+    <span class="navbar-toggler-icon">
+    </span>
+    <span class="badge badge-danger badge-text"
+    ng-show="currentSession.user.counters.notifications.unreaded
+          || systemCounters.errors.systemErrors
+          || unreadChats.length">
+      {{currentSession.user.counters.notifications.unreaded +
+        systemCounters.errors.systemErrors + unreadChats.length}}
     </span>
   </button>
 
   <!--  Collapsable Menu -->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent" ng-controller="LogoutCntrl">
-    <ul class="navbar-nav ml-auto">
-      <!--  If no User logged -->
-      <li class="nav-item" ng-if="!currentSession.user" >
+  <div id="appMenu" class="collapse navbar-collapse">
+    <!--  Menu when no User logged in -->
+    <ul class="navbar-nav ml-auto" ng-if="!currentSession.user">
+      <li class="nav-item">
         <a class="nav-link" href="#!/register">{{i18n.navigation.register}}</a>
       </li>
-      <li class="nav-item" ng-if="!currentSession.user" >
+      <li class="nav-item">
         <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
       </li>
-      <!-- Admin Menu: if user is Admin type -->
+    </ul>
+
+    <!--  Menu when User is logged in -->
+    <ul class="navbar-nav ml-auto" ng-if="currentSession.user">
+      <!-- Home -->
+      <li class="nav-item">
+        <a class="d-md-none nav-link" href="#!/home">{{i18n.navigation.home}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-home" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
+      </li>
+      <!-- Admin Menu -->
       <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
-        <a class="d-md-none nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{i18n.navigation.admin.menu}}
+        <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
+        <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
+          role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{systemCounters.errors.systemErrors}}
+          </span>
         </a>
-        <a class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-secret"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle="tooltip" title="{{i18n.navigation.admin.menu}}"></a>
+        <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
+          role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{i18n.navigation.admin.menu}}
+          <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+            {{systemCounters.errors.systemErrors}}
+          </span>
+        </a>
 
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="#!/admin/dashboard">{{i18n.navigation.admin.dashboard}}</a>
@@ -36,24 +58,29 @@
           <a class="dropdown-item" href="#!/members">{{i18n.navigation.admin.members}}</a>
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#!/admin/monitor">{{i18n.navigation.admin.monitor}}</a>
+          <a class="dropdown-item" href="#!/admin/monitor">
+            {{i18n.navigation.admin.monitor}}
+            <span ng-show="systemCounters.errors.systemErrors" class="badge badge-danger badge-text">
+              {{systemCounters.errors.systemErrors}}
+            </span>
+          </a>
+          <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>
         </div>
       </li>
       <!-- User Menu: if user has an associated Member -->
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.user.groups}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.user.groups}}"></a>
+      <li class="nav-item" ng-if="currentSession.memberData" >
+        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.groups}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.groups}}"></a>
       </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.user.contacts}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.user.contacts}}"></a>
+      <li class="nav-item" ng-if="currentSession.memberData" >
+        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.contacts}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
       </li>
-      <li class="nav-item" ng-if="currentSession.member" >
-        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.user.reports}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.user.reports}}"></a>
+      <li class="nav-item" ng-if="currentSession.memberData" >
+        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.reports}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
       </li>
-      <!-- User Menu: if user is logged in -->
-      <li class="nav-item" ng-if="currentSession.member">
+      <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}
           <span ng-show="unreadChats.length" class="badge badge-danger badge-text">
             {{unreadChats.length}}
@@ -65,28 +92,22 @@
           </span>
         </a>
       </li>
-      <li class="nav-item" ng-if="currentSession.member">
+      <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}
-          <span ng-show="notifications.length" class="badge badge-danger badge-text">
-            {{notifications.length}}
+          <span ng-show="currentSession.user.counters.notifications.unreaded" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.notifications.unreaded}}
           </span>
         </a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-bell" href="#!/notifications" data-toggle="tooltip" title="{{i18n.navigation.notifications}}">
-          <span ng-show="notifications.length" class="badge badge-danger badge-text">
-            {{notifications.length}}
+          <span ng-show="currentSession.user.counters.notifications.unreaded" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.notifications.unreaded}}
           </span>
         </a>
       </li>
-      <!-- <li class="nav-item" ng-if="currentSession.member">
-        <a class="d-md-none nav-link" href="#!/config">{{i18n.navigation.configurations}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-cog" href="#!/configurations" data-toggle="tooltip" title="{{i18n.navigation.configurations}}"></a>
-      </li> -->
       <li class="nav-item" ng-if="currentSession.user">
-        <a class="d-md-none nav-link" href="#!/login" ng-click="logout()">{{i18n.navigation.logout}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" href="#!/login" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
+        <a class="d-md-none nav-link" ng-click="logout()">{{i18n.navigation.logout}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
       </li>
     </ul>
   </div>
-
-
 </nav>

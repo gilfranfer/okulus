@@ -127,7 +127,8 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 				/* If there is no a conversation with that user already,
 				then we need to created the metadata folder for both Users*/
 				ChatService.createBaseMetadata( $rootScope.currentSession.user.$id, chatWithUserId, chatWithUserShortname);
-				ChatService.createBaseMetadata( chatWithUserId, $rootScope.currentSession.user.$id, $rootScope.currentSession.member.member.shortname);
+				//ChatService.createBaseMetadata( chatWithUserId, $rootScope.currentSession.user.$id, $rootScope.currentSession.member.member.shortname);
+				ChatService.createBaseMetadata( chatWithUserId, $rootScope.currentSession.user.$id, $rootScope.currentSession.memberData.shortname);
 			}else{
 				$scope.openChatWithUser(chatWithUserId);
 			}
