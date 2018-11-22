@@ -61,6 +61,10 @@ okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject', '$rootScope'
 					$rootScope.systemCounters = $firebaseObject(countersRef);
 				}
 			},
+			/* Builds a firebase Object representing the global counters */
+			getGlobalCounter: function(counterName){
+				return $firebaseObject(countersRef.child(counterName));
+			},
 			buildDateJson: function(dateObject){
 		    	let dateJson = null;
 		    	if(dateObject){

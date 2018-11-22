@@ -15,16 +15,16 @@
         <div class="card-body">
           <!-- <h4>
             <span class="badge badge-primary">
-              {{systemCounters.weeks.total}}
+              {{weeksGlobalCounter.total}}
             </span>
             <span>{{i18n.weeks.totalWeeks}}</span>
           </h4> -->
           <h4>
-            <span class="badge badge-success">{{systemCounters.weeks.open}}</span>
+            <span class="badge badge-success">{{weeksGlobalCounter.open}}</span>
             <span class="btn-link clickable" ng-click="loadOpenWeeksList()">{{i18n.weeks.openWeeks}}</span>
           </h4>
           <h4>
-            <span class="badge badge-danger">{{systemCounters.weeks.total-systemCounters.weeks.open}}</span>
+            <span class="badge badge-danger">{{weeksGlobalCounter.total-weeksGlobalCounter.open}}</span>
             <span class="btn-link clickable" ng-click="loadClosedWeeksList()">{{i18n.weeks.closedWeeks}}</span>
           </h4>
         </div>
@@ -34,11 +34,11 @@
       <article id="" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-primary">{{systemCounters.weeks.visible}}</span>
+            <span class="badge badge-primary">{{weeksGlobalCounter.visible}}</span>
             <span class="btn-link clickable" ng-click="loadVisibleWeeksList()">{{i18n.weeks.visibleWeeks}}</span>
           </h4>
           <h4>
-            <span class="badge badge-dark">{{systemCounters.weeks.total-systemCounters.weeks.visible}}</span>
+            <span class="badge badge-dark">{{weeksGlobalCounter.total-weeksGlobalCounter.visible}}</span>
             <span class="btn-link clickable" ng-click="loadHiddenWeeksList()">{{i18n.weeks.hiddenWeeks}}</span>
           </h4>
         </div>

@@ -3,15 +3,24 @@ okulusApp.controller('WeeksCntrl',
 	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'AuditSvc', 'UtilsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuditSvc, UtilsSvc, AuthenticationSvc){
 
+		let unwatch = undefined;
 		/* Executed everytime we enter to /weeks
 		  This function is used to confirm the user is Admin and prepare some initial values */
 		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(user.type == constants.roles.admin){
-						UtilsSvc.loadSystemCounter();
-						$rootScope.systemCounters.$loaded().then(function(counters) {
-							$scope.response = undefined;
+						$rootScope.weeksGlobalCounter = UtilsSvc.getGlobalCounter("weeks");
+						$rootScope.weeksGlobalCounter.$loaded().then(
+							function(weekCounters) {
+								$scope.response = undefined;
+								/* Adding a Watch to the weeksGlobalCounter to detect changes.
+								The idea is to update the maxPossible value from weekListParams.*/
+								if(unwatch){ unwatch(); }
+								unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
+									$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
+									console.log("Update!", data, $rootScope.weekListParams);
+								} );
 						});
 					}else{
 						$rootScope.response = {error:true, showHomeButton: true,
@@ -95,40 +104,28 @@ okulusApp.controller('WeeksCntrl',
 			let weekListParams = {activeWeekLoader:weekLoader};
 			if(weekLoader == "loadAllWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.totalWeeks;
-				weekListParams.maxPossible = $rootScope.systemCounters.weeks.total;
+				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.total;
 			} else if(weekLoader == "loadOpenWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.openWeeks;
-				weekListParams.maxPossible = $rootScope.systemCounters.weeks.open;
+				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.open;
 			} else if(weekLoader == "loadClosedWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.closedWeeks;
-				weekListParams.maxPossible = ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.open);
+				weekListParams.maxPossible = ($rootScope.weeksGlobalCounter.total - $rootScope.weeksGlobalCounter.open);
 			} else if(weekLoader == "loadVisibleWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.visibleWeeks;
-				weekListParams.maxPossible = $rootScope.systemCounters.weeks.visible;
+				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.visible;
 			} else if(weekLoader == "loadHiddenWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.hiddenWeeks;
-				weekListParams.maxPossible = ($rootScope.systemCounters.weeks.total - $rootScope.systemCounters.weeks.visible);
+				weekListParams.maxPossible = ($rootScope.weeksGlobalCounter.total - $rootScope.weeksGlobalCounter.visible);
 			}
 			return weekListParams;
 		};
 
-		let unwatch  = undefined;
 		/*Prepares the response after the weeksList is loaded */
 		weekListLoaded = function () {
 			$rootScope.weeksList.$loaded().then(function(weeks) {
 				$rootScope.weekResponse = null;
 				$scope.response = {success:true, message: weeks.length+" "+$rootScope.i18n.weeks.loadingSuccess };
-				//TODO: What about watch on the systemCounters??
-				/* Adding a Watch to the weekList to detect changes in the array.
-				The idea is to update the weekListParams, so the maxPossible value is updated.
-				If a previous watch exists, unwatch.*/
-				if(unwatch){ unwatch(); }
-				unwatch = $rootScope.weeksList.$watch( function(data){
-					/* Sometimes the weekListParams.maxPossible will not be updated, because
-					 we are using the $rootScope.systemCounters, and it is async */
-					$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
-				} );
-
 			}).catch( function(error){
 				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
 				console.error(error);
