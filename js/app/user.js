@@ -10,7 +10,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 						$location.path("/error/nomember");
 						return;
 					}
-					$scope.weeksList = WeeksSvc.loadAllWeeks();
+					$scope.weeksList = WeeksSvc.loadVisibleWeeks();
 					//Get the Groups the user has access to
 					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
