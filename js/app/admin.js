@@ -5,9 +5,10 @@ okulusApp.controller('MonitorCntrl',
 		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
-		let auditRef = firebase.database().ref().child(rootFolder).child('audit');
-		let usersRef = firebase.database().ref().child(rootFolder).child('users');
-		let errorsRef = firebase.database().ref().child(rootFolder).child('errors');
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let auditRef = baseRef.child('audit');
+		let usersRef = baseRef.child('users');
+		let errorsRef = baseRef.child('errors');
 
 		/*Executed when accessing to /admin/monitor, to confirm the user still admin*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
@@ -126,8 +127,9 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateWeeks = function () {
 			console.log("Init Weeks Migration");
+			let weeksRef = baseRef.child('weeks');
 			//Updates in Week Object
-			WeeksSvc.loadAllWeeks();
+			$rootScope.allWeeks = $firebaseArray(weeksRef);
 			$rootScope.allWeeks.$loaded().then(function (weeks) {
 				let totalReports = 0;
 				let totalWeeks = weeks.length;
@@ -183,7 +185,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 					if($rootScope.currentSession.user.type == 'admin'){
 
 						$scope.adminViewActive = true;
-						$scope.weeksList = WeeksSvc.loadAllWeeks();
+						$scope.weeksList = WeeksSvc.loadVisibleWeeks();
 						$scope.groupsList = GroupsSvc.loadAllGroupsList();
 						$scope.groupsList.$loaded().then(function () {
 							$scope.loadingReportSelector = false;

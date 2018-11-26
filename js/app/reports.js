@@ -166,7 +166,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
 	function($scope, $rootScope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
 		//Data Required to populate some Form Selects
-		WeeksSvc.loadActiveWeeks();
+		WeeksSvc.loadOpenWeeks();
 		MembersSvc.loadActiveMembers().$loaded().then(function(activeMembers){
 			$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
 			$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);

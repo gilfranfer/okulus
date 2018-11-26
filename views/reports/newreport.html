@@ -93,7 +93,7 @@
                   <option ng-if="reportWeek" value="{{reportWeek.$id}}">
                     {{reportWeek.$id}} - {{reportWeek.name}}
                   </option>
-                  <option ng-repeat="w in allActiveWeeks | orderBy:'w.$id':true" value="{{w.$id}}">
+                  <option ng-repeat="w in openWeeks | orderBy:'w.$id':true" value="{{w.$id}}">
                     {{w.$id}} - {{w.name}}
                   </option>
                 </select>

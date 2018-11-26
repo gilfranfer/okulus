@@ -103,7 +103,7 @@ okulusApp.controller('WeeksCntrl',
 		};
 
 		getweekListParams = function (weekLoader) {
-			let weekListParams = {activeWeekLoader:weekLoader};
+			let weekListParams = {activeWeekLoader:weekLoader, searchFilter:undefined};
 			if(weekLoader == "loadAllWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.totalWeeks;
 				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.total;
@@ -186,17 +186,17 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 		};
 
 		return {
-			//Remove
-			loadActiveWeeks: function(){
-				if(!$rootScope.allActiveWeeks){
-					$rootScope.allActiveWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
+			/* Create openWeeks object in rootScope containing all the Weeks with isOpen = true */
+			loadOpenWeeks: function(){
+				if(!$rootScope.openWeeks){
+					$rootScope.openWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
 				}
 			},
-			loadAllWeeks: function(){
-				if(!$rootScope.allWeeks){
-					$rootScope.allWeeks = $firebaseArray(weeksRef);
+			/* Create visibleWeeks object in rootScope containing all the Weeks with isVisible = true */
+			loadVisibleWeeks: function(){
+				if(!$rootScope.visibleWeeks){
+					$rootScope.visibleWeeks = $firebaseArray(isVisibleWeekRef.equalTo(true));
 				}
-				return $rootScope.allWeeks;
 			},
 			getOpenWeeks: function(limit){
 				if(limit){
