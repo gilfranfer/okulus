@@ -77,7 +77,7 @@
       </div> -->
       <div class="row" ng-show="weeksList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="weekListParams.searchFilter">
         </div>
       </div>
     </div>
@@ -98,7 +98,7 @@
   <!-- Week Cards -->
   <article id="weeksList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="week in weeksList | filter:searchText | orderBy:'-$id' track by week.$id">
+      ng-repeat="week in weeksList | filter:weekListParams.searchFilter | orderBy:'-$id' track by week.$id">
       <!-- Group card -->
       <div class="card h-100">
         <div class="card-body">

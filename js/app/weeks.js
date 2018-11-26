@@ -103,7 +103,7 @@ okulusApp.controller('WeeksCntrl',
 		};
 
 		getweekListParams = function (weekLoader) {
-			let weekListParams = {activeWeekLoader:weekLoader};
+			let weekListParams = {activeWeekLoader:weekLoader, searchFilter:undefined};
 			if(weekLoader == "loadAllWeeksList"){
 				weekListParams.title= $rootScope.i18n.weeks.totalWeeks;
 				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.total;
