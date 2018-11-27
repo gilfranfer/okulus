@@ -399,13 +399,20 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 				return $firebaseArray(ref);
 			},
 			/* Called from AuthenticationSvc to update the User reference in the Member Object*/
-			updateUserInMemberObject: function(isUser, userId, memberDataObj){
-				memberDataObj.isUser = isUser;
+			updateUserReferenceInMemberObject: function(userId, memberDataObj){
 				memberDataObj.userId = userId;
+				memberDataObj.isUser = false;
+				if(userId){
+					memberDataObj.isUser = true;
+				}
 				memberDataObj.$save();
 			},
 			/* Same method than above, but using different aproach.*/
-			updateUserInMember: function(isUser, userId, memberId){
+			updateUserReferenceInMember: function(userId, memberId){
+				let isUser = false;
+				if(userId){
+					isUser = true;
+				}
 				membersRef.child(memberId).child("member").update({isUser:isUser, userId:userId});
 			},
 			increaseStatusCounter(status){
