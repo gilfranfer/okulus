@@ -18,7 +18,8 @@ const constants = {
 	},
 	pages: {
 		error: "/error", login:"/login",
-		adminWeeks:"/weeks"
+		adminWeeks:"/weeks",
+		adminMonitor:"/admin/monitor"
 	}
 };
 

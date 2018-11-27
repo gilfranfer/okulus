@@ -153,7 +153,7 @@ okulusApp.controller('AuthenticationCntrl',
 			AuthenticationSvc.updateUserLastActivity(userId, constants.status.offline);
 			AuthenticationSvc.logout(userId);
 		};
-		
+
 	}]//function
 );
 
@@ -274,19 +274,23 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 	}
 ]);
 
-okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
-	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
+/* Controller linked to /home */
+okulusApp.controller('HomeCntrl',
+	['$scope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
+	function($scope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
+
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(user.isRoot){
-					$location.path("/admin/monitor");
+					//Root User needs to be redirected to /admin/monitor
+					$location.path(constants.pages.adminMonitor);
 				}else if(!user.memberId){
-					//TODO: Add Error Message to the Scope
-					//$scope.response = { error: true, message: "No Member ID" };
-					$location.path("/error");
+					$rootScope.response = { error:true, message: systemMsgs.error.tryAgainLater};
+					$location.path(constants.pages.error);
 				}
 			});
 		});
+
 	}]
 );
