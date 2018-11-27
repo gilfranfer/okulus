@@ -18,10 +18,15 @@ const systemMsgs = {
 		tryAgainLater: "Hubo un error. Intente más tarde."
 	},
 	inProgress:{
-		sendingPwdResetEmail:"Enviando Correo..."
+		sendingPwdResetEmail:"Enviando Correo...",
+		logingUser: "Iniciando sesión...",
+		registeringUser: "Registrando Usuario..."
+
 	},
 	success:{
-		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!"
+		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
+		userRegistereyd: "Usuario Creado",
+
 	}
 };
 
@@ -99,15 +104,12 @@ okulusApp.run(function($rootScope) {
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdRequired:"La contraseña es requerida", forgotPwd: "Olvidé mi contraseña",
 				resetPwd: "Restablecer contraseña",
-				loginInProgress: "Iniciando sesión..."
 			},
 			register:{
 				title:"Regístrate",
 				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
-				registerInProgress: "Registrando Usuario...",
-				registerSuccess: "Usuario Creado",
 				alert:{ invalidEmail:"Ese no es un correo válido",
 							pwdSize:"La contraseña debe contener al menos 8 caracteres",
 							pwdMatch:"Las contraseñas deben coincidir"

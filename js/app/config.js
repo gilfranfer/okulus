@@ -17,9 +17,15 @@ const constants = {
 		visible:"show", hidden:"hide"
 	},
 	pages: {
-		error: "/error", login:"/login",
+		error: "/error", login:"/login", home:"/home",
 		adminWeeks:"/weeks",
 		adminMonitor:"/admin/monitor"
+	},
+	folders:{
+		users:"users"
+	},
+	actions:{
+		create:"create"
 	}
 };
 
