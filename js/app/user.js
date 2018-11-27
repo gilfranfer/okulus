@@ -97,9 +97,11 @@ okulusApp.factory('UsersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 		let usersRef = firebase.database().ref().child(rootFolder).child('users');
 
 		return {
-			updateMemberInUserObject: function(memberId, userType, userObj){
+			updateMemberReferenceInUserObject: function(memberId, userObj){
 				userObj.memberId = memberId;
-				userObj.type = userType; //in case it was admin
+				if(!memberId){
+					userObj.type = constants.roles.user; //in case it was admin
+				}
 				userObj.$save();
 			},
 			createUser: function(userId, userEmail, userType){

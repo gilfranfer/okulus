@@ -1,4 +1,31 @@
-/** Using a run function to set the language and settings **/
+/* Messages send from the backend. Usually used in Alert divs */
+const systemMsgs = {
+	error:{
+		nologin: "Necesitas iniciar sesión para ver este contenido.",
+		/* AuthenticationCntrl*/
+		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
+		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
+		memberNotActiveUser: "El Miembro asociado/encontrado no es un Usuario activo.",
+		referenceRemoved: "Se ha borrado la referencia entre el Usuario y el Miembro.",
+		contactAdmin: "Contacta al Administrador del Sistema.",
+		noMemberFound: "No se encontró un Miembro con el correo electrónico:",
+		moreThanOneMemberFound: "Existe mas de un Miembro con el correo electrónico:",
+		pwdResetEmailError: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador.",
+		/*LoginCntrl*/
+		incorrectCredentials: "Usuario o Contraseña Incorrectos",
+		/* RegistrationCntrl */
+		emailExist: "El correo electrónico ya está en uso.",
+		tryAgainLater: "Hubo un error. Intente más tarde."
+	},
+	inProgress:{
+		sendingPwdResetEmail:"Enviando Correo..."
+	},
+	success:{
+		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!"
+	}
+};
+
+/** Using a run function to set the language and settings in the rootScope **/
 okulusApp.run(function($rootScope) {
 
 		$rootScope.config ={
@@ -72,8 +99,6 @@ okulusApp.run(function($rootScope) {
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdRequired:"La contraseña es requerida", forgotPwd: "Olvidé mi contraseña",
 				resetPwd: "Restablecer contraseña",
-				resetPwdInProgress:"Enviando Correo...",
-				pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
 				loginInProgress: "Iniciando sesión..."
 			},
 			register:{
@@ -366,7 +391,6 @@ okulusApp.run(function($rootScope) {
 				lead: "Lo sentimos, pero algo salió mal.",
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
-				nologin: "Necesitas iniciar sesión para ver este contenido.",
 				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
 				noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
 				message:"Houston, Tenemos Problemas!"
