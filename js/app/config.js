@@ -17,8 +17,16 @@ const constants = {
 		visible:"show", hidden:"hide"
 	},
 	pages: {
-		error: "/error", login:"/login",
-		adminWeeks:"/weeks"
+		login:"/login", home:"/home",
+		error: "/error",
+		adminWeeks:"/weeks",
+		adminMonitor:"/admin/monitor"
+	},
+	folders:{
+		users:"users", chats:"chats", metadata:"metadata"
+	},
+	actions:{
+		create:"create"
 	}
 };
 
@@ -232,7 +240,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/chat/chats.html',
-				controller: "ChatCntrl"
+				controller: "ChatsCntrl"
 			})
 			.when('/notifications', {
 				resolve: {
@@ -248,9 +256,6 @@ okulusApp.config(['$routeProvider',
 			})
 			.when('/error/norecord', {
 				templateUrl: 'views/errors/error-norecord.html'
-			})
-			.when('/error/nomember', {
-				templateUrl: 'views/errors/error-nomember.html'
 			})
 			.otherwise({
 				redirectTo: '/home'

@@ -53,8 +53,8 @@ okulusApp.controller('GroupsUserCntrl',
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(!user.memberId){
-						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
-						$location.path("/error");
+						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+						$location.path(constants.pages.error);
 						return;
 					}
 
@@ -84,7 +84,8 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(!user.memberId){
-						$location.path("/error/nomember");
+						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+						$location.path(constants.pages.error);
 						return;
 					}
 					$rootScope.response = null;

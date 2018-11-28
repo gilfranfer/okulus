@@ -1,11 +1,14 @@
 /* Controller linked to /chats */
-okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$scope','$firebaseAuth', '$location','AuthenticationSvc',
-	function(MembersSvc, ChatService, $rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc){
+okulusApp.controller('ChatsCntrl',
+	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','ChatService',
+	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc, ChatService){
 
+		/* Executed everytime we enter to Chat Center */
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if(!user.memberId){
-					$location.path("/error/nomember");
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
 					return;
 				}
 
@@ -138,7 +141,8 @@ okulusApp.controller('ChatCntrl', ['MembersSvc', 'ChatService','$rootScope','$sc
 	}
 ]);
 
-okulusApp.factory('ChatService', ['$rootScope', '$firebaseArray', '$firebaseObject', 'ErrorsSvc',
+okulusApp.factory('ChatService',
+	['$rootScope', '$firebaseArray', '$firebaseObject', 'ErrorsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, ErrorsSvc){
 
 		let chatsRef = firebase.database().ref().child(rootFolder).child('chats');
@@ -181,6 +185,22 @@ okulusApp.factory('ChatService', ['$rootScope', '$firebaseArray', '$firebaseObje
 							console.debug(error);
 						}
 					});
+			}
+		};/*return end*/
+	}
+]);
+
+/* New Service for the Chat Refactor */
+okulusApp.factory('ChatSvc',
+	['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
+		let chatsRef = firebase.database().ref().child(rootFolder).child( constants.folders.chats );
+
+		return {
+			/* Return $firebaseObject with the Chats metadata for the specified user*/
+			getChatMetadataForUser: function(userId){
+				let reference = chatsRef.child(userId).child(constants.folders.metadata);
+				return $firebaseObject(reference);
 			}
 		};/*return end*/
 	}

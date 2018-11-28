@@ -13,10 +13,8 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 
 /* Controller linked to page body, to control the whole app */
 okulusApp.controller('AuthenticationCntrl',
-	['$scope', '$rootScope', '$firebaseAuth','$location', 'AuthenticationSvc','ChatService',
-		'NotificationsSvc', 'MembersSvc', 'UsersSvc', 'ErrorsSvc','UtilsSvc',
-	function($scope, $rootScope, $firebaseAuth, $location, AuthenticationSvc, ChatService,
-						NotificationsSvc, MembersSvc, UsersSvc,ErrorsSvc,UtilsSvc){
+	['$scope','$rootScope','$firebaseAuth','$location','AuthenticationSvc','ChatSvc','MembersSvc','UsersSvc', 'ErrorsSvc',
+	function($scope,$rootScope,$firebaseAuth,$location,AuthenticationSvc,ChatSvc,MembersSvc,UsersSvc,ErrorsSvc){
 
 		/* Function executed anytime an Authetication state changes in the app.
 		Like after login, or when refreshing page. */
@@ -38,11 +36,7 @@ okulusApp.controller('AuthenticationCntrl',
 							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
 							/* Load Unread Chats Count */
-
-							// $rootScope.unreadChats = ChatService.getUnreadChats(authUser.uid);
-							// if(loggedUser.type == "admin"){
-							// 	UtilsSvc.loadSystemCounter();
-							// }
+							$rootScope.currentSession.chatsMetadata = ChatSvc.getChatMetadataForUser(authUser.uid);
 					});
 				}else{
 					cleanRootScope();
@@ -151,29 +145,34 @@ okulusApp.controller('AuthenticationCntrl',
 		$scope.logout = function(){
 			let userId = $rootScope.currentSession.user.$id;
 			AuthenticationSvc.updateUserLastActivity(userId, constants.status.offline);
-			AuthenticationSvc.logout(userId);
+			AuthenticationSvc.logout();
 		};
-		
+
 	}]//function
 );
 
-okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'AuthenticationSvc',
+/* Controller linked to  /login */
+okulusApp.controller('LoginCntrl',
+	['$scope', '$rootScope', '$location', 'AuthenticationSvc',
 	function($scope, $rootScope, $location, AuthenticationSvc){
 
-		let homePage ="/home";
 		/* When navigating to "#!/login", but the user is already logged-in
 		 we better redirect him to Home Page, instead of showing the login page */
 		if($rootScope.currentSession && $rootScope.currentSession.user ){
-			$location.path(homePage);
+			$location.path(constants.pages.home); return;
 		}
+
 		$scope.response = null;
 
+		/*For login:
+		1. Use firebase $signInWithEmailAndPassword, throug AuthenticationSvc.loginUser
+		2. Update User's last login date and status.
+		3. Redirect to Home */
 		$scope.login = function(){
-			$scope.response = {working: true, message: $rootScope.i18n.login.loginInProgress };
+			$scope.response = {working: true, message: systemMsgs.inProgress.logingUser };
 			AuthenticationSvc.loginUser($scope.user).then( function (user){
-				$scope.response = null;
 				AuthenticationSvc.updateUserLastLogin(user.uid);
-				$location.path(homePage);
+				$location.path(constants.pages.home);
 			})
 			/* Catching unsuccessful login attempts */
 			.catch( function(error){
@@ -193,24 +192,29 @@ okulusApp.controller('LoginCntrl', ['$scope', '$rootScope', '$location', 'Authen
 	}]
 );
 
-okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 'AuthenticationSvc',
-																	'AuditSvc', 'UsersSvc',
+/* Controller linked to  /register */
+okulusApp.controller('RegistrationCntrl',
+	['$scope', '$rootScope', '$location', 'AuthenticationSvc','AuditSvc', 'UsersSvc',
 	function($scope, $rootScope, $location, AuthenticationSvc, AuditSvc, UsersSvc){
-		let homePage ="/home";
 
 		/* When navigating to "#!/register", but the user is already logged-in
 		 we better redirect him to Home Page, instead of showing the login page */
 		if($rootScope.currentSession && $rootScope.currentSession.user){
-			$location.path(homePage);
+			$location.path(constants.pages.home); return;
 		}
 
+		/* To register a user:
+		1. Create user in firebase Authentication with $createUserWithEmailAndPassword
+		2. After Firebase-User creation, record a user object in the DB
+		3. Trigger Audit Record
+		4. Redirect to Home */
 		$scope.register = function(){
-			$scope.response = {working: true, message: $rootScope.i18n.register.registerInProgress };
+			$scope.response = {working: true, message: systemMsgs.inProgress.registeringUser};
 			AuthenticationSvc.register($scope.newUser).then(function(regUser){
-				$scope.response = {success: true, message: $rootScope.i18n.register.registerSuccess };
+				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
-				AuditSvc.recordAudit(regUser.uid, "create", "users");
-				$location.path(homePage);
+				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.folders.users);
+				$location.path(constants.pages.home);
 			})
 			.catch( function(error){
 				let message = undefined;
@@ -230,9 +234,9 @@ okulusApp.controller('RegistrationCntrl', ['$scope', '$rootScope', '$location', 
 );
 
 /* Service methods for Authetication related tasks. */
-okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', 'MembersSvc', '$firebaseAuth',
-	function($rootScope, $location,$firebaseObject,MembersSvc,$firebaseAuth){
-		let usersFolder = firebase.database().ref().child(rootFolder).child('users')
+okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$firebaseAuth',
+	function($rootScope,$firebaseObject,$firebaseAuth){
+		let usersFolder = firebase.database().ref().child(rootFolder).child( constants.folders.users )
 		var auth = $firebaseAuth();
 
 		return{
@@ -254,14 +258,13 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			},
 			/* Only called after a successful login */
 			updateUserLastLogin: function(userid){
-				//TODO: Remove lastLogin: old value. setting null to remove from DB
 				let record = { lastLoginOn:firebase.database.ServerValue.TIMESTAMP, lastLogin:null};
 				usersFolder.child(userid).update(record);
 			},
 			loginUser: function(user){
 				return auth.$signInWithEmailAndPassword(user.email,user.pwd);
 			},
-			logout: function(userId){
+			logout: function(){
 				return auth.$signOut();
 			},
 			isUserLoggedIn: function(){
@@ -270,23 +273,27 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			register: function(user){
 				return auth.$createUserWithEmailAndPassword(user.email, user.pwd);
 			}
-		};//return
+		};
 	}
 ]);
 
-okulusApp.controller('HomeCntrl', ['$scope','$location', 'AuthenticationSvc','$firebaseAuth', 'MessageCenterSvc',
-	function($scope,$location, AuthenticationSvc,$firebaseAuth,MessageCenterSvc){
+/* Controller linked to /home */
+okulusApp.controller('HomeCntrl',
+	['$scope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
+	function($scope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
+
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(user.isRoot){
-					$location.path("/admin/monitor");
+					//Root User needs to be redirected to /admin/monitor
+					$location.path(constants.pages.adminMonitor);
 				}else if(!user.memberId){
-					//TODO: Add Error Message to the Scope
-					//$scope.response = { error: true, message: "No Member ID" };
-					$location.path("/error");
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
 				}
 			});
 		});
+
 	}]
 );

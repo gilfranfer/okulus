@@ -15,13 +15,17 @@ const systemMsgs = {
 		incorrectCredentials: "Usuario o Contraseña Incorrectos",
 		/* RegistrationCntrl */
 		emailExist: "El correo electrónico ya está en uso.",
-		tryAgainLater: "Hubo un error. Intente más tarde."
+		tryAgainLater: "Hubo un error. Intente más tarde.",
+		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador."
 	},
 	inProgress:{
-		sendingPwdResetEmail:"Enviando Correo..."
+		sendingPwdResetEmail:"Enviando Correo...",
+		logingUser: "Iniciando sesión...",
+		registeringUser: "Registrando Usuario..."
 	},
 	success:{
-		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!"
+		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
+		userRegistered: "Usuario Creado"
 	}
 };
 
@@ -99,15 +103,12 @@ okulusApp.run(function($rootScope) {
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdRequired:"La contraseña es requerida", forgotPwd: "Olvidé mi contraseña",
 				resetPwd: "Restablecer contraseña",
-				loginInProgress: "Iniciando sesión..."
 			},
 			register:{
 				title:"Regístrate",
 				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
-				registerInProgress: "Registrando Usuario...",
-				registerSuccess: "Usuario Creado",
 				alert:{ invalidEmail:"Ese no es un correo válido",
 							pwdSize:"La contraseña debe contener al menos 8 caracteres",
 							pwdMatch:"Las contraseñas deben coincidir"
@@ -392,7 +393,6 @@ okulusApp.run(function($rootScope) {
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
 				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
-				noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{
