@@ -279,8 +279,8 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
-	['$scope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
-	function($scope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
+	['$scope','$rootScope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
+	function($scope,$rootScope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
