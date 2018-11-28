@@ -7,7 +7,8 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(!user.memberId){
-						$location.path("/error/nomember");
+						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+						$location.path(constants.pages.error);
 						return;
 					}
 					$scope.weeksList = WeeksSvc.loadVisibleWeeks();
@@ -39,8 +40,8 @@ okulusApp.controller('UserMyContactsCntrl',
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
 					if(!user.memberId){
-						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
-						$location.path("/error");
+						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+						$location.path(constants.pages.error);
 						return;
 					}
 
@@ -72,7 +73,8 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if(!user.memberId){
-					$location.path("/error/nomember");
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
 					return;
 				}
 				let usersFolder = firebase.database().ref().child(rootFolder).child('users');

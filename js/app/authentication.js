@@ -35,6 +35,8 @@ okulusApp.controller('AuthenticationCntrl',
 							}
 							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
+							/* Load Unread Chats Count */
+							$rootScope.currentSession.chatsMetadata = ChatSvc.getChatMetadataForUser(authUser.uid);
 					});
 				}else{
 					cleanRootScope();
@@ -149,6 +151,7 @@ okulusApp.controller('AuthenticationCntrl',
 	}]//function
 );
 
+/* Controller linked to  /login */
 okulusApp.controller('LoginCntrl',
 	['$scope', '$rootScope', '$location', 'AuthenticationSvc',
 	function($scope, $rootScope, $location, AuthenticationSvc){
@@ -156,8 +159,9 @@ okulusApp.controller('LoginCntrl',
 		/* When navigating to "#!/login", but the user is already logged-in
 		 we better redirect him to Home Page, instead of showing the login page */
 		if($rootScope.currentSession && $rootScope.currentSession.user ){
-			$location.path(constants.pages.home);
+			$location.path(constants.pages.home); return;
 		}
+
 		$scope.response = null;
 
 		/*For login:
@@ -168,7 +172,7 @@ okulusApp.controller('LoginCntrl',
 			$scope.response = {working: true, message: systemMsgs.inProgress.logingUser };
 			AuthenticationSvc.loginUser($scope.user).then( function (user){
 				AuthenticationSvc.updateUserLastLogin(user.uid);
-				$location.path(homePage);
+				$location.path(constants.pages.home);
 			})
 			/* Catching unsuccessful login attempts */
 			.catch( function(error){
@@ -188,6 +192,7 @@ okulusApp.controller('LoginCntrl',
 	}]
 );
 
+/* Controller linked to  /register */
 okulusApp.controller('RegistrationCntrl',
 	['$scope', '$rootScope', '$location', 'AuthenticationSvc','AuditSvc', 'UsersSvc',
 	function($scope, $rootScope, $location, AuthenticationSvc, AuditSvc, UsersSvc){
@@ -195,7 +200,7 @@ okulusApp.controller('RegistrationCntrl',
 		/* When navigating to "#!/register", but the user is already logged-in
 		 we better redirect him to Home Page, instead of showing the login page */
 		if($rootScope.currentSession && $rootScope.currentSession.user){
-			$location.path(constants.pages.home);
+			$location.path(constants.pages.home); return;
 		}
 
 		/* To register a user:
@@ -209,7 +214,7 @@ okulusApp.controller('RegistrationCntrl',
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
 				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.folders.users);
-				$location.path(homePage);
+				$location.path(constants.pages.home);
 			})
 			.catch( function(error){
 				let message = undefined;
@@ -229,8 +234,8 @@ okulusApp.controller('RegistrationCntrl',
 );
 
 /* Service methods for Authetication related tasks. */
-okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObject', '$firebaseAuth',
-	function($rootScope, $location,$firebaseObject,$firebaseAuth){
+okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$firebaseAuth',
+	function($rootScope,$firebaseObject,$firebaseAuth){
 		let usersFolder = firebase.database().ref().child(rootFolder).child( constants.folders.users )
 		var auth = $firebaseAuth();
 
@@ -268,7 +273,7 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$location','$firebaseObjec
 			register: function(user){
 				return auth.$createUserWithEmailAndPassword(user.email, user.pwd);
 			}
-		};//return
+		};
 	}
 ]);
 
@@ -284,7 +289,7 @@ okulusApp.controller('HomeCntrl',
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);
 				}else if(!user.memberId){
-					$rootScope.response = { error:true, message: systemMsgs.error.tryAgainLater};
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}
 			});

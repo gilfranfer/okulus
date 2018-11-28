@@ -15,18 +15,17 @@ const systemMsgs = {
 		incorrectCredentials: "Usuario o Contraseña Incorrectos",
 		/* RegistrationCntrl */
 		emailExist: "El correo electrónico ya está en uso.",
-		tryAgainLater: "Hubo un error. Intente más tarde."
+		tryAgainLater: "Hubo un error. Intente más tarde.",
+		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario..."
-
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
-		userRegistereyd: "Usuario Creado",
-
+		userRegistered: "Usuario Creado"
 	}
 };
 
@@ -394,7 +393,6 @@ okulusApp.run(function($rootScope) {
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
 				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
-				noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{

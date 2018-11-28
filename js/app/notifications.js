@@ -2,28 +2,28 @@
 okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebaseAuth', '$location','AuthenticationSvc', 'NotificationsSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, AuthenticationSvc, NotificationsSvc){
 
-		let noMemberPath = "/error/nomember"
-
 		/*Executed everytime we enter to Notification Center*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(user.memberId){
-					/*Show notifications only when the user has a member assigned*/
-					if(!$rootScope.allNotifications){
-						$rootScope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxQueryListResults);
-					}
-					$rootScope.allNotifications.$loaded().then(function(notifications) {
-						$scope.response = null;
-					})
-					.catch( function(error){
-						$scope.response = { error: true, message: $rootScope.i18n.notifications.loadingError };
-						console.error(error);
-					});
-				}else{
-					$location.path(noMemberPath);
+				if(!user.memberId){
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
+					return;
 				}
+				/*Show notifications only when the user has a member assigned*/
+				if(!$rootScope.allNotifications){
+					$rootScope.allNotifications = NotificationsSvc.getFirstNotificationsForUser(authUser.uid, $rootScope.config.maxQueryListResults);
+				}
+				$rootScope.allNotifications.$loaded().then(function(notifications) {
+					$scope.response = null;
+				})
+				.catch( function(error){
+					$scope.response = { error: true, message: $rootScope.i18n.notifications.loadingError };
+					console.error(error);
+				});
+
 			});
 		});
 

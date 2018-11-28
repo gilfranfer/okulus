@@ -58,7 +58,8 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(!user.memberId){
-						$location.path("/error/nomember");
+						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+						$location.path(constants.pages.error);
 						return;
 					}
 

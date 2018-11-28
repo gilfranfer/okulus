@@ -318,7 +318,7 @@ okulusApp.controller('WeekDetailsCntrl',
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					/* Confirm the user has an associated Member */
 					if(!user.memberId){
-						$rootScope.response = {error: true, message: $rootScope.i18n.error.noMemberAssociated };
+						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
 					}
