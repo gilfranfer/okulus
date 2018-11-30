@@ -62,13 +62,15 @@ okulusApp.controller('AuthenticationCntrl',
 					errorMessage = systemMsgs.error.memberNotActiveUser;
 				}else{
 					/* All good: Emails match, the member is "Active" and canBeUser.
-					 Update the User reference in the Member Object and save Memeber Data in rootScope */
+					 Update the UserId reference in the Member Object.
+					 Update the MemberId and Member Shortname in the User Object */
 					MembersSvc.updateUserReferenceInMemberObject(loggedUserObj.$id, memberDataObj);
+					UsersSvc.updateMemberReferenceInUserObject(loggedUserObj.memberId, memberDataObj.shortname, loggedUserObj);
 					$rootScope.currentSession.memberData = memberDataObj;
 				}
 
 				if(errorMessage){
-					UsersSvc.updateMemberReferenceInUserObject(null, loggedUserObj);
+					UsersSvc.updateMemberReferenceInUserObject(null, null, loggedUserObj);
 					if(memberDataObj){
 						MembersSvc.updateUserReferenceInMemberObject(null, memberDataObj);
 					}
@@ -96,7 +98,7 @@ okulusApp.controller('AuthenticationCntrl',
 					if(memberObj.member.status == constants.status.active && memberObj.member.canBeUser){
 						$rootScope.currentSession.memberData = memberObj.member;
 						//Create Cross Reference
-						UsersSvc.updateMemberReferenceInUserObject(memberObj.$id, loggedUser);
+						UsersSvc.updateMemberReferenceInUserObject(memberObj.$id, memberObj.member.shortname, loggedUser);
 						MembersSvc.updateUserReferenceInMember(loggedUser.$id, memberObj.$id);
 					}else{
 						errorMessage = systemMsgs.error.memberNotActiveUser;
@@ -279,8 +281,8 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
-	['$scope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
-	function($scope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
+	['$scope','$rootScope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
+	function($scope,$rootScope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;

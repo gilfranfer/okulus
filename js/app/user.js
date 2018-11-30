@@ -93,16 +93,28 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 		}});
 }]);
 
-okulusApp.factory('UsersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
+okulusApp.factory('UsersSvc',
+	['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-
-		let usersRef = firebase.database().ref().child(rootFolder).child('users');
+		let usersRef = firebase.database().ref().child(rootFolder).child(constants.folders.users);
+		let validUsersRef = usersRef.orderByChild("isValid").equalTo(true);
 
 		return {
-			updateMemberReferenceInUserObject: function(memberId, userObj){
+			/*Valid Users are the ones with a MemberId associated*/
+			loadValidUsersList: function(){
+				if(!$rootScope.allValidUsersList){
+					$rootScope.allValidUsersList = $firebaseArray(validUsersRef);
+				}
+				return $rootScope.allValidUsersList;
+			},
+			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
+				userObj.shortname = memberShortname;
+				userObj.isValid = true;
 				if(!memberId){
-					userObj.type = constants.roles.user; //in case it was admin
+					//Force User role, in case it was admin
+					userObj.type = constants.roles.user;
+					userObj.isValid = false;
 				}
 				userObj.$save();
 			},

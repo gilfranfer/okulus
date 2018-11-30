@@ -1,0 +1,64 @@
+<section id="chatCenter">
+	<!-- Alerts -->
+	<div ng-include="'views/alerts.html'"></div>
+	<!-- New Chat Modal -->
+	<div ng-include="'views/chat/addChatModal.html'"></div>
+
+	<!-- Chat List and Chat area -->
+	<div class="row" ng-show="!response.loading">
+		<article id="chatList" class="col-4 p-0" style="overflow-y: scroll;height: {{chatCenterParams.chatAreaHeight}}px">
+			<div class="list-group">
+				<!-- Filter and New Chat Btn -->
+				<div class="list-group-item">
+					<input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control"
+						ng-model="chatCenterParams.searchFilter" ng-show="chatList.length > config.minResultsToshowFilter"/>
+					<div class="ml-auto mt-2 text-right">
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-link clickable" ng-click="openNewChatModal()"
+							data-toggle="modal" data-target="#newChatModal">
+						  {{i18n.chat.newchatBtn}}
+						</button>
+					</div>
+				</div>
+				<!-- Alert for no records -->
+				<div class="alert alert-danger" ng-if="!chatList || chatList.length == 0">
+					{{i18n.chat.noChats}}
+				</div>
+				<!-- Chat List Elements -->
+				<div id="chat-{{chat.$id}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
+						ng-repeat="chat in chatList | filter:chatCenterParams.searchFilter | orderBy:'-lastMessageOn'" ng-click="openChatWithUser(chat.$id)">
+					<!-- Title and Counter -->
+					<div class="d-flex w-100">
+					  <span class="mb-1 font-weight-bold">
+							<small class="badge badge-danger" ng-if="chat.unreadCount >0">{{chat.unreadCount}}</small>
+							{{chat.recipientAlias}}
+						</span>
+					</div>
+					<!-- Show Details only on Screen size Medium and above -->
+					<div class="d-none d-md-block">
+						<span ng-if="!chat.lastMessageExcerpt" class="badge badge-primary">{{i18n.chat.newChatLbl}}</span>
+						<span>{{chat.lastMessageExcerpt}}</span><br>
+						<small>{{chat.lastMessageOn | date: 'MMM dd yyyy hh:mm a' }}</small>
+					</div>
+				</div>
+			</div>
+		</article>
+		<article id="chatArea" class="col-8 pr-0  bg-white" style="overflow-y: scroll;height: {{chatSectionHeight}}px">
+			<article class="h-100 pt-3 pl-3">
+				<div ng-if="activeChatMessages && activeChatMessages.length<1" class="alert alert-warning m-4">
+					{{i18n.chat.emptyChat}}
+				</div>
+        <div class="row" ng-repeat="m in activeChatMessages | orderBy:'time':false">
+					<div ng-if="m.from != currentSession.user.$id" class="alert alert-primary m-1 ml-4 p-2" data-toggle="tooltip"
+							title="{{m.time | date: 'MMM dd yyyy hh:mm a'}}">
+		      	{{m.message}}
+	        </div>
+        	<div ng-if="m.from == currentSession.user.$id" class="alert alert-secondary ml-auto mr-4 p-2" data-toggle="tooltip"
+							title="{{m.time| date: 'MMM dd yyyy hh:mm a'}}">
+            {{m.message}}
+        	</div>
+				</div>
+			</article>
+		</article>
+	</div>
+</section>

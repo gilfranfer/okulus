@@ -131,7 +131,7 @@ okulusApp.factory('NotificationsSvc', ['$rootScope', '$firebaseArray', '$firebas
 		/*This is for the actual notification creation in the DB*/
 		let pushNotification = function (userIdToNotify, notificationRecord){
 			//In Prod, Avoid sending notification to the user performing the action
-			if($rootScope.config.isProdEnv && userIdToNotify == notificationRecord.fromId) return;
+			if(constants.config.isProdEnv && userIdToNotify == notificationRecord.fromId) return;
 			let notKey = notificationsRef.child("list").child(userIdToNotify).push();
 			notKey.set(notificationRecord);
 			increaseUnreadNotificationCounter(userIdToNotify);

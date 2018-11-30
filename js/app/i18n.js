@@ -29,25 +29,8 @@ const systemMsgs = {
 	}
 };
 
-/** Using a run function to set the language and settings in the rootScope **/
+/** Using a run function to set the language in the rootScope **/
 okulusApp.run(function($rootScope) {
-
-		$rootScope.config ={
-			isProdEnv: false,
-			/*The Max lenght a firebaseArray should have in the initial request*/
-			maxQueryListResults: 20,
-			/*After this number of records, the Filter box will be visible*/
-			minResultsToshowFilter: 3,
-			/*Date range limits*/
-			bday:{maxDate:"2019-12-31",minDate:"1900-01-01"},
-			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
-			reports:{
-						maxDate:"2019-12-31",minDate:"2018-01-01",
-						minDuration:"0", maxDuration:"300"
-					}
-		};
-
-		//Caption for Frontend
 		$rootScope.i18n = {
 			navigation:{
 				brand:"Grupos PIB Xalapa", home:"Inicio",
@@ -121,8 +104,12 @@ okulusApp.run(function($rootScope) {
 			},
 			chat:{
 				emptyChat:"No hay mensajes en esta conversación",
-				startConversation:"Abrir Conversación", noChats:"No hay Chats",
-				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones"
+				startConversation:"Abrir Conversación", noChats:"No tienes Conversaciones",
+				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones",
+				newchatBtn:"Iniciar Conversación",newChatLbl:"Conversación Nueva!",
+				modal:{
+					title:"Nueva Conversación"
+				}
 			},
 			weeks:{
 				title: "Administrador de Semanas",
@@ -410,5 +397,4 @@ okulusApp.run(function($rootScope) {
 				}
 			}
 		};
-
 });
