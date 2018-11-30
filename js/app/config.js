@@ -1,34 +1,10 @@
 /** Application entry point. In this is the configuration file we:
 1. Create the Angular module
 2. Prepare the URL routing in the config function
+3. Create a constants $firebaseObject
+4. Set the System Editable Configurations
 **/
 var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
-
-//Db Root Folder
-const rootFolder = "okulusTest";
-const constants = {
-	roles: {
-		user:"user", admin: "admin"
-	},
-	status: {
-		online:"online", offline:"offline",
-		active:"active", inactive:"inactive",
-		open:"open", closed:"closed",
-		visible:"show", hidden:"hide"
-	},
-	pages: {
-		login:"/login", home:"/home",
-		error: "/error",
-		adminWeeks:"/weeks",
-		adminMonitor:"/admin/monitor"
-	},
-	folders:{
-		users:"users", chats:"chats", metadata:"metadata"
-	},
-	actions:{
-		create:"create"
-	}
-};
 
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
@@ -239,9 +215,18 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/chat/chats.html',
-				controller: "ChatsCntrl"
+				templateUrl: 'views/chat/chatCenter.html',
+				controller: "ChatCenterCntrl"
 			})
+			// .when('/chats', {
+			// 	resolve: {
+			// 		currentAuth: function(AuthenticationSvc){
+			// 			return AuthenticationSvc.isUserLoggedIn();
+			// 		}
+			// 	},
+			// 	templateUrl: 'views/chat/chats.html',
+			// 	controller: "ChatCntrl"
+			// })
 			.when('/notifications', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -262,3 +247,49 @@ okulusApp.config(['$routeProvider',
 			});
 	}
 ]);
+
+//Db Root Folder
+const rootFolder = "okulusTest";
+const constants = {
+	roles: {
+		user:"user", admin: "admin"
+	},
+	status: {
+		online:"online", offline:"offline",
+		active:"active", inactive:"inactive",
+		open:"open", closed:"closed",
+		visible:"show", hidden:"hide"
+	},
+	pages: {
+		login:"/login", home:"/home",
+		error: "/error",
+		adminWeeks:"/weeks",
+		adminMonitor:"/admin/monitor"
+	},
+	folders:{
+		root:"okulusTest",
+		users:"users", chats:"chats", metadata:"metadata",
+		chatList:"chatList"
+	},
+	actions:{
+		create:"create"
+	},
+	config:{isProdEnv: false}
+};
+
+/* Configurations that, in future versions, can be modified by System Admin*/
+okulusApp.run(function($rootScope) {
+		$rootScope.config ={
+			/*The Max lenght a firebaseArray should have in the initial request*/
+			maxQueryListResults: 20,
+			/*After this number of records, the Filter box will be visible*/
+			minResultsToshowFilter: 3,
+			/*Date range limits*/
+			bday:{maxDate:"2019-12-31",minDate:"1900-01-01"},
+			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
+			reports:{
+						maxDate:"2019-12-31",minDate:"2018-01-01",
+						minDuration:"0", maxDuration:"300"
+					}
+		};
+});
