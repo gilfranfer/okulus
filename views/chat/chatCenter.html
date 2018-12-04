@@ -26,19 +26,19 @@
 				</div>
 				<!-- Chat List Elements -->
 				<div id="chat-{{chat.$id}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
-						ng-repeat="chat in chatList | filter:chatCenterParams.searchFilter | orderBy:'-lastMessageOn' track by chat.$id" ng-click="openChatWithUser(chat.$id)">
+						ng-repeat="chatRoom in chatList | filter:chatCenterParams.searchFilter | orderBy:'-lastMessageOn' track by chatRoom.$id" ng-click="openChatRoom(chatRoom)">
 					<!-- Title and Counter -->
 					<div class="d-flex w-100">
 					  <span class="mb-1 font-weight-bold">
-							<small class="badge badge-danger" ng-if="chat.unreadCount >0">{{chat.unreadCount}}</small>
-							{{chat.recipientAlias}}
+							<small class="badge badge-danger" ng-if="chatRoom.unreadCount >0">{{chatRoom.unreadCount}}</small>
+							{{chatRoom.recipientAlias}}
 						</span>
 					</div>
 					<!-- Show Details only on Screen size Medium and above -->
 					<div class="d-none d-md-block">
-						<span ng-if="!chat.lastMessageExcerpt" class="badge badge-primary">{{i18n.chat.newChatLbl}}</span>
-						<span>{{chat.lastMessageExcerpt}}</span><br>
-						<small>{{chat.lastMessageOn | date: 'MMM dd yyyy hh:mm a' }}</small>
+						<span ng-if="!chatRoom.lastMessageExcerpt" class="badge badge-primary">{{i18n.chat.newChatLbl}}</span>
+						<span>{{chatRoom.lastMessageExcerpt}}</span><br>
+						<small>{{chatRoom.lastMessageOn | date: 'MMM dd yyyy hh:mm a' }}</small>
 					</div>
 				</div>
 			</div>

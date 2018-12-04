@@ -260,7 +260,8 @@ const constants = {
 	folders:{
 		root:"okulusTest",
 		users:"users", chats:"chats", metadata:"metadata",
-		chatList:"chatList",chatMessages:"messages"
+		chatList:"chatRooms",chatMessages:"messages",
+		unreadChats:"unreadChats"
 	},
 	actions:{
 		create:"create"

@@ -1,53 +1,4 @@
-okulusApp.factory('ChatService',
-	['$rootScope', '$firebaseArray', '$firebaseObject', 'ErrorsSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, ErrorsSvc){
-
-		let chatsRef = firebase.database().ref().child(rootFolder).child('chats');
-
-		return {
-			getUserChatMetadataList: function(userid){
-				let reference = chatsRef.child("metadata").child(userid);
-				return $firebaseArray(reference);
-			},
-			getUnreadChats: function(userid){
-				let reference = chatsRef.child("metadata").child(userid).orderByChild("unreadCount").startAt(1);
-				return $firebaseArray(reference);
-			},
-			getConversationMessages: function(useridFrom,useridTo){
-				let reference = chatsRef.child("conversations").child(useridFrom).child(useridTo).child("messages");
-				return $firebaseArray(reference);
-			},
-			getConversationMetadata: function(useridFrom,useridTo){
-				let reference = chatsRef.child("metadata").child(useridFrom).child(useridTo);
-				return $firebaseObject(reference);
-			},
-			createBaseMetadata: function(userFromId, userToId, userToShortname){
-				chatsRef.child("metadata").child(userFromId).child(userToId).update({unreadCount:0, chatWith:userToShortname});
-			},
-			saveMessage: function(message,userFrom,userTo){
-				//Save messages in both (userFrom, userTo) users' folder
-				let record = { message: message, from: userFrom, time:firebase.database.ServerValue.TIMESTAMP};
-
-				//Updates in the User sending the message
-				chatsRef.child("conversations").child(userFrom).child(userTo).child("messages").push().set( record,
-					function(error) {
-						if(error){
-							console.debug(error);
-						}
-					});
-				//Updates in the User receiving the message
-				chatsRef.child("conversations").child(userTo).child(userFrom).child("messages").push().set(record,
-					function(error) {
-						if(error){
-							console.debug(error);
-						}
-					});
-			}
-		};/*return end*/
-	}
-]);
-
-/* New Controller linked to /chats */
+/* Controller linked to /chats */
 okulusApp.controller('ChatCenterCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','UsersSvc','ChatSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UsersSvc,ChatSvc){
@@ -63,20 +14,20 @@ okulusApp.controller('ChatCenterCntrl',
 					$location.path(constants.pages.error);
 					return;
 				}
+				/* Setting some values useful in the frontend */
 				$scope.chatCenterParams = {
 					chatAreaHeight: Math.round(window.innerHeight*.75),
-					loggedUserId: authUser.uid,
-					loggedUserEmail: authUser.email,
+					loggedUserId: loggedUser.$id, //loggedUserEmail: loggedUser.email,
 					activeChatWith:undefined, activeChatMessages: undefined,
 					activeChatLimit: undefined
 				};
 				/*Load User's Chat List*/
 				if(!$rootScope.chatList){
-					$rootScope.chatList = ChatSvc.getChatListForUser(loggedUser.$id);
+					$rootScope.chatList = ChatSvc.getChatRoomsForUser(loggedUser.$id);
 				}
 				$rootScope.chatList.$loaded().then(function(list){ $scope.response = undefined; });
 
-				//Event to post message with "Enter"
+				//Register vent to post message with "Enter"
 				document.querySelector('#chatInput').addEventListener('keyup', function(e){
 		      if (e.keyCode === 13 && !e.shiftKey) {
 		        saveMessage();
@@ -96,22 +47,21 @@ okulusApp.controller('ChatCenterCntrl',
 			let loggedUserId = $rootScope.currentSession.user.$id;
 			let chatExists = $rootScope.chatList.$getRecord(selectedUser);
 			if(!chatExists){
-				ChatSvc.createChatWith(loggedUserId,selectedUser);
-				//Should I creae the chat in both users?
+				ChatSvc.createChatRoomWith(loggedUserId,selectedUser);
 			}
 		};
 
-		/* Called when clicking an element from the ChatList */
-		$scope.openChatWithUser = function(activeChatWith){
+		/* Called when clicking an element from the ChatRooms List */
+		$scope.openChatRoom = function(chatRoom){
 			let loggedUserId = $rootScope.currentSession.user.$id;
 			let previuosChatWith = $scope.chatCenterParams.activeChatWith;
 
 			/* Load Messages, and update view only when clicking in a different Chat */
-			if(previuosChatWith != activeChatWith){
-				$scope.chatCenterParams.activeChatMessages = undefined;
-				$scope.chatCenterParams.activeChatWith = activeChatWith;
-
+			if(previuosChatWith != chatRoom.$id){
 				document.getElementById("chatInput").value = "";
+				$scope.chatCenterParams.activeChatMessages = undefined;
+				$scope.chatCenterParams.activeChatWith = chatRoom.$id;
+
 				/* Remove Styles to previous Selected Chat*/
 				let htmlElement = document.getElementById("chat-"+previuosChatWith);
 				if(htmlElement){
@@ -119,55 +69,60 @@ okulusApp.controller('ChatCenterCntrl',
 					htmlElement.classList.remove("text-white");
 				}
 				/* Add Styles to Selected Chat*/
-				htmlElement = document.getElementById("chat-"+activeChatWith);
+				htmlElement = document.getElementById("chat-"+chatRoom.$id);
 				if(htmlElement){
 					htmlElement.classList.add("active");
 					htmlElement.classList.add("text-white");
 				}
 
-				//Get the Chat conversation Messages from the loggedUserId folder
+				/*Get the Chat Messages from the loggedUserId folder, and Mark Chat as Read*/
 				let limit = $rootScope.config.maxQueryListResults;
 				$scope.chatCenterParams.activeChatLimit = limit;
-				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,activeChatWith,limit);
-				//$scope.chatCenterParams.activeChatMessages.$watch(function(event) {scrollBottom();});
-
-				//Metadata for this conversation (receiver folder). Used when sending messages
-				//$scope.chatCenterParams.activeChatMetadataTo = ChatService.getConversationMetadata(chatId,loggedUserId);
-				//Metadata for this conversation (sender folder, the loggedUser)
-				//$scope.chatCenterParams.activeChatMetadataFrom = ChatService.getConversationMetadata(loggedUserId,chatId);
+				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,chatRoom.$id,limit);
 			}
 
-			document.getElementById("chatInput").focus();
-			scrollBottom();
-
-			//Clean unreadCount for this chat everytime you click on it
-			// $scope.chatCenterParams.activeChatMetadataFrom.$loaded().then(function(metadata){
-			// 	metadata.unreadCount = 0;
-			// 	metadata.$save().then(function(){
-			// 		//Visual updates on the selected chat
-			// 		document.getElementById("chatInput").value = "";;
-			// 		document.getElementById("chatInput").focus();
-			// 		let htmlElement = document.getElementById("chat-"+chatId);
-			// 		if( htmlElement ){
-			// 			htmlElement.classList.add("active");
-			// 			htmlElement.classList.add("text-white");
-			// 		}
-			// 		scrollBottom();
-			// 	});
-			// });
+			/* This should be done anytime you clic in the chatRoom, even if it's already selected.
+			 After Chat Messages are retrieved from DB*/
+			$scope.chatCenterParams.activeChatMessages.$loaded().then(function(messages) {
+				//Clean Input Area
+				document.getElementById("chatInput").focus();
+				//Set unreadCount to 0 on ChatRoom
+				ChatSvc.setChatRoomUnreadCount(chatRoom.$id,0);
+				//Remove this chat from unreadChats List
+				ChatSvc.removeChatFromUnreadList(loggedUserId,chatRoom.$id);
+				scrollBottom();
+			});
 		};
 
 		/* Persist the Message to Firebase*/
 		saveMessage = function(){
-			let chattingWith = $scope.chatCenterParams.activeChatWith;
+			let senderId = $scope.chatCenterParams.loggedUserId;
+			let receiverId = $scope.chatCenterParams.activeChatWith;
 			let chatInput = document.getElementById("chatInput");
 			let message = chatInput.value.trim();
 			chatInput.value = "";
 
-			if(message && chattingWith){
-				ChatSvc.saveMessage(message, $scope.chatCenterParams.loggedUserId, chattingWith);
+			if(message && receiverId){
+				//Save Message in Sender Folder
+				let messageReference = ChatSvc.persistMessage(message, senderId, receiverId, null);
+				//Save Message in Receiver Folder, usign the same Key from the previous message
+				ChatSvc.persistMessage(message, receiverId, senderId, messageReference.key);
+				//Update the Sender's ChatRoom summary
+
+
+				//Validate if the Receiver has a ChatRoom with the sender
+				ChatSvc.getChatRoomObject(receiverId, senderId).$loaded().then(function(chatRoom){
+					if(!chatRoo.lastMessageOn){
+
+					}
+				});
+				if( ChatSvc.getCha){
+					ChatSvc.createChatRoomWith(receiverId, senderId);
+				}
+				//Update chatList details (unreadCount,lastMessageExcerpt,lastMessageOn) for Sender and for Receiver
+				//Mark Chat Readed for Sender
+				//Increase Unread Chats for Receiver
 			}
-				console.log("save");
 			return;
 
 	    if($scope.activeChatWith && message){
@@ -189,7 +144,6 @@ okulusApp.controller('ChatCenterCntrl',
 					}
 				});
 			}
-			chatInput.value = "";
 		};
 
 		/* Current problem is this method doesnt work the first time you open the chat,
@@ -214,24 +168,30 @@ okulusApp.factory('ChatSvc',
 		let chatsRef = firebase.database().ref().child(rootFolder).child( constants.folders.chats );
 
 		return {
-			/* Returns $firebaseObject with the Chats metadata for the given user */
-			getChatMetadataForUser: function(userId){
-				let reference = chatsRef.child(userId).child(constants.folders.metadata);
-				return $firebaseObject(reference);
+			/* Returns $firebaseArray with the list of unread ChatRoom Ids for the given user.
+			This is mainly used in AuthenticationSvc for the navigation badge.*/
+			getUnreadChatsForUser: function(userId){
+				let reference = chatsRef.child(userId).child(constants.folders.unreadChats);
+				return $firebaseArray(reference);
 			},
-			/* Returns $firebaseArray with the chat list for the given user */
-			getChatListForUser: function(userId){
+			/* Returns $firebaseArray with all the chat rooms for the given user */
+			getChatRoomsForUser: function(userId){
 				let reference = chatsRef.child(userId).child(constants.folders.chatList);
 				return $firebaseArray(reference);
 			},
-			/* Create a new object in the User's Chatlist
+			/* Returns $firebaseObject with the specific chat room*/
+			getChatRoomObject: function(userId,chatWithUserId){
+				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatWithUserId);
+				return $firebaseObject(reference);
+			},
+			/* Create a new object in the User's ChatRooms
 				chatWithUser is a User Object that represents the person chatting with*/
-			createChatWith: function(loggedUserId, chatWithUser){
+			createChatRoomWith: function(userId, chatWithUserObj){
 				let newChat = {
-					recipientAlias:chatWithUser.shortname,
+					recipientAlias:chatWithUserObj.shortname,
 					lastMessageExcerpt:"", lastMessageOn:firebase.database.ServerValue.TIMESTAMP, unreadCount: 0
 				};
-				let newChatRef = chatsRef.child(loggedUserId).child(constants.folders.chatList).child(chatWithUser.$id);
+				let newChatRef = chatsRef.child(userId).child(constants.folders.chatList).child(chatWithUserObj.$id);
 				newChatRef.update(newChat);
 			},
 			/* Returns $firebaseArray with the chat messages between the loggedUser and
@@ -240,24 +200,46 @@ okulusApp.factory('ChatSvc',
 				let reference = chatsRef.child(loggedUser).child(constants.folders.chatMessages).child(chatWithUserId).orderByKey().limitToLast(limit);;
 				return $firebaseArray(reference);
 			},
-			saveMessage: function(message, loggedUserId, chattingWithId){
-				let record = { message:message, from:loggedUserId, time:firebase.database.ServerValue.TIMESTAMP};
-				//Save the Message in the Folder of the User sending it
-				let newMessageRef = chatsRef.child(loggedUserId).child(constants.folders.chatMessages).child(chattingWithId).push();
+			/* Persist a Message in the firebase location /chats/{{userId}}/messages/{{chattingWithId}}
+			and return the reference to the recenlty created message. This method should be called twice for each
+			message in the chat. The first time will be to save the message in the Sender's Db folder, and the
+			param messageKey should be null. The second time will be to save the message in the Receiver's Db folder,
+			and the param messageKey should be valid because it will be used as Key for the new message. */
+			persistMessage: function(message, userId, chattingWithId, messageKey){
+				let record = { message:message, from:userId, time:firebase.database.ServerValue.TIMESTAMP };
+				let newMessageRef = chatsRef.child(userId).child(constants.folders.chatMessages).child(chattingWithId);
+
+				if(!messageKey){
+					//Used when persisting a Message in the Sender's Db folder
+					newMessageRef = newMessageRef.push();
+				}else {
+					//Used when persisting a Message in the Receiver's Db Folder
+					newMessageRef = newMessageRef.child(messageKey);
+				}
 				newMessageRef.set(record,
 					function(error) {
 						if(error){
 							console.error(error);
 						}
 					});
-				//Save the Message in the Folder of the User receiving it
-				//Use the same message key (newMessageRef) 
-				chatsRef.child(chattingWithId).child(constants.folders.chatMessages).child(loggedUserId).child(newMessageRef.key).set(record,
-					function(error) {
-						if(error){
-							console.error(error);
-						}
-					});
+				return newMessageRef;
+			},
+			/* Update the unreadCount value of the logged User's chatRoom, using the
+			chatList ($firebaseArray) that should be available in rootScope. */
+			setChatRoomUnreadCount: function (chatRoomId, count){
+				let chatRoom = $rootScope.chatList.$getRecord(chatRoomId);
+				chatRoom.unreadCount = count;
+				$rootScope.chatList.$save(chatRoom).then(function(){});
+			},
+			/* Remove the Chat Id from the /chats/{{userId}}/unreadChats list*/
+			removeChatFromUnreadList: function (userId, chatRoomId){
+				let reference = chatsRef.child(userId).child(constants.folders.unreadChats).child(chatRoomId);
+				reference.set({});
+			},
+			/* Add the Chat Id to the /chats/{{userId}}/unreadChats list*/
+			addChatToUnreadList: function (userId, chatRoomId){
+				let reference = chatsRef.child(userId).child(constants.folders.unreadChats).child(chatRoomId);
+				reference.set(true);
 			}
 		};/*return end*/
 	}
