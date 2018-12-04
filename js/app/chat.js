@@ -51,6 +51,7 @@ okulusApp.factory('ChatService',
 okulusApp.controller('ChatCenterCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','UsersSvc','ChatSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UsersSvc,ChatSvc){
+		const messageExcerptSize = 25;
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
@@ -78,7 +79,7 @@ okulusApp.controller('ChatCenterCntrl',
 				//Event to post message with "Enter"
 				document.querySelector('#chatInput').addEventListener('keyup', function(e){
 		      if (e.keyCode === 13 && !e.shiftKey) {
-		        aveMessage();
+		        saveMessage();
 		    	}
 				});
 			});
@@ -156,10 +157,19 @@ okulusApp.controller('ChatCenterCntrl',
 			// });
 		};
 
-		const messageExcerptSize = 25;
+		/* Persist the Message to Firebase*/
 		saveMessage = function(){
+			let chattingWith = $scope.chatCenterParams.activeChatWith;
 			let chatInput = document.getElementById("chatInput");
 			let message = chatInput.value.trim();
+			chatInput.value = "";
+
+			if(message && chattingWith){
+				ChatSvc.saveMessage(message, $scope.chatCenterParams.loggedUserId, chattingWith);
+			}
+				console.log("save");
+			return;
+
 	    if($scope.activeChatWith && message){
 				ChatService.saveMessage(message, $scope.loggedUserId, $scope.activeChatWith);
 				//Update the receiver metadata
@@ -224,9 +234,30 @@ okulusApp.factory('ChatSvc',
 				let newChatRef = chatsRef.child(loggedUserId).child(constants.folders.chatList).child(chatWithUser.$id);
 				newChatRef.update(newChat);
 			},
+			/* Returns $firebaseArray with the chat messages between the loggedUser and
+			the user selected from the chatList. The limit will help to reduce the data downloaded */
 			getChatMessages: function(loggedUser,chatWithUserId,limit){
 				let reference = chatsRef.child(loggedUser).child(constants.folders.chatMessages).child(chatWithUserId).orderByKey().limitToLast(limit);;
 				return $firebaseArray(reference);
+			},
+			saveMessage: function(message, loggedUserId, chattingWithId){
+				let record = { message:message, from:loggedUserId, time:firebase.database.ServerValue.TIMESTAMP};
+				//Save the Message in the Folder of the User sending it
+				let newMessageRef = chatsRef.child(loggedUserId).child(constants.folders.chatMessages).child(chattingWithId).push();
+				newMessageRef.set(record,
+					function(error) {
+						if(error){
+							console.error(error);
+						}
+					});
+				//Save the Message in the Folder of the User receiving it
+				//Use the same message key (newMessageRef) 
+				chatsRef.child(chattingWithId).child(constants.folders.chatMessages).child(loggedUserId).child(newMessageRef.key).set(record,
+					function(error) {
+						if(error){
+							console.error(error);
+						}
+					});
 			}
 		};/*return end*/
 	}
