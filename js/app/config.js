@@ -261,7 +261,7 @@ const constants = {
 		root:"okulusTest",
 		users:"users", chats:"chats", metadata:"metadata",
 		chatList:"chatRooms",chatMessages:"messages",
-		unreadChats:"unreadChats"
+		unreadChats:"unreadChats",unreadCount:"unreadCount"
 	},
 	actions:{
 		create:"create"
