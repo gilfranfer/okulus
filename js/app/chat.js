@@ -104,25 +104,27 @@ okulusApp.controller('ChatCenterCntrl',
 
 			//(receiverId==chatRoomId)
 			if(message && receiverId){
-				//Prepare the ChatRoom Summary updates
+				let timestamp = firebase.database.ServerValue.TIMESTAMP;
+				//Prepare the ChatRoom Summary record, and Message Record
 				let messageExcerpt = (message.length<messageExcerptSize)?message:(message.substring(0, messageExcerptSize-3)+"...");
-				let updates = {lastMessageExcerpt:messageExcerpt,lastMessageFrom:senderId,lastMessageOn:firebase.database.ServerValue.TIMESTAMP}
+				let chatRoomSummaryRecord = {lastMessageExcerpt:messageExcerpt, lastMessageFrom:senderId, lastMessageOn:timestamp}
+				let messageRecord = {message:message, from:senderId, time:timestamp};
 
 				//Save Message in Sender's Folder
-				let messageReference = ChatSvc.persistMessage(message, senderId, receiverId, null);
+				let messageReference = ChatSvc.persistMessage(senderId, receiverId, messageRecord, null);
 				//Update the Sender's ChatRoom summary
-				ChatSvc.updateChatRoomSummary(senderId,receiverId,updates);
+				ChatSvc.updateChatRoomSummary(senderId, receiverId, chatRoomSummaryRecord);
 				//Set Sender's Chat as Readed
 				ChatSvc.setChatRoomUnreadCount(receiverId,0);
 				//Remove this chat from Sender's unreadChats List
 				ChatSvc.removeChatFromUnreadList(senderId,receiverId);
 
 				//Save Message in Receiver's Folder, using the same Key from the previous message
-				ChatSvc.persistMessage(message, receiverId, senderId, messageReference.key);
+				ChatSvc.persistMessage(receiverId, senderId, messageRecord, messageReference.key);
 				/*Update the Receiver's ChatRoom summary. Including the shortname of the
 				loggedUser as chattingWith, in case the Receiver was not having the ChatRoom before*/
-				updates.chattingWith = $rootScope.currentSession.memberData.shortname
-				ChatSvc.updateChatRoomSummary(receiverId,senderId,updates);
+				chatRoomSummaryRecord.chattingWith = $rootScope.currentSession.memberData.shortname
+				ChatSvc.updateChatRoomSummary(receiverId,senderId,chatRoomSummaryRecord);
 				//Increase Receiver's ChatRoom unreadCount
 				ChatSvc.increaseChatRoomUnreadCount(receiverId,senderId);
 				//Add this chat to Receiver's unreadChats List
@@ -189,10 +191,8 @@ okulusApp.factory('ChatSvc',
 			message in the chat. The first time will be to save the message in the Sender's Db folder, and the
 			param messageKey should be null. The second time will be to save the message in the Receiver's Db folder,
 			and the param messageKey should be valid because it will be used as Key for the new message. */
-			persistMessage: function(message, userId, chattingWithId, messageKey){
-				let record = { message:message, from:userId, time:firebase.database.ServerValue.TIMESTAMP };
+			persistMessage: function(userId, chattingWithId, messageRecord, messageKey){
 				let newMessageRef = chatsRef.child(userId).child(constants.folders.chatMessages).child(chattingWithId);
-
 				if(!messageKey){
 					//Used when persisting a Message in the Sender's Db folder
 					newMessageRef = newMessageRef.push();
@@ -200,7 +200,7 @@ okulusApp.factory('ChatSvc',
 					//Used when persisting a Message in the Receiver's Db Folder
 					newMessageRef = newMessageRef.child(messageKey);
 				}
-				newMessageRef.set(record,
+				newMessageRef.set(messageRecord,
 					function(error) {
 						if(error){
 							console.error(error);
@@ -233,9 +233,9 @@ okulusApp.factory('ChatSvc',
 				reference.set(true);
 			},
 			/*Called when sending a Message, to update the ChatRoom Summary*/
-			updateChatRoomSummary: function(userId,chatRoomId,updates) {
+			updateChatRoomSummary: function(userId,chatRoomId,record) {
 				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatRoomId);
-				reference.update(updates);
+				reference.update(record);
 			},
 		};
 	}
