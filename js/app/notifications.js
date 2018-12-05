@@ -1,5 +1,6 @@
 /* Controller used only in the app config for the Notification Center (/notifications) */
-okulusApp.controller('NotificationCenterCntrl', ['$rootScope','$scope','$firebaseAuth', '$location','AuthenticationSvc', 'NotificationsSvc',
+okulusApp.controller('NotificationCenterCntrl',
+	['$rootScope','$scope','$firebaseAuth', '$location','AuthenticationSvc', 'NotificationsSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, AuthenticationSvc, NotificationsSvc){
 
 		/*Executed everytime we enter to Notification Center*/
