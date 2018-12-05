@@ -1,4 +1,3 @@
-
 okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 	function($rootScope, ErrorsSvc, NotificationsSvc){
 		let baseRef = firebase.database().ref().child(rootFolder);
