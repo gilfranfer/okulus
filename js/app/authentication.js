@@ -36,7 +36,7 @@ okulusApp.controller('AuthenticationCntrl',
 							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
 							/* Load Unread Chats Count */
-							$rootScope.currentSession.chatsMetadata = ChatSvc.getChatMetadataForUser(authUser.uid);
+							$rootScope.currentSession.unreadChats = ChatSvc.getUnreadChatsForUser(authUser.uid);
 					});
 				}else{
 					cleanRootScope();

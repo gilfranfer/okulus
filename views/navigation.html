@@ -83,13 +83,13 @@
       <!-- Chats -->
       <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}
-          <span ng-show="currentSession.chatsMetadata.unreadChats" class="badge badge-danger badge-text">
-            {{currentSession.chatsMetadata.unreadChats}}
+          <span ng-show="currentSession.unreadChats.length" class="badge badge-danger badge-text">
+            {{currentSession.unreadChats.length}}
           </span>
         </a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-comments" href="#!/chats" data-toggle="tooltip" title="{{i18n.navigation.chat}}">
-          <span ng-show="currentSession.chatsMetadata.unreadChats" class="badge badge-danger badge-text">
-            {{currentSession.chatsMetadata.unreadChats}}
+          <span ng-show="currentSession.unreadChats.length" class="badge badge-danger badge-text">
+            {{currentSession.unreadChats.length}}
           </span>
         </a>
       </li>

@@ -218,15 +218,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/chat/chatCenter.html',
 				controller: "ChatCenterCntrl"
 			})
-			// .when('/chats', {
-			// 	resolve: {
-			// 		currentAuth: function(AuthenticationSvc){
-			// 			return AuthenticationSvc.isUserLoggedIn();
-			// 		}
-			// 	},
-			// 	templateUrl: 'views/chat/chats.html',
-			// 	controller: "ChatCntrl"
-			// })
 			.when('/notifications', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -269,7 +260,8 @@ const constants = {
 	folders:{
 		root:"okulusTest",
 		users:"users", chats:"chats", metadata:"metadata",
-		chatList:"chatList"
+		chatList:"chatRooms",chatMessages:"messages",
+		unreadChats:"unreadChats",unreadCount:"unreadCount"
 	},
 	actions:{
 		create:"create"
