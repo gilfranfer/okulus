@@ -107,31 +107,38 @@ okulusApp.controller('ChatCenterCntrl',
 				let timestamp = firebase.database.ServerValue.TIMESTAMP;
 				//Prepare the ChatRoom Summary record, and Message Record
 				let messageExcerpt = (message.length<messageExcerptSize)?message:(message.substring(0, messageExcerptSize-3)+"...");
-				let chatRoomSummaryRecord = {lastMessageExcerpt:messageExcerpt, lastMessageFrom:senderId, lastMessageOn:timestamp}
 				let messageRecord = {message:message, from:senderId, time:timestamp};
 
-				//Save Message in Sender's Folder
+				//Save Message in Sender's Folder first
 				let messageReference = ChatSvc.persistMessage(senderId, receiverId, messageRecord, null);
-				//Update the Sender's ChatRoom summary
-				chatRoomSummaryRecord.messageId = messageReference.key;
-				ChatSvc.updateChatRoomSummary(senderId, receiverId, chatRoomSummaryRecord);
-				//Set Sender's Chat as Readed
-				ChatSvc.setChatRoomUnreadCount(receiverId,0);
-				//Remove this chat from Sender's unreadChats List
-				ChatSvc.removeChatFromUnreadList(senderId,receiverId);
+				messageReference.once('value').then(function(persistedMessage) {
+				  //The Promise was "fulfilled" (it succeeded). So proceed with other updates
+					let chatRoomSummaryRecord = {lastMessageExcerpt:messageExcerpt, lastMessageFrom:senderId,
+						lastMessageOn:timestamp, lastMessageId:messageReference.key};
+					//Update the Sender's ChatRoom summary
+					ChatSvc.updateChatRoomSummary(senderId, receiverId, chatRoomSummaryRecord);
+					//Set Sender's ChatRoom as Readed (unreadCount=0)
+					ChatSvc.setChatRoomUnreadCount(receiverId,0);
+					//Remove this chat from Sender's unreadChats List
+					ChatSvc.removeChatFromUnreadList(senderId,receiverId);
 
-				//Save Message in Receiver's Folder, using the same Key from the previous message
-				ChatSvc.persistMessage(receiverId, senderId, messageRecord, messageReference.key);
-				/*Update the Receiver's ChatRoom summary. Including the shortname of the
-				loggedUser as chattingWith, in case the Receiver was not having the ChatRoom before*/
-				chatRoomSummaryRecord.chattingWith = $rootScope.currentSession.memberData.shortname
-				ChatSvc.updateChatRoomSummary(receiverId,senderId,chatRoomSummaryRecord);
-				//Increase Receiver's ChatRoom unreadCount
-				ChatSvc.increaseChatRoomUnreadCount(receiverId,senderId);
-				//Add this chat to Receiver's unreadChats List
-				ChatSvc.addChatToUnreadList(receiverId,senderId);
+					//Save Message in Receiver's Folder, using the same Key from the previous message
+					ChatSvc.persistMessage(receiverId, senderId, messageRecord, messageReference.key);
+					/*Update the Receiver's ChatRoom summary. Including the shortname of the
+					loggedUser as chattingWith, in case the Receiver was not having the ChatRoom before*/
+					chatRoomSummaryRecord.chattingWith = $rootScope.currentSession.memberData.shortname
+					let chatRoomRef = ChatSvc.updateChatRoomSummary(receiverId,senderId,chatRoomSummaryRecord);
+					chatRoomRef.once('value').then(function(updatedChatRoom) {
+						/*Increase Receiver's ChatRoom unreadCount. Thi is done in the Promise
+						after the ChatRoom Summary is updated/created because, if it didnt exists
+						before, the unread count was not going to be increased. */
+						ChatSvc.increaseChatRoomUnreadCount(receiverId,senderId);
+					}, function(error) {console.error(error);});
+					//Add this chat to Receiver's unreadChats List
+					ChatSvc.addChatToUnreadList(receiverId,senderId);
+					scrollBottom();
+				}, function(error) {console.error(error);});
 			}
-			scrollBottom();
 		};
 
 		/* Current problem is this method doesnt work the first time you open the chat,
@@ -313,6 +320,7 @@ okulusApp.factory('ChatSvc',
 			updateChatRoomSummary: function(userId,chatRoomId,record) {
 				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatRoomId);
 				reference.update(record);
+				return reference;
 			},
 			/*Delete a Message */
 			deleteChatMessage: function(userId,chatRoomId,messageId){
