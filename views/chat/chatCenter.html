@@ -3,6 +3,8 @@
 	<div ng-include="'views/alerts.html'"></div>
 	<!-- New Chat Modal -->
 	<div ng-include="'views/chat/addChatModal.html'"></div>
+	<!-- Delete Message Modal -->
+	<div ng-include="'views/chat/deleteMessageModal.html'"></div>
 
 	<!-- Chat List and Chat area -->
 	<div class="row" ng-show="!response.loading">
@@ -50,16 +52,48 @@
 					{{i18n.chat.emptyChat}}
 				</div>
         <div class="row" ng-repeat="message in chatCenterParams.activeChatMessages | orderBy:'time':false track by message.$id">
-					<!-- Message received -->
-					<div ng-if="message.from != chatCenterParams.loggedUserId" class="alert clickable alert-primary ml-2 mr-auto" data-toggle="tooltip"
-							title="{{message.time | date: 'MMM dd yyyy hh:mm a'}}">
-		      	{{message.message}}
-	        </div>
 					<!-- Message Sent -->
-        	<div ng-if="message.from == chatCenterParams.loggedUserId" class="alert clickable alert-secondary mr-2 ml-auto" data-toggle="tooltip"
-							title="{{message.time| date: 'MMM dd yyyy hh:mm a'}}">
-            {{message.message}}
-        	</div>
+        	<div class="mr-2 ml-auto" ng-if="message.from == chatCenterParams.loggedUserId">
+	        	<div class="alert clickable alert-secondary mb-0 mt-2" data-toggle="tooltip"
+								title="{{message.time| date: 'MMM dd yyyy hh:mm a'}}"
+								ng-click="showMessageMenu(message)">
+							<span ng-show="message.message">{{message.message}}</span>
+							<span ng-show="message.wasDeleted" class="font-weight-light font-italic">
+								{{i18n.chat.deletedMessage}}
+							</span>
+							<!-- Default Message Time displays only hour -->
+							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage != message.$id">
+								<small class="">{{message.time | date: 'hh:mm a'}}</small>
+							</div>
+							<!-- Clicking on Message will show following div -->
+							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage == message.$id">
+								<small>{{message.time | date: 'MMM dd yyyy hh:mm a'}}</small>
+								<span class="clickable fas fa-md fa-trash-alt" ng-click="setMessage(message)"
+									data-toggle="modal" data-target="#deleteMessageModal"></span>
+								<span class="clickable fas fa-md fa-edit" ng-click="setMessage(message)"
+									data-toggle="modal" data-target="#editMessageModal"></span>
+							</div>
+	        	</div>
+					</div>
+					<!-- Message received -->
+					<div class="ml-2 mr-auto" ng-if="message.from != chatCenterParams.loggedUserId">
+						<div class="alert clickable alert-primary mb-0 mt-2" data-toggle="tooltip"
+								title="{{message.time | date: 'MMM dd yyyy hh:mm a'}}"
+								ng-click="showMessageMenu(message)">
+							<span ng-show="message.message">{{message.message}}</span>
+							<span ng-show="message.wasDeleted" class="font-weight-light font-italic">
+								{{i18n.chat.deletedMessage}}
+							</span>
+							<!-- Default Message Time displays only hour -->
+							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage != message.$id">
+								<small class="">{{message.time | date: 'hh:mm a'}}</small>
+							</div>
+							<!-- Clcking on Message will show following div -->
+							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage == message.$id">
+								<small>{{message.time | date: 'MMM dd yyyy hh:mm a'}}</small>
+							</div>
+		        </div>
+	        </div>
 				</div>
 			</div>
 			<div class="row mt-2" ng-show="chatCenterParams.activeChatWith">

@@ -145,6 +145,52 @@ okulusApp.controller('ChatCenterCntrl',
     		element.scrollTop = 0;
 		}
 
+		/* Expand/retract the Menu with the Delete and Edit icons,
+		and the full message's date*/
+		$scope.showMessageMenu = function(message){
+			let messageId = message.$id;
+			let previous = $scope.chatCenterParams.showMenuInMessage;
+			if(messageId == previous){
+				//clicking for secondtime in the same message
+				$scope.chatCenterParams.showMenuInMessage = undefined;
+			}else{
+				$scope.chatCenterParams.showMenuInMessage = messageId;
+			}
+		};
+
+		/* Used by "Delete" and "Edit" icons to set the selected message in the
+		chatCenterParams, for further use (when performing the actual edit/delete)*/
+		$scope.setMessage = function(message){
+			$scope.chatCenterParams.selectedMessage = message;
+		};
+
+		/*Called from deleteMessageModal, to delete the message only from the
+		loggedUser's db folder. It will use the message previously saved in the
+		chatCenterParams, using setMessage(). For security, double chek the message
+		belongs to the loggedUser*/
+		$scope.deleteMessageForUser = function(){
+			let message = $scope.chatCenterParams.selectedMessage;
+			let loggedUserId = $scope.chatCenterParams.loggedUserId;
+			let chatRoomId = $scope.chatCenterParams.activeChatWith;
+			if(message.from == loggedUserId){
+				ChatSvc.deleteChatMessage(loggedUserId,chatRoomId,message.$id);
+			}
+			$scope.chatCenterParams.selectedMessage = undefined;
+		};
+
+		$scope.deleteMessageForBoth = function(){
+			let message = $scope.chatCenterParams.selectedMessage;
+			let loggedUserId = $scope.chatCenterParams.loggedUserId;
+			let chatRoomId = $scope.chatCenterParams.activeChatWith;
+			if(message.from == loggedUserId){
+				//Delete from Sender's Folder
+				ChatSvc.softDeleteMessage(loggedUserId,chatRoomId,message.$id);
+				//Delete from Receiver's Folder
+				ChatSvc.softDeleteMessage(chatRoomId,loggedUserId,message.$id);
+			}
+			$scope.chatCenterParams.selectedMessage = undefined;
+		};
+
 	}
 ]);
 
@@ -237,6 +283,16 @@ okulusApp.factory('ChatSvc',
 				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatRoomId);
 				reference.update(record);
 			},
+			/*Delete a Message */
+			deleteChatMessage: function(userId,chatRoomId,messageId){
+				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				reference.set({});
+			},
+			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
+			softDeleteMessage: function(userId,chatRoomId,messageId){
+				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				reference.update({message:"",wasDeleted:true});
+			}
 		};
 	}
 ]);
