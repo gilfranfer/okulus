@@ -1,0 +1,27 @@
+<article class="modal fade" id="editMessageModal" tabindex="-1" role="dialog" aria-labelledby="editMessageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editMessageModalLabel">{{i18n.chat.modals.editMessageTitle}}</h5>
+        <button type="button" class="close clickable" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form class="mt-3" name="editForm" novalidate>
+        <div class="modal-body">
+          <div class="row m-2">
+    				<div class="col">
+    					<textarea id="editInput" class="form-control" ng-required="true" ng-model="chatCenterParams.editedMessagetTxt"></textarea>
+    				</div>
+    			</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn clickable btn-lg btn-block btn-success" data-dismiss="modal"
+            ng-disabled="editForm.$invalid" ng-click="editMessage()">
+            {{i18n.btns.saveBtn}}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</article>

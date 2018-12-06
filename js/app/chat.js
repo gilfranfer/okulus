@@ -113,6 +113,7 @@ okulusApp.controller('ChatCenterCntrl',
 				//Save Message in Sender's Folder
 				let messageReference = ChatSvc.persistMessage(senderId, receiverId, messageRecord, null);
 				//Update the Sender's ChatRoom summary
+				chatRoomSummaryRecord.messageId = messageReference.key;
 				ChatSvc.updateChatRoomSummary(senderId, receiverId, chatRoomSummaryRecord);
 				//Set Sender's Chat as Readed
 				ChatSvc.setChatRoomUnreadCount(receiverId,0);
@@ -158,28 +159,32 @@ okulusApp.controller('ChatCenterCntrl',
 			}
 		};
 
-		/* Used by "Delete" and "Edit" icons to set the selected message in the
-		chatCenterParams, for further use (when performing the actual edit/delete)*/
-		$scope.setMessage = function(message){
-			$scope.chatCenterParams.selectedMessage = message;
+		/* Used by "Delete" icon to set the selected message in the
+		chatCenterParams, for further use (when performing the actual delete)*/
+		$scope.prepareForDelete = function(message){
+			$scope.chatCenterParams.messageToDelete = message;
 		};
 
 		/*Called from deleteMessageModal, to delete the message only from the
 		loggedUser's db folder. It will use the message previously saved in the
-		chatCenterParams, using setMessage(). For security, double chek the message
+		chatCenterParams, using prepareForDelete(). For security, double chek the message
 		belongs to the loggedUser*/
 		$scope.deleteMessageForUser = function(){
-			let message = $scope.chatCenterParams.selectedMessage;
+			let message = $scope.chatCenterParams.messageToDelete;
 			let loggedUserId = $scope.chatCenterParams.loggedUserId;
 			let chatRoomId = $scope.chatCenterParams.activeChatWith;
 			if(message.from == loggedUserId){
 				ChatSvc.deleteChatMessage(loggedUserId,chatRoomId,message.$id);
 			}
-			$scope.chatCenterParams.selectedMessage = undefined;
+			$scope.chatCenterParams.messageToDelete = undefined;
 		};
 
+		/*Called from deleteMessageModal, to soft delete the message for both, the
+		sender and receiver's db folder. It will use the message previously saved in the
+		chatCenterParams, using prepareForDelete(). For security, double chek the message
+		belongs to the loggedUser*/
 		$scope.deleteMessageForBoth = function(){
-			let message = $scope.chatCenterParams.selectedMessage;
+			let message = $scope.chatCenterParams.messageToDelete;
 			let loggedUserId = $scope.chatCenterParams.loggedUserId;
 			let chatRoomId = $scope.chatCenterParams.activeChatWith;
 			if(message.from == loggedUserId){
@@ -188,7 +193,33 @@ okulusApp.controller('ChatCenterCntrl',
 				//Delete from Receiver's Folder
 				ChatSvc.softDeleteMessage(chatRoomId,loggedUserId,message.$id);
 			}
-			$scope.chatCenterParams.selectedMessage = undefined;
+			$scope.chatCenterParams.messageToDelete = undefined;
+		};
+
+		/* Used by "Edit" icon to set the selected message in the
+		chatCenterParams, for further use (when performing the actual edit)*/
+		$scope.prepareForEdit = function(messageObg){
+			$scope.chatCenterParams.messageToEdit = messageObg;
+			$scope.chatCenterParams.editedMessagetTxt = messageObg.message;
+		};
+
+		/*Called from editMessageModal, to save updates to the message.
+		It will use two params from chatCenterParams: 1) the message previously saved,
+		using setMessage(), 2) and the chattingWith param. For security, double chek
+		the message belongs to the loggedUser*/
+		$scope.editMessage = function(){
+			let editedMessagetTxt = $scope.chatCenterParams.editedMessagetTxt;
+			let messageObj = $scope.chatCenterParams.messageToEdit;
+			let loggedUserId = $scope.chatCenterParams.loggedUserId;
+			let chatRoomId = $scope.chatCenterParams.activeChatWith;
+
+			if(messageObj.from == loggedUserId){
+				//Update Message in the Sender's folder
+				ChatSvc.updateMessageText(loggedUserId,chatRoomId,messageObj.$id,editedMessagetTxt);
+				//Update Message in the Receiver's folder
+				ChatSvc.updateMessageText(chatRoomId,loggedUserId,messageObj.$id,editedMessagetTxt);
+			}
+			$scope.chatCenterParams.messageToEdit = undefined;
 		};
 
 	}
@@ -291,7 +322,12 @@ okulusApp.factory('ChatSvc',
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
 			softDeleteMessage: function(userId,chatRoomId,messageId){
 				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
-				reference.update({message:"",wasDeleted:true});
+				reference.update({message:"",wasDeleted:true,wasEdited:null});
+			},
+			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
+			updateMessageText: function(userId,chatRoomId,messageId,editedMessagetTxt){
+				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				reference.update({message:editedMessagetTxt,wasEdited:true});
 			}
 		};
 	}

@@ -113,7 +113,8 @@ okulusApp.run(function($rootScope) {
 					newChatTitle:"Nueva Conversación",
 					deleteMessageTitle:"Eliminar Mensaje",
 					deleteForMeBtn:"Eliminar para mí",
-					deleteForAllBtn:"Eliminar para todos"
+					deleteForAllBtn:"Eliminar para todos",
+					editMessageTitle:"Editar Mensaje"
 				}
 			},
 			weeks:{
