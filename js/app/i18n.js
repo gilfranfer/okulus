@@ -29,6 +29,28 @@ const systemMsgs = {
 	}
 };
 
+/* Map with valid actions and their description. Used for notification Service*/
+const actionsDescMap = new Map([
+				[constants.actions.create, "creado"], [constants.actions.update, "actualizado"],
+				[constants.actions.delete, "eliminado"],
+				[constants.actions.approve,"aprobado"], [constants.actions.reject,"rechazado"],
+				[constants.actions.open,"abierto"], [constants.actions.close,"cerrado"],
+				[constants.actions.show,"visible"], [constants.actions.hide,"oculto"],
+				[constants.actions.grantAccess,"Acceso Concedido a"],
+				[constants.actions.revokeAccess,"Acceso Removido a"],
+				[constants.actions.updateRole,"Tipo de Usuario Modificado"],
+			]);
+
+/*Actions performed on the following elements can trigger notificaions
+ Key: is used to validate an element can trigger a notificaciones
+ Value: will be used to build the Notification description*/
+const notifiableElements = new Map([
+		[constants.folders.groups,"Grupo"],
+		[constants.folders.members,"Miembro"],
+		[constants.folders.reports,"Reporte"],
+		[constants.folders.weeks,"Semana"],
+		[constants.folders.users,"Usuario"] ]);
+
 /** Using a run function to set the language in the rootScope **/
 okulusApp.run(function($rootScope) {
 		$rootScope.i18n = {
