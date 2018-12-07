@@ -1,0 +1,20 @@
+<article class="modal fade" id="deleteMessageModal" tabindex="-1" role="dialog" aria-labelledby="deleteMessageModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteMessageModalLabel">{{i18n.chat.modals.deleteMessageTitle}}</h5>
+        <button type="button" class="close clickable" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-lg btn-block btn-warning" ng-click="deleteMessageForUser()" data-dismiss="modal">
+          {{i18n.chat.modals.deleteForMeBtn}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-danger" ng-click="deleteMessageForBoth()" data-dismiss="modal">
+          {{i18n.chat.modals.deleteForAllBtn}}
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
