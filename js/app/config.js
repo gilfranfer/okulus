@@ -258,10 +258,12 @@ const constants = {
 		adminMonitor:"/admin/monitor"
 	},
 	folders:{
-		root:"okulusTest",
+		root:"okulusTest", notifications:"notifications",
 		users:"users", chats:"chats", metadata:"metadata",
 		chatList:"chatRooms",chatMessages:"messages",
-		unreadChats:"unreadChats",unreadCount:"unreadCount"
+		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		unredNotifCount:"counters/notifications/unreaded",
+		totalNotifCount:"counters/notifications/total"
 	},
 	actions:{
 		create:"create"
