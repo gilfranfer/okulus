@@ -243,13 +243,14 @@ okulusApp.config(['$routeProvider',
 const rootFolder = "okulusTest";
 const constants = {
 	roles: {
-		user:"user", admin: "admin"
+		user:"user", admin: "admin", type:"type", system: "System"
 	},
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
 		open:"open", closed:"closed",
-		visible:"show", hidden:"hide"
+		visible:"show", hidden:"hide",
+		readed:"readed"
 	},
 	pages: {
 		login:"/login", home:"/home",
@@ -258,13 +259,22 @@ const constants = {
 		adminMonitor:"/admin/monitor"
 	},
 	folders:{
-		root:"okulusTest",
-		users:"users", chats:"chats", metadata:"metadata",
-		chatList:"chatRooms",chatMessages:"messages",
-		unreadChats:"unreadChats",unreadCount:"unreadCount"
+		root:"okulusTest", 
+		audit:"audit", users:"users", weeks:"weeks",
+		groups:"groups", members:"members", reports:"reports",
+		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
+		metadata:"metadata",
+		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		notificationsList:"notifications/list",
+		unredNotifCount:"counters/notifications/unreaded",
+		totalNotifCount:"counters/notifications/total"
 	},
 	actions:{
-		create:"create"
+		create:"create",update:"update",delete:"delte",
+		approve:"approved",reject:"rejected",
+		open:"open",close:"closed",show:"show",hide:"hide",
+		grantAccess:"access-granted", revokeAccess:"access-deleted",
+		updateRole:"type-update"
 	},
 	config:{isProdEnv: false}
 };
