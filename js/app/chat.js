@@ -152,6 +152,22 @@ okulusApp.controller('ChatCenterCntrl',
 			var element = document.getElementById("messagesList");
     		element.scrollTop = 0;
 		}
+		debugger;
+		var numberOfMsgsToDisplay = $rootScope.config.maxQueryListResults;
+
+		$('#messagesList').scroll(function() {
+	    var pos = $('#messagesList').scrollTop();
+			let loggedUserId = $rootScope.currentSession.user.$id;
+			let chatRoomId = $scope.chatCenterParams.activeChatWith;
+			let chatRoom = $rootScope.chatList.$getRecord(chatRoomId);
+			//check if we have reached the top of the list
+	    if (pos == 0) {
+				//Get the Chat Messages from the loggedUserId folder, and Mark Chat as Read
+				numberOfMsgsToDisplay += 20;
+				$scope.chatCenterParams.activeChatLimit = numberOfMsgsToDisplay;
+				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,chatRoom.$id,numberOfMsgsToDisplay);
+	    }
+		});
 
 		/* Expand/retract the Menu with the Delete and Edit icons,
 		and the full message's date*/
