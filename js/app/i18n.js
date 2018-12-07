@@ -107,7 +107,7 @@ okulusApp.run(function($rootScope) {
 				startConversation:"Abrir Conversación", noChats:"No tienes Conversaciones",
 				usersList:"Lista de Usuarios", userChatsList:"Mis Conversaciones",
 				newchatBtn:"Iniciar Conversación",newChatLbl:"Conversación Nueva!",
-				deletedMessage:"(Mensaje eliminado)",
+				deletedForAll:"(Eliminado para todos)",deletedForUser:"(Eliminado para tí)",
 				editedMessage:"(Editado)",
 				modals:{
 					newChatTitle:"Nueva Conversación",

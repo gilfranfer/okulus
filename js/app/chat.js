@@ -177,11 +177,19 @@ okulusApp.controller('ChatCenterCntrl',
 		chatCenterParams, using prepareForDelete(). For security, double chek the message
 		belongs to the loggedUser*/
 		$scope.deleteMessageForUser = function(){
-			let message = $scope.chatCenterParams.messageToDelete;
+			let messageObj = $scope.chatCenterParams.messageToDelete;
 			let loggedUserId = $scope.chatCenterParams.loggedUserId;
 			let chatRoomId = $scope.chatCenterParams.activeChatWith;
-			if(message.from == loggedUserId){
-				ChatSvc.deleteChatMessage(loggedUserId,chatRoomId,message.$id);
+
+			if(messageObj.from == loggedUserId){
+				ChatSvc.softDeleteForUser(loggedUserId,chatRoomId,messageObj.$id);
+				//Update ChatRooms Summary
+				let messageInChatRoomSummary = $rootScope.chatList.$getRecord(chatRoomId).lastMessageId;
+				if(messageObj.$id == messageInChatRoomSummary){
+					//Update the Sender's ChatRoom summary
+					let messageTxt = $rootScope.i18n.chat.deletedForUser;
+					ChatSvc.updateChatRoomSummary(loggedUserId, chatRoomId, {lastMessageExcerpt:messageTxt});
+				}
 			}
 			$scope.chatCenterParams.messageToDelete = undefined;
 		};
@@ -191,14 +199,24 @@ okulusApp.controller('ChatCenterCntrl',
 		chatCenterParams, using prepareForDelete(). For security, double chek the message
 		belongs to the loggedUser*/
 		$scope.deleteMessageForBoth = function(){
-			let message = $scope.chatCenterParams.messageToDelete;
+			let messageObj = $scope.chatCenterParams.messageToDelete;
 			let loggedUserId = $scope.chatCenterParams.loggedUserId;
 			let chatRoomId = $scope.chatCenterParams.activeChatWith;
-			if(message.from == loggedUserId){
+
+			if(messageObj.from == loggedUserId){
 				//Delete from Sender's Folder
-				ChatSvc.softDeleteMessage(loggedUserId,chatRoomId,message.$id);
+				ChatSvc.softDeleteForAll(loggedUserId,chatRoomId,messageObj.$id);
 				//Delete from Receiver's Folder
-				ChatSvc.softDeleteMessage(chatRoomId,loggedUserId,message.$id);
+				ChatSvc.softDeleteForAll(chatRoomId,loggedUserId,messageObj.$id);
+				//Update ChatRooms Summary
+				let messageInChatRoomSummary = $rootScope.chatList.$getRecord(chatRoomId).lastMessageId;
+				if(messageObj.$id == messageInChatRoomSummary){
+					//Update the Sender's ChatRoom summary
+					let messageTxt = $rootScope.i18n.chat.deletedForAll;
+					ChatSvc.updateChatRoomSummary(loggedUserId, chatRoomId, {lastMessageExcerpt:messageTxt});
+					//Update the Receiver's ChatRoom summary
+					ChatSvc.updateChatRoomSummary(chatRoomId, loggedUserId, {lastMessageExcerpt:messageTxt});
+				}
 			}
 			$scope.chatCenterParams.messageToDelete = undefined;
 		};
@@ -225,6 +243,15 @@ okulusApp.controller('ChatCenterCntrl',
 				ChatSvc.updateMessageText(loggedUserId,chatRoomId,messageObj.$id,editedMessagetTxt);
 				//Update Message in the Receiver's folder
 				ChatSvc.updateMessageText(chatRoomId,loggedUserId,messageObj.$id,editedMessagetTxt);
+				//Update ChatRooms Summary
+				let messageInChatRoomSummary = $rootScope.chatList.$getRecord(chatRoomId).lastMessageId;
+				if(messageObj.$id == messageInChatRoomSummary){
+					let messageExcerpt = (editedMessagetTxt.length<messageExcerptSize)?editedMessagetTxt:(editedMessagetTxt.substring(0, messageExcerptSize-3)+"...");
+					//Update the Sender's ChatRoom summary
+					ChatSvc.updateChatRoomSummary(loggedUserId, chatRoomId, {lastMessageExcerpt:messageExcerpt});
+					//Update the Receiver's ChatRoom summary
+					ChatSvc.updateChatRoomSummary(chatRoomId, loggedUserId, {lastMessageExcerpt:messageExcerpt});
+				}
 			}
 			$scope.chatCenterParams.messageToEdit = undefined;
 		};
@@ -322,15 +349,15 @@ okulusApp.factory('ChatSvc',
 				reference.update(record);
 				return reference;
 			},
-			/*Delete a Message */
-			deleteChatMessage: function(userId,chatRoomId,messageId){
+			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
+			softDeleteForUser: function(userId,chatRoomId,messageId){
 				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
-				reference.set({});
+				reference.update({deletedForUser:true,deletedForAll:null,wasEdited:null,message:null});
 			},
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
-			softDeleteMessage: function(userId,chatRoomId,messageId){
+			softDeleteForAll: function(userId,chatRoomId,messageId){
 				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
-				reference.update({message:"",wasDeleted:true,wasEdited:null});
+				reference.update({deletedForAll:true,deletedForUser:null,wasEdited:null,message:null});
 			},
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
 			updateMessageText: function(userId,chatRoomId,messageId,editedMessagetTxt){

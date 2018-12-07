@@ -62,7 +62,8 @@
 							<div>
 								<span ng-show="message.message">{{message.message}}</span>
 								<small class="font-weight-light font-italic" ng-show="message.wasEdited">{{i18n.chat.editedMessage}}</small>
-								<small class="font-weight-light font-italic" ng-show="message.wasDeleted">{{i18n.chat.deletedMessage}}</small>
+								<small class="font-weight-light font-italic" ng-show="message.deletedForAll">{{i18n.chat.deletedForAll}}</small>
+								<small class="font-weight-light font-italic" ng-show="message.deletedForUser">{{i18n.chat.deletedForUser}}</small>
 							</div>
 							<!-- Default Message Time displays only hour -->
 							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage != message.$id">
@@ -73,8 +74,8 @@
 								<small class="font-weight-light">{{message.time | date: 'MMM dd yyyy hh:mm a'}}</small>
 								<span class="clickable fas fa-md fa-trash-alt" ng-click="prepareForDelete(message)"
 									data-toggle="modal" data-target="#deleteMessageModal"></span>
-								<span class="clickable fas fa-md fa-edit" ng-if="!message.wasDeleted" ng-click="prepareForEdit(message)"
-									data-toggle="modal" data-target="#editMessageModal"></span>
+								<span class="clickable fas fa-md fa-edit" ng-if="!message.deletedForAll || !message.deletedForUser"
+									ng-click="prepareForEdit(message)" data-toggle="modal" data-target="#editMessageModal"></span>
 							</div>
 	        	</div>
 					</div>
@@ -86,7 +87,8 @@
 							<div>
 								<span ng-show="message.message">{{message.message}}</span>
 								<small class="font-weight-light font-italic" ng-show="message.wasEdited">{{i18n.chat.editedMessage}}</small>
-								<small class="font-weight-light font-italic" ng-show="message.wasDeleted">{{i18n.chat.deletedMessage}}</small>
+								<small class="font-weight-light font-italic" ng-show="message.deletedForAll">{{i18n.chat.deletedForAll}}</small>
+								<small class="font-weight-light font-italic" ng-show="message.deletedForUser">{{i18n.chat.deletedForUser}}</small>
 							</div>
 							<!-- Default Message Time displays only hour -->
 							<div class="text-right" ng-show="chatCenterParams.showMenuInMessage != message.$id">
