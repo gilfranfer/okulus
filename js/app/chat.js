@@ -141,18 +141,6 @@ okulusApp.controller('ChatCenterCntrl',
 			}
 		};
 
-		/* Current problem is this method doesnt work the first time you open the chat,
-		because the messages are printed async, after the data comes from Firebase */
-		scrollBottom = function(){
-			var element = document.getElementById("messagesList");
-    	element.scrollTop = element.scrollHeight;
-		};
-
-		scrollToTop = function(){
-			var element = document.getElementById("messagesList");
-    		element.scrollTop = 0;
-		}
-
 		/* Expand/retract the Menu with the Delete and Edit icons,
 		and the full message's date*/
 		$scope.showMessageMenu = function(message){
@@ -256,6 +244,31 @@ okulusApp.controller('ChatCenterCntrl',
 			$scope.chatCenterParams.messageToEdit = undefined;
 		};
 
+		/* Current problem is this method doesnt work the first time you open the chat,
+		because the messages are printed async, after the data comes from Firebase */
+		scrollBottom = function(){
+			var element = document.getElementById("messagesList");
+    	element.scrollTop = element.scrollHeight;
+		};
+
+		scrollToTop = function(){
+			var element = document.getElementById("messagesList");
+    		element.scrollTop = 0;
+		}
+
+		/*This function will watch for scroll. Once it reaches the top, it will load
+		older messages, increasing the limit value used for the Db query. */
+		$('#messagesList').scroll(function() {
+	    var pos = $('#messagesList').scrollTop();
+			//check if we have reached the top of the list
+	    if(pos == 0){
+				let loggedUserId = $rootScope.currentSession.user.$id;
+				let chatRoomId = $scope.chatCenterParams.activeChatWith;
+				let messagesLimit = $scope.chatCenterParams.activeChatLimit + $rootScope.config.maxQueryListResults;
+				$scope.chatCenterParams.activeChatLimit = messagesLimit;
+				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,chatRoomId,messagesLimit);
+	    }
+		});
 	}
 ]);
 
