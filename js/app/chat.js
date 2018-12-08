@@ -3,6 +3,7 @@ okulusApp.controller('ChatCenterCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','UsersSvc','ChatSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UsersSvc,ChatSvc){
 		const messageExcerptSize = 25;
+		const delay = 25;
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
@@ -90,7 +91,9 @@ okulusApp.controller('ChatCenterCntrl',
 				ChatSvc.setChatRoomUnreadCount(chatRoom.$id,0);
 				//Remove this chat from unreadChats List
 				ChatSvc.removeChatFromUnreadList(loggedUserId,chatRoom.$id);
-				scrollBottom();
+				setTimeout(function() {
+		        scrollBottom();
+		    }, delay);
 			});
 		};
 
@@ -136,7 +139,9 @@ okulusApp.controller('ChatCenterCntrl',
 					}, function(error) {console.error(error);});
 					//Add this chat to Receiver's unreadChats List
 					ChatSvc.addChatToUnreadList(receiverId,senderId);
-					scrollBottom();
+					setTimeout(function() {
+			        scrollBottom();
+			    }, delay);
 				}, function(error) {console.error(error);});
 			}
 		};
