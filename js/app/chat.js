@@ -3,7 +3,6 @@ okulusApp.controller('ChatCenterCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','UsersSvc','ChatSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UsersSvc,ChatSvc){
 		const messageExcerptSize = 25;
-		const delay = 25;
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
@@ -54,6 +53,7 @@ okulusApp.controller('ChatCenterCntrl',
 
 		/* Called when clicking an element from the ChatRooms List */
 		$scope.openChatRoom = function(chatRoom){
+			$scope.chatCenterParams.response = undefined;
 			let loggedUserId = $rootScope.currentSession.user.$id;
 			let previuosChatWith = $scope.chatCenterParams.activeChatWith;
 
@@ -248,10 +248,11 @@ okulusApp.controller('ChatCenterCntrl',
 		/* Added a delay to this method to ensure that all HTML elements are fully
 		rendered before setting the scroll position to the bottom of the chat area*/
 		scrollBottom = function(){
-			var element = document.getElementById("messagesList");
+			let delay = 25;
+			let element = document.getElementById("messagesList");
 			setTimeout(function() {
 				element.scrollTop = element.scrollHeight;
-			}, delay)
+			}, delay);
 		};
 
 		scrollToTop = function(){
@@ -265,12 +266,26 @@ okulusApp.controller('ChatCenterCntrl',
 	    var pos = $('#messagesList').scrollTop();
 			//check if we have reached the top of the list
 	    if(pos == 0){
+				$scope.chatCenterParams.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 				let loggedUserId = $rootScope.currentSession.user.$id;
 				let chatRoomId = $scope.chatCenterParams.activeChatWith;
+				//set the new limit for the query
 				let messagesLimit = $scope.chatCenterParams.activeChatLimit + $rootScope.config.maxQueryListResults;
-				$scope.chatCenterParams.activeChatLimit = messagesLimit;
+
 				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,chatRoomId,messagesLimit);
+				$scope.chatCenterParams.activeChatMessages.$loaded().then(function(list){
+					/*Save the new limit, only if it's equal to the retrieved list's size.
+					If the list size is smaller, that means we have already loaded all the
+					existing messages from DB. */
+					if(list.length==messagesLimit){
+						$scope.chatCenterParams.activeChatLimit = messagesLimit;
+						$scope.chatCenterParams.response = undefined;
+					}else{
+						$scope.chatCenterParams.response = { message: systemMsgs.success.noMoreChatMessages };
+					}
+				});
 	    }
+
 		});
 	}
 ]);

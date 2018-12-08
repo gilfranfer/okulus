@@ -25,7 +25,8 @@ const systemMsgs = {
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
-		userRegistered: "Usuario Creado"
+		userRegistered: "Usuario Creado",
+		noMoreChatMessages:"No hay más mensajes"
 	}
 };
 
