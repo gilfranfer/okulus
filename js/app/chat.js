@@ -3,6 +3,7 @@ okulusApp.controller('ChatCenterCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc','MembersSvc','UsersSvc','ChatSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UsersSvc,ChatSvc){
 		const messageExcerptSize = 25;
+		const delay = 25;
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
@@ -90,7 +91,7 @@ okulusApp.controller('ChatCenterCntrl',
 				ChatSvc.setChatRoomUnreadCount(chatRoom.$id,0);
 				//Remove this chat from unreadChats List
 				ChatSvc.removeChatFromUnreadList(loggedUserId,chatRoom.$id);
-				scrollBottom();
+	      scrollBottom();
 			});
 		};
 
@@ -136,7 +137,7 @@ okulusApp.controller('ChatCenterCntrl',
 					}, function(error) {console.error(error);});
 					//Add this chat to Receiver's unreadChats List
 					ChatSvc.addChatToUnreadList(receiverId,senderId);
-					scrollBottom();
+		      scrollBottom();
 				}, function(error) {console.error(error);});
 			}
 		};
@@ -244,11 +245,13 @@ okulusApp.controller('ChatCenterCntrl',
 			$scope.chatCenterParams.messageToEdit = undefined;
 		};
 
-		/* Current problem is this method doesnt work the first time you open the chat,
-		because the messages are printed async, after the data comes from Firebase */
+		/* Added a delay to this method to ensure that all HTML elements are fully
+		rendered before setting the scroll position to the bottom of the chat area*/
 		scrollBottom = function(){
 			var element = document.getElementById("messagesList");
-    	element.scrollTop = element.scrollHeight;
+			setTimeout(function() {
+				element.scrollTop = element.scrollHeight;
+			}, delay)
 		};
 
 		scrollToTop = function(){
