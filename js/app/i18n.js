@@ -210,7 +210,7 @@ okulusApp.run(function($rootScope) {
 				firstnameLbl:"Nombre",lastnameLbl:"Apellido",
 				emailLbl:"Correo electrónico",phoneLbl:"Teléfono",
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-				loading:"Cargando Mimebros...", loadingSuccess: "Mimebros Cargados.",
+				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
 				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
 				noMembersError: "No se encontraron Miembros.",
 				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",

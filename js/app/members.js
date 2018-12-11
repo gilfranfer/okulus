@@ -115,7 +115,7 @@ okulusApp.controller('MembersAdminCntrl',
 				params.title= systemMsgs.success.activeMembersTitle;
 				params.maxPossible = $rootScope.membersGlobalCount.active;
 			}
-			else if(loaderName == "InctiveMembersLoader"){
+			else if(loaderName == "InactiveMembersLoader"){
 				params.title= systemMsgs.success.inactiveMembersTitle;
 				params.maxPossible = $rootScope.membersGlobalCount.total - $rootScope.membersGlobalCount.active;
 			}
