@@ -1,83 +1,137 @@
 <!-- Admin Members List View -->
 <section id="adminMemberssList" ng-show="currentSession.user.type == 'admin'">
 
+  <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.admin.members.title}}</h4>
-      <hr>
-      <div class="row">
-        <h4 class="col">
-          <span class="badge badge-primary">
-            {{systemCounters.members.active + systemCounters.members.inactive}}
-          </span>
-          <span>{{i18n.admin.members.totalMembers}}</span>
-        </h4>
-        <h4 class="col">
-          <span class="badge badge-success">{{systemCounters.members.active}}</span>
-          <span>{{i18n.admin.members.activeMembers}}</span>
-        </h4>
-        <h4 class="col">
-          <span class="badge badge-danger">{{systemCounters.members.inactive}}</span>
-          <span>{{i18n.admin.members.inactiveMembers}}</span>
-        </h4>
-      </div>
+      <h4 class="card-title">{{i18n.members.title}}</h4>
+    </div>
+  </article>
+
+  <!-- Badges -->
+  <article class="row">
+    <div class="col mb-3">
+      <article id="badgesCard" class="card h-100">
+        <div class="card-body">
+          <h4>
+            <span class="badge badge-primary">{{membersGlobalCount.active + membersGlobalCount.inactive}}</span>
+            <span class="btn-link clickable" ng-click="loadAllMembersList()">{{i18n.members.totalMembers}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-success">{{membersGlobalCount.active}}</span>
+            <span class="btn-link clickable" ng-click="loadActiveMembersList()">{{i18n.members.activeMembers}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-danger">{{membersGlobalCount.total-membersGlobalCount.active}}</span>
+            <span class="btn-link clickable" ng-click="loadInactiveMembersList()">{{i18n.members.inactiveMembers}}</span>
+          </h4>
+        </div>
+      </article>
+    </div>
+    <div class="col mb-3">
+      <article id="" class="card h-100">
+        <div class="card-body">
+          <h4>
+            <span class="badge badge-primary">{{membersGlobalCount.leads}}</span>
+            <span class="btn-link clickable" ng-click="loadLeadMembersList()">{{i18n.members.leadMembers}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-dark">{{membersGlobalCount.hosts}}</span>
+            <span class="btn-link clickable" ng-click="loadTraineeMembersList()">{{i18n.members.hostMembers}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-warning">{{membersGlobalCount.trainees}}</span>
+            <span class="btn-link clickable" ng-click="loadHostMembersList()">{{i18n.members.traineeMembers}}</span>
+          </h4>
+        </div>
+      </article>
     </div>
   </article>
 
   <!-- Buttons -->
   <div class="row">
     <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadMembersList()">
-        {{i18n.admin.members.loadBtn}}
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllMembersList()">
+        {{i18n.members.loadBtn}}
       </a>
     </div>
     <div class="col mb-3">
       <a href="#!/members/new" class="btn btn-lg btn-block btn-primary">
-        {{i18n.admin.members.newBtn}}
+        {{i18n.members.newBtn}}
       </a>
     </div>
   </div>
 
+  <!-- Alerts to show Response Message (Used after redirect from Member Delete) -->
+  <div class="alert alert-danger" role="alert" ng-show="memberResponse.deleted" >
+    {{memberResponse.message}}
+  </div>
   <div ng-include="'views/alerts.html'"></div>
-  <!-- Alerts to show Response Message (Used after redirect from Member Create/Delete) -->
-  <div class="alert alert-success" role="alert" ng-show="response.memberMsgOk">
-    {{response.memberMsgOk}}
-  </div>
-  <div class="alert alert-danger" role="alert" ng-show="response.memberMsgError">
-    {{response.memberMsgError}}
-  </div>
 
-  <article id="filterCard" class="card mb-3" ng-show="membersList">
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="adminMembersList.length">
     <div class="card-body">
-      <!-- <div class="card-text">
-        <p>{{i18n.admin.members.filterDescription}}</p>
-      </div> -->
-      <div class="row mb-2">
+      <p class="lead">
+  			{{adminMembersParams.title}}
+  		</p>
+      <div class="row" ng-show="adminMembersList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
-        </div>
-      </div>
-      <div class="row">
-        <div class="ml-auto">
-          <span>
-            {{i18n.admin.members.filterMemberType}}:
-          </span>
-          <input type="radio" ng-click="filterMembersByType()" value="all" name="memberTypeFilter" id="memberTypeAll" ng-model="memberTypeFilter">
-          <label class="pr-3" for="memberTypeAll">{{i18n.admin.members.allMembersLabel}}</label>
-
-          <input type="radio" ng-click="filterMembersByType()" value="host" name="memberTypeFilter" id="memberTypeHost" ng-model="memberTypeFilter">
-          <label class="pr-3" for="memberTypeHost">{{i18n.admin.members.hostLabel}}</label>
-
-          <input type="radio" ng-click="filterMembersByType()" value="lead" name="memberTypeFilter" id="memberTypeLead" ng-model="memberTypeFilter">
-          <label class="pr-3" for="memberTypeLead">{{i18n.admin.members.leadLabel}}</label>
-
-          <input type="radio" ng-click="filterMembersByType()" value="trainee" name="memberTypeFilter" id="memberTypeTrainee" ng-model="memberTypeFilter">
-          <label class="pr-3" for="userTypeTrainee">{{i18n.admin.members.traineeLabel}}</label>
+          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg"
+            ng-model="adminMembersParams.searchFilter">
         </div>
       </div>
     </div>
   </article>
 
-  <article ng-include="'views/members/membersList.html'"></article>
+  <!-- Show number of loaded Members -->
+  <div class="alert alert-info" role="alert" ng-show="adminMembersList.length" >
+    {{adminMembersList.length}} {{i18n.members.loadingSuccess}}
+    <!-- Load all pending Members  -->
+    <span class="btn-link clickable" ng-click="loadPendingMembers()"
+      ng-if="(adminMembersList.length < adminMembersParams.maxPossible)" >
+      {{i18n.members.loadPending1}}
+      {{adminMembersParams.maxPossible - adminMembersList.length}}
+      {{i18n.members.loadPending2}}
+    </span>
+  </div>
 
+  <!-- Members Cards -->
+  <article id="membersList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="member in adminMembersList | filter:adminMembersParams.searchFilter | orderBy:'shortname' track by member.$id">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/members/edit/{{member.$id}}">
+              {{member.shortname}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="member.isActive">{{i18n.members.activeLbl}}</span>
+          <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.inactiveLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.members.firstnameLbl}}:</span> {{member.firstname}}<br>
+            <span class="font-weight-bold">{{i18n.members.lastnameLbl}}:</span> {{member.lastname}}<br>
+            <span class="font-weight-bold">{{i18n.members.emailLbl}}:</span> {{member.email}}<br>
+            <span class="font-weight-bold">{{i18n.members.phoneLbl}}:</span> {{member.phone}}
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Load all pending Members  -->
+  <div class="row mb-3" ng-show="adminMembersList.length">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{adminMembersList.length}} {{i18n.members.loadingSuccess}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingMembers()"
+        ng-if="(adminMembersList.length < adminMembersParams.maxPossible)" >
+        {{i18n.members.loadPending1}}
+        {{adminMembersParams.maxPossible - adminMembersList.length}}
+        {{i18n.members.loadPending2}}
+      </span>
+    </div>
+  </div>
 </section>

@@ -21,12 +21,26 @@ const systemMsgs = {
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
-		registeringUser: "Registrando Usuario..."
+		registeringUser: "Registrando Usuario...",
+		loading:"Cargando ...",
+		loadingAllMembers:"Cargando Todos los Miembros ...",
+		loadingActiveMembers:"Cargando Miembros Activos ...",
+		loadingInactiveMembers:"Cargando Miembros Inactivos ...",
+		loadingLeadMembers:"Cargando Miembros Líderes ...",
+		loadingHostMembers:"Cargando Miembros Anfitriones ...",
+		loadingTraineeMembers:"Cargando Miembros Aprendices ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
 		userRegistered: "Usuario Creado",
-		noMoreChatMessages:"No hay más mensajes"
+		noMoreChatMessages:"No hay más mensajes",
+		/* Members JS */
+		allMembersTitle:"Miembros existentes",
+		activeMembersTitle:"Miembros Activos",
+		inactiveMembersTitle:"Miembros Inactivos",
+		leadMembersTitle:"Miembros Líderes",
+		traineeMembersTitle:"Miembros Aprendices",
+		hostMembersTitle:"Miembros Anfitriones"
 	}
 };
 
@@ -168,7 +182,6 @@ okulusApp.run(function($rootScope) {
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
 				weekExists:"Ya existe la Semana",
-				loadedWeeks: "Semanas fueron cargadas.",
 				loadPending1: "Mostar ", loadPending2: "Semanas restantes.",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
@@ -179,6 +192,29 @@ okulusApp.run(function($rootScope) {
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
 				showStatusLbl:"Si / Semana Visible", hideStatusLbl:"No / Semana Oculta",
 				modifyLbl:"Modificar", newLbl: "Nueva"
+			},
+			members:{
+				/* Admin Members */
+				title:"Administrador de  Miembros",
+				/* Global Badges */
+				totalMembers:"Miembros Existentes",
+				activeMembers:"Miembros Activos", inactiveMembers:"Miembros Inactivos",
+				leadMembers:"Líderes", hostMembers:"Anfitriones", traineeMembers:"Aprendices",
+				/*Buttons*/
+				loadBtn:"Mostrar Miembros", newBtn:"Crear Miembro",
+        /*Alert Messages*/
+        loadingSuccess: "Miembros Cargados.",
+				loadPending1: "Mostar ", loadPending2: "Miembros restantes.",
+				/*Labels*/
+				activeLbl:"Activo", inactiveLbl:"Inactivo",
+				firstnameLbl:"Nombre",lastnameLbl:"Apellido",
+				emailLbl:"Correo electrónico",phoneLbl:"Teléfono",
+				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
+				loading:"Cargando Mimebros...", loadingSuccess: "Mimebros Cargados.",
+				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
+				noMembersError: "No se encontraron Miembros.",
+				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
+				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
@@ -286,20 +322,6 @@ okulusApp.run(function($rootScope) {
 					noGroupsError: "No se encontraron Grupos.",
 					loadBtn:"Mostrar Grupos",
 					newBtn:"Crear Grupo"
-				},
-				members:{
-					title:"Administrar Miembros de la Iglesia",
-					activeMembers:"Miembros Activos",
-					inactiveMembers:"Miembros Inactivos",
-					totalMembers:"Miembros Existentes",
-					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-					loading:"Cargando Mimebros...", loadingSuccess: "Mimebros Cargados.",
-					loadingError: "Error al cargar los miembros. Intentelo más tarde.",
-					noMembersError: "No se encontraron Miembros.",
-					loadBtn:"Mostrar Miembros",
-					newBtn:"Crear Miembro",
-					filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
-					leadLabel:"Líderes", traineeLabel: "Aprendíces"
 				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{

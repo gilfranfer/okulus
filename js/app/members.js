@@ -1,53 +1,152 @@
 //Mapping: /members
 okulusApp.controller('MembersAdminCntrl',
-	['$rootScope','$scope','$firebaseAuth','$location','AuthenticationSvc', 'MembersSvc', 'UtilsSvc',
-	function($rootScope,$scope,$firebaseAuth,$location,AuthenticationSvc,MembersSvc,UtilsSvc){
+	['$rootScope','$scope','$firebaseAuth','$location','MembersSvc','AuthenticationSvc','UtilsSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,MembersSvc,AuthenticationSvc,UtilsSvc){
 
+		let unwatch = undefined;
 		/*Executed everytime we enter to /members
 		  This function is used to confirm the user is Admin */
-		$firebaseAuth().$onAuthStateChanged(function(authUser){
-		if(authUser){
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
-				function(user){
-					if(user.type == 'admin'){
-						UtilsSvc.loadSystemCounter();
-						$rootScope.systemCounters.$loaded().then(function(counters) {
+		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
+				if(user.type == constants.roles.admin){
+					$rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter(constants.folders.members);
+					$rootScope.membersGlobalCount.$loaded().then(
+						function(membersCount) {
 							$scope.response = undefined;
-						});
+							/* Adding a Watch to the membersGlobalCount to detect changes.
+							The idea is to update the maxPossible value from membersListParams.*/
+							if(unwatch){ unwatch(); }
+							unwatch = $rootScope.membersGlobalCount.$watch( function(data){
+								if($rootScope.membersListParams){
+									let loader = $rootScope.membersListParams.activeMembersLoader;
+									$rootScope.membersListParams = getmembersListParams(loader);
+									$scope.response = undefined;
+								}
+							});
+					});
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
 																	message:$rootScope.i18n.error.noAdmin};
-					$location.path("/error");
+					$location.path(constants.pages.error);
 				}
 			});
-		}
-	});
+		}});
 
-	$scope.loadMembersList = function functionName() {
-		$scope.memberTypeFilter = "all";
-		$scope.response = {loading: true, message: $rootScope.i18n.admin.members.loading };
-		$rootScope.membersList = MembersSvc.loadAllMembersList();
-		$rootScope.membersList.$loaded().then(function(members) {
-			$scope.response = {success:true, message:members.length+" "+$rootScope.i18n.admin.members.loadingSuccess };
-		})
-		.catch( function(error){
-			$scope.response = { error: true, message: $rootScope.i18n.admin.members.loadingError };
-			console.error(error);
-		});
-	};
+		/* All the following on-demand loaders (called from html view) will limit the
+		 initial result list to the maxQueryListResults value (from $rootScope.config).
+		 They will create a adminMembersParams object containing the name of the loader
+		 used, and determining the max possible records to display. */
+		$scope.loadAllMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("AllMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getAllMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
 
-	$scope.filterMembersByType = function () {
-		if($scope.memberTypeFilter=="all"){
-			$scope.membersList = MembersSvc.loadAllMembersList();
-		}else if($scope.memberTypeFilter=="host"){
-			$scope.membersList = MembersSvc.filterActiveHosts($rootScope.allMembers);
-		}else if($scope.memberTypeFilter=="lead"){
-			$scope.membersList = MembersSvc.filterActiveLeads($rootScope.allMembers);
-		}else if($scope.memberTypeFilter=="trainee"){
-			$scope.membersList = MembersSvc.filterActiveTrainees($rootScope.allMembers);
-		}
-	};
+		$scope.loadActiveMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingActiveMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("ActiveMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getActiveMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
+
+		$scope.loadInactiveMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingInactiveMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("InactiveMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getInactiveMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
+
+		$scope.loadLeadMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingLeadMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("LeadMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getLeadMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
+
+		$scope.loadHostMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingHostMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("HostMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getHostMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
+
+		$scope.loadTraineeMembersList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingTraineeMembers};
+ 			$rootScope.adminMembersParams = getParamsByLoader("TraineeMembersLoader");
+ 			$rootScope.adminMembersList = MembersSvc.getTraineeMembers($rootScope.config.maxQueryListResults);
+ 			whenMembersRetrieved();
+		};
+
+		/* Load ALL pending members. Use the adminMembersParams.activeMembersLoader
+		to determine what type of members should be loaded, and how. */
+		$scope.loadPendingMembers = function () {
+			let loaderName = $rootScope.adminMembersParams.activeMembersLoader;
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+			if(loaderName=="AllMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getAllMembers();
+			} else if(loaderName=="ActiveMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getActiveMembers();
+			} else if(loaderName=="InactiveMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getInactiveMembers();
+			} else if(loaderName=="LeadMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getLeadMembers();
+			} else if(loaderName=="TraineeMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getTraineeMembers();
+			} else if(loaderName=="HostMembersLoader"){
+				$rootScope.adminMembersList = MembersSvc.getHostMembers();
+			}
+			whenMembersRetrieved();
+		};
+
+		/*Build object with Params used in the view.
+		 activeMembersLoader: Will help to identify what type of members we want to load.
+		 searchFilter: Container for the view filter
+		 title: Title of the Members List will change according to the loader in use
+		 maxPossible: Used to inform the user how many elements are pending to load */
+		getParamsByLoader = function (loaderName) {
+			let params = {activeMembersLoader:loaderName, searchFilter:undefined};
+			if(loaderName == "AllMembersLoader"){
+				params.title= systemMsgs.success.allMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.total;
+			}
+			else if(loaderName == "ActiveMembersLoader"){
+				params.title= systemMsgs.success.activeMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.active;
+			}
+			else if(loaderName == "InctiveMembersLoader"){
+				params.title= systemMsgs.success.inactiveMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.total - $rootScope.membersGlobalCount.active;
+			}
+			else if(loaderName == "LeadMembersLoader"){
+				params.title= systemMsgs.success.leadMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.leads;
+			}
+			else if(loaderName == "TraineeMembersLoader"){
+				params.title= systemMsgs.success.traineeMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.trainees;
+			}
+			else if(loaderName == "HostMembersLoader"){
+				params.title= systemMsgs.success.hostMembersTitle;
+				params.maxPossible = $rootScope.membersGlobalCount.hosts;
+			}
+			return params;
+		};
+
+		/*Prepares the response after the members list is loaded */
+		whenMembersRetrieved = function () {
+			$rootScope.adminMembersList.$loaded().then(function(members) {
+				$scope.response = undefined;
+				$rootScope.membersResponse = null;
+				if(!members.length){
+					$scope.response = { error: true, message: $rootScope.i18n.weeks.noWeeksError };
+				}
+			}).catch( function(error){
+				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
+				console.error(error);
+			});
+		};
 
 	}
 ]);
@@ -240,11 +339,67 @@ okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location'
 okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let memberBasicRef = baseRef.child('members/basic');
+		let isActiveMemberRef = memberBasicRef.orderByChild("isActive");
+		let isLeadMemberRef = memberBasicRef.orderByChild("isLeader");
+		let isTraineeMemberRef = memberBasicRef.orderByChild("isTrainee");
+		let isHostMemberRef = memberBasicRef.orderByChild("isHost");
+
 		let membersRef = firebase.database().ref().child(rootFolder).child('members');
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
 		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
 
 		return {
+			/*Return all Members, using a limit for the query, if specified*/
+			getAllMembers: function(limit) {
+					if(limit){
+						return $firebaseArray(memberBasicRef.orderByKey().limitToLast(limit));
+					}else{
+						return $firebaseArray(memberBasicRef.orderByKey());
+					}
+			},
+			/*Return all Members with isActive:true, using a limit for the query, if specified*/
+			getActiveMembers: function(limit) {
+				if(limit){
+					return $firebaseArray(isActiveMemberRef.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(isActiveMemberRef.equalTo(true));
+				}
+			},
+			/*Return all Members with isActive:false, using a limit for the query, if specified*/
+			getInactiveMembers: function(limit) {
+				if(limit){
+					return $firebaseArray(isActiveMemberRef.equalTo(false).limitToLast(limit));
+				}else{
+					return $firebaseArray(isActiveMemberRef.equalTo(false));
+				}
+			},
+			/*Return all Members with isLeader:true, using a limit for the query, if specified*/
+			getLeadMembers: function(limit) {
+				if(limit){
+					return $firebaseArray(isLeadMemberRef.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(isLeadMemberRef.equalTo(true));
+				}
+			},
+			/*Return all Members with isTrainee:true, using a limit for the query, if specified*/
+			getTraineeMembers: function(limit) {
+				if(limit){
+					return $firebaseArray(isTraineeMemberRef.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(isTraineeMemberRef.equalTo(true));
+				}
+			},
+			/*Return all Members with isHost:true, using a limit for the query, if specified*/
+			getHostMembers: function(limit) {
+				if(limit){
+					return $firebaseArray(isHostMemberRef.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(isHostMemberRef.equalTo(true));
+				}
+			},
+
 			allMembersLoaded: function() {
 				return $rootScope.allMembers != null;
 			},
