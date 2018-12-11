@@ -72,9 +72,6 @@
       <p class="lead">
   			{{weekListParams.title}}
   		</p>
-      <!-- <div class="card-text">
-        <p>{{i18n.admin.groups.filterDescription}}</p>
-      </div> -->
       <div class="row" ng-show="weeksList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="weekListParams.searchFilter">
@@ -147,10 +144,10 @@
   </article>
 
   <!-- Load all pending weeks  -->
-  <div class="row mb-3" ng-show="weeksList.length && !allWeeksListLoaded">
+  <div class="row mb-3" ng-show="weeksList.length">
     <div class="col text-center">
       <span class="text-primary">
-        {{weeksList.length}} {{i18n.weeks.loadedWeeks}}
+        {{weeksList.length}} {{i18n.weeks.loadingSuccess}}
       </span><br>
       <span class="btn-link clickable" ng-click="loadPendingWeeks()"
         ng-if="(weeksList.length < weekListParams.maxPossible)" >

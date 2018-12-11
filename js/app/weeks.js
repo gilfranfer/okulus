@@ -1,7 +1,7 @@
 /* Controller linked to the Admin view of Weeks (/weeks) */
 okulusApp.controller('WeeksCntrl',
-	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'AuditSvc', 'UtilsSvc','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuditSvc, UtilsSvc, AuthenticationSvc){
+	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'UtilsSvc','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, UtilsSvc, AuthenticationSvc){
 
 		let unwatch = undefined;
 		/* Executed everytime we enter to /weeks
@@ -10,7 +10,7 @@ okulusApp.controller('WeeksCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(user.type == constants.roles.admin){
-						$rootScope.weeksGlobalCounter = UtilsSvc.getGlobalCounter("weeks");
+						$rootScope.weeksGlobalCounter = UtilsSvc.getGlobalCounter(constants.folders.weeks);
 						$rootScope.weeksGlobalCounter.$loaded().then(
 							function(weekCounters) {
 								$scope.response = undefined;
@@ -19,8 +19,9 @@ okulusApp.controller('WeeksCntrl',
 								if(unwatch){ unwatch(); }
 								unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
 									if($rootScope.weekListParams){
+										let loader = $rootScope.weekListParams.activeWeekLoader;
+										$rootScope.weekListParams = getweekListParams(loader);
 										$scope.response = undefined;
-										$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
 									}
 								} );
 						});
@@ -32,10 +33,10 @@ okulusApp.controller('WeeksCntrl',
 				});
 		}});
 
-		/* All the following on-demand loaders will limit the initial result list to
-		 the maxQueryListResults value (from $rootScope.config). They will create a
-		 weekListParams object containing the name of the loader used, and determining
-		 the max possible records to display. */
+		/* All the following on-demand loaders (called from html view) will limit the
+		 initial result list to the maxQueryListResults value (from $rootScope.config).
+		 They will create a weekListParams object containing the name of the loader
+		 used, and determining the max possible records to display. */
 		$scope.loadAllWeeksList = function () {
 			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading};
 			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
@@ -71,8 +72,8 @@ okulusApp.controller('WeeksCntrl',
 			weekListLoaded();
 		};
 
-		/* Use the weekListParams.activeWeekLoader to determin what type of weeks
-		should be loaded, and how. */
+		/* Load ALL the pending weeks. Use the weekListParams.activeWeekLoader to
+		determine what type of weeks should be loaded, and how. */
 		$scope.loadPendingWeeks = function () {
 			let weekLoaderName = $rootScope.weekListParams.activeWeekLoader;
 			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
@@ -90,18 +91,11 @@ okulusApp.controller('WeeksCntrl',
 			weekListLoaded();
 		};
 
-		/*Toogle the Week Status (isOpen=true/false) */
-		$scope.setWeekOpenStatus = function (weekId, setOpen) {
-			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
-		};
-
-		/*Toogle the Week visibility (isVisible=true/false) */
-		$scope.setWeekVisibility = function (weekId, setVisible) {
-			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
-		};
-
+		/*Build object with Params used in the view.
+		 activeWeekLoader: Will help to identify what type of weeks we want to load (open,closed,visible,hidden,all)
+		 searchFilter: Container for the view filter
+		 title: Title of the Week List will change according to the loader in use
+		 maxPossible: Used to inform the user how many weeks are pending to load */
 		getweekListParams = function (weekLoader) {
 			let weekListParams = {activeWeekLoader:weekLoader, searchFilter:undefined};
 			if(weekLoader == "loadAllWeeksList"){
@@ -136,6 +130,19 @@ okulusApp.controller('WeeksCntrl',
 				console.error(error);
 			});
 		};
+
+		/*Toogle the Week Status (isOpen=true/false) */
+		$scope.setWeekOpenStatus = function (weekId, setOpen) {
+			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
+		};
+
+		/*Toogle the Week visibility (isVisible=true/false) */
+		$scope.setWeekVisibility = function (weekId, setVisible) {
+			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
+		};
+
 	}
 ]);
 
