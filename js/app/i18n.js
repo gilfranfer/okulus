@@ -54,7 +54,8 @@ const systemMsgs = {
 		memberAddressRemoved:"Dirección Eliminada",
 		memberCreated:"Miembro Creado",
 		membershipStatusUpdated:"Estado de la membresia actualizado",
-		memberRoleUpdated:"Rol del Miembro modificado"
+		memberRoleUpdated:"Rol del Miembro modificado",
+		baseGroupUpdated:"Grupo Base Actualizado"
 	}
 };
 
@@ -242,7 +243,7 @@ okulusApp.run(function($rootScope) {
 				activeStatusLbl:"Miembro Activo", inactiveStatusLbl:"Miembro Inactivo",
 				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Siervo Líder?",
 				isTraineeLbl:"Es Siervo Aprendíz?",
-				baseGroupLbl: "Grupo Base",
+				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
 
 
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",

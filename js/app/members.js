@@ -154,8 +154,10 @@ okulusApp.controller('MembersListCntrl',
 /* Controller linked to /members/details/:memberId and /members/edit/:memberId
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
-	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth', 'MembersSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
-	function($rootScope, $scope, $routeParams, $location,$firebaseAuth, MembersSvc, UtilsSvc,AuditSvc, AuthenticationSvc){
+	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
+		'MembersSvc','GroupsSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
+	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
+		MembersSvc, GroupsSvc, UtilsSvc,AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/details/:memberId or /members/edit/:memberId */
@@ -431,6 +433,37 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails.basicInfo.bday = birthdate;
 		};
 
+		$scope.prepareForBaseGroupUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+			if(!$scope.memberEditParams.groupsList){
+				//TODO Update Groups call
+				$scope.memberEditParams.groupsList = GroupsSvc.loadActiveGroups();
+			}
+			$scope.memberEditParams.groupsList.$loaded().then(function(){
+				clearResponse();
+				$scope.memberEditParams.updatingBaseGroup = true;
+			});
+		};
+
+		$scope.updateBaseGroup = function(){
+			clearResponse();
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+					if(memberInfo.baseGroupId){
+						let group = $scope.memberEditParams.groupsList.$getRecord(memberInfo.baseGroupId);
+						//TODO: Update after Group Refactor (group.name)
+						memberInfo.baseGroupName = group.group.name;
+					}else{
+						memberInfo.baseGroupName = null;
+						memberInfo.baseGroupId = null;
+					}
+					memberInfo.$save().then(function() {
+						AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+						$scope.memberEditParams.updatingBaseGroup = false;
+						$scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};
+					});
+			}
+		};
 
 	}
 ]);

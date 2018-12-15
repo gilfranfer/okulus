@@ -23,7 +23,7 @@
 
   <!-- Basic Details Card -->
   <article class="card mb-3">
-    <form id="memberBasicInfoForm" name="memberBasicInfoForm" novalidate ng-submit="saveBasicDetails()">
+    <form id="memberBasicInfoForm" name="memberBasicInfoForm" novalidate ng-submit="">
       <div class="card-body">
         <!-- Header -->
         <div class="row">
@@ -97,7 +97,7 @@
 
   <!-- Address Card -->
   <article class="card mb-3" ng-show="memberEditParams.isEdit">
-    <form name="memberAddressForm" novalidate ng-submit="saveAddress()">
+    <form name="memberAddressForm" novalidate ng-submit="">
       <div class="card-body">
         <!-- Header and Add Button (Admin)-->
         <div class="row">
@@ -187,91 +187,102 @@
 
   <!-- Membership Card (Only for Admin) -->
   <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type == 'admin'">
-    <form name="membershipForm" novalidate ng-submit="saveMembership()">
-      <!-- Form Fields -->
-      <div class="card mb-2">
-        <div class="card-body">
-          <!-- Header -->
-          <div class="row">
-            <div class="col">
-              <legend>{{i18n.members.membershipTitle}}</legend>
-            </div>
+    <div class="card mb-2">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.membershipTitle}}</legend>
           </div>
-          <hr>
-          <div class="form-row">
-            <div class="col-sm form-group">
-              <label for="baseGroup">
-                {{i18n.forms.member.baseGroupLbl}}
-              </label>
-              <select id="baseGroup" class="form-control form-control-lg" ng-model="member.baseGroup" ng-required="false">
-                <option value=""></option>
-                <option ng-repeat="group in groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
-                  {{group.group.number}}-{{group.group.name}}
-                </option>
-              </select>
-            </div>
+        </div>
+        <hr>
+        <!-- Base Group -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label for="baseGroup">
+              {{i18n.forms.member.baseGroupLbl}}
+            </label>
           </div>
-          <!-- Membership Status -->
-          <div class="form-row">
-            <div class="col-md-6 form-group">
-              <label class="font-weight-bold" for="status">
-                {{i18n.members.statusLbl}}
-              </label>
-              <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
-                ng-show="objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(false)">
-                {{i18n.members.activeStatusLbl}}
-              </button>
-              <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
-                ng-show="!objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(true)">
-                {{i18n.members.inactiveStatusLbl}}
-              </button>
-            </div>
+        </div>
+        <div class="form-row">
+          <div class="col-11 form-group">
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!memberEditParams.updatingBaseGroup" ng-model="objectDetails.basicInfo.baseGroupName">
+            <select id="baseGroup" class="form-control form-control-lg" ng-required="false"
+              ng-if="memberEditParams.updatingBaseGroup" ng-model="objectDetails.basicInfo.baseGroupId">
+              <option value="">{{i18n.members.noGroup}}</option>
+              <option ng-repeat="group in memberEditParams.groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
+                {{group.group.number}}-{{group.group.name}}
+              </option>
+            </select>
           </div>
-          <!-- Roles -->
-          <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
-            <div class="col-6 col-md-4 form-group">
-              <label class="font-weight-bold" for="isHost">
-                {{i18n.members.isHostLbl}}
-              </label>
-              <button type="button" class="btn btn-lg btn-block btn-primary clickable"
-                ng-if="objectDetails.basicInfo.isHost" ng-click="isHost(false)">
-                {{i18n.btns.yesBtn}}
-              </button>
-              <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
-                ng-if="!objectDetails.basicInfo.isHost" ng-click="isHost(true)">
-                {{i18n.btns.noBtn}}
-              </button>
-            </div>
-            <div class="col-6 col-md-4 form-group">
-              <label class="font-weight-bold" for="isLead">
-                {{i18n.members.isLeadLbl}}
-              </label>
-              <button type="button" class="btn btn-lg btn-block btn-primary clickable"
-                ng-if="objectDetails.basicInfo.isLeader" ng-click="isLeader(false)">
-                {{i18n.btns.yesBtn}}
-              </button>
-              <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
-                ng-if="!objectDetails.basicInfo.isLeader" ng-click="isLeader(true)">
-                {{i18n.btns.noBtn}}
-              </button>
-            </div>
-            <div class="col-6 col-md-4 form-group">
-              <label class="font-weight-bold" for="isTrainee">
-                {{i18n.members.isTraineeLbl}}
-              </label>
-              <button type="button" class="btn btn-lg btn-block btn-primary clickable"
-                ng-if="objectDetails.basicInfo.isTrainee" ng-click="isTrainee(false)">
-                {{i18n.btns.yesBtn}}
-              </button>
-              <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
-                ng-if="!objectDetails.basicInfo.isTrainee" ng-click="isTrainee(true)">
-                {{i18n.btns.noBtn}}
-              </button>
-            </div>
+          <div class="col-1 form-group">
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="memberEditParams.updatingBaseGroup" ng-click="updateBaseGroup()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!memberEditParams.updatingBaseGroup" ng-click="prepareForBaseGroupUpdate()" ></i>
+          </div>
+        </div>
+        <!-- Membership Status -->
+        <div class="form-row">
+          <div class="col-md-6 form-group">
+            <label class="font-weight-bold" for="status">
+              {{i18n.members.statusLbl}}
+            </label>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
+              ng-show="objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(false)">
+              {{i18n.members.activeStatusLbl}}
+            </button>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-show="!objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(true)">
+              {{i18n.members.inactiveStatusLbl}}
+            </button>
+          </div>
+        </div>
+        <!-- Roles -->
+        <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isHost">
+              {{i18n.members.isHostLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isHost" ng-click="isHost(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isHost" ng-click="isHost(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isLead">
+              {{i18n.members.isLeadLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isLeader" ng-click="isLeader(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isLeader" ng-click="isLeader(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isTrainee">
+              {{i18n.members.isTraineeLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isTrainee" ng-click="isTrainee(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isTrainee" ng-click="isTrainee(true)">
+              {{i18n.btns.noBtn}}
+            </button>
           </div>
         </div>
       </div>
-    </form>
+    </div>
   </article>
 
   <!-- Audit -->
