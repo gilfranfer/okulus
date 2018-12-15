@@ -125,7 +125,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/members/members-admin.html',
-				controller: 'MembersAdminCntrl'
+				controller: 'MembersListCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
@@ -133,7 +133,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html'
+				templateUrl: 'views/members/memberEdit.html',
+				controller: 'MemberDetailsCntrl'
 			})
 			.when('/members/edit/:memberId', {
 				resolve: {
@@ -141,7 +142,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html',
+				templateUrl: 'views/members/memberEdit.html',
 				controller: 'MemberDetailsCntrl'
 			})
 			.when('/members/details/:memberId', {
@@ -150,7 +151,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html',
+				templateUrl: 'views/members/memberEdit.html',
 				controller: 'MemberDetailsCntrl'
 			})
 			.when('/users/edit/:userId', {
@@ -243,28 +244,33 @@ okulusApp.config(['$routeProvider',
 const rootFolder = "okulusTest";
 const constants = {
 	roles: {
-		user:"user", admin: "admin", type:"type", system: "System"
+		user:"user", admin: "admin", type:"type", system: "System",
+		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost"
 	},
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
 		open:"open", closed:"closed",
 		visible:"show", hidden:"hide",
-		readed:"readed"
+		readed:"readed",
+		isActive:"isActive"
 	},
 	pages: {
 		login:"/login", home:"/home",
 		error: "/error",
 		adminWeeks:"/weeks",
-		adminMonitor:"/admin/monitor"
+		adminMonitor:"/admin/monitor",
+		memberEdit:"/members/edit/"
 	},
 	folders:{
-		root:"okulusTest", 
+		root:"okulusTest",
 		audit:"audit", users:"users", weeks:"weeks",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
-		metadata:"metadata",
+		metadata:"metadata", address:"address",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		/*TODO: Update membersDetails: members/details */
+		membersList:"members/list", membersDetails:"members",
 		notificationsList:"notifications/list",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"

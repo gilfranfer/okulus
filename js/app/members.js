@@ -1,5 +1,5 @@
 //Mapping: /members
-okulusApp.controller('MembersAdminCntrl',
+okulusApp.controller('MembersListCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','MembersSvc','AuthenticationSvc','UtilsSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,MembersSvc,AuthenticationSvc,UtilsSvc){
 
@@ -151,84 +151,157 @@ okulusApp.controller('MembersAdminCntrl',
 	}
 ]);
 
-okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$firebaseAuth','MembersSvc', 'AuditSvc', 'UtilsSvc', 'GroupsSvc','AuthenticationSvc',
-	function($rootScope, $scope, $location,$firebaseAuth, MembersSvc, AuditSvc, UtilsSvc, GroupsSvc,AuthenticationSvc){
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
-						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
-						$location.path(constants.pages.error);
-						return;
-					}
+/* Controller linked to /members/details/:memberId and /members/edit/:memberId
+ * It will load the Member for the id passed */
+okulusApp.controller('MemberDetailsCntrl',
+	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth', 'MembersSvc', 'AuditSvc','AuthenticationSvc',
+	function($rootScope, $scope, $routeParams, $location,$firebaseAuth, MembersSvc, AuditSvc, AuthenticationSvc){
 
-					$rootScope.response = null;
-					$scope.provideAddress = true;
-					$scope.groupsList = GroupsSvc.loadActiveGroups();
-				});
-			}
-		});
+		/* Init. Executed everytime we enter to /members/new,
+		/members/details/:memberId or /members/edit/:memberId */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingMember };
 
-		$scope.saveOrUpdateMember = function() {
-			$scope.response = null;
-			$scope.working = true;
+			$scope.objectDetails = {};
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				/* Only Users with an associated Member can see the content */
+				if(!user.memberId){
+					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
+					return;
+				}
 
-			let record = undefined;
-			if($scope.provideAddress){
-				record = { member: $scope.member, address: $scope.address };
-			}else{
-				record = { member: $scope.member };
-			}
-			record.member.birthdate = UtilsSvc.buildDateJson($scope.member.bday);
-
-			/* When a value for memberId is present in the scope, the user is on Edit
-				mode and we have to perform an UPDATE.*/
-			if( $scope.memberId ){
-	    	let mRef = MembersSvc.getMemberReference($scope.memberId);
-				let orgiStatus = undefined;
-				mRef.child("member/status").once('value').then(
-					function(snapshot) {
-						orgiStatus = snapshot.val();
-				});
-
-			  mRef.update(record, function(error) {
-					if(error){
-						$scope.working = false;
-						$scope.response = { memberMsgError: error};
-					}else{
-					  AuditSvc.recordAudit(mRef.key, "update", "members");
-					  if(orgiStatus != record.member.status){
-							MembersSvc.updateStatusCounter(record.member.status);
+				let memberId = $routeParams.memberId;
+				/* Prepare for Edit or View Details of Existing Member */
+				if(memberId){
+					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
+					$scope.objectDetails.basicInfo.$loaded().then(function(member){
+						//If member from DB hasn't shortname, is because no member was found
+						if(!member.shortname){
+							$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+							$location.path(constants.pages.error);
+							return;
 						}
-						$scope.response = { memberMsgOk: "Miembro Actualizado"};
-						$scope.working = false;
-					}
-				});
-			}
-			/* Otherwise, when groupId is not present in the scope,
-				we perform a SET to create a new record */
-			else{
-				var newmemberRef = MembersSvc.getNewMemberReference();
-				newmemberRef.set(record, function(error) {
-					if(error){
-						$scope.working = false;
-						$scope.response = { memberMsgError: error};
-					}else{
-						//For some reason the message is not displayed until
-						//you interact with any form element
-					}
-				});
 
-				//adding trick below to ensure message is displayed
-				let obj = MembersSvc.getMember(newmemberRef.key);
-				obj.$loaded().then(function(data) {
-					//$scope.memberId = newmemberRef.key;
-					AuditSvc.recordAudit(newmemberRef.key, "create", "members");
-					MembersSvc.increaseStatusCounter(data.member.status);
-					$scope.working = false;
-					$rootScope.response = { memberMsgOk: "Miembro Creado"};
-					$location.path( "/members");
-				});
+						$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
+						$scope.objectDetails.audit = MembersSvc.getMemberAuditObject(memberId);
+						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
+						// $scope.objectDetails.groups = MembersSvc.getMemberGroups(memberId);
+						// $scope.objectDetails.attendance = MembersSvc.getMemberAttendance(memberId);
+						$scope.prepareViewForEdit(member);
+					}).catch( function(error){
+						$rootScope.response = { error: true, message: error };
+						$location.path(constants.pages.error);
+					});
+				}
+				/* Prepare for New Member Creation */
+				else{
+					$scope.prepareViewForNew();
+				}
+			});
+		}});
+
+		$scope.prepareViewForEdit = function (memberObject) {
+			$scope.memberEditParams = {};
+			$scope.memberEditParams.actionLbl = $rootScope.i18n.members.modifyLbl;
+			$scope.memberEditParams.showBadges = true;
+			$scope.memberEditParams.isEdit = true;
+			$scope.memberEditParams.memberId = memberObject.$id;
+			$scope.response = undefined;
+		}
+
+		$scope.prepareViewForNew = function () {
+			$scope.memberEditParams = {};
+			$scope.memberEditParams.actionLbl = $rootScope.i18n.members.newLbl;
+			$scope.memberEditParams.showBadges = false;
+			$scope.memberEditParams.isEdit = false;
+			$scope.memberEditParams.memberId = undefined;
+			$scope.response = undefined;
+		}
+
+		/*Create address Object in scope so we can populate it's values from view*/
+		$scope.addAdress = function(){
+			$scope.response = null;
+			$rootScope.memberResponse = null;
+			$scope.objectDetails.address = {};
+		};
+
+		/*Remove the address Object from scope, and from DB*/
+		$scope.removeAdress = function(){
+			$rootScope.memberResponse = null;
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				if($scope.objectDetails.address.$id){
+					$scope.response = {working:true, message: systemMsgs.inProgress.deletingMemberAddress};
+					let memberId = $scope.memberEditParams.memberId;
+
+					$scope.objectDetails.address.$remove().then(function(ref) {
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						$scope.response = {success:true, message: systemMsgs.success.memberAddressRemoved};
+					}, function(error) {
+					  console.log("Error:", error);
+					});
+				}
+				$scope.objectDetails.address = null;
+			}
+		};
+
+		/*Save functions available only for Admin User*/
+		$scope.saveBasicInfoAndAddress = function(){
+			$scope.saveBasicInfo();
+			$scope.saveAddress();
+		};
+
+		/*Save the changes to the Member´s Address */
+		$scope.saveAddress = function(){
+			$rootScope.memberResponse = null;
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberAddress};
+				let memberId = $scope.memberEditParams.memberId;
+
+				//Update using the existing address firebaseObject
+				if($scope.objectDetails.address.$id){
+					$scope.objectDetails.address.$save().then(function(){
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
+					});
+				}
+				//Save address for the first time, and keep the address firebaseObject in scope
+				else{
+					MembersSvc.persistMemberAddress(memberId,$scope.objectDetails.address);
+					$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
+					$scope.objectDetails.address.$loaded().then(function() {
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
+					});
+				}
+			}
+		};
+
+		$scope.saveBasicInfo = function(){
+			$rootScope.memberResponse = null;
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberInfo};
+				let memberId = $scope.memberEditParams.memberId;
+
+				/*UPDATE Current Member*/
+				if($scope.objectDetails.basicInfo.$id){
+					$scope.objectDetails.basicInfo.$save().then(function() {
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
+					});
+				}
+				/*CREATE A NEW MEMBER, and redirect to /members/edit/ */
+				else{
+					$scope.objectDetails.basicInfo.isActive = true;
+					let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
+					MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function() {
+						AuditSvc.recordAudit(newmemberRef.key, constants.actions.create, constants.folders.members);
+						//TODO:increase member counter (total and active)
+						// MembersSvc.
+						$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreated };
+						$location.path(constants.pages.memberEdit+newmemberRef.key);
+					});
+				}
 			}
 		};
 
@@ -236,9 +309,11 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			If a memeber is deleted, his attendance to reunions still recorded on every Reunion Report
 			When deleting a Member:
 			1. Decrease the Member Status counter
-			2. Delete all references to this member from group/access
-		*/
+			2. Delete all references to this member from group/access*/
 	  $scope.deleteMember = function() {
+			console.log("deleteMember");
+			return;
+
 			if($rootScope.currentSession.user.type == 'user'){
 				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
 			}else{
@@ -263,103 +338,126 @@ okulusApp.controller('MemberFormCntrl', ['$rootScope', '$scope', '$location','$f
 			}
 		};
 
-		$scope.isHost = function(value){
-			validateMemberObj();
-			$scope.member.isHost = value;
-			//console.debug($scope.member);
-		};
-		$scope.isLeader = function(value){
-			validateMemberObj();
-			$scope.member.isLeader = value;
-			//console.debug($scope.member);
-		};
-		$scope.isTrainee = function(value){
-			validateMemberObj();
-			$scope.member.isTrainee = value;
-			//console.debug($scope.member);
-		};
-		$scope.canBeUser = function(value){
-			validateMemberObj();
-			$scope.member.canBeUser = value;
-			//console.debug($scope.member);
+		/*Called when change detected on bday input*/
+		updateBdayValue = function(){
+			let birthdate = document.getElementById("bday").value;
+			$scope.objectDetails.basicInfo.bday = birthdate;
 		};
 
-		validateMemberObj = function () {
-			if(!$scope.member){
-				$scope.member = {}
+		/* Toogle the Membership status.*/
+		$scope.setMembershipStatus = function(setMembershipActive){
+			$rootScope.memberResponse = null;
+			if($rootScope.currentSession.user.type == constants.roles.admin
+				&& $scope.memberEditParams.isEdit){
+
+			 let memberInfo = $scope.objectDetails.basicInfo;
+			 memberInfo.isActive = setMembershipActive;
+				/*When setting Membership to Active, we must update the global counters */
+				if(setMembershipActive){
+					console.log("Increase Active Members Count");
+					console.log("Reduce Inactive Members Count");
+				}else{
+					/*When setting Membership to Inactive, we must update the global counters
+					and set the assigned roles to false*/
+					console.log("Reduce Active Members Count");
+					console.log("Increase Inactive Members Count");
+					if(memberInfo.isHost){
+						memberInfo.isHost = false;
+						console.log("Reduce Host Members Count");
+					}
+					if(memberInfo.isLeader){
+						memberInfo.isLeader = false;
+						console.log("Reduce Lead Members Count");
+					}
+					if(memberInfo.isTrainee){
+						memberInfo.isTrainee = false;
+						console.log("Reduce Trainee Members Count");
+					}
+				}
+				memberInfo.$save();
+			}
+		};
+
+		$scope.isLeader = function(isLeader) {
+			$rootScope.memberResponse = null;
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if($rootScope.currentSession.user.type == constants.roles.admin
+				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
+
+				memberInfo.isLeader = isLeader;
+				memberInfo.$save().then(function() {
+					if(isLeader){
+						console.log("Increase Lead Members Counter");
+					}else{
+						console.log("Reduce Lead Members Counter");
+					}
+				});
 			}
 		}
-  }
-]);
 
-okulusApp.controller('MemberDetailsCntrl', ['$scope','$routeParams', '$location', 'MembersSvc',
-	function($scope, $routeParams, $location, MembersSvc){
-		let whichMember = $routeParams.memberId;
-		$scope.provideAddress = true;
+		$scope.isTrainee = function(isTrainee) {
+			$rootScope.memberResponse = null;
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if($rootScope.currentSession.user.type == constants.roles.admin
+				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
 
-		/* When opening "Edit" page from the Members List, we can use the
-		"allMemberss" firebaseArray from rootScope to get the specific Member data */
-		if( MembersSvc.allMembersLoaded() ){
-			let record = MembersSvc.getMemberFromArray(whichMember);
-			putRecordOnScope(record);
-		}
-		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
-		we will not have the "allMemberss" firebaseArray Loaded in the rootScope.
-		Instead of loading all the Members, what could be innecessary,
-		we can use firebaseObject to get only the required member data */
-		else{
-			let obj = MembersSvc.getMember(whichMember);
-			obj.$loaded().then(function() {
-				putRecordOnScope(obj);
-			}).catch(function(error) {
-		    $location.path( "/error/norecord" );
-		  });
+				memberInfo.isTrainee = isTrainee;
+				memberInfo.$save().then(function() {
+					if(isTrainee){
+						console.log("Increase Treinee Members Counter");
+					}else{
+						console.log("Reduce Treinee Members Counter");
+					}
+				});
+			}
 		}
 
-		function putRecordOnScope(record){
-			if(record && record.member){
-				$scope.memberId = record.$id;
-				$scope.member = record.member;
-				$scope.address = record.address;
-				$scope.audit = record.audit;
+		$scope.isHost = function(isHost) {
+			$rootScope.memberResponse = null;
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if($rootScope.currentSession.user.type == constants.roles.admin
+				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
 
-				if(record.member.birthdate){
-					$scope.member.bday = new Date(record.member.birthdate.year,
-												  record.member.birthdate.month-1,
-												  record.member.birthdate.day);
-				}
-			}else{
-				$location.path( "/error/norecord" );
+				memberInfo.isHost = isHost;
+				memberInfo.$save().then(function() {
+					if(isHost){
+						console.log("Increase Host Members Counter");
+					}else{
+						console.log("Reduce Host Members Counter");
+					}
+				});
 			}
 		}
 
 	}
 ]);
 
-okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
+okulusApp.factory('MembersSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let memberBasicRef = baseRef.child('members/basic');
-		let isActiveMemberRef = memberBasicRef.orderByChild("isActive");
-		let isLeadMemberRef = memberBasicRef.orderByChild("isLeader");
-		let isTraineeMemberRef = memberBasicRef.orderByChild("isTrainee");
-		let isHostMemberRef = memberBasicRef.orderByChild("isHost");
+		let memberListRef = baseRef.child(constants.folders.membersList);
+		let memberDetailsRef = baseRef.child(constants.folders.membersDetails);
+		let isActiveMemberRef = memberListRef.orderByChild(constants.status.isActive);
+		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
+		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
+		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
 
-		let membersRef = firebase.database().ref().child(rootFolder).child('members');
+		let membersRef = firebase.database().ref().child(rootFolder).child(constants.folders.members);
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
 		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
 
 		return {
-			/*Return all Members, using a limit for the query, if specified*/
+			/* Return all Members, using a limit for the query, if specified*/
 			getAllMembers: function(limit) {
 					if(limit){
-						return $firebaseArray(memberBasicRef.orderByKey().limitToLast(limit));
+						return $firebaseArray(memberListRef.orderByKey().limitToLast(limit));
 					}else{
-						return $firebaseArray(memberBasicRef.orderByKey());
+						return $firebaseArray(memberListRef.orderByKey());
 					}
 			},
-			/*Return all Members with isActive:true, using a limit for the query, if specified*/
+			/* Return all Members with isActive:true, using a limit for the query, if specified*/
 			getActiveMembers: function(limit) {
 				if(limit){
 					return $firebaseArray(isActiveMemberRef.equalTo(true).limitToLast(limit));
@@ -367,7 +465,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					return $firebaseArray(isActiveMemberRef.equalTo(true));
 				}
 			},
-			/*Return all Members with isActive:false, using a limit for the query, if specified*/
+			/* Return all Members with isActive:false, using a limit for the query, if specified*/
 			getInactiveMembers: function(limit) {
 				if(limit){
 					return $firebaseArray(isActiveMemberRef.equalTo(false).limitToLast(limit));
@@ -375,7 +473,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					return $firebaseArray(isActiveMemberRef.equalTo(false));
 				}
 			},
-			/*Return all Members with isLeader:true, using a limit for the query, if specified*/
+			/* Return all Members with isLeader:true, using a limit for the query, if specified*/
 			getLeadMembers: function(limit) {
 				if(limit){
 					return $firebaseArray(isLeadMemberRef.equalTo(true).limitToLast(limit));
@@ -383,7 +481,7 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					return $firebaseArray(isLeadMemberRef.equalTo(true));
 				}
 			},
-			/*Return all Members with isTrainee:true, using a limit for the query, if specified*/
+			/* Return all Members with isTrainee:true, using a limit for the query, if specified*/
 			getTraineeMembers: function(limit) {
 				if(limit){
 					return $firebaseArray(isTraineeMemberRef.equalTo(true).limitToLast(limit));
@@ -391,13 +489,37 @@ okulusApp.factory('MembersSvc', ['$rootScope', '$firebaseArray', '$firebaseObjec
 					return $firebaseArray(isTraineeMemberRef.equalTo(true));
 				}
 			},
-			/*Return all Members with isHost:true, using a limit for the query, if specified*/
+			/* Return all Members with isHost:true, using a limit for the query, if specified*/
 			getHostMembers: function(limit) {
 				if(limit){
 					return $firebaseArray(isHostMemberRef.equalTo(true).limitToLast(limit));
 				}else{
 					return $firebaseArray(isHostMemberRef.equalTo(true));
 				}
+			},
+			/* Get member from firebase and return as object */
+			getMemberBasicDataObject: function(memberId){
+				return $firebaseObject(memberListRef.child(memberId));
+			},
+			/* Get member from firebase and return as object */
+			getMemberAddressObject: function(memberId){
+				return $firebaseObject(memberDetailsRef.child(memberId).child(constants.folders.address));
+			},
+			/* Get member from firebase and return as object */
+			getMemberAuditObject: function(memberId){
+				return $firebaseObject(memberDetailsRef.child(memberId).child(constants.folders.audit));
+			},
+			/* Push Member Basic Details Object to Firebase*/
+			persistMember: function(memberObj){
+				let ref = memberListRef.push();
+				ref.set(memberObj);
+				return ref;
+			},
+			/* Push Address Object to Firebase, in the folder members/details/:memberId */
+			persistMemberAddress: function(memberId, addressObj){
+				let ref = memberDetailsRef.child(memberId).child(constants.folders.address);
+				ref.set(addressObj);
+				return ref;
 			},
 
 			allMembersLoaded: function() {

@@ -16,19 +16,25 @@ const systemMsgs = {
 		/* RegistrationCntrl */
 		emailExist: "El correo electrónico ya está en uso.",
 		tryAgainLater: "Hubo un error. Intente más tarde.",
-		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador."
+		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
+		recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		loadingMember:"Cargando información del Miembro ...",
 		loadingAllMembers:"Cargando Todos los Miembros ...",
 		loadingActiveMembers:"Cargando Miembros Activos ...",
 		loadingInactiveMembers:"Cargando Miembros Inactivos ...",
 		loadingLeadMembers:"Cargando Miembros Líderes ...",
 		loadingHostMembers:"Cargando Miembros Anfitriones ...",
-		loadingTraineeMembers:"Cargando Miembros Aprendices ..."
+		loadingTraineeMembers:"Cargando Miembros Aprendices ...",
+		/*Members JS*/
+		savingMemberInfo:"Guardando Información del Miembro",
+		savingMemberAddress:"Guardando Dirección del Miembro",
+		deletingMemberAddress:"Eliminando Dirección del Miembro"
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -40,7 +46,10 @@ const systemMsgs = {
 		inactiveMembersTitle:"Miembros Inactivos",
 		leadMembersTitle:"Miembros Líderes",
 		traineeMembersTitle:"Miembros Aprendices",
-		hostMembersTitle:"Miembros Anfitriones"
+		hostMembersTitle:"Miembros Anfitriones",
+		memberInfoSAved:"Información Guardada",
+		memberAddressRemoved:"Dirección Eliminada",
+		memberCreated:"Miembro Creado"
 	}
 };
 
@@ -202,19 +211,52 @@ okulusApp.run(function($rootScope) {
 				leadMembers:"Líderes", hostMembers:"Anfitriones", traineeMembers:"Aprendices",
 				/*Buttons*/
 				loadBtn:"Mostrar Miembros", newBtn:"Crear Miembro",
+				saveBasicInfoBtn:"Guardar información básica",
+				saveAddressBtn:"Guardar dirección",
+				saveAllBtn:"Guardar cambios",
+				addAddressBtn:"Agregar dirección",
+				deleteAddressBtn:"Eliminar dirección",
+				deleteMemberBtn:"Eliminar miembro",
         /*Alert Messages*/
         loadingSuccess: "Miembros Cargados.",
 				loadPending1: "Mostar ", loadPending2: "Miembros restantes.",
 				/*Labels*/
-				activeLbl:"Activo", inactiveLbl:"Inactivo",
-				firstnameLbl:"Nombre",lastnameLbl:"Apellido",
-				emailLbl:"Correo electrónico",phoneLbl:"Teléfono",
+				memberLbl:"Miembro",
+				basicInfoTitle:"Información Básica",
+				membershipTitle:"Membresía",
+				groupsTitle:"Grupos",
+				modifyLbl:"Modificar información del", newLbl: "Nuevo",
+				/* Form Labels*/
+				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
+				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
+				aliasLbl:"Alias", aliasHint:"Franfer Gil",
+				bdayLbl:"Fecha de nacimiento", bdayHint:"aaaa-mm-dd",
+				emailLbl:"Correo electrónico", emailHint:"micorreo@gmail.com",
+				phoneLbl:"Teléfono",
+				statusLbl:"Estado de la membresía",
+				activeStatusLbl:"Miembro Activo", inactiveStatusLbl:"Miembro Inactivo",
+				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Siervo Líder?",
+				isTraineeLbl:"Es Siervo Aprendíz?",
+				baseGroupLbl: "Grupo Base",
+
+
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
 				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
 				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
 				noMembersError: "No se encontraron Miembros.",
 				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
+			},
+			address:{
+				legend: "Dirección",
+				streetLbl:"Calle", streetHint:"",
+				extNumberLbl: "Num ext", extNumberHint: "",
+				intNumberLbl: "Num int", intNumberHint: "",
+				zipLbl: "C.P.", zipHint: "",
+				cityLbl: "Ciudad", cityHint: "",
+				neighborhoodLbl: "Colonia", neighborhoodHint: "",
+				stateLbl: "Estado", stateHint: "",
+				countryLbl: "Pais", countryHint: ""
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
@@ -230,6 +272,7 @@ okulusApp.run(function($rootScope) {
 			alerts:{
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
 				confirmDelete: "Seguro que deseas eliminar este registro?",
+				confirmQuestion: "Seguro?",
 				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ..."
 			},
 			forms:{

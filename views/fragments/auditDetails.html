@@ -5,41 +5,38 @@
     </h4>
     <hr>
     <div class="row">
-      <div class="col" ng-show="audit.createdBy">
+      <div class="col" ng-show="objectDetails.audit.createdBy">
         <label class="font-weight-bold">{{i18n.forms.audit.creation}}</label><br>
         <span>
-          <a ng-if="audit.createdById" href="#!/users/edit/{{audit.createdById}}">{{audit.createdBy}}</a>
-          <span ng-if="!audit.createdById">{{audit.createdBy}}</span>
+          <a ng-if="objectDetails.audit.createdById" href="#!/users/edit/{{objectDetails.audit.createdById}}">{{objectDetails.audit.createdBy}}</a>
+          <span ng-if="!objectDetails.audit.createdById">{{objectDaudit.createdBy}}</span>
         </span><br>
-        <span>{{audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</span>
+        <span>{{objectDetails.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
-      <div class="col" ng-show="audit.lastUpdateBy">
+      <div class="col" ng-show="objectDetails.audit.lastUpdateBy">
         <label class="font-weight-bold">{{i18n.forms.audit.update}}</label><br>
         <span>
-          <a ng-if="audit.lastUpdateById" href="#!/users/edit/{{audit.lastUpdateById}}">{{audit.lastUpdateBy}}</a>
-          <span ng-if="!audit.lastUpdateById">{{audit.lastUpdateBy}}</span>
+          <a ng-if="objectDetails.audit.lastUpdateById" href="#!/users/edit/{{objectDetails.audit.lastUpdateById}}">{{objectDetails.audit.lastUpdateBy}}</a>
+          <span ng-if="!objectDetails.audit.lastUpdateById">{{objectDaudit.lastUpdateBy}}</span>
         </span><br>
-        <span>{{audit.lastUpdateOn | date: "MMM dd yyyy hh:mm a"}}</span>
+        <span>{{objectDetails.audit.lastUpdateOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
-      <div class="col" ng-show="audit.approvedBy">
+      <div class="col" ng-show="objectDetails.audit.approvedBy">
         <label class="font-weight-bold">{{i18n.forms.audit.approval}}</label><br>
         <span>
-          <a ng-if="audit.approvedById" href="#!/users/edit/{{audit.approvedById}}">{{audit.approvedBy}}</a>
-          <span ng-if="!audit.approvedById">{{audit.approvedBy}}</span>
+          <a ng-if="objectDetails.audit.approvedById" href="#!/users/edit/{{objectDetails.audit.approvedById}}">{{objectDetails.audit.approvedBy}}</a>
+          <span ng-if="!objectDetails.audit.approvedById">{{objectDaudit.approvedBy}}</span>
         </span><br>
-        <span>{{audit.approvedOn | date: "MMM dd yyyy hh:mm a"}}</span>
+        <span>{{objectDetails.audit.approvedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
-      <div class="col" ng-show="audit.rejectedBy">
+      <div class="col" ng-show="objectDetails.audit.rejectedBy">
         <label class="font-weight-bold">{{i18n.forms.audit.rejection}}</label><br>
         <span>
-          <a ng-if="audit.rejectedById" href="#!/users/edit/{{audit.rejectedById}}">{{audit.rejectedBy}}</a>
-          <span ng-if="!audit.rejectedById">{{audit.rejectedBy}}</span>
+          <a ng-if="objectDetails.audit.rejectedById" href="#!/users/edit/{{objectDetails.audit.rejectedById}}">{{objectDetails.audit.rejectedBy}}</a>
+          <span ng-if="!objectDetails.audit.rejectedById">{{objectDaudit.rejectedBy}}</span>
         </span><br>
-        <span>{{audit.rejectedOn | date: "MMM dd yyyy hh:mm a"}}</span>
+        <span>{{objectDetails.audit.rejectedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
     </div>
-    <p class="mt-3">
-      <span class="small text-danger">{{i18n.forms.audit.refreshForUpdates}}</span>
-    </p>
   </div>
 </div>
