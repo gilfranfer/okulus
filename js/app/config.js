@@ -263,7 +263,7 @@ const constants = {
 		memberEdit:"/members/edit/"
 	},
 	folders:{
-		root:"okulusTest",
+		root:"okulusTest", counters:"counters",
 		audit:"audit", users:"users", weeks:"weeks",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",

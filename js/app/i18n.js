@@ -52,7 +52,9 @@ const systemMsgs = {
 		hostMembersTitle:"Miembros Anfitriones",
 		memberInfoSAved:"Información Guardada",
 		memberAddressRemoved:"Dirección Eliminada",
-		memberCreated:"Miembro Creado"
+		memberCreated:"Miembro Creado",
+		membershipStatusUpdated:"Estado de la membresia actualizado",
+		memberRoleUpdated:"Rol del Miembro modificado"
 	}
 };
 

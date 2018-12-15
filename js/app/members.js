@@ -154,8 +154,8 @@ okulusApp.controller('MembersListCntrl',
 /* Controller linked to /members/details/:memberId and /members/edit/:memberId
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
-	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth', 'MembersSvc', 'AuditSvc','AuthenticationSvc',
-	function($rootScope, $scope, $routeParams, $location,$firebaseAuth, MembersSvc, AuditSvc, AuthenticationSvc){
+	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth', 'MembersSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
+	function($rootScope, $scope, $routeParams, $location,$firebaseAuth, MembersSvc, UtilsSvc,AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/details/:memberId or /members/edit/:memberId */
@@ -221,14 +221,13 @@ okulusApp.controller('MemberDetailsCntrl',
 
 		/*Create address Object in scope so we can populate it's values from view*/
 		$scope.addAdress = function(){
-			$scope.response = null;
-			$rootScope.memberResponse = null;
+			clearResponse();
 			$scope.objectDetails.address = {};
 		};
 
 		/*Remove the address Object from scope, and from DB*/
 		$scope.removeAdress = function(){
-			$rootScope.memberResponse = null;
+			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 				if($scope.objectDetails.address.$id){
 					$scope.response = {working:true, message: systemMsgs.inProgress.deletingMemberAddress};
@@ -253,7 +252,7 @@ okulusApp.controller('MemberDetailsCntrl',
 
 		/*Save the changes to the Member´s Address */
 		$scope.saveAddress = function(){
-			$rootScope.memberResponse = null;
+			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberAddress};
 				let memberId = $scope.memberEditParams.memberId;
@@ -278,7 +277,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		};
 
 		$scope.saveBasicInfo = function(){
-			$rootScope.memberResponse = null;
+			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberInfo};
 				let memberId = $scope.memberEditParams.memberId;
@@ -296,8 +295,8 @@ okulusApp.controller('MemberDetailsCntrl',
 					let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
 					MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function() {
 						AuditSvc.recordAudit(newmemberRef.key, constants.actions.create, constants.folders.members);
-						//TODO:increase member counter (total and active)
-						// MembersSvc.
+						MembersSvc.increaseTotalMembersCount();
+						MembersSvc.increaseActiveMembersCount();
 						$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreated };
 						$location.path(constants.pages.memberEdit+newmemberRef.key);
 					});
@@ -311,6 +310,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			1. Decrease the Member Status counter
 			2. Delete all references to this member from group/access*/
 	  $scope.deleteMember = function() {
+			clearResponse();
 			console.log("deleteMember");
 			return;
 
@@ -338,96 +338,99 @@ okulusApp.controller('MemberDetailsCntrl',
 			}
 		};
 
+		/* Toogle the Membership status.*/
+		$scope.setMembershipStatus = function(setMembershipActive){
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				let memberInfo = $scope.objectDetails.basicInfo;
+				memberInfo.isActive = setMembershipActive;
+				if(setMembershipActive){
+					MembersSvc.increaseActiveMembersCount();
+					//No need to reduce decrease InactiveMembersCount (it doesnt exist)
+				}else{
+					/*When setting Membership to Inactive, we must update ALL ROLES to false*/
+					MembersSvc.decreaseActiveMembersCount();
+					if(memberInfo.isHost){
+						memberInfo.isHost = false;
+						MembersSvc.decreaseHostMembersCount();
+					}
+					if(memberInfo.isLeader){
+						memberInfo.isLeader = false;
+						MembersSvc.decreaseLeadMembersCount();
+					}
+					if(memberInfo.isTrainee){
+						memberInfo.isTrainee = false;
+						MembersSvc.decreaseTraineeMembersCount();
+					}
+				}
+				memberInfo.$save();
+				AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+				$scope.response = {success:true, message: systemMsgs.success.membershipStatusUpdated};
+			}
+		};
+
+		$scope.isLeader = function(isLeader) {
+			clearResponse();
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if(memberInfo.isActive  && $rootScope.currentSession.user.type == constants.roles.admin){
+				memberInfo.isLeader = isLeader;
+				memberInfo.$save().then(function() {
+					if(isLeader){
+						MembersSvc.increaseLeadMembersCount();
+					}else{
+						MembersSvc.decreaseLeadMembersCount();
+					}
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
+				});
+			}
+		};
+
+		$scope.isTrainee = function(isTrainee) {
+			clearResponse();
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if(memberInfo.isActive && $rootScope.currentSession.user.type == constants.roles.admin){
+				memberInfo.isTrainee = isTrainee;
+				memberInfo.$save().then(function() {
+					if(isTrainee){
+						MembersSvc.increaseTraineeMembersCount();
+					}else{
+						MembersSvc.decreaseTraineeMembersCount();
+					}
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
+				});
+			}
+		};
+
+		$scope.isHost = function(isHost) {
+			clearResponse();
+			let memberInfo = $scope.objectDetails.basicInfo;
+			if(memberInfo.isActive && $rootScope.currentSession.user.type == constants.roles.admin){
+				memberInfo.isHost = isHost;
+				memberInfo.$save().then(function() {
+					if(isHost){
+						MembersSvc.increaseHostMembersCount();
+					}else{
+						MembersSvc.decreaseHostMembersCount();
+					}
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
+				});
+			}
+		};
+
+		clearResponse = function() {
+			$rootScope.memberResponse = null;
+			$scope.response = null;
+		};
+
 		/*Called when change detected on bday input*/
 		updateBdayValue = function(){
 			let birthdate = document.getElementById("bday").value;
 			$scope.objectDetails.basicInfo.bday = birthdate;
 		};
 
-		/* Toogle the Membership status.*/
-		$scope.setMembershipStatus = function(setMembershipActive){
-			$rootScope.memberResponse = null;
-			if($rootScope.currentSession.user.type == constants.roles.admin
-				&& $scope.memberEditParams.isEdit){
-
-			 let memberInfo = $scope.objectDetails.basicInfo;
-			 memberInfo.isActive = setMembershipActive;
-				/*When setting Membership to Active, we must update the global counters */
-				if(setMembershipActive){
-					console.log("Increase Active Members Count");
-					console.log("Reduce Inactive Members Count");
-				}else{
-					/*When setting Membership to Inactive, we must update the global counters
-					and set the assigned roles to false*/
-					console.log("Reduce Active Members Count");
-					console.log("Increase Inactive Members Count");
-					if(memberInfo.isHost){
-						memberInfo.isHost = false;
-						console.log("Reduce Host Members Count");
-					}
-					if(memberInfo.isLeader){
-						memberInfo.isLeader = false;
-						console.log("Reduce Lead Members Count");
-					}
-					if(memberInfo.isTrainee){
-						memberInfo.isTrainee = false;
-						console.log("Reduce Trainee Members Count");
-					}
-				}
-				memberInfo.$save();
-			}
-		};
-
-		$scope.isLeader = function(isLeader) {
-			$rootScope.memberResponse = null;
-			let memberInfo = $scope.objectDetails.basicInfo;
-			if($rootScope.currentSession.user.type == constants.roles.admin
-				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
-
-				memberInfo.isLeader = isLeader;
-				memberInfo.$save().then(function() {
-					if(isLeader){
-						console.log("Increase Lead Members Counter");
-					}else{
-						console.log("Reduce Lead Members Counter");
-					}
-				});
-			}
-		}
-
-		$scope.isTrainee = function(isTrainee) {
-			$rootScope.memberResponse = null;
-			let memberInfo = $scope.objectDetails.basicInfo;
-			if($rootScope.currentSession.user.type == constants.roles.admin
-				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
-
-				memberInfo.isTrainee = isTrainee;
-				memberInfo.$save().then(function() {
-					if(isTrainee){
-						console.log("Increase Treinee Members Counter");
-					}else{
-						console.log("Reduce Treinee Members Counter");
-					}
-				});
-			}
-		}
-
-		$scope.isHost = function(isHost) {
-			$rootScope.memberResponse = null;
-			let memberInfo = $scope.objectDetails.basicInfo;
-			if($rootScope.currentSession.user.type == constants.roles.admin
-				&& $scope.memberEditParams.isEdit && memberInfo.isActive){
-
-				memberInfo.isHost = isHost;
-				memberInfo.$save().then(function() {
-					if(isHost){
-						console.log("Increase Host Members Counter");
-					}else{
-						console.log("Reduce Host Members Counter");
-					}
-				});
-			}
-		}
 
 	}
 ]);
@@ -447,6 +450,22 @@ okulusApp.factory('MembersSvc',
 		let membersRef = firebase.database().ref().child(rootFolder).child(constants.folders.members);
 		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
 		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
+
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				if(currentCount>0)
+					return currentCount - 1;
+				return currentCount;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				return currentCount + 1;
+			});
+		};
 
 		return {
 			/* Return all Members, using a limit for the query, if specified*/
@@ -520,6 +539,56 @@ okulusApp.factory('MembersSvc',
 				let ref = memberDetailsRef.child(memberId).child(constants.folders.address);
 				ref.set(addressObj);
 				return ref;
+			},
+			/* Used when creating a Member */
+			increaseTotalMembersCount: function () {
+				let conunterRef = baseRef.child('counters/membersNew/total');
+				increaseCounter(conunterRef);
+			},
+			/* Used when deleting a Member */
+			decreaseTotalMembersCount: function () {
+				let conunterRef = baseRef.child('counters/membersNew/total');
+				decreaseCounter(conunterRef);
+			},
+			/* Called after setting the membership status "isActive" to True  */
+			increaseActiveMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/active');
+				increaseCounter(conunterRef);
+			},
+			/* Called after setting the membership status "isActive" to False  */
+			decreaseActiveMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/active');
+				decreaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isHost */
+			increaseHostMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/hosts');
+				increaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isHost */
+			decreaseHostMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/hosts');
+				decreaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isLead */
+			increaseLeadMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/leads');
+				increaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isLead */
+			decreaseLeadMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/leads');
+				decreaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isTrainee */
+			increaseTraineeMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/trainees');
+				increaseCounter(conunterRef);
+			},
+			/* Called after setting the member to isTrainee */
+			decreaseTraineeMembersCount: function() {
+				let conunterRef = baseRef.child('counters/membersNew/trainees');
+				decreaseCounter(conunterRef);
 			},
 
 			allMembersLoaded: function() {

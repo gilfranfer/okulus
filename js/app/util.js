@@ -52,15 +52,9 @@ okulusApp.factory('ErrorsSvc', ['$rootScope',
 
 okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject', '$rootScope',
 	function( $firebaseArray, $firebaseObject, $rootScope){
-		let countersRef = firebase.database().ref().child(rootFolder).child('counters');
+		let countersRef = firebase.database().ref().child(rootFolder).child(constants.folders.counters);
 
 		return {
-			/* Builds a firebase Object representing the global counters */
-			loadSystemCounter: function(){
-				if(!$rootScope.systemCounters){
-					$rootScope.systemCounters = $firebaseObject(countersRef);
-				}
-			},
 			/* Builds a firebase Object representing the global counters */
 			getGlobalCounter: function(counterName){
 				return $firebaseObject(countersRef.child(counterName));
