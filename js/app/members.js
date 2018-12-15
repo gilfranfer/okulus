@@ -140,10 +140,10 @@ okulusApp.controller('MembersListCntrl',
 				$scope.response = undefined;
 				$rootScope.membersResponse = null;
 				if(!members.length){
-					$scope.response = { error: true, message: $rootScope.i18n.weeks.noWeeksError };
+					$scope.response = { error: true, message: systemMsgs.error.noMembersError };
 				}
 			}).catch( function(error){
-				$scope.response = { error: true, message: $rootScope.i18n.weeks.loadingError };
+				$scope.response = { error: true, message: systemMsgs.error.loadingMembersError };
 				console.error(error);
 			});
 		};

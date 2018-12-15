@@ -18,12 +18,16 @@ const systemMsgs = {
 		tryAgainLater: "Hubo un error. Intente más tarde.",
 		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
 		recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
+		/*Members*/
+		noMembersError:"No se encontraron Miembros",
+		loadingMembersError:"Error al cargar la lista de Miembros"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		/*Members JS*/
 		loadingMember:"Cargando información del Miembro ...",
 		loadingAllMembers:"Cargando Todos los Miembros ...",
 		loadingActiveMembers:"Cargando Miembros Activos ...",
@@ -31,7 +35,6 @@ const systemMsgs = {
 		loadingLeadMembers:"Cargando Miembros Líderes ...",
 		loadingHostMembers:"Cargando Miembros Anfitriones ...",
 		loadingTraineeMembers:"Cargando Miembros Aprendices ...",
-		/*Members JS*/
 		savingMemberInfo:"Guardando Información del Miembro",
 		savingMemberAddress:"Guardando Dirección del Miembro",
 		deletingMemberAddress:"Eliminando Dirección del Miembro"
