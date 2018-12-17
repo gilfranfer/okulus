@@ -5,7 +5,7 @@ const systemMsgs = {
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
-		memberNotActiveUser: "El Miembro asociado/encontrado no es un Usuario activo.",
+		memberNotActiveUser: "El Miembro asociado/encontrado no está activo.",
 		referenceRemoved: "Se ha borrado la referencia entre el Usuario y el Miembro.",
 		contactAdmin: "Contacta al Administrador del Sistema.",
 		noMemberFound: "No se encontró un Miembro con el correo electrónico:",

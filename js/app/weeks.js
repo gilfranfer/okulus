@@ -308,7 +308,7 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 	}
 ]);
 
-/* Controller linked to /weeks/details/:weekId and /weeks/edit/:weekId
+/* Controller linked to /weeks/view/:weekId and /weeks/edit/:weekId
  * It will load the Week for the id passed */
 okulusApp.controller('WeekDetailsCntrl',
 	['$rootScope','$routeParams','$scope','$location','$firebaseAuth',
@@ -316,7 +316,7 @@ okulusApp.controller('WeekDetailsCntrl',
 	function($rootScope, $routeParams, $scope, $location, $firebaseAuth,
 		AuthenticationSvc, WeeksSvc, ReportsSvc, AuditSvc){
 
-		/* Init. Executed everytime we enter to /weeks/details/:weekId or /weeks/edit/:weekId */
+		/* Init. Executed everytime we enter to /weeks/view/:weekId or /weeks/edit/:weekId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 				$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
 				//Container for Aditional Parameters, used when building the view
@@ -358,7 +358,6 @@ okulusApp.controller('WeekDetailsCntrl',
 			$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.modifyLbl;
 			$scope.weekEditParams.dateRequired = false;
 			$scope.weekEditParams.showBadges = true;
-			//$scope.audit = weekObject.audit;
 
 			let weekInput = document.querySelector("#weekDate")
 			if(weekInput){

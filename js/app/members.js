@@ -482,7 +482,6 @@ okulusApp.factory('MembersSvc',
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
 
 		let membersRef = firebase.database().ref().child(rootFolder).child(constants.folders.members);
-		let activeMembersRef = membersRef.orderByChild("member/status").equalTo("active");
 		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
@@ -566,6 +565,11 @@ okulusApp.factory('MembersSvc',
 			getMemberAccessList: function(whichMemberId) {
 				return $firebaseArray(memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules));
 			},
+			/* Returns the member/list containing members with baseGroupId = gropId */
+			getMembersForBaseGroup: function(gropId){
+				let ref = memberDetailsRef.orderByChild("baseGroupId").equalTo(gropId);
+				return $firebaseArray(ref);
+			},
 			/* Push Member Basic Details Object to Firebase*/
 			persistMember: function(memberObj){
 				let ref = memberListRef.push();
@@ -578,139 +582,94 @@ okulusApp.factory('MembersSvc',
 				ref.set(addressObj);
 				return ref;
 			},
+			/* Remove all Member details (Address, Audit, Access Rules, attendance, etc.)*/
 			deleteMemberDetails:function(whichMemberId){
 				memberDetailsRef.child(whichMemberId).set({});
 			},
 			/* Used when creating a Member */
 			increaseTotalMembersCount: function () {
-				let conunterRef = baseRef.child('counters/membersNew/total');
+				let conunterRef = baseRef.child(constants.folders.totalMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Used when deleting a Member */
 			decreaseTotalMembersCount: function () {
-				let conunterRef = baseRef.child('counters/membersNew/total');
+				let conunterRef = baseRef.child(constants.folders.totalMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to True  */
 			increaseActiveMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/active');
+				let conunterRef = baseRef.child(constants.folders.activeMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to False  */
 			decreaseActiveMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/active');
+				let conunterRef = baseRef.child(constants.folders.activeMembersCount);
 				decreaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isHost */
+			/* Called after setting the member to isHost true*/
 			increaseHostMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/hosts');
+				let conunterRef = baseRef.child(constants.folders.hostMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isHost */
+			/* Called after setting the member to isHost false*/
 			decreaseHostMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/hosts');
+				let conunterRef = baseRef.child(constants.folders.hostMembersCount);
 				decreaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isLead */
+			/* Called after setting the member to isLead true*/
 			increaseLeadMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/leads');
+				let conunterRef = baseRef.child(constants.folders.leadMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isLead */
+			/* Called after setting the member to isLead false*/
 			decreaseLeadMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/leads');
+				let conunterRef = baseRef.child(constants.folders.leadMembersCount);
 				decreaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isTrainee */
+			/* Called after setting the member to isTrainee true*/
 			increaseTraineeMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/trainees');
+				let conunterRef = baseRef.child(constants.folders.traineeMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Called after setting the member to isTrainee */
+			/* Called after setting the member to isTrainee false*/
 			decreaseTraineeMembersCount: function() {
-				let conunterRef = baseRef.child('counters/membersNew/trainees');
+				let conunterRef = baseRef.child(constants.folders.traineeMembersCount);
 				decreaseCounter(conunterRef);
+			},
+			/* Called From Authetication Service:
+			Return a list with all members having the email passed */
+			getMembersByEmail: function(email){
+				return $firebaseArray(memberListRef.orderByChild("email").equalTo(email));
+			},
+			/*  Called From Authetication Service:
+			Update the User reference in the Member Object*/
+			updateUserReferenceInMemberObject: function(userId, memberBasicInfoObj){
+				memberBasicInfoObj.userId = userId;
+				memberBasicInfoObj.isUser = false;
+				if(userId){
+					memberBasicInfoObj.isUser = true;
+				}
+				memberBasicInfoObj.$save();
+			},
+			/* Called From Authetication Service:
+			Same method than above, but using different aproach.*/
+			updateUserReferenceInMember: function(userId, memberId){
+				let isUser = false;
+				if(userId){
+					isUser = true;
+				}
+				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
 
-			allMembersLoaded: function() {
-				return $rootScope.allMembers != null;
-			},
-			getMemberFromArray: function(memberId){
-				return $rootScope.allMembers.$getRecord(memberId);
-			},
-			/* Get member Personal data from firebase and return as object */
-			getMemberDataObject: function(memberId){
-				return $firebaseObject(membersRef.child(memberId).child("member"));
-			},
-			/* Get member from firebase and return as object */
-			getMemberObject: function(memberId){
-				return $firebaseObject(membersRef.child(memberId));
-			},
 			//Deprecated
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));
 			},
-			getMemberInfo: function(memberId){
-				return $firebaseObject(membersRef.child(memberId).child("member"));
-			},
 			getMemberAccessRules: function(whichMember) {
 				return $firebaseArray(membersRef.child(whichMember).child("access"));
 			},
-			loadAllMembersList: function(){
-				if(!$rootScope.allMembers){
-					// console.debug("Creating firebaseArray for allMembers");
-					$rootScope.allMembers = $firebaseArray(membersRef);
-				}
-				return $rootScope.allMembers;
-			},
-			loadActiveMembers: function(){
-				if(!$rootScope.allActiveMembers){
-					$rootScope.allActiveMembers = $firebaseArray(activeMembersRef);
-				}
-				return $rootScope.allActiveMembers;
-			},
-			getMembersThatCanBeUser: function(){
-				return  $firebaseArray(membersRef.orderByChild("member/canBeUser").equalTo(true));
-			},
-			getMembersWithUser: function(){
-				return  $firebaseArray(membersRef.orderByChild("user/isUser").equalTo(true));
-			},
-			filterActiveHosts: function(activeMembers){
-				let activeHosts = [];
-				activeMembers.forEach(function(host) {
-						if(host.member.isHost){
-							activeHosts.push( host );
-						}
-				});
-				return activeHosts;
-			},
-			filterActiveLeads: function(activeMembers){
-				let activeLeads = [];
-				activeMembers.forEach(function(lead) {
-						if(lead.member.isLeader){
-							activeLeads.push( lead );
-						}
-				});
-				return activeLeads;
-			},
-			filterActiveTrainees: function(activeMembers){
-				let activeTrainees = [];
-				activeMembers.forEach(function(lead) {
-						if(lead.member.isTrainee){
-							activeTrainees.push( lead );
-						}
-				});
-				return activeTrainees;
-			},
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);
-			},
-			getNewMemberReference: function(){
-				return membersRef.push();
-			},
-			getMembersForBaseGroup: function(gropId){
-				let ref = membersRef.orderByChild("member/baseGroup").equalTo(gropId);
-				return $firebaseArray(ref);
 			},
 			//Receives the access list from a Group = { accessRuleId: {memberId,mamberName,date} , ...}
 			//The accessRuleId is the same on groups/:gropuId/access and members/:memberId/access
@@ -780,63 +739,6 @@ okulusApp.factory('MembersSvc',
 					});
 					resolve(contacts);
 				});
-			},
-			/* Return a list with all members having the email passed */
-			getMembersByEmail: function(email){
-				let ref = membersRef.orderByChild("member/email").equalTo(email);
-				return $firebaseArray(ref);
-			},
-			/* Called from AuthenticationSvc to update the User reference in the Member Object*/
-			updateUserReferenceInMemberObject: function(userId, memberDataObj){
-				memberDataObj.userId = userId;
-				memberDataObj.isUser = false;
-				if(userId){
-					memberDataObj.isUser = true;
-				}
-				memberDataObj.$save();
-			},
-			/* Same method than above, but using different aproach.*/
-			updateUserReferenceInMember: function(userId, memberId){
-				let isUser = false;
-				if(userId){
-					isUser = true;
-				}
-				membersRef.child(memberId).child("member").update({isUser:isUser, userId:userId});
-			},
-			increaseStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( statusCounter ){
-						if(status == 'active'){
-							statusCounter.active = statusCounter.active+1;
-						}else{
-							statusCounter.inactive = statusCounter.inactive+1;
-						}
-						statusCounter.$save();
-					});
-			},
-			decreaseStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( statusCounter ){
-						if(status == 'active'){
-							statusCounter.active = statusCounter.active-1;
-						}else{
-							statusCounter.inactive = statusCounter.inactive-1;
-						}
-						statusCounter.$save();
-					});
-			},
-			updateStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( statusCounter ){
-						if(status == 'active'){
-							statusCounter.active = statusCounter.active+1;
-							statusCounter.inactive = statusCounter.inactive-1;
-						}else{
-							statusCounter.inactive = statusCounter.inactive+1;
-							statusCounter.active = statusCounter.active-1;
-						}
-						statusCounter.$save();
-					});
 			},
 			addReportReference: function(memberId,reportId, report){
 				// console.debug(memberId,reportId, report);

@@ -263,15 +263,21 @@ const constants = {
 		memberEdit:"/members/edit/"
 	},
 	folders:{
-		root:"okulusTest", counters:"counters",
+		root:"okulusTest", counters:"counters", details:"details",
 		audit:"audit", users:"users", weeks:"weeks",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
-		/*TODO: Update membersDetails: members/details */
-		membersList:"members/list", membersDetails:"members",
+		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
+		/**Counters*/
+		//TODO: Update membersNew to members
+		totalMembersCount:"counters/membersNew/total",
+		activeMembersCount:"counters/membersNew/active",
+		hostMembersCount:"counters/membersNew/hosts",
+		leadMembersCount:"counters/membersNew/leads",
+		traineeMembersCount:"counters/membersNew/trainees",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"
 	},

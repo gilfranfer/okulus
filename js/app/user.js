@@ -110,11 +110,11 @@ okulusApp.factory('UsersSvc',
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
 				userObj.shortname = memberShortname;
-				userObj.isValid = true;
+				userObj.isValid = true; //A valid User is the one with a MemberId
 				if(!memberId){
+					userObj.isValid = false;
 					//Force User role, in case it was admin
 					userObj.type = constants.roles.user;
-					userObj.isValid = false;
 				}
 				userObj.$save();
 			},

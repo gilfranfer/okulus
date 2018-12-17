@@ -90,10 +90,10 @@ okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$f
 					}
 					$rootScope.response = null;
 					$scope.provideAddress = true;
-					$scope.membersList = MembersSvc.loadActiveMembers();
+					$scope.membersList = MembersSvc.getActiveMembers();
 					$scope.membersList.$loaded().then(function(activeMembers){
-						$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
-						$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+						//$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+						//$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
 					});
 				});
 			}
@@ -198,7 +198,7 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 	function($scope, $routeParams, $location, GroupsSvc,MembersSvc){
 		let whichGroup = $routeParams.groupId;
 		$scope.provideAddress = true;
-		$scope.membersList = MembersSvc.loadActiveMembers();
+		$scope.membersList = MembersSvc.getActiveMembers();
 
 		/* When opening "Edit" page from the Groups List, we can use the
 		"allGroups" firebaseArray from rootScope to get the specific Group data */
@@ -375,7 +375,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
     		if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
 					if($rootScope.currentSession.user.type == 'admin'){
-						$scope.membersAccess = MembersSvc.getMembersThatCanBeUser();
+						//$scope.membersAccess = MembersSvc.getMembersThatCanBeUser();
 						$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
 						$scope.group = GroupsSvc.getGroupObj(whichGroup);
 					}else{
