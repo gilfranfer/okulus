@@ -63,7 +63,7 @@
   </div>
 
   <!-- Alerts to show Response Message (Used after redirect from Member Delete) -->
-  <div class="alert alert-danger" role="alert" ng-show="memberResponse.deleted" >
+  <div class="alert alert-success" role="alert" ng-show="memberResponse.deleted" >
     {{memberResponse.message}}
   </div>
   <div ng-include="'views/alerts.html'"></div>
@@ -110,8 +110,8 @@
           <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.inactiveLbl}}</span>
           <hr>
           <p>
-            <span class="font-weight-bold">{{i18n.members.firstnameLbl}}:</span> {{member.firstname}}<br>
-            <span class="font-weight-bold">{{i18n.members.lastnameLbl}}:</span> {{member.lastname}}<br>
+            <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>
+            <span class="font-weight-bold">{{i18n.members.lnameLbl}}:</span> {{member.lastname}}<br>
             <span class="font-weight-bold">{{i18n.members.emailLbl}}:</span> {{member.email}}<br>
             <span class="font-weight-bold">{{i18n.members.phoneLbl}}:</span> {{member.phone}}
           </p>

@@ -20,7 +20,8 @@ const systemMsgs = {
 		recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
 		/*Members*/
 		noMembersError:"No se encontraron Miembros",
-		loadingMembersError:"Error al cargar la lista de Miembros"
+		loadingMembersError:"Error al cargar la lista de Miembros",
+		deletingActiveMember:"No se puede eliminar un Miembro Activo"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -37,6 +38,7 @@ const systemMsgs = {
 		loadingTraineeMembers:"Cargando Miembros Aprendices ...",
 		savingMemberInfo:"Guardando Información del Miembro",
 		savingMemberAddress:"Guardando Dirección del Miembro",
+		deletingMember:"Eliminando Miembro",
 		deletingMemberAddress:"Eliminando Dirección del Miembro"
 	},
 	success:{
@@ -53,6 +55,7 @@ const systemMsgs = {
 		memberInfoSAved:"Información Guardada",
 		memberAddressRemoved:"Dirección Eliminada",
 		memberCreated:"Miembro Creado",
+		memberRemoved:"Miembro Eliminado",
 		membershipStatusUpdated:"Estado de la membresia actualizado",
 		memberRoleUpdated:"Rol del Miembro modificado",
 		baseGroupUpdated:"Grupo Base Actualizado"
@@ -233,6 +236,7 @@ okulusApp.run(function($rootScope) {
 				groupsTitle:"Grupos",
 				modifyLbl:"Modificar información del", newLbl: "Nuevo",
 				/* Form Labels*/
+				activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo", 
 				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
 				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
 				aliasLbl:"Alias", aliasHint:"Franfer Gil",
