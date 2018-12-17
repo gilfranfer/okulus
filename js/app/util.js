@@ -58,10 +58,6 @@ okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject', '$rootScope'
 		let countersRef = firebase.database().ref().child(rootFolder).child(constants.folders.counters);
 
 		return {
-			/* Builds a firebase Object representing the global counters */
-			getGlobalCounter: function(counterName){
-				return $firebaseObject(countersRef.child(counterName));
-			},
 			buildDateJson: function(dateObject){
 		    	let dateJson = null;
 		    	if(dateObject){

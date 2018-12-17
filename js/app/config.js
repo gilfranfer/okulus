@@ -272,6 +272,7 @@ const constants = {
 		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
 		/**Counters*/
+		weeksCounters:"counters/weeks",
 		membersCounters:"counters/members",
 		totalMembersCount:"counters/members/total",
 		activeMembersCount:"counters/members/active",

@@ -1,7 +1,7 @@
 /* Controller linked to the Admin view of Weeks (/weeks) */
 okulusApp.controller('WeeksCntrl',
-	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'UtilsSvc','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, UtilsSvc, AuthenticationSvc){
+	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuthenticationSvc){
 
 		let unwatch = undefined;
 		/* Executed everytime we enter to /weeks
@@ -10,7 +10,7 @@ okulusApp.controller('WeeksCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(user.type == constants.roles.admin){
-						$rootScope.weeksGlobalCounter = UtilsSvc.getGlobalCounter(constants.folders.weeks);
+						$rootScope.weeksGlobalCounter = WeeksSvc.getGlobalWeeksCounter();
 						$rootScope.weeksGlobalCounter.$loaded().then(
 							function(weekCounters) {
 								$scope.response = undefined;
@@ -303,6 +303,9 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			/*Used when deleting a Week with Visible Status*/
 			decreaseVisibleWeeksCounter: function () {
 				decreaseCounter(visibleWeeksCounterRef);
+			},
+			getGlobalWeeksCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.weeksCounters));
 			}
 		};//return end
 	}
