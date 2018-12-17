@@ -1,5 +1,5 @@
-okulusApp.factory('ErrorsSvc', ['$rootScope',
-	function($rootScope){
+okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
+	function($rootScope,$firebaseObject){
 		let baseRef = firebase.database().ref().child(rootFolder);
 		let errorsRef = baseRef.child('errors');
 		let counterRef = baseRef.child("counters/errors/systemErrors");
@@ -45,7 +45,10 @@ okulusApp.factory('ErrorsSvc', ['$rootScope',
 					decreaseUnreadErrorsCounter();
 				}
 				errorsRef.child(error.$id).set({});
-			}
+			},
+			getGlobalErrorCounter: function(){
+				return $firebaseObject(baseRef.child("counters/errors"));
+			},
 		};
 	}
 ]);
