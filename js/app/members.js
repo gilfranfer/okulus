@@ -1,7 +1,7 @@
 //Mapping: /members
 okulusApp.controller('MembersListCntrl',
-	['$rootScope','$scope','$firebaseAuth','$location','MembersSvc','AuthenticationSvc','UtilsSvc',
-	function($rootScope,$scope,$firebaseAuth,$location,MembersSvc,AuthenticationSvc,UtilsSvc){
+	['$rootScope','$scope','$firebaseAuth','$location','MembersSvc','AuthenticationSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,MembersSvc,AuthenticationSvc){
 
 		let unwatch = undefined;
 		/*Executed everytime we enter to /members
@@ -10,8 +10,7 @@ okulusApp.controller('MembersListCntrl',
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
 				if(user.type == constants.roles.admin){
-					// $rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter(constants.folders.members);
-					$rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter("membersNew");
+					$rootScope.membersGlobalCount = MembersSvc.getGlobalMembersCounter();
 					$rootScope.membersGlobalCount.$loaded().then(
 						function(membersCount) {
 							$scope.response = undefined;
@@ -156,9 +155,9 @@ okulusApp.controller('MembersListCntrl',
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-		'MembersSvc','GroupsSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
+		'MembersSvc','GroupsSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, GroupsSvc, UtilsSvc,AuditSvc, AuthenticationSvc){
+		MembersSvc, GroupsSvc,AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -659,7 +658,18 @@ okulusApp.factory('MembersSvc',
 				}
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
-
+			getGlobalMembersCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.membersCounters));
+			},
+			/*Migration function*/
+			migrateMembers: function() {
+				let membersList = $firebaseArray(membersRef.orderByKey().limitToLast(5));
+				membersList.$loaded().then(function(list) {
+					list.forEach(function(member) {
+						console.log(member);
+					});
+				});
+			},
 			//Deprecated
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));

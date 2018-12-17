@@ -272,12 +272,12 @@ const constants = {
 		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
 		/**Counters*/
-		//TODO: Update membersNew to members
-		totalMembersCount:"counters/membersNew/total",
-		activeMembersCount:"counters/membersNew/active",
-		hostMembersCount:"counters/membersNew/hosts",
-		leadMembersCount:"counters/membersNew/leads",
-		traineeMembersCount:"counters/membersNew/trainees",
+		membersCounters:"counters/members",
+		totalMembersCount:"counters/members/total",
+		activeMembersCount:"counters/members/active",
+		hostMembersCount:"counters/members/hosts",
+		leadMembersCount:"counters/members/leads",
+		traineeMembersCount:"counters/members/trainees",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"
 	},
