@@ -474,6 +474,7 @@ okulusApp.factory('MembersSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
+		let membersRef = baseRef.child(constants.folders.members);
 		let memberListRef = baseRef.child(constants.folders.membersList);
 		let memberDetailsRef = baseRef.child(constants.folders.membersDetails);
 		let isActiveMemberRef = memberListRef.orderByChild(constants.status.isActive);
@@ -481,8 +482,6 @@ okulusApp.factory('MembersSvc',
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
 
-		let membersRef = firebase.database().ref().child(rootFolder).child(constants.folders.members);
-		let counterRef = firebase.database().ref().child(rootFolder).child('counters/members');
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
