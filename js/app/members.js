@@ -152,7 +152,7 @@ okulusApp.controller('MembersListCntrl',
 	}
 ]);
 
-/* Controller linked to /members/details/:memberId and /members/edit/:memberId
+/* Controller linked to /members/view/:memberId and /members/edit/:memberId
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
@@ -161,7 +161,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		MembersSvc, GroupsSvc, UtilsSvc,AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
-		/members/details/:memberId or /members/edit/:memberId */
+		/members/view/:memberId or /members/edit/:memberId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingMember };
 

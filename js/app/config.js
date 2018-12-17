@@ -100,7 +100,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/groups/newgroup.html',
 				controller: 'GroupDetailsCntrl'
 			})
-			.when('/groups/details/:groupId', {
+			.when('/groups/view/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -124,7 +124,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/members-admin.html',
+				templateUrl: 'views/members/membersAdmin.html',
 				controller: 'MembersListCntrl'
 			})
 			.when('/members/new', {
@@ -145,20 +145,20 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/memberEdit.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/members/details/:memberId', {
+			.when('/members/view/:memberId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/memberEdit.html',
+				templateUrl: 'views/members/memberView.html',
 				controller: 'MemberDetailsCntrl'
 			})
 			.when('/users/edit/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
-			.when('/users/details/:userId', {
+			.when('/users/view/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
@@ -180,7 +180,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/reports/newreport.html',
 				controller: 'ReportDetailsCntrl'
 			})
-			.when('/reports/details/:reportId', {
+			.when('/reports/view/:reportId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -206,7 +206,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/weeks/weekEdit.html',
 				controller: 'WeekDetailsCntrl'
 			})
-			.when('/weeks/details/:weekId', {
+			.when('/weeks/view/:weekId', {
 				templateUrl: 'views/weeks/weekDetails.html',
 				controller: 'WeekDetailsCntrl'
 			})

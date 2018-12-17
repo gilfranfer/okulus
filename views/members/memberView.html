@@ -1,0 +1,152 @@
+<!-- Loading Member Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after Member is loaded -->
+<section id="memberView" ng-show="!response.loading">
+
+  <!-- Title (Member alias) -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.shortname}}</span>
+      </h4>
+    </div>
+  </article>
+
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.members.basicInfoTitle}}</legend>
+        </div>
+      </div>
+      <hr>
+      <!-- Fullname and Alias -->
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.members.fnameLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.firstname}} {{objectDetails.basicInfo.lastname}}</span>
+        </div>
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.members.aliasLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.shortname}}</span>
+        </div>
+      </div>
+      <!-- Birthdate, Email and Phone -->
+      <div class="form-row">
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.bday">
+          <label class="font-weight-bold">
+            {{i18n.members.bdayLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.bday |  date: "MMM dd yyyy"}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
+          <label class="font-weight-bold">
+            {{i18n.members.emailLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.email}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+          <label class="font-weight-bold">
+            {{i18n.members.phoneLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.phone}}</span>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Address Card -->
+  <article class="card mb-3" ng-show="objectDetails.address.street">
+    <div class="card-body">
+      <!-- Header and Add Button (Admin)-->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.forms.address.legend}}</legend>
+        </div>
+      </div>
+      <hr>
+      <!-- Address -->
+      <div ng-include="'views/fragments/addressView.html'"></div>
+    </div>
+  </article>
+
+  <!-- Membership Card (Only for Admin) -->
+  <article class="mb-3">
+    <div class="card mb-2">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.membershipTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Base Group -->
+        <div class="form-row">
+          <div class="col form-group" ng-show="objectDetails.basicInfo.baseGroupName">
+            <label class="font-weight-bold">
+              {{i18n.forms.member.baseGroupLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.baseGroupName}}</span>
+          </div>
+        </div>
+        <!-- Membership Status -->
+        <div class="form-row">
+          <div class="col-md-6 form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.statusLbl}}:
+            </label>
+            <span ng-show="objectDetails.basicInfo.isActive">{{i18n.members.activeStatusLbl}}</span>
+            <span ng-show="!objectDetails.basicInfo.isActive">{{i18n.members.inactiveStatusLbl}}</span>
+          </div>
+        </div>
+        <!-- Roles -->
+        <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.isHostLbl}}:
+            </label>
+            <span ng-show="objectDetails.basicInfo.isHost">{{i18n.btns.yesBtn}}</span>
+            <span ng-show="!objectDetails.basicInfo.isHost">{{i18n.btns.noBtn}}</span>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.isLeadLbl}}:
+            </label>
+            <span ng-show="objectDetails.basicInfo.isLeader">{{i18n.btns.yesBtn}}</span>
+            <span ng-show="!objectDetails.basicInfo.isLeader">{{i18n.btns.noBtn}}</span>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.isTraineeLbl}}:
+            </label>
+            <span ng-show="objectDetails.basicInfo.isTrainee">{{i18n.btns.yesBtn}}</span>
+            <span ng-show="!objectDetails.basicInfo.isTrainee">{{i18n.btns.noBtn}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
+    <div class="col">
+      <a href="#!/members/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
+        {{i18n.members.editBtn}}
+      </a>
+    </div>
+  </div>
+
+</section>

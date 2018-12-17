@@ -226,7 +226,8 @@ okulusApp.run(function($rootScope) {
 				addAddressBtn:"Agregar dirección",
 				deleteAddressBtn:"Eliminar dirección",
 				deleteMemberBtn:"Eliminar miembro",
-        /*Alert Messages*/
+				editBtn:"Editar Miembro",
+				/*Alert Messages*/
         loadingSuccess: "Miembros Cargados.",
 				loadPending1: "Mostar ", loadPending2: "Miembros restantes.",
 				/*Labels*/
@@ -236,7 +237,7 @@ okulusApp.run(function($rootScope) {
 				groupsTitle:"Grupos",
 				modifyLbl:"Modificar información del", newLbl: "Nuevo",
 				/* Form Labels*/
-				activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo", 
+				activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo",
 				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
 				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
 				aliasLbl:"Alias", aliasHint:"Franfer Gil",

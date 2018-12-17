@@ -182,7 +182,8 @@ okulusApp.factory('NotificationsSvc',
 					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
 
 					/* Send the notification only after the audit record is created/updated in the elment itself
-						This is because the audit folder will help us to identify the parties we need to notify*/
+						This is because the audit folder will help us to identify the parties we need to notify
+						TODO: add child(onFolder).child("details")*/
 					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.folders.audit)).$loaded().then(function(audit) {
 						/*array to control already notified users*/
 						let notifiedUsers = new Array();
