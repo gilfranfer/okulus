@@ -12,7 +12,7 @@ okulusApp.controller('GroupsAdminCntrl',
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
 					function(user){
 						if(user.type == 'admin'){
-							UtilsSvc.loadSystemCounter();
+							//UtilsSvc.loadSystemCounter();
 							$rootScope.systemCounters.$loaded().then(function(counters) {
 								$scope.response = undefined;
 							});
@@ -245,6 +245,8 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
+		//TODO: Update to groups/details
+		let groupDetailsRef = firebase.database().ref().child(rootFolder).child('groups');
 		let groupsRef = firebase.database().ref().child(rootFolder).child('groups');
 		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
 
@@ -303,14 +305,22 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
 			},
-			//Receives the access list from a Member = { accessRuleId: {groupId,groupName,date} , ...}
-			//The accessRuleId is the same on groups/:gropuId/access and groups/:groupId/access
-			//Use accessRuleId.groupId and accessRuleId to delete the reference from each member to the group
+			/* Receives the member's access rules ( { accessRuleId: {groupId,groupName,date} , ...} ),
+			and uses it to delete the member's access to each group.
+			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId
+			and members/:memberId/access/:accessRuleId */
+			removeAllGroupAccess: function(accessList){
+				if(accessList){
+					accessList.forEach(function(accessRule) {
+						let accessRuleId = accessRule.$id;
+						groupDetailsRef.child(accessRule.groupId).child("access").child(accessRuleId).set(null);
+					});
+				}
+			},
 			deleteAccessToGroups: function(accessObj){
 				if(accessObj){
 					for (const accessRuleId in accessObj) {
 						let groupId = accessObj[accessRuleId].groupId;
-						console.debug(accessRuleId);
 						groupsRef.child(groupId).child("access").child(accessRuleId).set(null);
 					}
 				}

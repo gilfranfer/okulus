@@ -258,7 +258,7 @@ const constants = {
 	pages: {
 		login:"/login", home:"/home",
 		error: "/error",
-		adminWeeks:"/weeks",
+		adminWeeks:"/weeks", adminMembers:"/members",
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/"
 	},
@@ -267,7 +267,7 @@ const constants = {
 		audit:"audit", users:"users", weeks:"weeks",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
-		metadata:"metadata", address:"address",
+		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
 		/*TODO: Update membersDetails: members/details */
 		membersList:"members/list", membersDetails:"members",
@@ -276,7 +276,7 @@ const constants = {
 		totalNotifCount:"counters/notifications/total"
 	},
 	actions:{
-		create:"create",update:"update",delete:"delte",
+		create:"create",update:"update",delete:"delete",
 		approve:"approved",reject:"rejected",
 		open:"open",close:"closed",show:"show",hide:"hide",
 		grantAccess:"access-granted", revokeAccess:"access-deleted",

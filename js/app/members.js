@@ -10,7 +10,8 @@ okulusApp.controller('MembersListCntrl',
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
 				if(user.type == constants.roles.admin){
-					$rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter(constants.folders.members);
+					// $rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter(constants.folders.members);
+					$rootScope.membersGlobalCount = UtilsSvc.getGlobalCounter("membersNew");
 					$rootScope.membersGlobalCount.$loaded().then(
 						function(membersCount) {
 							$scope.response = undefined;
@@ -306,37 +307,37 @@ okulusApp.controller('MemberDetailsCntrl',
 			}
 		};
 
-		/* A member can be deleted by Admin.
-			If a memeber is deleted, his attendance to reunions still recorded on every Reunion Report
-			When deleting a Member:
-			1. Decrease the Member Status counter
-			2. Delete all references to this member from group/access*/
+		/* A member can be deleted by Admin, if not active, but his attendance records
+		 to reunions will remain on Reports. When deleting a Member:
+			1. Delete from /members/list
+			2. Delete from /members/details
+			3. Decrease the Members total count
+			2. Delete all references to this member from groups/access */
 	  $scope.deleteMember = function() {
 			clearResponse();
-			console.log("deleteMember");
-			return;
+			let memberInfo = $scope.objectDetails.basicInfo;
+			//A member cannot be deleted if isActive
+			if(memberInfo.isActive){
+				$scope.response = {deleteError:true, message: systemMsgs.error.deletingActiveMember};
+				return;
+			}
 
-			if($rootScope.currentSession.user.type == 'user'){
-				$scope.response = { memberMsgError: "Para eliminar este miembro, contacta al administrador"};
-			}else{
-				$scope.working = true;
-				if( $scope.memberId ){
-					MembersSvc.getMember($scope.memberId).$loaded().then( function(memberObj){
-						let status = memberObj.member.status;
-						let accessList = memberObj.access;
-						memberObj.$remove().then(function(ref) {
-							$rootScope.response = { memberMsgOk: "Miembro Eliminado"};
-					    AuditSvc.recordAudit(ref.key, "delete", "members");
-							MembersSvc.decreaseStatusCounter(status);
-							GroupsSvc.deleteAccessToGroups(accessList);
-							$scope.working = false;
-							$location.path( "/members");
-						}, function(error) {
-							$scope.working = false;
-							$rootScope.response = { memberMsgError: err};
-						});
-					});
-				}
+			if(memberInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.deletingMember};
+				//Remove Member from members/list
+				let deletedMemberId = undefined;
+				memberInfo.$remove().then(function(deletedMemberRef){
+					deletedMemberId = deletedMemberRef.key;
+					AuditSvc.recordAudit(deletedMemberId, constants.actions.delete, constants.folders.members);
+					MembersSvc.decreaseTotalMembersCount();
+					return MembersSvc.getMemberAccessList(deletedMemberId).$loaded();
+				}).then(function(accessList){
+					GroupsSvc.removeAllGroupAccess(accessList);
+					MembersSvc.deleteMemberDetails(deletedMemberId);
+					$rootScope.memberResponse = {deleted:true, message:systemMsgs.success.memberRemoved};
+					$location.path(constants.pages.adminMembers);
+				});
+				return;
 			}
 		};
 
@@ -549,17 +550,21 @@ okulusApp.factory('MembersSvc',
 					return $firebaseArray(isHostMemberRef.equalTo(true));
 				}
 			},
-			/* Get member from firebase and return as object */
-			getMemberBasicDataObject: function(memberId){
-				return $firebaseObject(memberListRef.child(memberId));
+			/* Get member basic info from firebase and return as object */
+			getMemberBasicDataObject: function(whichMemberId){
+				return $firebaseObject(memberListRef.child(whichMemberId));
 			},
-			/* Get member from firebase and return as object */
-			getMemberAddressObject: function(memberId){
-				return $firebaseObject(memberDetailsRef.child(memberId).child(constants.folders.address));
+			/* Get member address from firebase and return as object */
+			getMemberAddressObject: function(whichMemberId){
+				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.folders.address));
 			},
-			/* Get member from firebase and return as object */
-			getMemberAuditObject: function(memberId){
-				return $firebaseObject(memberDetailsRef.child(memberId).child(constants.folders.audit));
+			/* Get member audit from firebase and return as object */
+			getMemberAuditObject: function(whichMemberId){
+				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.folders.audit));
+			},
+			/* Get member access from firebase and return as array */
+			getMemberAccessList: function(whichMemberId) {
+				return $firebaseArray(memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules));
 			},
 			/* Push Member Basic Details Object to Firebase*/
 			persistMember: function(memberObj){
@@ -572,6 +577,9 @@ okulusApp.factory('MembersSvc',
 				let ref = memberDetailsRef.child(memberId).child(constants.folders.address);
 				ref.set(addressObj);
 				return ref;
+			},
+			deleteMemberDetails:function(whichMemberId){
+				memberDetailsRef.child(whichMemberId).set({});
 			},
 			/* Used when creating a Member */
 			increaseTotalMembersCount: function () {
