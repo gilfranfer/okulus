@@ -127,48 +127,53 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateWeeks = function () {
 			console.log("Init Weeks Migration");
-			$rootScope.weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
-			let weeksRef = baseRef.child('weeks');
+			let weeksListRef = baseRef.child(constants.folders.weeksList);
+			let weeksDetailsRef = baseRef.child(constants.folders.weeksDetails);
+
+			let weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
 			//Updates in Week Object
-			$rootScope.allWeeks = $firebaseArray(weeksRef);
-			$rootScope.allWeeks.$loaded().then(function (weeks) {
-				let totalReports = 0;
-				let totalWeeks = weeks.length;
+			let allWeeks = $firebaseArray(baseRef.child('weeks'));
+			allWeeks.$loaded().then(function (weeks) {
+				let totalWeeks = 0
 				let openWeeks = 0;
 
 				weeks.forEach(function(week){
-					//Add year and weekNumber to the DB, from the week id
-					let index = $rootScope.allWeeks.$indexFor(week.$id);
-					let idtxt = week.$id + "";
-					let yearStr = idtxt.substring(0,4);
-					let weekStr = idtxt.substring(4);
-					week.year = Number(yearStr);
-					week.weekNumber = Number(weekStr);
-					//Add isOpen and isVisible from week status
-					if(week.status == "open"){
-						week.isOpen = true;
-						week.isVisible = true;
-						openWeeks++;
-					}else{
-						week.isOpen = false;
-						week.isVisible = false;
+					if(week.$id != "list" && week.$id != "details"){
+						totalWeeks++;
+						//Add year and weekNumber to the DB, from the week id
+						//let index = $rootScope.allWeeks.$indexFor(week.$id);
+						let weekObj = {};
+						let idtxt = week.$id + "";
+						let yearStr = idtxt.substring(0,4);
+						let weekStr = idtxt.substring(4);
+						weekObj.year = Number(yearStr);
+						weekObj.weekNumber = Number(weekStr);
+						weekObj.name = week.name;
+						//Add isOpen and isVisible from week status
+						if(week.status == "open"){
+							weekObj.isOpen = true;
+							weekObj.isVisible = true;
+							openWeeks++;
+						}else{
+							weekObj.isOpen = false;
+							weekObj.isVisible = false;
+						}
+						//week.status = null;
+
+						//Get Reports for the week to update week's reportsCount
+						ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+							weekObj.reportsCount = reports.length;
+							console.log(week.$id+" has "+reports.length+" reports");
+							weeksDetailsRef.child(week.$id).child("audit").set(week.audit);
+							weeksListRef.child(week.$id).set(weekObj);
+						});
 					}
-					//week.status = null;
-
-					//Get Reports for the week to update week's reportsCount
-					ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
-						week.reportsCount = reports.length;
-						console.log(week.$id+" has "+reports.length+" reports");
-						$rootScope.allWeeks.$save(index);
-					});
-
 				});
-
 				//Update Global System Counters
-				$rootScope.weeksGlobalCount.total = totalWeeks;
-				$rootScope.weeksGlobalCount.open = openWeeks;
-				$rootScope.weeksGlobalCount.visible = openWeeks;
-				$rootScope.weeksGlobalCount.$save();
+				weeksGlobalCount.total = totalWeeks;
+				weeksGlobalCount.open = openWeeks;
+				weeksGlobalCount.visible = openWeeks;
+				weeksGlobalCount.$save();
 				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
 			});
 		};
