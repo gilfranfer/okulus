@@ -663,13 +663,85 @@ okulusApp.factory('MembersSvc',
 			},
 			/*Migration function*/
 			migrateMembers: function() {
-				let membersList = $firebaseArray(membersRef.orderByKey().limitToLast(5));
-				membersList.$loaded().then(function(list) {
+				let hostCount = 0;
+				let leadCount = 0;
+				let traineeCount = 0;
+				let totalCount = 0;
+				let memberFolderCount = 0;
+				let activeCount = 0;
+				let memberCountersRef = baseRef.child(constants.folders.membersCounters);
+				let membersListRef = baseRef.child(constants.folders.membersList);
+				let membersDetailsRef = baseRef.child(constants.folders.membersDetails);
+				let membersList = $firebaseArray(membersRef.orderByKey());
+
+				membersList.$loaded().then(function(list){
 					list.forEach(function(member) {
-						console.log(member);
+						if(member.$id != "list" && member.$id != "details"){
+							//Move /audit, /access, /attendance, /address and place in /details
+							let detailsRecord = {};
+							if(member.access){
+								detailsRecord.access = member.access;
+							}
+							if(member.audit){
+								detailsRecord.audit = member.audit;
+							}
+							if(member.attendance){
+								detailsRecord.attendance = member.attendance;
+							}
+							if(member.address){
+								detailsRecord.address = member.address;
+							}
+							membersDetailsRef.child(member.$id).set(detailsRecord);
+							//Merge /user with /member and place in /list
+							let basicRecord = member.member;
+							if(basicRecord){
+								basicRecord.isActive = (basicRecord.status == "active");
+								basicRecord.canBeUser = null;
+								basicRecord.status = null;
+								if(basicRecord.baseGroup){
+									basicRecord.baseGroupId = basicRecord.baseGroup;
+									basicRecord.baseGroupName = basicRecord.baseGroup;
+									basicRecord.baseGroup = null;
+								}
+								if(basicRecord.birthdate){
+									let dayString = (basicRecord.birthdate.day<10)?"0"+basicRecord.birthdate.day:basicRecord.birthdate.day;
+									let monthString = (basicRecord.birthdate.month<10)?"0"+basicRecord.birthdate.month:basicRecord.birthdate.month;
+									basicRecord.bday = basicRecord.birthdate.year+"-"+monthString+"-"+dayString;
+									basicRecord.birthdate = null;
+								}
+								if(member.user && member.user.userId){
+									basicRecord.isUser = true;
+									basicRecord.userId = member.user.userId;
+								}
+								if(basicRecord.isHost){
+									hostCount++;
+								}
+								if(basicRecord.isLeader){
+									leadCount++;
+								}
+								if(basicRecord.isTrainee){
+									traineeCount++;
+								}
+								if(basicRecord.isActive){
+									activeCount++;
+								}
+								membersListRef.child(member.$id).set(basicRecord);
+								memberFolderCount++;
+							}
+							totalCount++;
+						}
 					});
+					console.log("List Size",list.length);
+					console.log("With member folder",memberFolderCount);
+					console.log("Total:",totalCount);
+					console.log("Active:",activeCount);
+					console.log("Hosts:",hostCount);
+					console.log("Leads:",leadCount);
+					console.log("Trainees:",traineeCount);
+					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainee:traineeCount});
 				});
 			},
+
 			//Deprecated
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));

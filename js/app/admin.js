@@ -1,8 +1,8 @@
 okulusApp.controller('MonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc', 'ReportsSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MembersSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,ReportsSvc){
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MembersSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let baseRef = firebase.database().ref().child(rootFolder);
@@ -127,6 +127,7 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateWeeks = function () {
 			console.log("Init Weeks Migration");
+			$rootScope.weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
 			let weeksRef = baseRef.child('weeks');
 			//Updates in Week Object
 			$rootScope.allWeeks = $firebaseArray(weeksRef);
@@ -164,15 +165,18 @@ okulusApp.controller('MonitorCntrl',
 				});
 
 				//Update Global System Counters
-				$rootScope.systemCounters.weeks = {};
-				$rootScope.systemCounters.weeks.total = totalWeeks;
-				$rootScope.systemCounters.weeks.open = openWeeks;
-				$rootScope.systemCounters.weeks.visible = openWeeks;
-				$rootScope.systemCounters.$save();
+				$rootScope.weeksGlobalCount.total = totalWeeks;
+				$rootScope.weeksGlobalCount.open = openWeeks;
+				$rootScope.weeksGlobalCount.visible = openWeeks;
+				$rootScope.weeksGlobalCount.$save();
 				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
 			});
 		};
 
+		$scope.migrateMembers = function() {
+			console.log("Initiating Members Migration!!!");
+			MembersSvc.migrateMembers();
+		};
 }]);
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
