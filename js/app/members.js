@@ -163,11 +163,10 @@ okulusApp.controller('MemberDetailsCntrl',
 		/members/view/:memberId or /members/edit/:memberId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingMember };
-
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				/* Only Users with an associated Member can see the content */
-				if(!user.memberId){
+				/* Only Valid Users (with an associated MemberId) can see the content */
+				if(!user.isValid){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -184,7 +183,6 @@ okulusApp.controller('MemberDetailsCntrl',
 							$location.path(constants.pages.error);
 							return;
 						}
-
 						$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
 						$scope.objectDetails.audit = MembersSvc.getMemberAuditObject(memberId);
 						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
@@ -206,20 +204,18 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.prepareViewForEdit = function (memberObject) {
 			$scope.memberEditParams = {};
 			$scope.memberEditParams.actionLbl = $rootScope.i18n.members.modifyLbl;
-			$scope.memberEditParams.showBadges = true;
 			$scope.memberEditParams.isEdit = true;
 			$scope.memberEditParams.memberId = memberObject.$id;
 			$scope.response = undefined;
-		}
+		};
 
 		$scope.prepareViewForNew = function () {
 			$scope.memberEditParams = {};
 			$scope.memberEditParams.actionLbl = $rootScope.i18n.members.newLbl;
-			$scope.memberEditParams.showBadges = false;
 			$scope.memberEditParams.isEdit = false;
 			$scope.memberEditParams.memberId = undefined;
 			$scope.response = undefined;
-		}
+		};
 
 		/*Create address Object in scope so we can populate it's values from view*/
 		$scope.addAdress = function(){
@@ -333,7 +329,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				}).then(function(accessList){
 					GroupsSvc.removeAllGroupAccess(accessList);
 					MembersSvc.deleteMemberDetails(deletedMemberId);
-					$rootScope.memberResponse = {deleted:true, message:systemMsgs.success.memberRemoved};
+					$rootScope.memberResponse = {deleted:true, message: systemMsgs.success.memberRemoved};
 					$location.path(constants.pages.adminMembers);
 				});
 				return;
