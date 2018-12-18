@@ -713,6 +713,13 @@ okulusApp.factory('MembersSvc',
 									basicRecord.isUser = true;
 									basicRecord.userId = member.user.userId;
 								}
+								if(!basicRecord.isActive){
+									basicRecord.isHost = false;
+									basicRecord.isLeader = false;
+									basicRecord.isTrainee = false;
+								}else{
+									activeCount++;
+								}
 								if(basicRecord.isHost){
 									hostCount++;
 								}
@@ -721,9 +728,6 @@ okulusApp.factory('MembersSvc',
 								}
 								if(basicRecord.isTrainee){
 									traineeCount++;
-								}
-								if(basicRecord.isActive){
-									activeCount++;
 								}
 								membersListRef.child(member.$id).set(basicRecord);
 								memberFolderCount++;
