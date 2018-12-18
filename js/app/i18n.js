@@ -21,7 +21,10 @@ const systemMsgs = {
 		/*Members*/
 		noMembersError:"No se encontraron Miembros",
 		loadingMembersError:"Error al cargar la lista de Miembros",
-		deletingActiveMember:"No se puede eliminar un Miembro Activo"
+		deletingActiveMember:"No se puede eliminar un Miembro Activo",
+		/*Weeks*/
+		weekExists:"Ya existe la Semana",
+		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -39,7 +42,11 @@ const systemMsgs = {
 		savingMemberInfo:"Guardando Información del Miembro",
 		savingMemberAddress:"Guardando Dirección del Miembro",
 		deletingMember:"Eliminando Miembro",
-		deletingMemberAddress:"Eliminando Dirección del Miembro"
+		deletingMemberAddress:"Eliminando Dirección del Miembro",
+		/*Weeks JS*/
+		loadingWeek:"Cargando información de la Semana ...",
+		savingWeekInfo:"Guardando Información de la Semana",
+		deletingWeek:"Eliminando Semana",
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -58,7 +65,12 @@ const systemMsgs = {
 		memberRemoved:"Miembro Eliminado",
 		membershipStatusUpdated:"Estado de la membresia actualizado",
 		memberRoleUpdated:"Rol del Miembro modificado",
-		baseGroupUpdated:"Grupo Base Actualizado"
+		baseGroupUpdated:"Grupo Base Actualizado",
+		/* Weeks JS */
+		statusUpdated:"Estado de la Semana actualizado.",
+		visibilityUpdated:"Visibilidad de la Semana actualizada.",
+		weekInfoUpdated:"Semana Actualizada",
+		weekDeleted:"Se ha eliminado la semana"
 	}
 };
 
@@ -194,8 +206,6 @@ okulusApp.run(function($rootScope) {
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
         noWeeksError: "No se encontraron Semanas.",
 				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
-				statusUpdated:"Estado de la Semana actualizado.",
-				visibilityUpdated:"Visibilidad de la Semana actualizada.",
 				weekUpdated:"Se ha actualizado la Semana",
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
