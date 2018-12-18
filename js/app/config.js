@@ -195,7 +195,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/weeks/weeks-admin.html',
+				templateUrl: 'views/weeks/weekAdmin.html',
 				controller: "WeeksCntrl"
 			})
 			.when('/weeks/new', {
@@ -207,7 +207,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'WeekDetailsCntrl'
 			})
 			.when('/weeks/view/:weekId', {
-				templateUrl: 'views/weeks/weekDetails.html',
+				templateUrl: 'views/weeks/weekView.html',
 				controller: 'WeekDetailsCntrl'
 			})
 			.when('/chats', {
