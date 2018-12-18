@@ -727,18 +727,20 @@ okulusApp.factory('MembersSvc',
 								}
 								membersListRef.child(member.$id).set(basicRecord);
 								memberFolderCount++;
+							}else{
+								console.error("No member folder",member.$id);
 							}
 							totalCount++;
 						}
 					});
-					console.log("List Size",list.length);
+					console.log("List Size:",list.length);
+					console.log("Total Members:",totalCount);
 					console.log("With member folder",memberFolderCount);
-					console.log("Total:",totalCount);
 					console.log("Active:",activeCount);
 					console.log("Hosts:",hostCount);
 					console.log("Leads:",leadCount);
 					console.log("Trainees:",traineeCount);
-					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainee:traineeCount});
+					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
 				});
 			},
 
