@@ -1,46 +1,86 @@
-<section id="weekDetails">
+<!-- Loading Week Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after Member is loaded -->
+<section id="weekView" ng-show="!response.loading">
+
   <!-- Title Section -->
-  <div class="card h-100 mb-3" ng-show="!response.loading">
+  <article class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">
-        {{i18n.weeks.weekLbl}} {{objectDetails.$id}}
-        <span class="ml-4 badge badge-success" ng-if="objectDetails.isOpen">
-          {{i18n.weeks.openLbl}}
-        </span>
-        <span class="ml-4 badge badge-danger" ng-if="!objectDetails.isOpen">
-          {{i18n.weeks.closedLbl}}
-        </span>
-        <span class="ml-4 badge badge-primary" ng-if="objectDetails.isVisible">
-          {{i18n.weeks.showLbl}}
-        </span>
-        <span class="ml-4 badge badge-dark" ng-if="!objectDetails.isVisible">
-          {{i18n.weeks.hideLbl}}
-        </span>
+        <span class="tx-darkblue d-inline">{{i18n.weeks.weekLbl}} {{objectDetails.basicInfo.$id}}</span>
       </h4>
     </div>
-  </div>
+  </article>
 
-  <!-- Details Card -->
-  <div class="card h-100 mb-3" ng-show="!response.loading">
-    <div class="card-body">
-      <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{objectDetails.name}} <br>
-      <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{objectDetails.year}}
-      <span class="ml-3 font-weight-bold">{{i18n.weeks.weekLbl}}:</span> #{{objectDetails.weekNumber}} <br>
-      <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span> {{objectDetails.notes}}
+  <div class="row">
+    <!-- Basic Details Card -->
+    <div class="col-md-6 mb-3">
+      <article class="card h-100">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>{{i18n.weeks.basicInfoTitle}}</legend>
+            </div>
+          </div>
+          <hr>
+          <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{objectDetails.basicInfo.name}} <br>
+          <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{objectDetails.basicInfo.year}}
+          <span class="ml-3 font-weight-bold">{{i18n.weeks.weekLbl}}:</span> #{{objectDetails.basicInfo.weekNumber}} <br>
+          <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span> {{objectDetails.basicInfo.notes}}
+        </div>
+      </article>
     </div>
-  </div>
-
-  <div ng-include="'views/alerts.html'"></div>
-
-  <!-- Admin Buttons -->
-  <div class="row mb-3" ng-if="!response.loading && currentSession.user.type =='admin'">
-    <div class="col">
-      <a href="#!/weeks/edit/{{objectDetails.$id}}" class="btn btn-lg btn-block btn-warning">
-        {{i18n.weeks.editBtn}}
-      </a>
+    <!-- Status Card -->
+    <div class="col-md-6 mb-3">
+      <article class="card h-100">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>{{i18n.weeks.statusTitle}}</legend>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <label class="font-weight-bold">
+                {{i18n.weeks.statusLbl}}:
+              </label><br>
+              <span class="badge badge-success" ng-show="objectDetails.basicInfo.iOpen">
+                {{i18n.weeks.openStatusLbl}}</span>
+              <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.iOpen">
+                {{i18n.weeks.closedStatusLbl}}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="font-weight-bold">
+                {{i18n.weeks.visibilityLbl}}:
+              </label><br>
+              <span class="badge badge-primary" ng-show="objectDetails.basicInfo.isVisible">
+                {{i18n.weeks.showStatusLbl}}</span>
+              <span class="badge badge-dark" ng-show="!objectDetails.basicInfo.isVisible">
+                {{i18n.weeks.hideStatusLbl}}</span>
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
   </div>
 
   <!-- Audit -->
-  <article ng-show="!response.loading && objectDetails.audit" ng-include="'views/fragments/auditDetails0.html'"></article>
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
+    <div class="col">
+      <a href="#!/weeks/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
+        {{i18n.weeks.editBtn}}
+      </a>
+    </div>
+  </div>
 </section>

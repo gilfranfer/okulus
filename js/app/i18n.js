@@ -216,10 +216,11 @@ okulusApp.run(function($rootScope) {
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
 				statusLbl:"Se pueden agregar reportes? (Estado)",
-				openStatusLbl:"Si / Semana Abierta", closedStatusLbl:"No / Semana Cerrada",
+				openStatusLbl:"Sí. Semana Abierta", closedStatusLbl:"No. Semana Cerrada",
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
-				showStatusLbl:"Si / Semana Visible", hideStatusLbl:"No / Semana Oculta",
-				modifyLbl:"Modificar", newLbl: "Nueva"
+				showStatusLbl:"Sí. Semana Visible", hideStatusLbl:"No. Semana Oculta",
+				modifyLbl:"Modificar", newLbl: "Nueva",
+				basicInfoTitle:"Información", statusTitle:"Estado"
 			},
 			members:{
 				/* Admin Members */
