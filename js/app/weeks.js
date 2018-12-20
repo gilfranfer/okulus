@@ -384,7 +384,6 @@ okulusApp.controller('WeekDetailsCntrl',
 			$scope.weekEditParams = {};
 			$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.newLbl;
 			$scope.weekEditParams.isEdit = false;
-			$scope.weekEditParams.weekId = weekObject.$id;
 			$scope.weekEditParams.date = new Date();
 			$scope.weekEditParams.dateRequired = true;
 			$scope.response = undefined;
@@ -409,7 +408,7 @@ okulusApp.controller('WeekDetailsCntrl',
 		};
 
 		/* Save or Update Week data (Name and Description) */
-		$scope.save = function() {
+		$scope.saveWeek = function() {
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.admin
 				|| !$scope.objectDetails.basicInfo){ return; }
@@ -458,19 +457,19 @@ okulusApp.controller('WeekDetailsCntrl',
 		};
 
 		/* Delete Week, only when no report is associated to this week */
-		$scope.delete = function() {
+		$scope.deleteWeek = function() {
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
-				$scope.response = {working:true, message: systemMsgs.inProgress.deletingWeek};
-				let weekId = $scope.objectDetails.basicInfo.$id;
+			let weekInfo = $scope.objectDetails.basicInfo;
 
+			if(weekInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.deletingWeek};
 				if($scope.objectDetails.basicInfo.reportsCount > 0){
-					$scope.response = {error:true, message: systemMsgs.error.deleteWeekError};
+					$scope.response = {deleteError:true, message: systemMsgs.error.deleteWeekError};
 				}else{
 					let isWeekOpen = $scope.objectDetails.basicInfo.isOpen;
 					let isWeekVisible = $scope.objectDetails.basicInfo.isVisible;
 					//proceed with delete
-					$scope.objectDetails.basicInfo.$remove().then(function(ref) {
+					weekInfo.$remove().then(function(deletedWeekRef) {
 						if(isWeekOpen){
 							WeeksSvc.decreaseOpenWeeksCounter();
 						}
@@ -478,8 +477,9 @@ okulusApp.controller('WeekDetailsCntrl',
 							WeeksSvc.decreaseVisibleWeeksCounter();
 						}
 						WeeksSvc.decreaseTotalWeeksCounter();
-						AuditSvc.recordAudit(weekId, constants.actions.delete, constants.folders.weeks);
-						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+weekId};
+						AuditSvc.recordAudit(weekInfo.$id, constants.actions.delete, constants.folders.weeks);
+						deletedWeekId = deletedWeekRef.key;
+						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
 						$location.path(constants.pages.adminWeeks);
 					}, function(error) {
 						console.log("Error:", error);

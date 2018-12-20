@@ -186,6 +186,7 @@ okulusApp.run(function($rootScope) {
 			},
 			weeks:{
 				title: "Administrador de Semanas",
+				basicInfoTitle:"Información Básica",
 				description: "Las Semanas son los contenedores de los Reportes.",
         closeInstructions:
           "Se recomienda cerrar cada semana cuando se hayan recibido todos los reportes, para que ya no aparezacn al momento de crear un reporte. "+
@@ -199,8 +200,12 @@ okulusApp.run(function($rootScope) {
         /*Buttons*/
         loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
+        openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
+				showWeekBtn:"Mostrar Semana", hideWeekBtn:"Ocultar Semana",
 				editBtn:"Editar Semana",
+				saveWeekBtn:"Guardar Semana",
+				deleteWeekBtn:"Eliminar Semana",
         /*Alert Messages*/
         loading:"Cargando Semanas...", loadingSuccess: "Semanas Cargadas.",
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
