@@ -80,8 +80,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/groups-admin.html',
-				controller: 'GroupsAdminCntrl'
+				templateUrl: 'views/groups/groupsAdmin.html',
+				controller: 'GroupsListCntrl'
 			})
 			.when('/groups/new', {
 				resolve: {
@@ -89,7 +89,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html'
+				templateUrl: 'views/groups/groupEdit.html',
+				controller: 'GroupDetailsCntrl'
 			})
 			.when('/groups/edit/:groupId', {
 				resolve: {
@@ -97,7 +98,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html',
+				templateUrl: 'views/groups/groupEdit.html',
 				controller: 'GroupDetailsCntrl'
 			})
 			.when('/groups/view/:groupId', {
@@ -106,7 +107,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html',
+				templateUrl: 'views/groups/groupView.html',
 				controller: 'GroupDetailsCntrl'
 			})
 			.when('/groups/access/:groupId', {

@@ -1,6 +1,6 @@
 /* Controller linked to /groups
  * It will load the Groups the Current Member has Access to */
-okulusApp.controller('GroupsAdminCntrl',
+okulusApp.controller('GroupsListCntrl',
 	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc','UtilsSvc',
 	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc,UtilsSvc){
 		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
