@@ -21,7 +21,10 @@ const systemMsgs = {
 		/*Members*/
 		noMembersError:"No se encontraron Miembros",
 		loadingMembersError:"Error al cargar la lista de Miembros",
-		deletingActiveMember:"No se puede eliminar un Miembro Activo"
+		deletingActiveMember:"No se puede eliminar un Miembro Activo",
+		/*Weeks*/
+		weekExists:"Ya existe la Semana",
+		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -39,7 +42,11 @@ const systemMsgs = {
 		savingMemberInfo:"Guardando Información del Miembro",
 		savingMemberAddress:"Guardando Dirección del Miembro",
 		deletingMember:"Eliminando Miembro",
-		deletingMemberAddress:"Eliminando Dirección del Miembro"
+		deletingMemberAddress:"Eliminando Dirección del Miembro",
+		/*Weeks JS*/
+		loadingWeek:"Cargando información de la Semana ...",
+		savingWeekInfo:"Guardando Información de la Semana",
+		deletingWeek:"Eliminando Semana",
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -58,7 +65,12 @@ const systemMsgs = {
 		memberRemoved:"Miembro Eliminado",
 		membershipStatusUpdated:"Estado de la membresia actualizado",
 		memberRoleUpdated:"Rol del Miembro modificado",
-		baseGroupUpdated:"Grupo Base Actualizado"
+		baseGroupUpdated:"Grupo Base Actualizado",
+		/* Weeks JS */
+		statusUpdated:"Estado de la Semana actualizado.",
+		visibilityUpdated:"Visibilidad de la Semana actualizada.",
+		weekInfoUpdated:"Semana Actualizada",
+		weekDeleted:"Se ha eliminado la semana"
 	}
 };
 
@@ -174,6 +186,7 @@ okulusApp.run(function($rootScope) {
 			},
 			weeks:{
 				title: "Administrador de Semanas",
+				basicInfoTitle:"Información Básica",
 				description: "Las Semanas son los contenedores de los Reportes.",
         closeInstructions:
           "Se recomienda cerrar cada semana cuando se hayan recibido todos los reportes, para que ya no aparezacn al momento de crear un reporte. "+
@@ -187,15 +200,17 @@ okulusApp.run(function($rootScope) {
         /*Buttons*/
         loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
+        openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
+				showWeekBtn:"Mostrar Semana", hideWeekBtn:"Ocultar Semana",
 				editBtn:"Editar Semana",
+				saveWeekBtn:"Guardar Semana",
+				deleteWeekBtn:"Eliminar Semana",
         /*Alert Messages*/
         loading:"Cargando Semanas...", loadingSuccess: "Semanas Cargadas.",
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
         noWeeksError: "No se encontraron Semanas.",
 				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
-				statusUpdated:"Estado de la Semana actualizado.",
-				visibilityUpdated:"Visibilidad de la Semana actualizada.",
 				weekUpdated:"Se ha actualizado la Semana",
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
@@ -206,10 +221,11 @@ okulusApp.run(function($rootScope) {
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
 				statusLbl:"Se pueden agregar reportes? (Estado)",
-				openStatusLbl:"Si / Semana Abierta", closedStatusLbl:"No / Semana Cerrada",
+				openStatusLbl:"Sí. Semana Abierta", closedStatusLbl:"No. Semana Cerrada",
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
-				showStatusLbl:"Si / Semana Visible", hideStatusLbl:"No / Semana Oculta",
-				modifyLbl:"Modificar", newLbl: "Nueva"
+				showStatusLbl:"Sí. Semana Visible", hideStatusLbl:"No. Semana Oculta",
+				modifyLbl:"Modificar", newLbl: "Nueva",
+				basicInfoTitle:"Información", statusTitle:"Estado"
 			},
 			members:{
 				/* Admin Members */

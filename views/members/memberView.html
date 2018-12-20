@@ -105,8 +105,10 @@
             <label class="font-weight-bold">
               {{i18n.members.statusLbl}}:
             </label>
-            <span ng-show="objectDetails.basicInfo.isActive">{{i18n.members.activeStatusLbl}}</span>
-            <span ng-show="!objectDetails.basicInfo.isActive">{{i18n.members.inactiveStatusLbl}}</span>
+            <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
+              {{i18n.members.activeStatusLbl}}</span>
+            <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
+              {{i18n.members.inactiveStatusLbl}}</span>
           </div>
         </div>
         <!-- Roles -->

@@ -195,7 +195,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/weeks/weeks-admin.html',
+				templateUrl: 'views/weeks/weekAdmin.html',
 				controller: "WeeksCntrl"
 			})
 			.when('/weeks/new', {
@@ -207,7 +207,7 @@ okulusApp.config(['$routeProvider',
 				controller: 'WeekDetailsCntrl'
 			})
 			.when('/weeks/view/:weekId', {
-				templateUrl: 'views/weeks/weekDetails.html',
+				templateUrl: 'views/weeks/weekView.html',
 				controller: 'WeekDetailsCntrl'
 			})
 			.when('/chats', {
@@ -253,14 +253,16 @@ const constants = {
 		open:"open", closed:"closed",
 		visible:"show", hidden:"hide",
 		readed:"readed",
-		isActive:"isActive"
+		isActive:"isActive",
+		isOpen:"isOpen", isVisible:"isVisible"
 	},
 	pages: {
 		login:"/login", home:"/home",
 		error: "/error",
 		adminWeeks:"/weeks", adminMembers:"/members",
 		adminMonitor:"/admin/monitor",
-		memberEdit:"/members/edit/"
+		memberEdit:"/members/edit/",
+		weekEdit:"/weeks/edit/"
 	},
 	folders:{
 		root:"okulusTest", counters:"counters", details:"details",
@@ -269,11 +271,15 @@ const constants = {
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		weeksList:"weeks/list", weeksDetails:"weeks/details",
 		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
 		/**Counters*/
 		weeksCounters:"counters/weeks",
 		membersCounters:"counters/members",
+		totalWeeksCount:"counters/weeks/total",
+		openWeeksCount:"counters/weeks/open",
+		visibleWeeksCount:"counters/weeks/visible",
 		totalMembersCount:"counters/members/total",
 		activeMembersCount:"counters/members/active",
 		hostMembersCount:"counters/members/hosts",
