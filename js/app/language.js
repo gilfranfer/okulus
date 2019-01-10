@@ -3,7 +3,7 @@ okulusApp.controller('LanguageCntrl', ['$routeParams', '$rootScope',
 		$rootScope.config ={
 			env: "prod",
 			bday:{maxDate:"2018-12-31",minDate:"1900-01-01"},
-			week:{maxDate:"2018-12-31",minDate:"2018-01-01"},
+			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
 			reports:{
 						maxDate:"2018-12-31",minDate:"2018-01-01",
 						minDuration:"0", maxDuration:"300"
