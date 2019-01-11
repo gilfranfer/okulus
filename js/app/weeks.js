@@ -436,6 +436,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.response = {error:true, message: systemMsgs.error.weekExists+" "+weekId };
 					}else{
 						week.name = $scope.objectDetails.basicInfo.name;
+						week.notes = $scope.objectDetails.basicInfo.notes;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
 						week.isOpen = false;
