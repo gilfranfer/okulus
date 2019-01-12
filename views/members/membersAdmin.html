@@ -1,10 +1,10 @@
 <!-- Admin Members List View -->
-<section id="adminMemberssList" ng-show="currentSession.user.type == 'admin'">
+<section id="adminMembersList" ng-show="currentSession.user.type == 'admin'">
 
   <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.members.title}}</h4>
+      <h4 class="card-title">{{i18n.members.adminTitle}}</h4>
     </div>
   </article>
 
@@ -112,8 +112,8 @@
           <p>
             <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>
             <span class="font-weight-bold">{{i18n.members.lnameLbl}}:</span> {{member.lastname}}<br>
-            <span class="font-weight-bold">{{i18n.members.emailLbl}}:</span> {{member.email}}<br>
-            <span class="font-weight-bold">{{i18n.members.phoneLbl}}:</span> {{member.phone}}
+            <span class="font-weight-bold">{{i18n.members.emailLbl}}:</span> <a href="mailto:{{member.email}}">{{member.email}}</a><br>
+            <span class="font-weight-bold">{{i18n.members.phoneLbl}}:</span> <a href="tel:{{member.phone}}">{{member.phone}}</a>
           </p>
         </div>
       </div>
