@@ -6,7 +6,7 @@ okulusApp.controller('MembersListCntrl',
 		let unwatch = undefined;
 		/*Executed everytime we enter to /members
 		  This function is used to confirm the user is Admin */
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
 				if(user.type == constants.roles.admin){
@@ -27,7 +27,7 @@ okulusApp.controller('MembersListCntrl',
 					});
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
-																	message:$rootScope.i18n.error.noAdmin};
+																	message:systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
 				}
 			});
@@ -469,14 +469,14 @@ okulusApp.factory('MembersSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let membersRef = baseRef.child(constants.folders.members);
 		let memberListRef = baseRef.child(constants.folders.membersList);
 		let memberDetailsRef = baseRef.child(constants.folders.membersDetails);
 		let isActiveMemberRef = memberListRef.orderByChild(constants.status.isActive);
 		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
-
+		//Deprecated
+		let membersRef = baseRef.child(constants.folders.members);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -495,6 +495,9 @@ okulusApp.factory('MembersSvc',
 		};
 
 		return {
+			getGlobalMembersCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.membersCounters));
+			},
 			/* Return all Members, using a limit for the query, if specified*/
 			getAllMembers: function(limit) {
 					if(limit){
@@ -654,9 +657,6 @@ okulusApp.factory('MembersSvc',
 				}
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
-			getGlobalMembersCounter: function(){
-				return $firebaseObject(baseRef.child(constants.folders.membersCounters));
-			},
 			/*Migration function*/
 			migrateMembers: function() {
 				let hostCount = 0;
@@ -748,9 +748,11 @@ okulusApp.factory('MembersSvc',
 			getMember: function(memberId){
 				return $firebaseObject(membersRef.child(memberId));
 			},
+			//Deprecated
 			getMemberAccessRules: function(whichMember) {
 				return $firebaseArray(membersRef.child(whichMember).child("access"));
 			},
+			//Deprecated
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);
 			},
