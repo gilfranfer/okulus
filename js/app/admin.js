@@ -1,8 +1,8 @@
 okulusApp.controller('MonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MembersSvc', 'ReportsSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MigrationSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MembersSvc,ReportsSvc){
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MigrationSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let baseRef = firebase.database().ref().child(rootFolder);
@@ -180,8 +180,16 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateMembers = function() {
 			console.log("Initiating Members Migration!!!");
-			MembersSvc.migrateMembers();
+			MigrationSvc.getAllGroups().$loaded().then(function(groups){
+				MigrationSvc.migrateMembers(groups);
+			});
 		};
+
+		$scope.migrateGroups = function() {
+			console.log("Initiating Groups Migration!!!");
+			MigrationSvc.migrateGroups();
+		};
+
 }]);
 
 okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
@@ -221,4 +229,105 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 			}
 		});
 
+}]);
+
+okulusApp.factory('MigrationSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
+
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let membersRef = baseRef.child(constants.folders.members);
+		let groupsRef = baseRef.child(constants.folders.groups);
+
+		return {
+			migrateMembers: function(groups) {
+				let hostCount = 0;
+				let leadCount = 0;
+				let traineeCount = 0;
+				let totalCount = 0;
+				let memberFolderCount = 0;
+				let activeCount = 0;
+				let memberCountersRef = baseRef.child(constants.folders.membersCounters);
+				let membersListRef = baseRef.child(constants.folders.membersList);
+				let membersDetailsRef = baseRef.child(constants.folders.membersDetails);
+				let membersList = $firebaseArray(membersRef.orderByKey());
+
+				membersList.$loaded().then(function(list){
+					list.forEach(function(member) {
+						if(member.$id != "list" && member.$id != "details"){
+							//Move /audit, /access, /attendance, /address into /details
+							let detailsRecord = {};
+							if(member.access){
+								detailsRecord.access = member.access;
+							}
+							if(member.audit){
+								detailsRecord.audit = member.audit;
+							}
+							if(member.attendance){
+								detailsRecord.attendance = member.attendance;
+							}
+							if(member.address){
+								detailsRecord.address = member.address;
+							}
+							membersDetailsRef.child(member.$id).set(detailsRecord);
+
+							//Merge /user with /member and place in /list
+							let basicRecord = member.member;
+							if(basicRecord){
+								basicRecord.isActive = (basicRecord.status == "active");
+								basicRecord.canBeUser = null;
+								basicRecord.status = null;
+								if(basicRecord.baseGroup){
+									basicRecord.baseGroupId = basicRecord.baseGroup;
+									basicRecord.baseGroupName = groups.$getRecord(basicRecord.baseGroup).group.name;
+									basicRecord.baseGroup = null;
+								}
+								if(basicRecord.birthdate){
+									let dayString = (basicRecord.birthdate.day<10)?"0"+basicRecord.birthdate.day:basicRecord.birthdate.day;
+									let monthString = (basicRecord.birthdate.month<10)?"0"+basicRecord.birthdate.month:basicRecord.birthdate.month;
+									basicRecord.bday = basicRecord.birthdate.year+"-"+monthString+"-"+dayString;
+									basicRecord.birthdate = null;
+								}
+								if(member.user && member.user.userId){
+									basicRecord.isUser = true;
+									basicRecord.userId = member.user.userId;
+								}
+								if(!basicRecord.isActive){
+									basicRecord.isHost = false;
+									basicRecord.isLeader = false;
+									basicRecord.isTrainee = false;
+								}else{
+									activeCount++;
+								}
+								if(basicRecord.isHost){
+									hostCount++;
+								}
+								if(basicRecord.isLeader){
+									leadCount++;
+								}
+								if(basicRecord.isTrainee){
+									traineeCount++;
+								}
+								membersListRef.child(member.$id).set(basicRecord);
+								memberFolderCount++;
+							}else{
+								console.error("No member folder",member.$id);
+							}
+							totalCount++;
+						}
+					});
+					console.log("List Size:",list.length);
+					console.log("Total Members:",totalCount);
+					console.log("With member folder",memberFolderCount);
+					console.log("Active:",activeCount);
+					console.log("Hosts:",hostCount);
+					console.log("Leads:",leadCount);
+					console.log("Trainees:",traineeCount);
+					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
+				});
+			},
+			getAllGroups: function(){
+				return $firebaseArray(groupsRef);
+			}
+		};
 }]);
