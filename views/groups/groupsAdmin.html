@@ -1,25 +1,33 @@
 <!-- Admin Groups List View -->
 <section id="adminGroupsList" ng-show="currentSession.user.type == 'admin'">
 
+  <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.admin.groups.title}}</h4>
-      <hr>
-      <div class="row">
-        <h4 class="col">
-          <span class="badge badge-primary">
-            {{systemCounters.groups.active + systemCounters.groups.inactive}}
-          </span>
-          <span>{{i18n.admin.groups.totalGroups}}</span>
-        </h4>
-        <h4 class="col">
-          <span class="badge badge-success">{{systemCounters.groups.active}}</span>
-          <span>{{i18n.admin.groups.activeGroups}}</span>
-        </h4>
-        <h4 class="col">
-          <span class="badge badge-danger">{{systemCounters.groups.inactive}}</span>
-          <span>{{i18n.admin.groups.inactiveGroups}}</span>
-        </h4>
+      <h4 class="card-title">{{i18n.groups.adminTitle}}</h4>
+    </div>
+  </article>
+
+  <!-- Badges -->
+  <article class="row">
+    <div class="col mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="row">
+            <h4 class="col">
+              <span class="badge badge-primary">{{groupsGlobalCount.total}}</span>
+              <span class="btn-link clickable" ng-click="loadAllGroupsList()">{{i18n.groups.totalGroups}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-success">{{groupsGlobalCount.active}}</span>
+              <span class="btn-link clickable" ng-click="loadActiveGroupsList()">{{i18n.groups.activeGroups}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-danger">{{groupsGlobalCount.total-groupsGlobalCount.active}}</span>
+              <span class="btn-link clickable" ng-click="loadInactiveGroupsList()">{{i18n.groups.inactiveGroups}}</span>
+            </h4>
+          </div>
+        </div>
       </div>
     </div>
   </article>
@@ -27,112 +35,108 @@
   <!-- Buttons -->
   <div class="row">
     <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadGroupList()">
-        {{i18n.admin.groups.loadBtn}}
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllGroupsList()">
+        {{i18n.groups.loadBtn}}
       </a>
     </div>
     <div class="col mb-3">
       <a href="#!/groups/new" class="btn btn-lg btn-block btn-primary">
-        {{i18n.admin.groups.newBtn}}
+        {{i18n.groups.newBtn}}
       </a>
     </div>
   </div>
 
-  <div ng-include="'views/alerts.html'"></div>
   <!-- Alerts to show Response Message (Used after redirect from Group Delete) -->
-  <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
-    {{response.groupMsgOk}}
+  <div class="alert alert-success" role="alert" ng-show="groupResponse.deleted">
+    {{groupResponse.message}}
   </div>
-  <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
-    {{response.groupMsgError}}
-  </div>
+  <div ng-include="'views/alerts.html'"></div>
 
-  <article id="filterCard" class="card mb-3" ng-show="groupsList">
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="adminGroupsList.length">
     <div class="card-body">
-      <!-- <div class="card-text">
-        <p>{{i18n.admin.groups.filterDescription}}</p>
-      </div> -->
-      <div class="row">
+      <p class="lead">
+  			{{adminGroupsParams.title}}
+  		</p>
+      <div class="row" ng-show="adminGroupsList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg"
+            ng-model="adminGroupsParams.searchFilter">
         </div>
       </div>
     </div>
   </article>
 
-  <!-- <article ng-include="'views/groups/groupsList.html'"></article> -->
-  <article id="groupsList">
-    <div class="row">
-      <div class="col-md-6 col-lg-4 mb-3"
-        ng-repeat="g in groupsList | filter:searchText | orderBy:'group.number' track by g.$id">
-        <!-- Group card -->
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">
-              <a ng-href="#!/groups/edit/{{g.$id}}">
-                {{g.group.number}} - {{g.group.name}}
+  <!-- Show number of loaded Groups -->
+  <div class="alert alert-info" role="alert" ng-show="adminGroupsList.length" >
+    {{adminGroupsList.length}} {{i18n.groups.loadingSuccess}}
+    <!-- Load all pending Groups  -->
+    <span class="btn-link clickable" ng-click="loadPendingGroups()"
+      ng-if="(adminGroupsList.length < adminGroupsParams.maxPossible)" >
+      {{i18n.groups.loadPending1}}
+      {{adminGroupsParams.maxPossible - adminGroupsList.length}}
+      {{i18n.groups.loadPending2}}
+    </span>
+  </div>
+
+  <!-- Groups Cards -->
+  <article id="groupsList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="group in adminGroupsList | filter:adminGroupsParams.searchText | orderBy:'number' track by group.$id">
+      <!-- Group card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/groups/edit/{{group.$id}}">
+              {{group.number}} - {{group.name}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="group.isActive">{{i18n.groups.activeLbl}}</span>
+          <span class="badge badge-danger" ng-if="!group.isActive">{{i18n.groups.inactiveLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.address.legend}}:</span><br>
+            {{group.address.street}} #{{group.address.extNumber}},
+            <span ng-if="group.address.intNumber">Int {{group.address.intNumber}}.</span>
+            <span ng-if="group.address.neighborhood">{{i18n.address.neighborhoodLbl}} {{group.address.neighborhood}}.</span>
+            {{group.address.city}} {{group.address.state}}, {{group.address.country}}.
+            <span ng-if="group.address.zip">{{i18n.address.zipLbl}} {{group.address.zip}}.</span>
+            <span class="font-weight-bold">{{i18n.groups.emailLbl}}:</span> <a href="mailto:{{group.email}}">{{group.email}}</a><br>
+            <span class="font-weight-bold">{{i18n.groups.phoneLbl}}:</span> <a href="tel:{{group.phone}}">{{group.phone}}</a>
+          </p>
+          <hr>
+          <!-- Buttons -->
+          <div class="row">
+            <div class="col mb-2" ng-if="group.isActive">
+              <a ng-href="#!/reports/new/{{group.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.addReport}}
               </a>
-            </h4>
-            <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.forms.group.inactive}}</span>
-            <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.forms.group.active}}</span>
-            <!-- address -->
-            <p class="card-text mt-2" ng-if="g.address">
-              <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span><br>
-              {{g.address.street}} #{{g.address.extNumber}},
-              <span ng-if="g.address.intNumber">Int {{g.address.intNumber}}.</span>
-              <span ng-if="g.address.neighborhood">{{i18n.forms.address.neighborhoodLbl}} {{g.address.neighborhood}}.</span>
-              {{g.address.city}} {{g.address.state}}, {{g.address.country}}.
-              <span ng-if="g.address.zip">{{i18n.forms.address.zipLbl}} {{g.address.zip}}.</span>
-            </p>
-            <!-- phone -->
-            <p class="card-text" ng-if="g.group.phone">
-              <span class="font-weight-bold">
-                {{i18n.forms.phone.phoneLbl}}:
-              </span><br>
-              <a href="tel:{{g.group.phone}}">{{g.group.phone}}</a>
-            </p>
-            <!-- email -->
-            <p class="card-text" ng-if="g.group.email">
-              <span class="font-weight-bold">
-                {{i18n.forms.group.emailLbl}}:
-              </span><br>
-              <a href="mailto:{{g.group.email}}">{{g.group.email}}</a>
-            </p>
-            <!-- Schedule -->
-            <p class="card-text" ng-if="g.schedule">
-              <span class="font-weight-bold">
-                {{i18n.forms.group.shcLegend}}:
-              </span><br>
-              {{g.schedule.weekday}}, {{g.schedule.time.HH}}:{{g.schedule.time.MM}} hrs.
-            </p>
-            <!--
-            <p class="card-text">
-              <span class="font-weight-bold">
-                {{i18n.forms.group.typeLegend}}:
-              </span><br>
-              {{g.group.type}}
-            </p> -->
-            <hr>
-            <!-- Buttons -->
-            <div class="row">
-              <div class="col mb-2" ng-if="g.group.status == 'active'">
-                <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-warning">
-                  {{i18n.btns.addReport}}
-                </a>
-              </div>
             </div>
-            <div class="row">
-              <div class="col" >
-                <a ng-href="#!/groups/access/{{g.$id}}" class="btn btn-block btn-warning">
-                  {{i18n.btns.accessRules}}
-                </a>
-              </div>
+          </div>
+          <div class="row">
+            <div class="col" >
+              <a ng-href="#!/groups/access/{{group.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.accessRules}}
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </article>
 
+  <!-- Load all pending Groups  -->
+  <div class="row mb-3" ng-show="adminGroupsList.length">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{adminGroupsList.length}} {{i18n.groups.loadingSuccess}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingGroups()"
+        ng-if="(adminGroupsList.length < adminGroupsParams.maxPossible)" >
+        {{i18n.groups.loadPending1}}
+        {{adminGroupsParams.maxPossible - adminGroupsList.length}}
+        {{i18n.groups.loadPending2}}
+      </span>
+    </div>
+  </div>
 </section>

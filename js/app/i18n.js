@@ -2,6 +2,7 @@
 const systemMsgs = {
 	error:{
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
+		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
@@ -22,6 +23,10 @@ const systemMsgs = {
 		noMembersError:"No se encontraron Miembros",
 		loadingMembersError:"Error al cargar la lista de Miembros",
 		deletingActiveMember:"No se puede eliminar un Miembro Activo",
+		/*Groups*/
+		noGroupsError:"No se encontraron Grupos",
+		loadingGroupsError:"Error al cargar la lista de Grupos",
+		deletingActiveGroup:"No se puede eliminar un Grupo Activo",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
@@ -41,12 +46,21 @@ const systemMsgs = {
 		loadingTraineeMembers:"Cargando Miembros Aprendices ...",
 		savingMemberInfo:"Guardando Información del Miembro",
 		savingMemberAddress:"Guardando Dirección del Miembro",
-		deletingMember:"Eliminando Miembro",
-		deletingMemberAddress:"Eliminando Dirección del Miembro",
+		deletingMember:"Eliminando Miembro ...",
+		deletingMemberAddress:"Eliminando Dirección del Miembro ...",
+		/*Groups JS*/
+		loadingGroup:"Cargando información del Grupo ...",
+		loadingAllGroups:"Cargando Todos los Grupos ...",
+		loadingActiveGroups:"Cargando Grupos Activos ...",
+		loadingInactiveGroups:"Cargando Grupos Inactivos ...",
+		savingGroupInfo:"Guardando Información del Grupo",
+		savingGroupAddress:"Guardando Dirección del Grupo",
+		deletingGroup:"Eliminando Grupo ...",
+		deletingGroupAddress:"Eliminando Dirección del Grupo ...",
 		/*Weeks JS*/
 		loadingWeek:"Cargando información de la Semana ...",
 		savingWeekInfo:"Guardando Información de la Semana",
-		deletingWeek:"Eliminando Semana",
+		deletingWeek:"Eliminando Semana"
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -66,6 +80,14 @@ const systemMsgs = {
 		membershipStatusUpdated:"Estado de la membresia actualizado",
 		memberRoleUpdated:"Rol del Miembro modificado",
 		baseGroupUpdated:"Grupo Base Actualizado",
+		/* Groups JS */
+		allGroupsTitle:"Grupos existentes",
+		activeGroupsTitle:"Grupos Activos",
+		inactiveGroupsTitle:"Grupos Inactivos",
+		groupInfoSaved:"Información Guardada",
+		groupAddressRemoved:"Dirección Eliminada",
+		groupCreated:"Grupo Creado",
+		groupRemoved:"Grupo Eliminado",
 		/* Weeks JS */
 		statusUpdated:"Estado de la Semana actualizado.",
 		visibilityUpdated:"Visibilidad de la Semana actualizada.",
@@ -229,7 +251,7 @@ okulusApp.run(function($rootScope) {
 			},
 			members:{
 				/* Admin Members */
-				title:"Administrador de  Miembros",
+				adminTitle:"Administrador de  Miembros",
 				/* Global Badges */
 				totalMembers:"Miembros Existentes",
 				activeMembers:"Miembros Activos", inactiveMembers:"Miembros Inactivos",
@@ -265,14 +287,35 @@ okulusApp.run(function($rootScope) {
 				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Siervo Líder?",
 				isTraineeLbl:"Es Siervo Aprendíz?",
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
-
-
+				/*TODO: Used?*/
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
 				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
 				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
 				noMembersError: "No se encontraron Miembros.",
 				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
+			},
+			groups:{
+				/* Admin Groups */
+				adminTitle:"Administrador de Grupos Familiares",
+				/*Badges*/
+				activeGroups:"Grupos Activos",
+				inactiveGroups:"Grupos Inactivos",
+				totalGroups:"Grupos Existentes",
+				/*Buttons*/
+				loadBtn:"Mostrar Grupos", newBtn:"Crear Grupo",
+				/*Alert Messages*/
+        loadingSuccess: "Grupos Cargados.",
+				loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
+				/* Form Labels*/
+				activeLbl:"Grupo Activo", inactiveLbl:"Grupo Inactivo",
+				emailLbl:"Correo electrónico", emailHint:"micorreo@gmail.com",
+				phoneLbl:"Teléfono",
+				/*TODO: Used?*/
+				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
+				loading:"Cargando Grupos...", loadingSuccess: "Grupos Cargados.",
+				loadingError: "Error al cargar los grupos. Intentelo más tarde.",
+				noGroupsError: "No se encontraron Grupos."
 			},
 			address:{
 				legend: "Dirección",
@@ -320,6 +363,7 @@ okulusApp.run(function($rootScope) {
 					mandatoryFields: "Campos Obligatorios",
 					active: "Grupo Activo", inactive: "Grupo Inactivo"
 				},
+				/*TODO: Used?*/
 				member:{
 					newMember: "Nuevo Miembro",
 					basicDataLegend: "Datos del Miembro", membership:"Membresía",
@@ -380,19 +424,6 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			admin:{
-				//For Admin Views
-				groups:{
-					title:"Administrar Grupos Familiares",
-					activeGroups:"Grupos Activos",
-					inactiveGroups:"Grupos Inactivos",
-					totalGroups:"Grupos Existentes",
-					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-					loading:"Cargando Grupos...", loadingSuccess: "Grupos Cargados.",
-					loadingError: "Error al cargar los grupos. Intentelo más tarde.",
-					noGroupsError: "No se encontraron Grupos.",
-					loadBtn:"Mostrar Grupos",
-					newBtn:"Crear Grupo"
-				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				access:{
 					title: "Lista de acccesos al Grupo",
@@ -499,8 +530,6 @@ okulusApp.run(function($rootScope) {
 				title: "Houston, Tenemos Problemas!",
 				lead: "Lo sentimos, pero algo salió mal.",
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
-				recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
-				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{

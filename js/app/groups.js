@@ -1,38 +1,111 @@
-/* Controller linked to /groups
- * It will load the Groups the Current Member has Access to */
+//Mapping: /groups
 okulusApp.controller('GroupsListCntrl',
-	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc','UtilsSvc',
-	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc,UtilsSvc){
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+	['$rootScope','$scope','$firebaseAuth','$location','GroupsSvc', 'AuthenticationSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,GroupsSvc,AuthenticationSvc){
 
+		let unwatch = undefined;
 		/* Executed everytime we enter to /groups
 		  This function is used to confirm the user is Admin */
-		$firebaseAuth().$onAuthStateChanged(function(authUser){
-			if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
-					function(user){
-						if(user.type == 'admin'){
-							//UtilsSvc.loadSystemCounter();
-							$rootScope.systemCounters.$loaded().then(function(counters) {
-								$scope.response = undefined;
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
+				if(user.type == constants.roles.admin){
+					/*Load Group Counters and Set Watch*/
+					$rootScope.groupsGlobalCount = GroupsSvc.getGlobalGroupsCounter();
+					$rootScope.groupsGlobalCount.$loaded().then(
+						function(groupsCount) {
+							$scope.response = undefined;
+							/* Adding a Watch to the groupsGlobalCount to detect changes.
+							The idea is to update the maxPossible value from adminGroupsParams.*/
+							if(unwatch){ unwatch(); }
+							unwatch = $rootScope.groupsGlobalCount.$watch( function(data){
+								if($rootScope.adminGroupsParams){
+									let loader = $rootScope.adminGroupsParams.activeGroupsLoader;
+									$rootScope.adminGroupsParams = getAdminGroupsParams(loader);
+									$scope.response = undefined;
+								}
 							});
-						}else{
-							$rootScope.response = {error:true, showHomeButton: true,
-																			message:$rootScope.i18n.error.noAdmin};
-							$location.path("/error");
-						}
-				});
-			}
-		});
+					});
+				}else{
+					$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}
+			});
+		}});
 
-		$scope.loadGroupList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.admin.groups.loading };
-			$rootScope.groupsList = GroupsSvc.loadAllGroupsList();
-			$rootScope.groupsList.$loaded().then(function(groups) {
-				$scope.response = {success:true, message:groups.length+" "+$rootScope.i18n.admin.groups.loadingSuccess };
-			})
-			.catch( function(error){
-				$scope.response = { error: true, message: $rootScope.i18n.admin.groups.loadingError };
+		/* All the following on-demand loaders (called from html view) will limit the
+		 initial result list to the maxQueryListResults value (from $rootScope.config).
+		 They will create a params object containing the name of the loader used,
+		 and determining the max possible records to display. */
+		$scope.loadAllGroupsList = function () {
+			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllGroups};
+			$rootScope.adminGroupsParams = getParamsByLoader("AllGroupsLoader");
+			$rootScope.adminGroupsList = GroupsSvc.getAllGroups($rootScope.config.maxQueryListResults);
+			whenGroupsRetrieved();
+		};
+
+		$scope.loadActiveGroupsList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingActiveGroups};
+ 			$rootScope.adminGroupsParams = getParamsByLoader("ActiveGroupsLoader");
+ 			$rootScope.adminGroupsList = GroupsSvc.getActiveGroups($rootScope.config.maxQueryListResults);
+ 			whenGroupsRetrieved();
+		};
+
+		$scope.loadInactiveGroupsList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingInactiveGroups};
+ 			$rootScope.adminGroupsParams = getParamsByLoader("InactiveGroupsLoader");
+ 			$rootScope.adminGroupsList = GroupsSvc.getInactiveGroups($rootScope.config.maxQueryListResults);
+ 			whenGroupsRetrieved();
+		};
+
+		/* Load ALL pending groups. Use the adminGroupsParams.activeLoader
+		to determine what type of groups should be loaded, and how. */
+		$scope.loadPendingGroups = function () {
+			let loaderName = $rootScope.adminGroupsParams.activeLoader;
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+			if(loaderName=="AllGroupsLoader"){
+				$rootScope.adminGroupsList = GroupsSvc.getAllGroups();
+			} else if(loaderName=="ActiveGroupsLoader"){
+				$rootScope.adminGroupsList = GroupsSvc.getActiveGroups();
+			} else if(loaderName=="InactiveGroupsLoader"){
+				$rootScope.adminGroupsList = GroupsSvc.getInactiveGroups();
+			}
+			whenGroupsRetrieved();
+		};
+
+		/*Build object with Params used in the view.
+		 activeLoader: Will help to identify what type of groups we want to load.
+		 searchFilter: Container for the view filter
+		 title: Title of the Groups List will change according to the loader in use
+		 maxPossible: Used to inform the user how many elements are pending to load */
+		getParamsByLoader = function (loaderName) {
+			let params = {activeLoader:loaderName, searchFilter:undefined};
+			if(loaderName == "AllGroupsLoader"){
+				params.title= systemMsgs.success.allGroupsTitle;
+				params.maxPossible = $rootScope.groupsGlobalCount.total;
+			}
+			else if(loaderName == "ActiveGroupsLoader"){
+				params.title= systemMsgs.success.activeGroupsTitle;
+				params.maxPossible = $rootScope.groupsGlobalCount.active;
+			}
+			else if(loaderName == "InactiveGroupsLoader"){
+				params.title= systemMsgs.success.inactiveGroupsTitle;
+				params.maxPossible = $rootScope.groupsGlobalCount.total - $rootScope.groupsGlobalCount.active;
+			}
+			return params;
+		};
+
+		/*Prepares the response after the groups list is loaded */
+		whenGroupsRetrieved = function () {
+			$rootScope.adminGroupsList.$loaded().then(function(groups) {
+				$scope.response = undefined;
+				$rootScope.groupsResponse = null;
+				if(!groups.length){
+					$scope.response = { error: true, message: systemMsgs.error.noGroupsError };
+				}
+			}).catch( function(error){
+				$scope.response = { error: true, message: systemMsgs.error.loadingGroupsError };
 				console.error(error);
 			});
 		};
@@ -242,8 +315,13 @@ okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location',
 	}
 ]);
 
-okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
+okulusApp.factory('GroupsSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
+
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let groupsListRef = baseRef.child(constants.folders.groupsList);
+		let isActiveGroupRef = groupsListRef.orderByChild(constants.status.isActive);
 
 		//TODO: Update to groups/details
 		let groupDetailsRef = firebase.database().ref().child(rootFolder).child('groups');
@@ -252,7 +330,51 @@ okulusApp.factory('GroupsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject
 
 		let counterRef = firebase.database().ref().child(rootFolder).child('counters/groups');
 
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				if(currentCount>0)
+					return currentCount - 1;
+				return currentCount;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				return currentCount + 1;
+			});
+		};
+
 		return {
+			getGlobalGroupsCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
+			},
+			/* Return all Members, using a limit for the query, if specified*/
+			getAllGroups: function(limit) {
+					if(limit){
+						return $firebaseArray(groupsListRef.orderByKey().limitToLast(limit));
+					}else{
+						return $firebaseArray(groupsListRef.orderByKey());
+					}
+			},
+			/* Return all Groups with isActive:true, using a limit for the query, if specified*/
+			getActiveGroups: function(limit) {
+				if(limit){
+					return $firebaseArray(isActiveGroupRef.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(isActiveGroupRef.equalTo(true));
+				}
+			},
+			/* Return all Groups with isActive:false, using a limit for the query, if specified*/
+			getInactiveGroups: function(limit) {
+				if(limit){
+					return $firebaseArray(isActiveGroupRef.equalTo(false).limitToLast(limit));
+				}else{
+					return $firebaseArray(isActiveGroupRef.equalTo(false));
+				}
+			},
+
 			getGroupReference: function(groupId){
 				return groupsRef.child(groupId);
 			},
