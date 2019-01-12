@@ -27,7 +27,7 @@ okulusApp.controller('WeeksCntrl',
 						});
 					}else{
 						$rootScope.response = {error:true, showHomeButton: true,
-																	message:$rootScope.i18n.error.noAdmin};
+																	message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
 					}
 				});
