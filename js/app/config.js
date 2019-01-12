@@ -232,9 +232,6 @@ okulusApp.config(['$routeProvider',
 			.when('/error', {
 				templateUrl: 'views/errors/error-general.html'
 			})
-			.when('/error/norecord', {
-				templateUrl: 'views/errors/error-norecord.html'
-			})
 			.otherwise({
 				redirectTo: '/home'
 			});
@@ -273,11 +270,13 @@ const constants = {
 		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
+		groupsList:"groups", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
 		/**Counters*/
 		weeksCounters:"counters/weeks",
 		membersCounters:"counters/members",
+		groupsCounters:"counters/groups",
 		totalWeeksCount:"counters/weeks/total",
 		openWeeksCount:"counters/weeks/open",
 		visibleWeeksCount:"counters/weeks/visible",
