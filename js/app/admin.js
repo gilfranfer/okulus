@@ -326,6 +326,72 @@ okulusApp.factory('MigrationSvc',
 					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
 				});
 			},
+			migrateGroups: function(groups) {
+
+				let totalCount = 0;
+				let activeCount = 0;
+				let groupFolderCount = 0;
+
+				let groupsCountersRef = baseRef.child(constants.folders.groupsCounters);
+				let groupsListRef = baseRef.child(constants.folders.groupsList);
+				let groupsDetailsRef = baseRef.child(constants.folders.groupsDetails);
+				let groupsList = $firebaseArray(groupsRef.orderByKey());
+
+				groupsList.$loaded().then(function(list){
+					list.forEach(function(group){
+						if(group.$id != "list" && group.$id != "details"){
+							// /access, /audit, /reports create /roles
+							let detailsRecord = {};
+
+							if(group.access){
+								detailsRecord.access = group.access;
+							}
+							if(group.audit){
+								detailsRecord.audit = group.audit;
+							}
+							if(group.reports){
+								detailsRecord.reports = group.reports;
+							}
+							detailsRecord.roles = {};
+							if(group.group.leadId){
+								detailsRecord.roles = group.group.leadId;
+								group.group.leadId = null;
+							}
+							if(group.group.hostId){
+								detailsRecord.roles = group.group.hostId;
+								group.group.hostId = null;
+							}
+							groupsDetailsRef.child(group.$id).set(detailsRecord);
+
+							// basicRecord ( /group, /schedule, /address )
+							let basicRecord = group.group;
+							if(!basicRecord){
+								console.error("No group folder",group.$id);
+								basicRecord = {};
+							}
+							if(group.address){
+								basicRecord.address = group.address;
+							}
+							if(group.schedule){
+								basicRecord.weekday = group.schedule.weekday;
+								let minutesText = (group.schedule.time.MM<10)?("0"+group.schedule.time.MM):group.schedule.time.MM;
+								basicRecord.time = group.schedule.time.HH +":"+minutesText;
+							}
+							basicRecord.isActive = (basicRecord.status == "active");
+							basicRecord.status = null;
+							groupsListRef.child(group.$id).set(basicRecord);
+							if(basicRecord.isActive){
+								activeCount++;
+							}
+							totalCount++;
+						}
+					});
+					console.log("List Size:",list.length);
+					console.log("Total Groups:",totalCount);
+					console.log("Active:",activeCount);
+					groupsCountersRef.set({active:activeCount,total:totalCount});
+				});
+			},
 			getAllGroups: function(){
 				return $firebaseArray(groupsRef);
 			}
