@@ -33,15 +33,15 @@
         <div class="card-body">
           <h4>
             <span class="badge badge-primary">{{membersGlobalCount.leads}}</span>
-            <span class="btn-link clickable" ng-click="loadLeadMembersList()">{{i18n.members.leadMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadLeadMembersList()">{{i18n.members.leadsLbl}}</span>
           </h4>
           <h4>
             <span class="badge badge-dark">{{membersGlobalCount.trainees}}</span>
-            <span class="btn-link clickable" ng-click="loadTraineeMembersList()">{{i18n.members.traineeMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadTraineeMembersList()">{{i18n.members.traineesLbl}}</span>
           </h4>
           <h4>
             <span class="badge badge-warning">{{membersGlobalCount.hosts}}</span>
-            <span class="btn-link clickable" ng-click="loadHostMembersList()">{{i18n.members.hostMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadHostMembersList()">{{i18n.members.hostsLbl}}</span>
           </h4>
         </div>
       </article>
@@ -76,7 +76,7 @@
   		</p>
       <div class="row" ng-show="adminMembersList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg"
+          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
             ng-model="adminMembersParams.searchFilter">
         </div>
       </div>
@@ -112,8 +112,8 @@
           <p>
             <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>
             <span class="font-weight-bold">{{i18n.members.lnameLbl}}:</span> {{member.lastname}}<br>
-            <span class="font-weight-bold">{{i18n.members.emailLbl}}:</span> <a href="mailto:{{member.email}}">{{member.email}}</a><br>
-            <span class="font-weight-bold">{{i18n.members.phoneLbl}}:</span> <a href="tel:{{member.phone}}">{{member.phone}}</a>
+            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{member.email}}">{{member.email}}</a><br>
+            <span class="font-weight-bold">{{i18n.contact.phoneLbl}}:</span> <a href="tel:{{member.phone}}">{{member.phone}}</a>
           </p>
         </div>
       </div>

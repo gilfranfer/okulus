@@ -48,7 +48,7 @@
               <span class="text-danger">*</span>
             </label>
             <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
-                ng-model="objectDetails.basicInfo.lastname">
+                ng-model="objectDetails.basicInfo.lastname" ng-required="true">
           </div>
         </div>
         <!-- Shortname (Alias), and Birthdate -->
@@ -66,7 +66,7 @@
               {{i18n.members.bdayLbl}}
             </label>
             <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}"
-              class="form-control form-control-lg" placeholder="{{i18n.forms.member.bdayHint}}"
+              class="form-control form-control-lg" placeholder="{{i18n.members.bdayHint}}"
               value="{{objectDetails.basicInfo.bday}}" ng-required="false" onchange="updateBdayValue()">
               <input type="hidden" name="bdayHolder" ng-model="objectDetails.basicInfo.bday" ng-required="false">
           </div>
@@ -75,18 +75,18 @@
         <div class="form-row">
           <div class="col-md form-group">
             <label class="font-weight-bold" for="email">
-              {{i18n.members.emailLbl}}
+              {{i18n.contact.emailLbl}}
               <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
             </label>
-            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.members.emailHint}}"
+            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
               ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
           </div>
           <div class="col-md form-group">
             <label class="font-weight-bold" for="phone">
-              {{i18n.members.phoneLbl}}
+              {{i18n.contact.phoneLbl}}
               <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
             </label>
-            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.members.phoneHint}}"
+            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
                 ng-model="objectDetails.basicInfo.phone"
                 ng-required="!(objectDetails.basicInfo.email)">
           </div>
@@ -102,7 +102,7 @@
         <!-- Header and Add Button (Admin)-->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.forms.address.legend}}</legend>
+            <legend>{{i18n.address.legend}}</legend>
           </div>
           <!-- Button to Add/Remove address -->
           <div class="col" ng-if="currentSession.user.type == 'admin'">
@@ -200,7 +200,7 @@
         <div class="form-row">
           <div class="col form-group">
             <label class="font-weight-bold" for="baseGroup">
-              {{i18n.forms.member.baseGroupLbl}}
+              {{i18n.members.baseGroupLbl}}
             </label>
           </div>
         </div>
@@ -212,7 +212,7 @@
               ng-if="memberEditParams.updatingBaseGroup" ng-model="objectDetails.basicInfo.baseGroupId">
               <option value="">{{i18n.members.noGroup}}</option>
               <option ng-repeat="group in memberEditParams.groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
-                {{group.group.number}}-{{group.group.name}}
+                {{group.number}}-{{group.name}}
               </option>
             </select>
           </div>

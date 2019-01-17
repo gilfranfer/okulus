@@ -25,35 +25,35 @@
             </a>
           </h4>
           <!-- <hr> -->
-          <span class="badge badge-danger" ng-if="m.member.status == 'inactive'">{{i18n.forms.member.inactive}}</span>
-          <span class="badge badge-success" ng-if="m.member.status  == 'active'">{{i18n.forms.member.active}}</span>
+          <span class="badge badge-danger" ng-if="m.member.status == 'inactive'">{{i18n.members.inactive}}</span>
+          <span class="badge badge-success" ng-if="m.member.status  == 'active'">{{i18n.members.active}}</span>
           <!-- full name -->
           <p class="card-text mt-2">
             <span class="font-weight-bold">
-              {{i18n.forms.member.fnameLbl}}:
+              {{i18n.members.fnameLbl}}:
             </span><br>
             {{m.member.firstname}} {{m.member.lastname}}
           </p>
           <!-- address -->
           <p class="card-text" ng-if="m.address">
-            <span class="font-weight-bold">{{i18n.forms.address.legend}}:</span><br>
+            <span class="font-weight-bold">{{i18n.address.legend}}:</span><br>
             {{m.address.street}} #{{m.address.extNumber}},
             <span ng-if="m.address.intNumber">Int {{m.address.intNumber}}.</span>
-            <span ng-if="m.address.neighborhood">{{i18n.forms.address.neighborhoodLbl}} {{m.address.neighborhood}}.</span>
+            <span ng-if="m.address.neighborhood">{{i18n.address.neighborhoodLbl}} {{m.address.neighborhood}}.</span>
             {{m.address.city}} {{m.address.state}}, {{m.address.country}}.
-            <span ng-if="m.address.zip">{{i18n.forms.address.zipLbl}} {{m.address.zip}}.</span>
+            <span ng-if="m.address.zip">{{i18n.address.zipLbl}} {{m.address.zip}}.</span>
           </p>
           <!-- phone -->
           <p class="card-text" ng-if="m.member.phone">
             <span class="font-weight-bold">
-              {{i18n.forms.phone.phoneLbl}}:
+              {{i18n.contact.phoneLbl}}:
             </span><br>
             <a href="tel:{{m.phone}}">{{m.member.phone}}</a>
           </p>
           <!-- email -->
           <p class="card-text" ng-if="m.member.email">
             <span class="font-weight-bold">
-              {{i18n.forms.group.emailLbl}}:
+              {{i18n.contact.emailLbl}}:
             </span><br>
             <a href="mailto:{{m.email}}">{{m.member.email}}</a>
           </p>
