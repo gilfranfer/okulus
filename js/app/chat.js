@@ -6,7 +6,7 @@ okulusApp.controller('ChatCenterCntrl',
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(loggedUser){
 				if(!loggedUser.memberId){
@@ -266,7 +266,7 @@ okulusApp.controller('ChatCenterCntrl',
 	    var pos = $('#messagesList').scrollTop();
 			//check if we have reached the top of the list
 	    if(pos == 0){
-				$scope.chatCenterParams.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+				$scope.chatCenterParams.response = {loading: true, message: systemMsgs.inProgress.loading };
 				let loggedUserId = $rootScope.currentSession.user.$id;
 				let chatRoomId = $scope.chatCenterParams.activeChatWith;
 				//set the new limit for the query

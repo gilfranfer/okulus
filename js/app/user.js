@@ -32,7 +32,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 okulusApp.controller('UserMyContactsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
 	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 		/* Executed everytime we enter to /mycontacts
 		  This function is used to confirm the user has an associated Member */

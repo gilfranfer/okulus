@@ -6,7 +6,7 @@ okulusApp.controller('WeeksCntrl',
 		let unwatch = undefined;
 		/* Executed everytime we enter to /weeks
 		  This function is used to confirm the user is Admin and prepare some initial values */
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(user.type == constants.roles.admin){
@@ -38,35 +38,35 @@ okulusApp.controller('WeeksCntrl',
 		 They will create a weekListParams object containing the name of the loader
 		 used, and determining the max possible records to display. */
 		$scope.loadAllWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading};
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAllWeeks};
 			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
 			$rootScope.weeksList = WeeksSvc.getWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadOpenWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingOpenWeeks };
 			$rootScope.weekListParams = getweekListParams("loadOpenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getOpenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadClosedWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingClosedWeeks };
 			$rootScope.weekListParams = getweekListParams("loadClosedWeeksList");
 			$rootScope.weeksList = WeeksSvc.getClosedWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadVisibleWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingVisibleWeeks  };
 			$rootScope.weekListParams = getweekListParams("loadVisibleWeeksList");
 			$rootScope.weeksList = WeeksSvc.getVisibleWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadHiddenWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingHiddenWeeks  };
 			$rootScope.weekListParams = getweekListParams("loadHiddenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getHiddenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
@@ -76,7 +76,7 @@ okulusApp.controller('WeeksCntrl',
 		determine what type of weeks should be loaded, and how. */
 		$scope.loadPendingWeeks = function () {
 			let weekLoaderName = $rootScope.weekListParams.activeWeekLoader;
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading  };
 			if(weekLoaderName=="loadAllWeeksList"){
 				$rootScope.weeksList = WeeksSvc.getWeeks();
 			} else if(weekLoaderName=="loadOpenWeeksList"){
