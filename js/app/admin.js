@@ -180,6 +180,7 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateMembers = function() {
 			console.log("Initiating Members Migration!!!");
+			//Get Groups from Original Strcuture
 			MigrationSvc.getAllGroups().$loaded().then(function(groups){
 				MigrationSvc.migrateMembers(groups);
 			});
@@ -187,7 +188,9 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateGroups = function() {
 			console.log("Initiating Groups Migration!!!");
-			MigrationSvc.migrateGroups();
+			MigrationSvc.getMembersList().$loaded().then(function(members){
+				MigrationSvc.migrateGroups(members);
+			});
 		};
 
 }]);
@@ -236,6 +239,7 @@ okulusApp.factory('MigrationSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
+		let memberListRef = baseRef.child(constants.folders.membersList);
 		let membersRef = baseRef.child(constants.folders.members);
 		let groupsRef = baseRef.child(constants.folders.groups);
 
@@ -326,7 +330,7 @@ okulusApp.factory('MigrationSvc',
 					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
 				});
 			},
-			migrateGroups: function(groups) {
+			migrateGroups: function(members) {
 
 				let totalCount = 0;
 				let activeCount = 0;
@@ -354,11 +358,13 @@ okulusApp.factory('MigrationSvc',
 							}
 							detailsRecord.roles = {};
 							if(group.group.leadId){
-								detailsRecord.roles = group.group.leadId;
+								detailsRecord.roles.leadId = group.group.leadId;
+								detailsRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
 								group.group.leadId = null;
 							}
 							if(group.group.hostId){
-								detailsRecord.roles = group.group.hostId;
+								detailsRecord.roles.hostId = group.group.hostId;
+								detailsRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
 								group.group.hostId = null;
 							}
 							groupsDetailsRef.child(group.$id).set(detailsRecord);
@@ -394,6 +400,9 @@ okulusApp.factory('MigrationSvc',
 			},
 			getAllGroups: function(){
 				return $firebaseArray(groupsRef);
+			},
+			getMembersList: function(){
+				return $firebaseArray(memberListRef.orderByKey());
 			}
 		};
 }]);
