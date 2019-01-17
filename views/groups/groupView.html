@@ -1,209 +1,98 @@
-<section ng-controller="GroupFormCntrl">
-  <form class="mt-3" name="groupForm" novalidate ng-submit="saveOrUpdateGroup()">
-    <!-- Title -->
-    <div class="card h-100 mb-3">
-      <div class="card-body">
-        <h4 class="card-title" ng-if="groupId">
-           {{group.number}} - {{group.name}}
-        </h4>
-        <h4 class="card-title text-danger" ng-if="!groupId">
-          {{i18n.forms.group.newGroup}}
-        </h4>
-      </div>
+<!-- Loading Group Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after Group is loaded -->
+<section id="groupView" ng-show="!response.loading">
+
+  <!-- Title (Member alias) -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.number}} - {{objectDetails.basicInfo.name}}</span>
+      </h4>
     </div>
+  </article>
 
-    <div class="card h-100 mb-3">
-      <div class="card-body">
-        <!-- Card Title -->
-        <h4 class="card-title">
-          {{i18n.forms.group.basicDataLegend}}
-        </h4>
-        <hr>
-
-        <!-- Basic Group Information -->
-        <fieldset class="mb-4">
-          <legend></legend>
-
-          <!-- Name row -->
-          <div class="form-row">
-            <div class="col-2 form-group">
-              <label for="gnumber">
-                {{i18n.forms.group.numberLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <input type="number" min="0" id="gnumber" class="form-control form-control-lg"
-                placeholder="{{i18n.forms.group.numberHint}}" ng-model="group.number" ng-required="true">
-            </div>
-            <div class="col-10 form-group">
-              <label for="gname">
-                {{i18n.forms.group.nameLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <input type="text" id="gname" class="form-control form-control-lg"
-                placeholder="{{i18n.forms.group.nameHint}}" ng-model="group.name" ng-required="true">
-            </div>
-          </div>
-
-          <!-- Type and Status row -->
-          <div class="form-row">
-            <div class="col form-group">
-              <label for="gtype">
-                {{i18n.forms.group.typeLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <select id="gtype" class="form-control form-control-lg"
-                      ng-model="group.type" ng-required="true">
-                <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
-                <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
-                <option value="{{i18n.dropdowns.gtype.women}}">{{i18n.dropdowns.gtype.women}}</option>
-                <option value="{{i18n.dropdowns.gtype.young}}">{{i18n.dropdowns.gtype.young}}</option>
-                <option value="{{i18n.dropdowns.gtype.floating}}">{{i18n.dropdowns.gtype.floating}}</option>
-                <option value="{{i18n.dropdowns.gtype.reorg}}">{{i18n.dropdowns.gtype.reorg}}</option>
-              </select>
-            </div>
-            <div class="col form-group">
-              <label for="status">
-                {{i18n.dropdowns.status.label}}
-                <span class="text-danger">*</span>
-              </label>
-              <select id="status" class="form-control form-control-lg"
-                      ng-model="group.status" ng-required="true">
-                <option value="active">{{i18n.dropdowns.status.active}}</option>
-                <option value="inactive">{{i18n.dropdowns.status.inactive}}</option>
-              </select>
-            </div>
-          </div>
-          <!-- Email and Phone -->
-          <div class="form-row">
-            <div class="col form-group">
-              <label for="email">
-                {{i18n.forms.group.emailLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <input type="email" id="email" class="form-control form-control-lg"
-                  placeholder="{{i18n.forms.group.emailHint}}" ng-model="group.email" ng-required="!(group.phone)">
-            </div>
-            <div class="col form-group">
-              <label for="phone">
-                {{i18n.forms.phone.phoneLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <input type="tel" id="phone" class="form-control form-control-lg"
-                  placeholder="{{i18n.forms.phone.phoneHint}}" ng-model="group.phone" ng-required="!(group.email)">
-            </div>
-          </div>
-          <!-- Host and Lead -->
-          <div class="form-row">
-            <div class="col-sm form-group">
-              <label for="hostId">
-                {{i18n.forms.report.hostLbl}}
-              </label>
-              <select id="hostId" name="hostId" class="form-control form-control-lg"
-               	ng-model="group.hostId" ng-required="false">
-               	<option ng-repeat="m in hostsList" value="{{m.$id}}">
-              		{{m.member.shortname}}
-              	</option>
-              </select>
-            </div>
-            <div class="col-sm form-group">
-              <label for="leadId">
-                {{i18n.forms.report.leadLbl}}
-              </label>
-              <select id="leadId" name="leadId" class="form-control form-control-lg"
-               	ng-model="group.leadId" ng-required="false">
-               	<option ng-repeat="m in leadsList" value="{{m.$id}}">
-              		{{m.member.shortname}}
-              	</option>
-              </select>
-            </div>
-          </div>
-        </fieldset>
-
-        <!-- Address -->
-        <article ng-include="'views/fragments/addressFieldset.html'"></article>
-
-        <!-- Schedule -->
-        <fieldset class="mb-4">
-          <legend>{{i18n.forms.group.shcLegend}}</legend>
-          <hr>
-          <div class="form-row">
-            <div class="col form-group">
-               <label for="schdDay">
-                {{i18n.forms.group.schdDayLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <select id="schdDay" name="schdDay" class="form-control form-control-lg"
-                      ng-model="schedule.weekday" ng-required="true">
-                <option value="{{i18n.dropdowns.weekdays.mon}}">{{i18n.dropdowns.weekdays.mon}}</option>
-                <option value="{{i18n.dropdowns.weekdays.tue}}">{{i18n.dropdowns.weekdays.tue}}</option>
-                <option value="{{i18n.dropdowns.weekdays.wed}}">{{i18n.dropdowns.weekdays.wed}}</option>
-                <option value="{{i18n.dropdowns.weekdays.thu}}">{{i18n.dropdowns.weekdays.thu}}</option>
-                <option value="{{i18n.dropdowns.weekdays.fri}}">{{i18n.dropdowns.weekdays.fri}}</option>
-                <option value="{{i18n.dropdowns.weekdays.sat}}">{{i18n.dropdowns.weekdays.sat}}</option>
-                <option value="{{i18n.dropdowns.weekdays.sun}}">{{i18n.dropdowns.weekdays.sun}}</option>
-              </select>
-            </div>
-            <div class="col form-group">
-              <label for="schdTime">
-                {{i18n.forms.group.schdTimeLbl}}
-                <span class="text-danger">*</span>
-              </label>
-              <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.forms.group.schdTimeHint}}"
-                ng-model="schedule.timestamp" ng-required="true">
-            </div>
-          </div>
-        </fieldset>
-        <span class="text-danger">* {{i18n.forms.group.mandatoryFields}}</span>
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.groups.basicInfoTitle}}</legend>
+        </div>
       </div>
+      <hr>
+      <!-- Email and Phone -->
+      <div class="form-row">
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
+          <label class="font-weight-bold">
+            {{i18n.contact.emailLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.email}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+          <label class="font-weight-bold">
+            {{i18n.contact.phoneLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.phone}}</span>
+        </div>
+      </div>
+      <!-- Type, Satus and Schedule -->
+      <div class="form-row">
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
+          <label class="font-weight-bold">
+            {{i18n.groups.typeLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.type}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+          <label class="font-weight-bold">
+            {{i18n.groups.scheduleLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.weekday}}, {{objectDetails.basicInfo.time}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+          <label class="font-weight-bold">
+            {{i18n.groups.statusLbl}}:
+          </label>
+          <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
+            {{i18n.groups.activeStatusLbl}}</span>
+          <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
+            {{i18n.groups.inactiveStatusLbl}}</span>
+        </div>
+      </div>
+
     </div>
+  </article>
 
-    <!-- Audit -->
-    <article ng-if="groupId" ng-include="'views/fragments/auditDetails.html'"></article>
-
-    <!-- Alert/Error row -->
-    <div class="form-row">
-      <div class="col">
-        <div class="alert alert-warning" role="alert" ng-show="groupForm.$invalid && groupForm.$dirty">
-          {{i18n.alerts.invalidForm}}
-        </div>
-        <!-- Loading Alert -->
-        <div class="alert alert-warning" role="alert" ng-show="working">
-          {{i18n.alerts.working}}
-        </div>
-        <div class="alert alert-success" role="alert" ng-show="response.groupMsgOk">
-          {{response.groupMsgOk}}
-        </div>
-        <div class="alert alert-danger" role="alert" ng-show="response.groupMsgError">
-          {{response.groupMsgError}}
+  <!-- Address Card -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header and Add Button (Admin)-->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.address.legend}}</legend>
         </div>
       </div>
+      <hr>
+      <!-- Address -->
+      <div ng-include="'views/fragments/addressView.html'"></div>
     </div>
+  </article>
 
-    <!-- Admin Buttons rows -->
-    <div class="form-row" ng-if="currentSession.user.type == 'admin'">
-      <div class="col-sm form-group" >
-        <button type="submit" class="btn btn-lg btn-block btn-success"
-          ng-disabled="groupForm.$invalid || groupForm.$pristine">
-          {{i18n.btns.saveBtn}}
-        </button>
-      </div>
-      <div class="col-sm form-group" ng-if="groupId">
-        <button type="button" class="btn btn-lg btn-block btn-danger"
-            data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
-          {{i18n.btns.deleteBtn}}
-        </button>
-        <div  class="collapse" id="collapseDelete">
-          <div class="alert alert-danger" role="alert">
-            {{i18n.alerts.confirmDelete}}
-            <button type="button" class="btn btn-danger" ng-click="deleteGroup()">
-              {{i18n.btns.yesBtn}}
-            </button>
-            <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
-              {{i18n.btns.noBtn}}
-            </button>
-          </div>
-        </div>
-      </div>
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
+    <div class="col">
+      <a href="#!/groups/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
+        {{i18n.groups.editBtn}}
+      </a>
     </div>
-  </form>
+  </div>
+
 </section>
