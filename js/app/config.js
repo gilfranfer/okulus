@@ -260,17 +260,18 @@ const constants = {
 		adminWeeks:"/weeks", adminMembers:"/members",
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/",
+		groupEdit:"/groups/edit/",
 		weekEdit:"/weeks/edit/"
 	},
 	folders:{
 		root:"okulusTest", counters:"counters", details:"details",
-		audit:"audit", users:"users", weeks:"weeks",
+		audit:"audit", users:"users", weeks:"weeks", roles:"roles",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
-		groupsList:"groups", groupsDetails:"groups/details",
+		groupsList:"groups/list", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
 		/**Counters*/
