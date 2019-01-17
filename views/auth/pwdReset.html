@@ -5,9 +5,9 @@
 				<h4 class="card-title">{{i18n.login.resetPwd}}</h4>
 				<hr>
 				<div class="form-group">
-			    <label for="loginemail">{{i18n.login.email}}</label>
+			    <label for="loginemail">{{i18n.contact.emailLbl}}</label>
 			    <input id="loginemail" type="email" name="email"
-			    	class="form-control form-control-lg" placeholder="{{i18n.login.emailHint}}"
+			    	class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
 			    	ng-model="user.email" ng-required="true">
 					<div class="alert alert-danger" role="alert" ng-show="restForm.email.$invalid && restForm.email.$dirty">
 						{{i18n.login.invalidEmail}}
@@ -29,7 +29,7 @@
 		<div class="form-row" ng-if="!response.successMsg">
     	<div class="form-group col-md">
     		<button type="submit" class="btn btn-success btn-lg btn-block" ng-disabled="restForm.$invalid">
-					{{i18n.btns.sendBtn}}
+					{{i18n.login.resetPwdBtn}}
 				</button>
     	</div>
 		</div>

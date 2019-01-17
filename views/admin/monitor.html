@@ -21,7 +21,7 @@
         <!-- Search box -->
         <div class="row mb-4" ng-show="userRecords && userRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="filterUsers">
+            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="filterUsers">
           </div>
         </div>
         <!-- Table Scroll -->
@@ -124,7 +124,7 @@
         <!-- Search box -->
         <div class="row mb-4" ng-show="auditRecords && auditRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="auditFilter">
+            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="auditFilter">
           </div>
         </div>
         <!-- Table Scroll -->
@@ -186,7 +186,7 @@
         <!-- Search box -->
         <div class="row mb-4" ng-show="errorRecords && errorRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="filterErrors">
+            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="filterErrors">
           </div>
         </div>
         <!-- Table Scroll -->
@@ -251,6 +251,9 @@
         </button>
         <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateMembers()">
           Migrate Members
+        </button>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateGroups()">
+          Migrate Groups
         </button>
       </div>
     </div>
