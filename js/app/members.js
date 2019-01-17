@@ -157,7 +157,7 @@ okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
 		'MembersSvc','GroupsSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, GroupsSvc,AuditSvc, AuthenticationSvc){
+		MembersSvc, GroupsSvc, AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -429,11 +429,11 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails.basicInfo.bday = birthdate;
 		};
 
+		/*Load the list of Active Groups */
 		$scope.prepareForBaseGroupUpdate = function(){
 			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
 			if(!$scope.memberEditParams.groupsList){
-				//TODO Update Groups call
-				$scope.memberEditParams.groupsList = GroupsSvc.loadActiveGroups();
+				$scope.memberEditParams.groupsList = GroupsSvc.getActiveGroups();
 			}
 			$scope.memberEditParams.groupsList.$loaded().then(function(){
 				clearResponse();
@@ -441,14 +441,14 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
+		/*Persist the Member's Base Group Selection */
 		$scope.updateBaseGroup = function(){
 			clearResponse();
 			let memberInfo = $scope.objectDetails.basicInfo;
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 					if(memberInfo.baseGroupId){
 						let group = $scope.memberEditParams.groupsList.$getRecord(memberInfo.baseGroupId);
-						//TODO: Update after Group Refactor (group.name)
-						memberInfo.baseGroupName = group.group.name;
+						memberInfo.baseGroupName = group.name;
 					}else{
 						memberInfo.baseGroupName = null;
 						memberInfo.baseGroupId = null;
