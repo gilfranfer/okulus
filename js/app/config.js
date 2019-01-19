@@ -258,6 +258,7 @@ const constants = {
 		login:"/login", home:"/home",
 		error: "/error",
 		adminWeeks:"/weeks", adminMembers:"/members",
+		adminGroups:"/groups",
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/",
 		groupEdit:"/groups/edit/",
@@ -286,6 +287,8 @@ const constants = {
 		hostMembersCount:"counters/members/hosts",
 		leadMembersCount:"counters/members/leads",
 		traineeMembersCount:"counters/members/trainees",
+		totalGroupsCount:"counters/groups/total",
+		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"
 	},
