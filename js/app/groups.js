@@ -100,7 +100,7 @@ okulusApp.controller('GroupsListCntrl',
 		whenGroupsRetrieved = function () {
 			$rootScope.adminGroupsList.$loaded().then(function(groups) {
 				$scope.response = undefined;
-				$rootScope.groupsResponse = null;
+				$rootScope.groupResponse = null;
 				if(!groups.length){
 					$scope.response = { error: true, message: systemMsgs.error.noGroupsError };
 				}

@@ -138,7 +138,7 @@ okulusApp.controller('MembersListCntrl',
 		whenMembersRetrieved = function () {
 			$rootScope.adminMembersList.$loaded().then(function(members) {
 				$scope.response = undefined;
-				$rootScope.membersResponse = null;
+				$rootScope.memberResponse = null;
 				if(!members.length){
 					$scope.response = { error: true, message: systemMsgs.error.noMembersError };
 				}
