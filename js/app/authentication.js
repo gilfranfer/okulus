@@ -218,6 +218,7 @@ okulusApp.controller('RegistrationCntrl',
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
 				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.folders.users);
+				$rootScope.redirectFronRegister = true;
 				$location.path(constants.pages.home);
 			})
 			.catch( function(error){
@@ -292,6 +293,8 @@ okulusApp.controller('HomeCntrl',
 				if(user.isRoot){
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);
+				}else if($rootScope.redirectFronRegister){
+					$rootScope.redirectFronRegister = undefined;
 				}else if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
