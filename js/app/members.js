@@ -20,7 +20,7 @@ okulusApp.controller('MembersListCntrl',
 							unwatch = $rootScope.membersGlobalCount.$watch( function(data){
 								if($rootScope.membersListParams){
 									let loader = $rootScope.membersListParams.activeMembersLoader;
-									$rootScope.membersListParams = getmembersListParams(loader);
+									$rootScope.membersListParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
 							});
@@ -325,9 +325,9 @@ okulusApp.controller('MemberDetailsCntrl',
 					deletedMemberId = deletedMemberRef.key;
 					AuditSvc.recordAudit(deletedMemberId, constants.actions.delete, constants.folders.members);
 					MembersSvc.decreaseTotalMembersCount();
-					return MembersSvc.getMemberAccessList(deletedMemberId).$loaded();
+					return MembersSvc.getAccessRulesList(deletedMemberId).$loaded();
 				}).then(function(accessList){
-					GroupsSvc.removeAllGroupAccess(accessList);
+					GroupsSvc.removeAccessRules(accessList);
 					MembersSvc.deleteMemberDetails(deletedMemberId);
 					$rootScope.memberResponse = {deleted:true, message: systemMsgs.success.memberRemoved};
 					$location.path(constants.pages.adminMembers);
@@ -344,10 +344,9 @@ okulusApp.controller('MemberDetailsCntrl',
 				memberInfo.isActive = setMembershipActive;
 				if(setMembershipActive){
 					MembersSvc.increaseActiveMembersCount();
-					//No need to reduce decrease InactiveMembersCount (it doesnt exist)
 				}else{
-					/*When setting Membership to Inactive, we must update ALL ROLES to false*/
 					MembersSvc.decreaseActiveMembersCount();
+					/*When setting Membership to Inactive, we must update ALL ROLES to false*/
 					if(memberInfo.isHost){
 						memberInfo.isHost = false;
 						MembersSvc.decreaseHostMembersCount();
@@ -558,8 +557,8 @@ okulusApp.factory('MembersSvc',
 			getMemberAuditObject: function(whichMemberId){
 				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.folders.audit));
 			},
-			/* Get member access from firebase and return as array */
-			getMemberAccessList: function(whichMemberId) {
+			/* Get the list of Access Rules that indicate the groups the member has access to */
+			getAccessRulesList: function(whichMemberId) {
 				return $firebaseArray(memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules));
 			},
 			/* Returns the member/list containing members with baseGroupId = gropId */
@@ -669,15 +668,15 @@ okulusApp.factory('MembersSvc',
 			getMemberReference: function(memberId){
 				return membersRef.child(memberId);
 			},
-			//Receives the access list from a Group = { accessRuleId: {memberId,mamberName,date} , ...}
-			//The accessRuleId is the same on groups/:gropuId/access and members/:memberId/access
-			//Use accessRuleId.memberId and accessRuleId tu delete the reference from each member to the group
-			deleteMembersAccess: function(accessObj){
-				if(accessObj){
-					for (const accessRuleId in accessObj) {
-						let memberId = accessObj[accessRuleId].memberId;
-						membersRef.child(memberId).child("access").child(accessRuleId).set(null);
-					}
+			/* Receives the access list from a Group = ( { accessRuleId: {groupId,groupName,date} , ...} ),
+			and use them to delete the groups access from each member in the list.
+			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId
+			and members/:memberId/access/:accessRuleId */
+			removeAccessRules: function(accessList){
+				if(accessList){
+					accessList.forEach(function(accessRule) {
+						memberDetailsRef.child(accessRule.memberId).child("access").child(accessRule.$id).set(null);
+					});
 				}
 			},
 			removeMemberReferenceToReport: function(memberId,reportId){

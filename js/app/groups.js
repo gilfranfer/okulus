@@ -21,7 +21,7 @@ okulusApp.controller('GroupsListCntrl',
 							unwatch = $rootScope.groupsGlobalCount.$watch( function(data){
 								if($rootScope.adminGroupsParams){
 									let loader = $rootScope.adminGroupsParams.activeGroupsLoader;
-									$rootScope.adminGroupsParams = getAdminGroupsParams(loader);
+									$rootScope.adminGroupsParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
 							});
@@ -118,7 +118,7 @@ okulusApp.controller('GroupsListCntrl',
 okulusApp.controller('GroupsUserCntrl',
 	['$rootScope','$scope', '$location','$firebaseAuth','AuthenticationSvc', 'MembersSvc','GroupsSvc',
 	function($rootScope,$scope,$location,$firebaseAuth,AuthenticationSvc,MembersSvc, GroupsSvc){
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading};
 
 		/* Executed everytime we enter to /mygroups
 		  This function is used to confirm the user has an associated Member */
@@ -150,167 +150,237 @@ okulusApp.controller('GroupsUserCntrl',
 	}
 ]);
 
-okulusApp.controller('GroupFormCntrl', ['$rootScope', '$scope', '$location', '$firebaseAuth', 'GroupsSvc', 'MembersSvc', 'AuditSvc', 'UtilsSvc', 'AuthenticationSvc',
-	function($rootScope, $scope, $location, $firebaseAuth, GroupsSvc, MembersSvc, AuditSvc, UtilsSvc,AuthenticationSvc){
+/* Controller linked to /groups/view/:groupId and /groups/edit/:groupId
+ * It will load the Group for the id passed */
+okulusApp.controller('GroupDetailsCntrl',
+['$rootScope','$scope','$routeParams','$location','$firebaseAuth',
+ 'GroupsSvc','MembersSvc','AuditSvc','AuthenticationSvc',
+	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
+		GroupsSvc, MembersSvc, AuditSvc, AuthenticationSvc){
 
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
-						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+		/* Init. Executed everytime we enter to /gorups/new, /groups/view/:groupId or /groups/edit/:groupId */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
+			$scope.objectDetails = {};
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				/* Only Valid Users (with an associated MemberId) can see the content */
+				if(!user.isValid){
+					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
+					return;
+				}
+
+				let groupId = $routeParams.groupId;
+				/* Prepare for Edit or View Details of Existing Group */
+				if(groupId){
+					$scope.objectDetails.basicInfo = GroupsSvc.getGroupBasicDataObject(groupId);
+					$scope.objectDetails.basicInfo.$loaded().then(function(group){
+						//If group from DB hasn't name, is because no group was found
+						if(!group.name){
+							$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+							$location.path(constants.pages.error);
+							return;
+						}
+						$scope.objectDetails.address = GroupsSvc.getGroupAddressObject(groupId);
+						$scope.objectDetails.audit = GroupsSvc.getGroupAuditObject(groupId);
+						$scope.objectDetails.roles = GroupsSvc.getGroupRolesObject(groupId);
+						$scope.prepareViewForEdit(group);
+					}).catch( function(error){
+						$rootScope.response = { error: true, message: error };
 						$location.path(constants.pages.error);
-						return;
-					}
-					$rootScope.response = null;
-					$scope.provideAddress = true;
-					$scope.membersList = MembersSvc.getActiveMembers();
-					$scope.membersList.$loaded().then(function(activeMembers){
-						//$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
-						//$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
 					});
+				}
+				/* Prepare for Group Creation */
+				else{
+					$scope.prepareViewForNew();
+				}
+			});
+		}});
+
+		$scope.prepareViewForEdit = function (groupObject) {
+			$scope.groupEditParams = {};
+			$scope.groupEditParams.actionLbl = $rootScope.i18n.groups.modifyLbl;
+			$scope.groupEditParams.isEdit = true;
+			$scope.groupEditParams.groupId = groupObject.$id;
+			$scope.response = undefined;
+		};
+
+		$scope.prepareViewForNew = function () {
+			$scope.groupEditParams = {};
+			$scope.objectDetails.basicInfo = {};
+			$scope.groupEditParams.actionLbl = $rootScope.i18n.groups.newLbl;
+			$scope.groupEditParams.isEdit = false;
+			$scope.groupEditParams.groupId = undefined;
+			$scope.response = undefined;
+		};
+
+		$scope.saveGroup = function() {
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.savingGroupInfo};
+				let groupId = $scope.groupEditParams.groupId;
+
+				/*UPDATE Current Group */
+				if($scope.objectDetails.basicInfo.$id){
+					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
+					$scope.objectDetails.basicInfo.$save().then(function() {
+						AuditSvc.recordAudit(groupId, constants.actions.update, constants.folders.groups);
+						$scope.response = {success:true, message: systemMsgs.success.groupInfoSaved};
+					});
+				}
+				/*CREATE A NEW GROUP, and redirect to /groups/edit/ */
+				else{
+					$scope.objectDetails.basicInfo.isActive = true;
+					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
+					let newgroupRef = GroupsSvc.persistGroup($scope.objectDetails.basicInfo);
+					GroupsSvc.getGroupBasicDataObject(newgroupRef.key).$loaded().then(function() {
+						AuditSvc.recordAudit(newgroupRef.key, constants.actions.create, constants.folders.groups);
+						GroupsSvc.increaseTotalGroupsCount();
+						GroupsSvc.increaseActiveGroupsCount();
+						$rootScope.groupResponse = {created:true, message:systemMsgs.success.groupCreated };
+						$location.path(constants.pages.groupEdit+newgroupRef.key);
+					});
+				}
+			}
+		};
+
+		/* A group can be deleted by Admin , if not active, and if there are no reports associated to it.
+		 When deleting a Group:
+		  1. Delete from /groups/list
+		  2. Delete from /groups/details
+			3. Decrease the Groups total count
+			4. Delete all references to this group from member/access
+		*/
+		$scope.deleteGroup = function() {
+			clearResponse();
+			let groupId = $scope.objectDetails.basicInfo.$id;
+			let groupInfo = $scope.objectDetails.basicInfo;
+			//A group cannot be deleted if isActive
+			if(groupInfo.isActive){
+				$scope.response = {deleteError:true, message: systemMsgs.error.deletingActiveGroup};
+				return;
+			}
+
+			if(groupInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.deletingGroup};
+				//Remove Group from groups/list
+				let deletedGroupId = undefined;
+				GroupsSvc.getGroupReportsList(groupId).$loaded().then(function(reports){
+					if(reports.length){
+						$scope.response = {deleteError:true, message: systemMsgs.error.groupHasReports};
+					}else{
+						return groupInfo.$remove();
+					}
+				})
+				//After removing Group Basic Info
+				.then(function(deletedGroupRef){
+					deletedGroupId = deletedGroupRef.key;
+					AuditSvc.recordAudit(deletedGroupId, constants.actions.delete, constants.folders.groups);
+					GroupsSvc.decreaseTotalGroupsCount();
+					return GroupsSvc.getAccessRulesList(deletedGroupId).$loaded();
+				})
+				//After loading Group access rules
+				.then(function(accessList){
+					MembersSvc.removeAccessRules(accessList);
+					GroupsSvc.deleteGroupDetails(deletedGroupId);
+					$rootScope.groupResponse = {deleted:true, message: systemMsgs.success.groupRemoved};
+					$location.path(constants.pages.adminGroups);
 				});
 			}
-		});
+		};
 
-	    $scope.saveOrUpdateGroup = function() {
-				$scope.response = null;
-				$scope.working = true;
-				let record = { group: $scope.group, address: $scope.address, schedule: $scope.schedule };
-				record.schedule.time = UtilsSvc.buildTimeJson($scope.schedule.timestamp);
-
-				/* When a value for groupId is present in the scope, the user is on Edit
-					mode and we have to perform an UPDATE.*/
-		    	if( $scope.groupId ){
-						let gRef = GroupsSvc.getGroupReference($scope.groupId);
-						let orgiStatus = undefined;
-						gRef.child("group/status").once('value').then(
-							function(snapshot) {
-								orgiStatus = snapshot.val();
-							});
-
-						gRef.update(record, function(error) {
-							$scope.working = false;
-							if(error){
-								$scope.response = { groupMsgError: error};
-							}else{
-								$scope.response = { groupMsgOk: "Grupo Actualizado"};
-								AuditSvc.recordAudit(gRef.key, "update", "groups");
-
-								if(orgiStatus != record.group.status){
-									GroupsSvc.updateGroupsStatusCounter(record.group.status);
-								}
-							}
-						});
-		    	}
-				/* Otherwise, when groupId is not present in the scope,
-					we perform a SET to create a new record */
-				else{
-	    		var newgroupRef = GroupsSvc.getNewGroupReference();
-					newgroupRef.set(record, function(error) {
-						if(error){
-							$scope.working = false;
-							$scope.response = { groupMsgError: error};
-						}else{
-							//For some reason the message is not displayed until
-							//you interact with any form element
-						}
-					});
-
-					//adding trick below to ensure message is displayed
-					let obj = GroupsSvc.getGroupObj(newgroupRef.key);
-					obj.$loaded().then(function(data) {
-						//$scope.groupId = newgroupRef.key;
-						AuditSvc.recordAudit(newgroupRef.key, "create", "groups");
-						GroupsSvc.increaseGroupsStatusCounter(data.group.status);
-						$rootScope.response = { groupMsgOk: "Grupo Creado"};
-						$scope.working = false;
-						$location.path( "/groups");
-					});
-	    	}
-	    };
-
-			/* A group can be deleted by Admin if there are no reports associated to it.
-			 When deleting a Group:
-				1. Decrease the Group Status counter
-				2. Delete all references to this group from member/access
-			*/
-	    $scope.deleteGroup = function() {
-				if($rootScope.currentSession.user.type == 'user'){
-					$scope.response = { groupMsgError: "Para eliminar este grupo, contacta al administrador"};
+		/* Toogle the Group status.*/
+		$scope.setGroupStatus = function(setGroupActive){
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				let groupInfo = $scope.objectDetails.basicInfo;
+				groupInfo.isActive = setGroupActive;
+				if(setGroupActive){
+					GroupsSvc.increaseActiveGroupsCount();
 				}else{
-					$scope.working = true;
-		    	if( $scope.groupId ){
-						GroupsSvc.getGroupObj($scope.groupId).$loaded().then( function (groupObj) {
-							let status = groupObj.group.status;
-							let accessList = groupObj.access;
-							if( !groupObj.reports ){
-								groupObj.$remove().then(function(ref) {
-									$rootScope.response = { groupMsgOk: "Grupo Eliminado"};
-									AuditSvc.recordAudit(ref.key, "delete", "groups");
-									GroupsSvc.decreaseGroupsStatusCounter(status);
-									MembersSvc.deleteMembersAccess(accessList);
-									$scope.working = false;
-									$location.path( "/groups");
-								}, function(error) {
-									$scope.working = false;
-									$rootScope.response = { groupMsgError: err};
-									// console.debug("Error:", error);
-								});
-							}else{
-								$scope.working = false;
-								$scope.response = { groupMsgError: "No se puede elminar el Grupo porque tiene Reportes asociados"};
-							}
-						});
-			    }
+					GroupsSvc.decreaseActiveGroupsCount();
 				}
-	    };
-
-}]);
-
-okulusApp.controller('GroupDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc','MembersSvc',
-	function($scope, $routeParams, $location, GroupsSvc,MembersSvc){
-		let whichGroup = $routeParams.groupId;
-		$scope.provideAddress = true;
-		$scope.membersList = MembersSvc.getActiveMembers();
-
-		/* When opening "Edit" page from the Groups List, we can use the
-		"allGroups" firebaseArray from rootScope to get the specific Group data */
-		if( GroupsSvc.allGroupsLoaded() ){
-			let record = GroupsSvc.getGroupFromArray(whichGroup);
-			putRecordOnScope(record);
-		}
-		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
-		we will not have the "allGroups" firebaseArray Loaded in the rootScope.
-		Instead of loading all the Groups, what could be innecessary,
-		we can use firebaseObject to get only the required group data */
-		else{
-			let obj = GroupsSvc.getGroupObj(whichGroup);
-			obj.$loaded().then(function() {
-				putRecordOnScope(obj);
-			}).catch(function(error) {
-		    $location.path( "/error/norecord" );
-		  });
-		}
-
-		function putRecordOnScope(record){
-			if(record && record.group){
-				$scope.groupId = record.$id;
-				$scope.group = record.group;
-				$scope.address = record.address;
-				$scope.schedule = record.schedule;
-				$scope.audit = record.audit;
-				if(record.schedule.time){
-					//console.debug("Setting Time")
-					$scope.schedule.timestamp = new Date();
-					$scope.schedule.timestamp.setHours(record.schedule.time.HH);
-					$scope.schedule.timestamp.setMinutes(record.schedule.time.MM);
-					$scope.schedule.timestamp.setSeconds(0);
-					$scope.schedule.timestamp.setMilliseconds(0);
-				}
-			}else{
-				$location.path( "/error/norecord" );
+				groupInfo.$save();
+				AuditSvc.recordAudit(groupInfo.$id, constants.actions.update, constants.folders.groups);
+				$scope.response = {success:true, message: systemMsgs.success.groupStatusUpdated};
 			}
-		}
+		};
+
+		clearResponse = function() {
+			$rootScope.groupResponse = null;
+			$scope.response = null;
+		};
+
+		/*Called when change detected on time input*/
+		$scope.updateTimeModel = function(){
+			$scope.groupEditParams.timeUpdated = true;
+			let schdTime = document.getElementById("schdTime").value;
+			$scope.objectDetails.basicInfo.time = schdTime;
+		};
+
+		$scope.prepareForGroupLeadUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.groupEditParams.leadsList){
+				$scope.groupEditParams.leadsList = MembersSvc.getLeadMembers();
+			}
+			$scope.groupEditParams.leadsList.$loaded().then(function(){
+				clearResponse();
+				$scope.groupEditParams.updatingGroupLead = true;
+			});
+		};
+
+		/*Persist the Groups's Host Selection */
+		$scope.updateGroupLead = function(){
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				let groupRoles = $scope.objectDetails.roles;
+				if(groupRoles.leadId){
+					let member = $scope.groupEditParams.leadsList.$getRecord(groupRoles.leadId);
+					groupRoles.leadName = member.shortname;
+				}else{
+					groupRoles.leadId = null;
+					groupRoles.leadName = null;
+				}
+				groupRoles.$save().then(function() {
+					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.folders.groups);
+					$scope.groupEditParams.updatingGroupLead = false;
+					$scope.response = {success:true, message: systemMsgs.success.groupLeadUpdated};
+				});
+			}
+		};
+
+		$scope.prepareForGroupHostUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.groupEditParams.hostsList){
+				$scope.groupEditParams.hostsList = MembersSvc.getHostMembers();
+			}
+			$scope.groupEditParams.hostsList.$loaded().then(function(){
+				clearResponse();
+				$scope.groupEditParams.updatingGroupHost = true;
+			});
+		};
+
+		/*Persist the Groups's Host Selection */
+		$scope.updateGroupHost = function(){
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				let groupRoles = $scope.objectDetails.roles;
+				if(groupRoles.hostId){
+					let member = $scope.groupEditParams.hostsList.$getRecord(groupRoles.hostId);
+					groupRoles.hostName = member.shortname;
+				}else{
+					groupRoles.hostId = null;
+					groupRoles.hostName = null;
+				}
+				groupRoles.$save().then(function() {
+					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.folders.groups);
+					$scope.groupEditParams.updatingGroupHost = false;
+					$scope.response = {success:true, message: systemMsgs.success.groupHostUpdated};
+				});
+			}
+		};
 
 	}
 ]);
@@ -320,15 +390,11 @@ okulusApp.factory('GroupsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let groupsListRef = baseRef.child(constants.folders.groupsList);
-		let isActiveGroupRef = groupsListRef.orderByChild(constants.status.isActive);
-
-		//TODO: Update to groups/details
-		let groupDetailsRef = firebase.database().ref().child(rootFolder).child('groups');
-		let groupsRef = firebase.database().ref().child(rootFolder).child('groups');
-		let activeGroupsRef = groupsRef.orderByChild("group/status").equalTo("active");
-
-		let counterRef = firebase.database().ref().child(rootFolder).child('counters/groups');
+		let groupListRef = baseRef.child(constants.folders.groupsList);
+		let groupDetailsRef = baseRef.child(constants.folders.groupsDetails);
+		let isActiveGroupRef = groupListRef.orderByChild(constants.status.isActive);
+		//Deprecated
+		let groupsRef = baseRef.child(constants.folders.groups);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -350,12 +416,15 @@ okulusApp.factory('GroupsSvc',
 			getGlobalGroupsCounter: function(){
 				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
 			},
+			getGroupObj: function(groupId){
+				return $firebaseObject(groupListRef.child(groupId));
+			},
 			/* Return all Members, using a limit for the query, if specified*/
 			getAllGroups: function(limit) {
 					if(limit){
-						return $firebaseArray(groupsListRef.orderByKey().limitToLast(limit));
+						return $firebaseArray(groupListRef.orderByKey().limitToLast(limit));
 					}else{
-						return $firebaseArray(groupsListRef.orderByKey());
+						return $firebaseArray(groupListRef.orderByKey());
 					}
 			},
 			/* Return all Groups with isActive:true, using a limit for the query, if specified*/
@@ -374,22 +443,61 @@ okulusApp.factory('GroupsSvc',
 					return $firebaseArray(isActiveGroupRef.equalTo(false));
 				}
 			},
-
-			getGroupReference: function(groupId){
-				return groupsRef.child(groupId);
+			/* Get group basic info from firebase and return as object */
+			getGroupBasicDataObject: function(whichGroupId){
+				return $firebaseObject(groupListRef.child(whichGroupId));
 			},
-			getNewGroupReference: function(){
-				return groupsRef.push();
+			/* Get group address from firebase and return as object */
+			getGroupAddressObject: function(whichGroupId){
+				return $firebaseObject(groupListRef.child(whichGroupId).child(constants.folders.address));
 			},
-
-			//Use this when $rootScope.allGroups is NOT loaded
-			getGroupObj: function(groupId){
-				return $firebaseObject(groupsRef.child(groupId));
+			/* Get group audit from firebase and return as object */
+			getGroupAuditObject: function(whichGroupId){
+				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.folders.audit));
 			},
-			//Use this when $rootScope.allGroups is already loaded
-			getGroupFromArray: function(groupId){
-				return $rootScope.allGroups.$getRecord(groupId);
+			/* Get group roles from firebase and return as object */
+			getGroupRolesObject: function(whichGroupId){
+				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.folders.roles));
 			},
+			/* Get group roles from firebase and return as object */
+			getGroupReportsList: function(whichGroupId){
+				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.folders.reports));
+			},
+			/* Get the list of Access Rules that indicate the members with access to the group */
+			getAccessRulesList: function(whichGroupId) {
+				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.folders.accessRules));
+			},
+			/* Push Member Basic Details Object to Firebase*/
+			persistGroup: function(groupObj){
+				let ref = groupListRef.push();
+				ref.set(groupObj);
+				return ref;
+			},
+			/* Remove all Member details (Address, Audit, Access Rules, attendance, etc.)*/
+			deleteGroupDetails:function(whichGroupId){
+				groupDetailsRef.child(whichGroupId).set({});
+			},
+			/* Used when creating a Member */
+			increaseTotalGroupsCount: function () {
+				let conunterRef = baseRef.child(constants.folders.totalGroupsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Used when deleting a Member */
+			decreaseTotalGroupsCount: function () {
+				let conunterRef = baseRef.child(constants.folders.totalGroupsCount);
+				decreaseCounter(conunterRef);
+			},
+			/* Called after setting the membership status "isActive" to True  */
+			increaseActiveGroupsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Called after setting the membership status "isActive" to False  */
+			decreaseActiveGroupsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
+				decreaseCounter(conunterRef);
+			},
+			//Deprecated
 			loadAllGroupsList: function(){
 				if(!$rootScope.allGroups){
 					console.debug("Creating firebaseArray for Groups");
@@ -397,19 +505,7 @@ okulusApp.factory('GroupsSvc',
 				}
 				return $rootScope.allGroups;
 			},
-			allGroupsLoaded: function() {
-				return $rootScope.allGroups != null;
-			},
-
-			loadActiveGroups: function(){
-				if(!$rootScope.allActiveGroups){
-					$rootScope.allActiveGroups = $firebaseArray(activeGroupsRef);
-				}
-				return $rootScope.allActiveGroups;
-			},
-			// getActiveGroupFromArray: function(groupId){
-			// 	return $rootScope.allGroups.$getRecord(groupId);
-			// },
+			//Deprecated
 			addReportReference: function(report){
 				//Save the report Id in the Group/reports
 				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
@@ -419,68 +515,26 @@ okulusApp.factory('GroupsSvc',
 					date:report.reunion.dateObj
 				});
 			},
+			//Deprecated
 			removeReportReference: function(reportId,groupId){
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);
 				ref.set(null);
 			},
+			//Deprecated
 			getAccessRulesForGroup: function (groupId) {
 				let reference = groupsRef.child(groupId).child("access");
 				return $firebaseArray(reference);
 			},
 			/* Receives the member's access rules ( { accessRuleId: {groupId,groupName,date} , ...} ),
-			and uses it to delete the member's access to each group.
+			and use them to delete the member's access to each of those groups.
 			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId
 			and members/:memberId/access/:accessRuleId */
-			removeAllGroupAccess: function(accessList){
+			removeAccessRules: function(accessList){
 				if(accessList){
 					accessList.forEach(function(accessRule) {
-						let accessRuleId = accessRule.$id;
-						groupDetailsRef.child(accessRule.groupId).child("access").child(accessRuleId).set(null);
+						groupDetailsRef.child(accessRule.groupId).child("access").child(accessRule.$id).set(null);
 					});
 				}
-			},
-			deleteAccessToGroups: function(accessObj){
-				if(accessObj){
-					for (const accessRuleId in accessObj) {
-						let groupId = accessObj[accessRuleId].groupId;
-						groupsRef.child(groupId).child("access").child(accessRuleId).set(null);
-					}
-				}
-			},
-			increaseGroupsStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( groupStatusCounter ){
-						if(status == 'active'){
-							groupStatusCounter.active = groupStatusCounter.active+1;
-						}else{
-							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
-						}
-						groupStatusCounter.$save();
-					});
-			},
-			decreaseGroupsStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( groupStatusCounter ){
-						if(status == 'active'){
-							groupStatusCounter.active = groupStatusCounter.active-1;
-						}else{
-							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
-						}
-						groupStatusCounter.$save();
-					});
-			},
-			updateGroupsStatusCounter(status){
-				$firebaseObject(counterRef).$loaded().then(
-					function( groupStatusCounter ){
-						if(status == 'active'){
-							groupStatusCounter.active = groupStatusCounter.active+1;
-							groupStatusCounter.inactive = groupStatusCounter.inactive-1;
-						}else{
-							groupStatusCounter.inactive = groupStatusCounter.inactive+1;
-							groupStatusCounter.active = groupStatusCounter.active-1;
-						}
-						groupStatusCounter.$save();
-					});
 			}
 		};
 	}

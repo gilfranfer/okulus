@@ -27,6 +27,7 @@ const systemMsgs = {
 		noGroupsError:"No se encontraron Grupos",
 		loadingGroupsError:"Error al cargar la lista de Grupos",
 		deletingActiveGroup:"No se puede eliminar un Grupo Activo",
+		groupHasReports:"No se puede eliminar el Grupo porque tiene Reportes asociados.",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
@@ -93,6 +94,8 @@ const systemMsgs = {
 		groupCreated:"Grupo Creado",
 		groupRemoved:"Grupo Eliminado",
 		groupStatusUpdated:"Estado del grupo actualizado",
+		groupHostUpdated:"Anfitrión Actualizado",
+		groupLeadUpdated:"Lider Actualizado",
 		/* Weeks JS */
 		statusUpdated:"Estado de la Semana actualizado.",
 		visibilityUpdated:"Visibilidad de la Semana actualizada.",
@@ -325,14 +328,14 @@ okulusApp.run(function($rootScope) {
 			},
 			address:{
 				legend: "Dirección",
-				streetLbl:"Calle", streetHint:"Calle Uno",
-				extNumberLbl: "Num ext", extNumberHint: "22",
+				streetLbl:"Calle", streetHint:"",
+				extNumberLbl: "Num ext", extNumberHint: "",
 				intNumberLbl: "Num int", intNumberHint: "",
-				zipLbl: "C.P.", zipHint: "8600",
-				cityLbl: "Ciudad", cityHint: "Xalapa",
-				neighborhoodLbl: "Colonia", neighborhoodHint: "Centro",
-				stateLbl: "Estado", stateHint: "Veracruz",
-				countryLbl: "Pais", countryHint: "México"
+				zipLbl: "C.P.", zipHint: "",
+				cityLbl: "Ciudad", cityHint: "",
+				neighborhoodLbl: "Colonia", neighborhoodHint: "",
+				stateLbl: "Estado", stateHint: "",
+				countryLbl: "Pais", countryHint: ""
 			},
 			contact:{
 				emailLbl:"Correo electrónico", emailHint:"micorreo@gmail.com",
