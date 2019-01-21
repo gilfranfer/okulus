@@ -37,6 +37,9 @@ okulusApp.controller('AuthenticationCntrl',
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
 							/* Load Unread Chats Count */
 							$rootScope.currentSession.unreadChats = ChatSvc.getUnreadChatsForUser(authUser.uid);
+							if(loggedUser.type == "admin"){
+								$rootScope.errorsGlobalCount = ErrorsSvc.getGlobalErrorCounter();
+							}
 					});
 				}else{
 					cleanRootScope();
@@ -49,19 +52,19 @@ okulusApp.controller('AuthenticationCntrl',
 		2. When no object is returned, is because the Member was deleated (error)
 		3. Email from the User and the linked Member must match (error, when email upadated for the Member)
 		4. The User already has a reference to the member, Now Link the Member to User (Cross Reference)
-		5. Load Member data to scope only when member isActive and canBeUser
+		5. Load Member data to scope only when member isActive
 		In case of any error, Remove the Cross Reference */
 		var validateMemberFromUser = function(loggedUserObj) {
 			let errorMessage = undefined;
-			MembersSvc.getMemberDataObject(loggedUserObj.memberId).$loaded().then(function(memberDataObj){
+			MembersSvc.getMemberBasicDataObject(loggedUserObj.memberId).$loaded().then(function(memberDataObj){
 				if(!memberDataObj || !memberDataObj.email){
 					errorMessage = systemMsgs.error.memberlinkedDoesntExist;
 				}else if(memberDataObj.email != loggedUserObj.email){
 					errorMessage = systemMsgs.error.memberAndUserEmailMismatch;
-				}else if(memberDataObj.status != constants.status.active || !memberDataObj.canBeUser){
+				}else if(!memberDataObj.isActive){
 					errorMessage = systemMsgs.error.memberNotActiveUser;
 				}else{
-					/* All good: Emails match, the member is "Active" and canBeUser.
+					/* All good: Emails match, and the member isActive.
 					 Update the UserId reference in the Member Object.
 					 Update the MemberId and Member Shortname in the User Object */
 					MembersSvc.updateUserReferenceInMemberObject(loggedUserObj.$id, memberDataObj);
@@ -83,8 +86,7 @@ okulusApp.controller('AuthenticationCntrl',
 
 		/* This process is to find a Member that matches the User's email.
 		1. More than one member is an error that must be notified to the Admin
-		2. Exactly one member found will be linked to the user, only if the
-		   member isActive and canBeUser */
+		2. When only one member is found it'll be linked to the user (if the member status = active) */
 		var setMemberToUser = function(loggedUser){
 			let errorMessage = undefined;
 			MembersSvc.getMembersByEmail(loggedUser.email).$loaded().then(function(membersFound) {
@@ -95,10 +97,10 @@ okulusApp.controller('AuthenticationCntrl',
 				}else{
 					memberObj = membersFound[0];
 					membersFound.$destroy();
-					if(memberObj.member.status == constants.status.active && memberObj.member.canBeUser){
-						$rootScope.currentSession.memberData = memberObj.member;
+					if(memberObj.isActive){
+						$rootScope.currentSession.memberData = memberObj;
 						//Create Cross Reference
-						UsersSvc.updateMemberReferenceInUserObject(memberObj.$id, memberObj.member.shortname, loggedUser);
+						UsersSvc.updateMemberReferenceInUserObject(memberObj.$id, memberObj.shortname, loggedUser);
 						MembersSvc.updateUserReferenceInMember(loggedUser.$id, memberObj.$id);
 					}else{
 						errorMessage = systemMsgs.error.memberNotActiveUser;
@@ -216,6 +218,7 @@ okulusApp.controller('RegistrationCntrl',
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
 				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.folders.users);
+				$rootScope.redirectFronRegister = true;
 				$location.path(constants.pages.home);
 			})
 			.catch( function(error){
@@ -290,6 +293,8 @@ okulusApp.controller('HomeCntrl',
 				if(user.isRoot){
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);
+				}else if($rootScope.redirectFronRegister){
+					$rootScope.redirectFronRegister = undefined;
 				}else if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);

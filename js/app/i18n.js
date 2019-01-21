@@ -2,10 +2,11 @@
 const systemMsgs = {
 	error:{
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
+		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
-		memberNotActiveUser: "El Miembro asociado/encontrado no es un Usuario activo.",
+		memberNotActiveUser: "El Miembro asociado/encontrado no está activo.",
 		referenceRemoved: "Se ha borrado la referencia entre el Usuario y el Miembro.",
 		contactAdmin: "Contacta al Administrador del Sistema.",
 		noMemberFound: "No se encontró un Miembro con el correo electrónico:",
@@ -16,17 +17,99 @@ const systemMsgs = {
 		/* RegistrationCntrl */
 		emailExist: "El correo electrónico ya está en uso.",
 		tryAgainLater: "Hubo un error. Intente más tarde.",
-		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador."
+		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
+		recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
+		/*Members*/
+		noMembersError:"No se encontraron Miembros",
+		loadingMembersError:"Error al cargar la lista de Miembros",
+		deletingActiveMember:"No se puede eliminar un Miembro Activo",
+		/*Groups*/
+		noGroupsError:"No se encontraron Grupos",
+		loadingGroupsError:"Error al cargar la lista de Grupos",
+		deletingActiveGroup:"No se puede eliminar un Grupo Activo",
+		groupHasReports:"No se puede eliminar el Grupo porque tiene Reportes asociados.",
+		duplicatedRule:"La regla ya existe.",
+		creatingRuleError:"Error al crear la regla de acceso",
+		deletingRuleError:"Error al eliminar la regla de acceso",
+		/*Weeks*/
+		weekExists:"Ya existe la Semana",
+		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
-		registeringUser: "Registrando Usuario..."
+		registeringUser: "Registrando Usuario...",
+		loading:"Cargando ...",
+		working:"Estamos trabajando en tu solicitud ...",
+		/*Members JS*/
+		loadingMember:"Cargando información del Miembro ...",
+		loadingAllMembers:"Cargando Todos los Miembros ...",
+		loadingActiveMembers:"Cargando Miembros Activos ...",
+		loadingInactiveMembers:"Cargando Miembros Inactivos ...",
+		loadingLeadMembers:"Cargando Miembros Líderes ...",
+		loadingHostMembers:"Cargando Miembros Anfitriones ...",
+		loadingTraineeMembers:"Cargando Miembros Aprendices ...",
+		savingMemberInfo:"Guardando Información del Miembro",
+		savingMemberAddress:"Guardando Dirección del Miembro",
+		deletingMember:"Eliminando Miembro ...",
+		deletingMemberAddress:"Eliminando Dirección del Miembro ...",
+		/*Groups JS*/
+		loadingGroup:"Cargando información del Grupo ...",
+		loadingAccessRules:"Cargando reglas de acceso ...",
+		loadingAllGroups:"Cargando Todos los Grupos ...",
+		loadingActiveGroups:"Cargando Grupos Activos ...",
+		loadingInactiveGroups:"Cargando Grupos Inactivos ...",
+		savingGroupInfo:"Guardando Información del Grupo",
+		deletingGroup:"Eliminando Grupo ...",
+		deletingGroupAddress:"Eliminando Dirección del Grupo ...",
+		creatingRule:"Creando Regla de Acceso ...",
+		deletingRule:"Eliminando Regla de Acceso ...",
+		/*Weeks JS*/
+		loadingWeek:"Cargando información de la Semana ...",
+		loadingAllWeeks:"Cargando Todas los Semanas ...",
+		loadingOpenWeeks:"Cargando Semanas Abiertas ...",
+		loadingClosedWeeks:"Cargando Semanas Cerradas ...",
+		loadingVisibleWeeks:"Cargando Semanas Visibles ...",
+		loadingHiddenWeeks:"Cargando Semanas Ocultas ...",
+		savingWeekInfo:"Guardando Información de la Semana",
+		deletingWeek:"Eliminando Semana"
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
 		userRegistered: "Usuario Creado",
-		noMoreChatMessages:"No hay más mensajes"
+		noMoreChatMessages:"No hay más mensajes",
+		/* Members JS */
+		allMembersTitle:"Miembros existentes",
+		activeMembersTitle:"Miembros Activos",
+		inactiveMembersTitle:"Miembros Inactivos",
+		leadMembersTitle:"Miembros Líderes",
+		traineeMembersTitle:"Miembros Aprendices",
+		hostMembersTitle:"Miembros Anfitriones",
+		memberInfoSAved:"Información Guardada",
+		memberAddressRemoved:"Dirección Eliminada",
+		memberCreated:"Miembro Creado",
+		memberRemoved:"Miembro Eliminado",
+		membershipStatusUpdated:"Estado de la membresia actualizado",
+		memberRoleUpdated:"Rol del Miembro modificado",
+		baseGroupUpdated:"Grupo Base Actualizado",
+		/* Groups JS */
+		allGroupsTitle:"Grupos existentes",
+		activeGroupsTitle:"Grupos Activos",
+		inactiveGroupsTitle:"Grupos Inactivos",
+		groupInfoSaved:"Información Guardada",
+		groupAddressRemoved:"Dirección Eliminada",
+		groupCreated:"Grupo Creado",
+		groupRemoved:"Grupo Eliminado",
+		groupStatusUpdated:"Estado del grupo actualizado",
+		groupHostUpdated:"Anfitrión Actualizado",
+		groupLeadUpdated:"Lider Actualizado",
+		ruleCreated:"Regla Creada",
+		ruleRemoved:"Regla Eliminada",
+		/* Weeks JS */
+		statusUpdated:"Estado de la Semana actualizado.",
+		visibilityUpdated:"Visibilidad de la Semana actualizada.",
+		weekInfoUpdated:"Semana Actualizada",
+		weekDeleted:"Se ha eliminado la semana"
 	}
 };
 
@@ -89,7 +172,8 @@ okulusApp.run(function($rootScope) {
 				deleteInProgress: "Eliminando mensaje ...",
 				deleteSuccess: "El mensaje ha sido eliminado.",
 				deleteError: "Error al eliminar el mensaje. Intentelo más tarde.",
-				onlyAdmin: "Debes ser administrador."
+				onlyAdmin: "Debes ser administrador.",
+				sendBtn: "Enviar"
 			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"Por:", noRecords:"No tienes ninguna notificación",
@@ -104,15 +188,14 @@ okulusApp.run(function($rootScope) {
 			},
 			login:{
 				title:"Inicia Sesión",
-				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
 				invalidEmail:"Ese no es un correo válido",
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdRequired:"La contraseña es requerida", forgotPwd: "Olvidé mi contraseña",
-				resetPwd: "Restablecer contraseña",
+				resetPwd: "Restablecer contraseña", resetPwdBtn:"Restablecer contraseña",
+				loginBtn:"Iniciar Sesión"
 			},
 			register:{
-				title:"Regístrate",
-				email:"Correo Electrónico", emailHint:"micorreo@gmail.com",
+				title:"Regístrate", registerBtn:"Registrarse", emailDisclosure:"",
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
 				alert:{ invalidEmail:"Ese no es un correo válido",
@@ -142,6 +225,7 @@ okulusApp.run(function($rootScope) {
 			},
 			weeks:{
 				title: "Administrador de Semanas",
+				basicInfoTitle:"Información Básica",
 				description: "Las Semanas son los contenedores de los Reportes.",
         closeInstructions:
           "Se recomienda cerrar cada semana cuando se hayan recibido todos los reportes, para que ya no aparezacn al momento de crear un reporte. "+
@@ -155,79 +239,155 @@ okulusApp.run(function($rootScope) {
         /*Buttons*/
         loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
+        openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
+				showWeekBtn:"Mostrar Semana", hideWeekBtn:"Ocultar Semana",
 				editBtn:"Editar Semana",
+				saveWeekBtn:"Guardar Semana",
+				deleteWeekBtn:"Eliminar Semana",
         /*Alert Messages*/
         loading:"Cargando Semanas...", loadingSuccess: "Semanas Cargadas.",
         loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
         noWeeksError: "No se encontraron Semanas.",
 				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
-				statusUpdated:"Estado de la Semana actualizado.",
-				visibilityUpdated:"Visibilidad de la Semana actualizada.",
 				weekUpdated:"Se ha actualizado la Semana",
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
 				weekExists:"Ya existe la Semana",
-				loadedWeeks: "Semanas fueron cargadas.",
 				loadPending1: "Mostar ", loadPending2: "Semanas restantes.",
         /*Labels*/
         weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
 				statusLbl:"Se pueden agregar reportes? (Estado)",
-				openStatusLbl:"Si / Semana Abierta", closedStatusLbl:"No / Semana Cerrada",
+				openStatusLbl:"Sí. Semana Abierta", closedStatusLbl:"No. Semana Cerrada",
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
-				showStatusLbl:"Si / Semana Visible", hideStatusLbl:"No / Semana Oculta",
-				modifyLbl:"Modificar", newLbl: "Nueva"
+				showStatusLbl:"Sí. Semana Visible", hideStatusLbl:"No. Semana Oculta",
+				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado"
+			},
+			members:{
+				/* Admin Members */
+				adminTitle:"Administrador de  Miembros",
+				/* Global Badges */
+				totalMembers:"Miembros Existentes",
+				activeMembers:"Miembros Activos", inactiveMembers:"Miembros Inactivos",
+				leadLbl:"Líder", hostLbl:"Anfitrión", traineeLbl:"Aprendíz",
+				leadsLbl:"Líderes", hostsLbl:"Anfitriones", traineesLbl:"Aprendices",
+				/*Buttons*/
+				loadBtn:"Mostrar Miembros", newBtn:"Crear Miembro",
+				saveBasicInfoBtn:"Guardar información básica",
+				saveAddressBtn:"Guardar dirección",
+				saveAllBtn:"Guardar cambios",
+				addAddressBtn:"Agregar dirección",
+				deleteAddressBtn:"Eliminar dirección",
+				deleteMemberBtn:"Eliminar miembro",
+				editBtn:"Editar Miembro",
+				/*Alert Messages*/
+        loadingSuccess: "Miembros Cargados.",
+				loadPending1: "Mostar ", loadPending2: "Miembros restantes.",
+				/*Labels*/
+				memberLbl:"Miembro",
+				basicInfoTitle:"Información Básica",
+				membershipTitle:"Membresía",
+				groupsTitle:"Grupos",
+				modifyLbl:"Modificar información del", newLbl: "Nuevo",
+				activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo",
+				activeStatusLbl:"Miembro Activo", inactiveStatusLbl:"Miembro Inactivo",
+				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
+				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
+				aliasLbl:"Alias", aliasHint:"Franfer Gil",
+				bdayLbl:"Fecha de nacimiento", bdayHint:"aaaa-mm-dd",
+				statusLbl:"Estado de la membresía",
+				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Siervo Líder?",
+				isTraineeLbl:"Es Siervo Aprendíz?",
+				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
+				/*TODO: Used?*/
+				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
+				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
+				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
+				noMembersError: "No se encontraron Miembros.",
+				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
+				leadLabel:"Líderes", traineeLabel: "Aprendíces"
+			},
+			groups:{
+				/* Admin Groups */
+				adminTitle:"Administrador de Grupos Familiares",
+				/*Badges*/
+				activeGroups:"Grupos Activos",
+				inactiveGroups:"Grupos Inactivos",
+				totalGroups:"Grupos Existentes",
+				/*Buttons*/
+				loadBtn:"Mostrar Grupos", newBtn:"Crear Grupo", editBtn:"Editar Grupo",
+				deleteBtn:"Eliminar Grupo", saveBtn:"Guardar",
+				/*Alert Messages*/
+        loadingSuccess: "Grupos Cargados.",
+				loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
+				/*Labels*/
+				groupLbl:"Grupo",
+				basicInfoTitle:"Información Básica",
+				additionalInfoTitle:"Más Detalles",
+				modifyLbl:"Modificar Información del", newLbl: "Nuevo",
+				statusLbl:"Estado del Grupo",
+				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",
+				typeLbl:"Tipo", scheduleLbl:"Horario", schdTimeHint: "20:00",
+				numberLbl:"Número", numberHint:"0", typeLbl:"Tipo",
+				nameLbl:"Nombre", nameHint:"Semillas de Esperanza",
+				mandatoryFields: "Campos Obligatorios",
+				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión",
+				/*Access Rules*/
+				accessTitle:"Control de acccesos al Grupo",
+				newAccessTitle:"Porporcionar Acceso",
+				accessListTitle:"Usuarios con acccesos al Grupo",
+				loadingRulesSuccess: "Reglas de Acceso Cargadas.",
+				loadPendingRules1: "Mostar ", loadPendingRules2: "Reglas restantes.",
+				ruleDate:"Desde",
+				ruleDeleteBtn:"Eliminar Regla",
+				accessDescription: "Proporcionar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros con acceso al sistema.",
+				noRulesMessage: "No hay reglas de acceso en este grupo",
+				table:{
+					memberName:"Miembro", memberId:"Id", date:"Desde"
+				}
+			},
+			address:{
+				legend: "Dirección",
+				streetLbl:"Calle", streetHint:"",
+				extNumberLbl: "Num ext", extNumberHint: "",
+				intNumberLbl: "Num int", intNumberHint: "",
+				zipLbl: "C.P.", zipHint: "",
+				cityLbl: "Ciudad", cityHint: "",
+				neighborhoodLbl: "Colonia", neighborhoodHint: "",
+				stateLbl: "Estado", stateHint: "",
+				countryLbl: "Pais", countryHint: ""
+			},
+			contact:{
+				emailLbl:"Correo electrónico", emailHint:"micorreo@gmail.com",
+				phoneLbl:"Teléfono", phoneHint:""
+			},
+			audit:{
+				title:"Auditoria", creation:"Creación", update:"Última Actualización",
+				approval:"Aprobación", rejection: "Rechazo"
 			},
 			btns:{
-				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
-				cancelBtn: "Cancelar", sendBtn: "Enviar", yesBtn: "Si!", noBtn: "No!",
-				newgroupBtn: "Nuevo", newMemberBtn: "Nuevo", addBtn: "+", viewBtn: "Ver",
-				openBtn: "Abrir", closeBtn: "Cerrar", returnBtn:"Regresar",
-				addReport: "Crear Reporte", accessRules:"Reglas de Accesos", analytics: "Analizar",
-				provideAddress:"Proporcionar Direción", notProvideAddress:"No Proporcionar Direción",
-				login:"Iniciar Sesión", register:"Registrarse",
-				requestCreationBtn:"Solicitar Creación",requestUpdateSaveBtn:"Solicitar Actualización",
+				saveBtn: "Guardar", newBtn: "Nuevo",
+				deleteBtn: "Eliminar",
+				yesBtn: "Si!", noBtn: "No!",
+				viewBtn: "Ver",
+				/** Access Rules **/
+				returnBtn:"Regresar",
+				addReport: "Crear Reporte", accessRules:"Reglas de Accesos",
+				/*Reports*/
+				addBtn: "+",
 				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
 			},
 			alerts:{
+				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ...",
 				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
 				confirmDelete: "Seguro que deseas eliminar este registro?",
-				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ..."
+				confirmQuestion: "Seguro?"
 			},
 			forms:{
-				audit:{
-					title:"Auditoria", creation:"Creación", update:"Última Actualización",
-					approval:"Aprobación", rejection: "Rechazo",
-					refreshForUpdates: "Para ver actualizaciones de ésta sección, debes refrescar la página "
-				},
-				group:{
-					newGroup: "Nuevo Grupo",
-					basicDataLegend: "Datos del Grupo",
-					numberLbl:"Número", numberHint:"", typeLbl:"Tipo",
-					nameLbl:"Nombre", nameHint:"",
-					emailLbl:"Correo", emailHint:"",
-					shcLegend:"Horario de Servicio",
-					typeLegend:"Tipo de Grupo",
-					schdDayLbl: "Día", schdTimeLbl: "Hora", schdTimeHint: "",
-					mandatoryFields: "Campos Obligatorios",
-					active: "Grupo Activo", inactive: "Grupo Inactivo"
-				},
-				member:{
-					newMember: "Nuevo Miembro",
-					basicDataLegend: "Datos del Miembro", membership:"Membresía",
-					fnameLbl:"Nombre", fnameHint:"",
-					lnameLbl:"Apellido", lnameHint:"",
-					snameLbl:"Alias", snameHint:"",
-					emailLbl:"Correo", emailHint:"",
-					bdayLbl:"Fecha de nacimiento",
-					baseGroupLbl: "Grupo Base",
-					canBeUserLbl: "Puede ser Usuario?",
-					typeLbl:"Tipo de Miembro", isHostLbl:"Es Anfitrión?",
-					isLeadLbl:"Es Siervo Líder?", isTraineeLbl:"Es Siervo Aprendíz?",
-					active: "Miembro Activo", inactive: "Miembro Inactivo"
-				},
+				searchHint:"Buscar ...",
+				filterHint:"Filtrar resultados...",
 				report:{
 					newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
 					basicDataLegend: "Detalles de la Reunión",
@@ -251,65 +411,10 @@ okulusApp.run(function($rootScope) {
 					noMembersList:"No se ha registrado la asistencia de Miembros",
 					noGuestsList:"No se ha registrado la asistencia de Invitados",
 					approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
-				},
-				phone:{
-					phoneLbl:"Teléfono", phoneHint:""
-				},
-				search:{
-					hint:"Buscar ..."
-				},
-				filter:{
-					hint:"Filtrar resultados..."
-				},
-				address:{
-					legend: "Dirección",
-					streetLbl:"Calle", streetHint:"",
-					extNumberLbl: "Num ext", extNumberHint: "",
-					intNumberLbl: "Num int", intNumberHint: "",
-					zipLbl: "Codigo Postal", zipHint: "",
-					cityLbl: "Ciudad", cityHint: "",
-					neighborhoodLbl: "Colonia", neighborhoodHint: "",
-					stateLbl: "Estado", stateHint: "",
-					countryLbl: "Pais", countryHint: ""
 				}
 			},
 			admin:{
-				//For Admin Views
-				groups:{
-					title:"Administrar Grupos Familiares",
-					activeGroups:"Grupos Activos",
-					inactiveGroups:"Grupos Inactivos",
-					totalGroups:"Grupos Existentes",
-					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-					loading:"Cargando Grupos...", loadingSuccess: "Grupos Cargados.",
-					loadingError: "Error al cargar los grupos. Intentelo más tarde.",
-					noGroupsError: "No se encontraron Grupos.",
-					loadBtn:"Mostrar Grupos",
-					newBtn:"Crear Grupo"
-				},
-				members:{
-					title:"Administrar Miembros de la Iglesia",
-					activeMembers:"Miembros Activos",
-					inactiveMembers:"Miembros Inactivos",
-					totalMembers:"Miembros Existentes",
-					filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-					loading:"Cargando Mimebros...", loadingSuccess: "Mimebros Cargados.",
-					loadingError: "Error al cargar los miembros. Intentelo más tarde.",
-					noMembersError: "No se encontraron Miembros.",
-					loadBtn:"Mostrar Miembros",
-					newBtn:"Crear Miembro",
-					filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
-					leadLabel:"Líderes", traineeLabel: "Aprendíces"
-				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
-				access:{
-					title: "Lista de acccesos al Grupo",
-					description: "Otorgar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros que tiene permiso para ser Usuarios del sistema.",
-					noRecordsError: "No hay reglas de acceso en este grupo",
-					table:{
-						memberName:"Miembro", memberId:"Id", date:"Desde"
-					}
-				},
 				dashboard:{
 					counters:{
 						total: "Total",
@@ -407,8 +512,6 @@ okulusApp.run(function($rootScope) {
 				title: "Houston, Tenemos Problemas!",
 				lead: "Lo sentimos, pero algo salió mal.",
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
-				recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
-				noAdmin: "No cuentas con los permisos necesarios para ver este contenido.",
 				message:"Houston, Tenemos Problemas!"
 			},
 			dropdowns:{
