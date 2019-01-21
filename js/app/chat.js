@@ -6,7 +6,7 @@ okulusApp.controller('ChatCenterCntrl',
 
 		/* Executed everytime we enter to Chat Center
 		  This function is used to confirm the user is logged and prepare some initial values */
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(loggedUser){
 				if(!loggedUser.memberId){
@@ -53,6 +53,7 @@ okulusApp.controller('ChatCenterCntrl',
 
 		/* Called when clicking an element from the ChatRooms List */
 		$scope.openChatRoom = function(chatRoom){
+			$scope.chatCenterParams.response = undefined;
 			let loggedUserId = $rootScope.currentSession.user.$id;
 			let previuosChatWith = $scope.chatCenterParams.activeChatWith;
 
@@ -90,7 +91,7 @@ okulusApp.controller('ChatCenterCntrl',
 				ChatSvc.setChatRoomUnreadCount(chatRoom.$id,0);
 				//Remove this chat from unreadChats List
 				ChatSvc.removeChatFromUnreadList(loggedUserId,chatRoom.$id);
-				scrollBottom();
+	      scrollBottom();
 			});
 		};
 
@@ -136,7 +137,7 @@ okulusApp.controller('ChatCenterCntrl',
 					}, function(error) {console.error(error);});
 					//Add this chat to Receiver's unreadChats List
 					ChatSvc.addChatToUnreadList(receiverId,senderId);
-					scrollBottom();
+		      scrollBottom();
 				}, function(error) {console.error(error);});
 			}
 		};
@@ -244,11 +245,14 @@ okulusApp.controller('ChatCenterCntrl',
 			$scope.chatCenterParams.messageToEdit = undefined;
 		};
 
-		/* Current problem is this method doesnt work the first time you open the chat,
-		because the messages are printed async, after the data comes from Firebase */
+		/* Added a delay to this method to ensure that all HTML elements are fully
+		rendered before setting the scroll position to the bottom of the chat area*/
 		scrollBottom = function(){
-			var element = document.getElementById("messagesList");
-    	element.scrollTop = element.scrollHeight;
+			let delay = 25;
+			let element = document.getElementById("messagesList");
+			setTimeout(function() {
+				element.scrollTop = element.scrollHeight;
+			}, delay);
 		};
 
 		scrollToTop = function(){
@@ -262,12 +266,26 @@ okulusApp.controller('ChatCenterCntrl',
 	    var pos = $('#messagesList').scrollTop();
 			//check if we have reached the top of the list
 	    if(pos == 0){
+				$scope.chatCenterParams.response = {loading: true, message: systemMsgs.inProgress.loading };
 				let loggedUserId = $rootScope.currentSession.user.$id;
 				let chatRoomId = $scope.chatCenterParams.activeChatWith;
+				//set the new limit for the query
 				let messagesLimit = $scope.chatCenterParams.activeChatLimit + $rootScope.config.maxQueryListResults;
-				$scope.chatCenterParams.activeChatLimit = messagesLimit;
+
 				$scope.chatCenterParams.activeChatMessages = ChatSvc.getChatMessages(loggedUserId,chatRoomId,messagesLimit);
+				$scope.chatCenterParams.activeChatMessages.$loaded().then(function(list){
+					/*Save the new limit, only if it's equal to the retrieved list's size.
+					If the list size is smaller, that means we have already loaded all the
+					existing messages from DB. */
+					if(list.length==messagesLimit){
+						$scope.chatCenterParams.activeChatLimit = messagesLimit;
+						$scope.chatCenterParams.response = undefined;
+					}else{
+						$scope.chatCenterParams.response = { message: systemMsgs.success.noMoreChatMessages };
+					}
+				});
 	    }
+
 		});
 	}
 ]);

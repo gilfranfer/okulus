@@ -1,8 +1,8 @@
 okulusApp.controller('MonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc', 'ReportsSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MigrationSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,ReportsSvc){
+		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MigrationSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let baseRef = firebase.database().ref().child(rootFolder);
@@ -127,49 +127,69 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateWeeks = function () {
 			console.log("Init Weeks Migration");
-			let weeksRef = baseRef.child('weeks');
+			let weeksListRef = baseRef.child(constants.folders.weeksList);
+			let weeksDetailsRef = baseRef.child(constants.folders.weeksDetails);
+
+			let weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
 			//Updates in Week Object
-			$rootScope.allWeeks = $firebaseArray(weeksRef);
-			$rootScope.allWeeks.$loaded().then(function (weeks) {
-				let totalReports = 0;
-				let totalWeeks = weeks.length;
+			let allWeeks = $firebaseArray(baseRef.child('weeks'));
+			allWeeks.$loaded().then(function (weeks) {
+				let totalWeeks = 0
 				let openWeeks = 0;
 
 				weeks.forEach(function(week){
-					//Add year and weekNumber to the DB, from the week id
-					let index = $rootScope.allWeeks.$indexFor(week.$id);
-					let idtxt = week.$id + "";
-					let yearStr = idtxt.substring(0,4);
-					let weekStr = idtxt.substring(4);
-					week.year = Number(yearStr);
-					week.weekNumber = Number(weekStr);
-					//Add isOpen and isVisible from week status
-					if(week.status == "open"){
-						week.isOpen = true;
-						week.isVisible = true;
-						openWeeks++;
-					}else{
-						week.isOpen = false;
-						week.isVisible = false;
+					if(week.$id != "list" && week.$id != "details"){
+						totalWeeks++;
+						//Add year and weekNumber to the DB, from the week id
+						//let index = $rootScope.allWeeks.$indexFor(week.$id);
+						let weekObj = {};
+						let idtxt = week.$id + "";
+						let yearStr = idtxt.substring(0,4);
+						let weekStr = idtxt.substring(4);
+						weekObj.year = Number(yearStr);
+						weekObj.weekNumber = Number(weekStr);
+						weekObj.name = week.name;
+						//Add isOpen and isVisible from week status
+						if(week.status == "open"){
+							weekObj.isOpen = true;
+							weekObj.isVisible = true;
+							openWeeks++;
+						}else{
+							weekObj.isOpen = false;
+							weekObj.isVisible = false;
+						}
+						//week.status = null;
+
+						//Get Reports for the week to update week's reportsCount
+						ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+							weekObj.reportsCount = reports.length;
+							console.log(week.$id+" has "+reports.length+" reports");
+							weeksDetailsRef.child(week.$id).child("audit").set(week.audit);
+							weeksListRef.child(week.$id).set(weekObj);
+						});
 					}
-					//week.status = null;
-
-					//Get Reports for the week to update week's reportsCount
-					ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
-						week.reportsCount = reports.length;
-						console.log(week.$id+" has "+reports.length+" reports");
-						$rootScope.allWeeks.$save(index);
-					});
-
 				});
-
 				//Update Global System Counters
-				$rootScope.systemCounters.weeks = {};
-				$rootScope.systemCounters.weeks.total = totalWeeks;
-				$rootScope.systemCounters.weeks.open = openWeeks;
-				$rootScope.systemCounters.weeks.visible = openWeeks;
-				$rootScope.systemCounters.$save();
+				weeksGlobalCount.total = totalWeeks;
+				weeksGlobalCount.open = openWeeks;
+				weeksGlobalCount.visible = openWeeks;
+				weeksGlobalCount.$save();
 				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
+			});
+		};
+
+		$scope.migrateMembers = function() {
+			console.log("Initiating Members Migration!!!");
+			//Get Groups from Original Strcuture
+			MigrationSvc.getAllGroups().$loaded().then(function(groups){
+				MigrationSvc.migrateMembers(groups);
+			});
+		};
+
+		$scope.migrateGroups = function() {
+			console.log("Initiating Groups Migration!!!");
+			MigrationSvc.getMembersList().$loaded().then(function(members){
+				MigrationSvc.migrateGroups(members);
 			});
 		};
 
@@ -186,7 +206,7 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 
 						$scope.adminViewActive = true;
 						$scope.weeksList = WeeksSvc.loadVisibleWeeks();
-						$scope.groupsList = GroupsSvc.loadAllGroupsList();
+						$scope.groupsList = GroupsSvc.getAllGroups();
 						$scope.groupsList.$loaded().then(function () {
 							$scope.loadingReportSelector = false;
 						});
@@ -212,4 +232,177 @@ okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
 			}
 		});
 
+}]);
+
+okulusApp.factory('MigrationSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
+
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let memberListRef = baseRef.child(constants.folders.membersList);
+		let membersRef = baseRef.child(constants.folders.members);
+		let groupsRef = baseRef.child(constants.folders.groups);
+
+		return {
+			migrateMembers: function(groups) {
+				let hostCount = 0;
+				let leadCount = 0;
+				let traineeCount = 0;
+				let totalCount = 0;
+				let memberFolderCount = 0;
+				let activeCount = 0;
+				let memberCountersRef = baseRef.child(constants.folders.membersCounters);
+				let membersListRef = baseRef.child(constants.folders.membersList);
+				let membersDetailsRef = baseRef.child(constants.folders.membersDetails);
+				let membersList = $firebaseArray(membersRef.orderByKey());
+
+				membersList.$loaded().then(function(list){
+					list.forEach(function(member) {
+						if(member.$id != "list" && member.$id != "details"){
+							//Move /audit, /access, /attendance, /address into /details
+							let detailsRecord = {};
+							if(member.access){
+								detailsRecord.access = member.access;
+							}
+							if(member.audit){
+								detailsRecord.audit = member.audit;
+							}
+							if(member.attendance){
+								detailsRecord.attendance = member.attendance;
+							}
+							if(member.address){
+								detailsRecord.address = member.address;
+							}
+							membersDetailsRef.child(member.$id).set(detailsRecord);
+
+							//Merge /user with /member and place in /list
+							let basicRecord = member.member;
+							if(basicRecord){
+								basicRecord.isActive = (basicRecord.status == "active");
+								basicRecord.canBeUser = null;
+								basicRecord.status = null;
+								if(basicRecord.baseGroup){
+									basicRecord.baseGroupId = basicRecord.baseGroup;
+									basicRecord.baseGroupName = groups.$getRecord(basicRecord.baseGroup).group.name;
+									basicRecord.baseGroup = null;
+								}
+								if(basicRecord.birthdate){
+									let dayString = (basicRecord.birthdate.day<10)?"0"+basicRecord.birthdate.day:basicRecord.birthdate.day;
+									let monthString = (basicRecord.birthdate.month<10)?"0"+basicRecord.birthdate.month:basicRecord.birthdate.month;
+									basicRecord.bday = basicRecord.birthdate.year+"-"+monthString+"-"+dayString;
+									basicRecord.birthdate = null;
+								}
+								if(member.user && member.user.userId){
+									basicRecord.isUser = true;
+									basicRecord.userId = member.user.userId;
+								}
+								if(!basicRecord.isActive){
+									basicRecord.isHost = false;
+									basicRecord.isLeader = false;
+									basicRecord.isTrainee = false;
+								}else{
+									activeCount++;
+								}
+								if(basicRecord.isHost){
+									hostCount++;
+								}
+								if(basicRecord.isLeader){
+									leadCount++;
+								}
+								if(basicRecord.isTrainee){
+									traineeCount++;
+								}
+								membersListRef.child(member.$id).set(basicRecord);
+								memberFolderCount++;
+							}else{
+								console.error("No member folder",member.$id);
+							}
+							totalCount++;
+						}
+					});
+					console.log("List Size:",list.length);
+					console.log("Total Members:",totalCount);
+					console.log("With member folder",memberFolderCount);
+					console.log("Active:",activeCount);
+					console.log("Hosts:",hostCount);
+					console.log("Leads:",leadCount);
+					console.log("Trainees:",traineeCount);
+					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
+				});
+			},
+			migrateGroups: function(members) {
+
+				let totalCount = 0;
+				let activeCount = 0;
+				let groupFolderCount = 0;
+
+				let groupsCountersRef = baseRef.child(constants.folders.groupsCounters);
+				let groupsListRef = baseRef.child(constants.folders.groupsList);
+				let groupsDetailsRef = baseRef.child(constants.folders.groupsDetails);
+				let groupsList = $firebaseArray(groupsRef.orderByKey());
+
+				groupsList.$loaded().then(function(list){
+					list.forEach(function(group){
+						if(group.$id != "list" && group.$id != "details"){
+							// /access, /audit, /reports create /roles
+							let detailsRecord = {};
+
+							if(group.access){
+								detailsRecord.access = group.access;
+							}
+							if(group.audit){
+								detailsRecord.audit = group.audit;
+							}
+							if(group.reports){
+								detailsRecord.reports = group.reports;
+							}
+							detailsRecord.roles = {};
+							if(group.group.leadId){
+								detailsRecord.roles.leadId = group.group.leadId;
+								detailsRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
+								group.group.leadId = null;
+							}
+							if(group.group.hostId){
+								detailsRecord.roles.hostId = group.group.hostId;
+								detailsRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
+								group.group.hostId = null;
+							}
+							groupsDetailsRef.child(group.$id).set(detailsRecord);
+
+							// basicRecord ( /group, /schedule, /address )
+							let basicRecord = group.group;
+							if(!basicRecord){
+								console.error("No group folder",group.$id);
+								basicRecord = {};
+							}
+							if(group.address){
+								basicRecord.address = group.address;
+							}
+							if(group.schedule){
+								basicRecord.weekday = group.schedule.weekday;
+								let minutesText = (group.schedule.time.MM<10)?("0"+group.schedule.time.MM):group.schedule.time.MM;
+								basicRecord.time = group.schedule.time.HH +":"+minutesText;
+							}
+							basicRecord.isActive = (basicRecord.status == "active");
+							basicRecord.status = null;
+							groupsListRef.child(group.$id).set(basicRecord);
+							if(basicRecord.isActive){
+								activeCount++;
+							}
+							totalCount++;
+						}
+					});
+					console.log("List Size:",list.length);
+					console.log("Total Groups:",totalCount);
+					console.log("Active:",activeCount);
+					groupsCountersRef.set({active:activeCount,total:totalCount});
+				});
+			},
+			getAllGroups: function(){
+				return $firebaseArray(groupsRef);
+			},
+			getMembersList: function(){
+				return $firebaseArray(memberListRef.orderByKey());
+			}
+		};
 }]);

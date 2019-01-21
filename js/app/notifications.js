@@ -182,7 +182,8 @@ okulusApp.factory('NotificationsSvc',
 					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
 
 					/* Send the notification only after the audit record is created/updated in the elment itself
-						This is because the audit folder will help us to identify the parties we need to notify*/
+						This is because the audit folder will help us to identify the parties we need to notify
+						TODO: add child(onFolder).child("details")*/
 					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.folders.audit)).$loaded().then(function(audit) {
 						/*array to control already notified users*/
 						let notifiedUsers = new Array();
@@ -223,8 +224,22 @@ okulusApp.factory('NotificationsSvc',
 			},
 			/*Used when we want to notify someone that is not part of the audit folder of an element
 			For Example, when granting a user access to a gorup, we want to notify the user.*/
-			notifySpecificUser: function(receiver, actionPerformed, onFolder, objectId, actionByUser, actionByUserId){
-				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
+			notifySpecificUser: function(receiver, actionPerformed, onFolder, objectId){
+				//Determine who is doing the action
+				let user = undefined;
+				let userId = null;
+
+				let session = $rootScope.currentSession;
+				if(!session || !session.user){
+					user = "System";
+				} else if (session.user.isRoot){
+					user = "Root";
+					userId = session.user.$id;
+				} else {
+					user = session.user.email;
+					userId = session.user.$id;
+				}
+				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, user, userId);
 				pushNotification(receiver, notification);
 			},
 			/*Return the list of notifications for specific user*/

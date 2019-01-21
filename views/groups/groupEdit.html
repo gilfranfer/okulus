@@ -1,0 +1,264 @@
+<!-- Loading Group Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after Group is loaded -->
+<section id="groupEdit" ng-show="!response.loading">
+
+  <!-- Informs a Group was created (used after redirect from groups/new to groups/edit) -->
+  <div class="alert alert-success" role="alert" ng-show="groupResponse.created" >
+    {{groupResponse.message}}
+  </div>
+
+  <!-- Title -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{groupEditParams.actionLbl}} {{i18n.groups.groupLbl}}
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.name}}</span>
+      </h4>
+    </div>
+  </article>
+
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <form id="groupForm" name="groupForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.groups.basicInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Number and Name -->
+        <div class="form-row">
+          <div class="col-4 col-md-2 form-group">
+            <label class="font-weight-bold" for="gnumber">
+              {{i18n.groups.numberLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="number" min="0" id="gnumber" class="form-control form-control-lg"
+              placeholder="{{i18n.groups.numberHint}}" ng-model="objectDetails.basicInfo.number" ng-required="true">
+          </div>
+          <div class="col-8 col-md-10 form-group">
+            <label class="font-weight-bold" for="gname">
+              {{i18n.groups.nameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="gname" class="form-control form-control-lg"
+              placeholder="{{i18n.groups.nameHint}}" ng-model="objectDetails.basicInfo.name" ng-required="true">
+          </div>
+        </div>
+        <!-- Type and schedule row -->
+        <div class="form-row">
+          <div class="col-12 col-md-4 form-group">
+            <label class="font-weight-bold" for="gtype">
+              {{i18n.groups.typeLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="gtype" class="form-control form-control-lg" ng-model="objectDetails.basicInfo.type" ng-required="true">
+              <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
+              <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
+              <option value="{{i18n.dropdowns.gtype.women}}">{{i18n.dropdowns.gtype.women}}</option>
+              <option value="{{i18n.dropdowns.gtype.young}}">{{i18n.dropdowns.gtype.young}}</option>
+              <option value="{{i18n.dropdowns.gtype.floating}}">{{i18n.dropdowns.gtype.floating}}</option>
+              <option value="{{i18n.dropdowns.gtype.reorg}}">{{i18n.dropdowns.gtype.reorg}}</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+             <label class="font-weight-bold" for="schdDay">
+              {{i18n.groups.scheduleLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="schdDay" name="schdDay" class="form-control form-control-lg"
+                    ng-model="objectDetails.basicInfo.weekday" ng-required="true">
+              <option value="{{i18n.dropdowns.weekdays.mon}}">{{i18n.dropdowns.weekdays.mon}}</option>
+              <option value="{{i18n.dropdowns.weekdays.tue}}">{{i18n.dropdowns.weekdays.tue}}</option>
+              <option value="{{i18n.dropdowns.weekdays.wed}}">{{i18n.dropdowns.weekdays.wed}}</option>
+              <option value="{{i18n.dropdowns.weekdays.thu}}">{{i18n.dropdowns.weekdays.thu}}</option>
+              <option value="{{i18n.dropdowns.weekdays.fri}}">{{i18n.dropdowns.weekdays.fri}}</option>
+              <option value="{{i18n.dropdowns.weekdays.sat}}">{{i18n.dropdowns.weekdays.sat}}</option>
+              <option value="{{i18n.dropdowns.weekdays.sun}}">{{i18n.dropdowns.weekdays.sun}}</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="schdTime">&nbsp;</label>
+            <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.groups.schdTimeHint}}"
+              value="{{objectDetails.basicInfo.time}}" ng-blur="updateTimeModel()">
+            <input type="hidden" name="timeHolder" ng-model="objectDetails.basicInfo.time" ng-required="false">
+          </div>
+        </div>
+        <!-- Email and Phone -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="email">
+              {{i18n.contact.emailLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
+            </label>
+            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
+              ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="phone">
+              {{i18n.contact.phoneLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
+            </label>
+            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
+                ng-model="objectDetails.basicInfo.phone"
+                ng-required="!(objectDetails.basicInfo.email)">
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Address Card -->
+  <article class="card mb-3">
+    <form name="groupAddressForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header and Add Button (Admin)-->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.address.legend}}</legend>
+          </div>
+        </div>
+        <!-- Address -->
+        <div ng-include="'views/fragments/addressFormFields.html'"></div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Save Buttons (Only for Admin) -->
+  <div class="mb-3" ng-if="currentSession.user.type == 'admin'">
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-show="(!groupEditParams.isEdit && !groupForm.$invalid && !groupAddressForm.$invalid) ||
+                    (groupEditParams.isEdit && ( ((!groupForm.$pristine||groupEditParams.timeUpdated) && !groupForm.$invalid) || (!groupAddressForm.$pristine && !groupAddressForm.$invalid) ) )"
+          ng-disabled="groupForm.$invalid || groupAddressForm.$invalid"
+          ng-click="saveGroup()">
+          {{i18n.groups.saveBtn}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Groups Additional Info Card (Only for Admin) -->
+  <article class="mb-3" ng-if="groupEditParams.isEdit && currentSession.user.type == 'admin'">
+    <div class="card mb-2">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.groups.additionalInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Group Status -->
+        <div class="form-row">
+          <div class="col-md-6 form-group">
+            <label class="font-weight-bold" for="status">
+              {{i18n.groups.statusLbl}}
+            </label>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
+              ng-show="objectDetails.basicInfo.isActive" ng-click="setGroupStatus(false)">
+              {{i18n.groups.activeStatusLbl}}
+            </button>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-show="!objectDetails.basicInfo.isActive" ng-click="setGroupStatus(true)">
+              {{i18n.groups.inactiveStatusLbl}}
+            </button>
+          </div>
+        </div>
+        <!-- Lead -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="groupLead">
+              {{i18n.members.leadLbl}}
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-11 form-group">
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadName">
+            <select id="groupLead" class="form-control form-control-lg" ng-required="false"
+              ng-if="groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadId">
+              <option value="">{{i18n.groups.noLeadLbl}}</option>
+              <option ng-repeat="lead in groupEditParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
+                {{lead.shortname}}
+              </option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="groupEditParams.updatingGroupLead" ng-click="updateGroupLead()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!groupEditParams.updatingGroupLead" ng-click="prepareForGroupLeadUpdate()" ></i>
+          </div>
+        </div>
+        <!-- Host -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="groupHost">
+              {{i18n.members.hostLbl}}
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-11 form-group">
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostName">
+            <select id="groupHost" class="form-control form-control-lg" ng-required="false"
+              ng-if="groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostId">
+              <option value="">{{i18n.groups.noHostLbl}}</option>
+              <option ng-repeat="host in groupEditParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
+                {{host.shortname}}
+              </option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="groupEditParams.updatingGroupHost" ng-click="updateGroupHost()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!groupEditParams.updatingGroupHost" ng-click="prepareForGroupHostUpdate()" ></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Delete Group Button (Only for Admin) -->
+  <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
+    {{response.message}}
+  </div>
+  <div class="row mb-3" ng-if="currentSession.user.type == 'admin'">
+    <div class="col-sm form-group" ng-if="groupEditParams.isEdit">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.groups.deleteBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="deleteGroup()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-success"
+            data-toggle="collapse" data-target="#collapseDelete"
+            aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

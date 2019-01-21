@@ -1,0 +1,317 @@
+<!-- Loading Member Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after Member is loaded -->
+<section id="memberEdit" ng-show="!response.loading">
+
+  <!-- Informs a Member was created (used after redirect from members/new to members/edit) -->
+  <div class="alert alert-success" role="alert" ng-show="memberResponse.created" >
+    {{memberResponse.message}}
+  </div>
+
+  <!-- Title (Member alias) -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{memberEditParams.actionLbl}} {{i18n.members.memberLbl}}
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.shortname}}</span>
+      </h4>
+    </div>
+  </article>
+
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <form id="memberBasicInfoForm" name="memberBasicInfoForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.basicInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Firstname and Lastname-->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="firstname">
+              {{i18n.members.fnameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="firstname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameHint}}"
+              ng-model="objectDetails.basicInfo.firstname" ng-required="true">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="lastname">
+              {{i18n.members.lnameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
+                ng-model="objectDetails.basicInfo.lastname" ng-required="true">
+          </div>
+        </div>
+        <!-- Shortname (Alias), and Birthdate -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="shortname">
+              {{i18n.members.aliasLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="shortname" name="shortname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.aliasHint}}"
+              ng-model="objectDetails.basicInfo.shortname" ng-required="true">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="bday">
+              {{i18n.members.bdayLbl}}
+            </label>
+            <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}"
+              class="form-control form-control-lg" placeholder="{{i18n.members.bdayHint}}"
+              value="{{objectDetails.basicInfo.bday}}" ng-required="false" onchange="updateBdayValue()">
+              <input type="hidden" name="bdayHolder" ng-model="objectDetails.basicInfo.bday" ng-required="false">
+          </div>
+        </div>
+        <!-- Email and Phone -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="email">
+              {{i18n.contact.emailLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
+            </label>
+            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
+              ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="phone">
+              {{i18n.contact.phoneLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
+            </label>
+            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
+                ng-model="objectDetails.basicInfo.phone"
+                ng-required="!(objectDetails.basicInfo.email)">
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Address Card -->
+  <article class="card mb-3" ng-show="memberEditParams.isEdit">
+    <form name="memberAddressForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header and Add Button (Admin)-->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.address.legend}}</legend>
+          </div>
+          <!-- Button to Add/Remove address -->
+          <div class="col" ng-if="currentSession.user.type == 'admin'">
+            <button type="button" class="btn btn-block btn-warning clickable"
+              ng-show="!objectDetails.address" ng-click="addAdress()">
+              {{i18n.members.addAddressBtn}}
+            </button>
+            <!-- Delete Address button -->
+            <button type="button" class="btn btn-block btn-danger clickable"
+              data-toggle="collapse" data-target="#collapseDeleteAddress"
+              aria-expanded="false" aria-controls="collapseDeleteAddress"
+              ng-show="objectDetails.address">
+              {{i18n.members.deleteAddressBtn}}
+            </button>
+            <div  class="collapse" id="collapseDeleteAddress">
+              <div class="alert alert-danger" role="alert">
+                {{i18n.alerts.confirmQuestion}}
+                <button type="button" class="btn btn-danger" ng-click="removeAdress()"
+                 data-toggle="collapse" data-target="#collapseDeleteAddress"
+                 aria-expanded="false" aria-controls="collapseDeleteAddress">
+                  {{i18n.btns.yesBtn}}
+                </button>
+                <button type="button" class="btn btn-success"
+                 data-toggle="collapse" data-target="#collapseDeleteAddress"
+                 aria-expanded="false" aria-controls="collapseDeleteAddress">
+                  {{i18n.btns.noBtn}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr ng-show="objectDetails.address">
+        <!-- Address -->
+        <div ng-show="objectDetails.address" ng-include="'views/fragments/addressFormFields.html'"></div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Save Buttons (Only for Admin) -->
+  <div class="mb-3" ng-if="currentSession.user.type == 'admin'">
+    <!-- Save Basic Info Only -->
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-disabled="memberBasicInfoForm.$invalid || memberBasicInfoForm.$pristine"
+          ng-show="(!memberBasicInfoForm.$pristine && !memberBasicInfoForm.$invalid)
+                  && (memberAddressForm.$pristine || memberAddressForm.$invalid)"
+          ng-click="saveBasicInfo()">
+          {{i18n.members.saveBasicInfoBtn}}
+        </button>
+      </div>
+    </div>
+    <!-- Save Address Only -->
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-disabled="memberAddressForm.$invalid || memberAddressForm.$pristine"
+          ng-show="!memberAddressForm.$pristine && !memberAddressForm.$invalid
+                && (memberBasicInfoForm.$pristine || memberBasicInfoForm.$invalid)"
+          ng-click="saveAddress()">
+          {{i18n.members.saveAddressBtn}}
+        </button>
+      </div>
+    </div>
+    <!-- Save Basic Info and Address -->
+    <div class="row">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-disabled="memberBasicInfoForm.$invalid || memberBasicInfoForm.$pristine
+                      || memberAddressForm.$invalid || memberAddressForm.$pristine"
+          ng-show="(!memberBasicInfoForm.$pristine && !memberBasicInfoForm.$invalid)
+                  && (!memberAddressForm.$pristine && !memberAddressForm.$invalid)"
+          ng-click="saveBasicInfoAndAddress()">
+          {{i18n.members.saveAllBtn}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Membership Card (Only for Admin) -->
+  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type == 'admin'">
+    <div class="card mb-2">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.membershipTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Base Group -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="baseGroup">
+              {{i18n.members.baseGroupLbl}}
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-11 form-group">
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!memberEditParams.updatingBaseGroup" ng-model="objectDetails.basicInfo.baseGroupName">
+            <select id="baseGroup" class="form-control form-control-lg" ng-required="false"
+              ng-if="memberEditParams.updatingBaseGroup" ng-model="objectDetails.basicInfo.baseGroupId">
+              <option value="">{{i18n.members.noGroup}}</option>
+              <option ng-repeat="group in memberEditParams.groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
+                {{group.number}}-{{group.name}}
+              </option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="memberEditParams.updatingBaseGroup" ng-click="updateBaseGroup()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!memberEditParams.updatingBaseGroup" ng-click="prepareForBaseGroupUpdate()" ></i>
+          </div>
+        </div>
+        <!-- Membership Status -->
+        <div class="form-row">
+          <div class="col-md-6 form-group">
+            <label class="font-weight-bold" for="status">
+              {{i18n.members.statusLbl}}
+            </label>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
+              ng-show="objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(false)">
+              {{i18n.members.activeStatusLbl}}
+            </button>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-show="!objectDetails.basicInfo.isActive" ng-click="setMembershipStatus(true)">
+              {{i18n.members.inactiveStatusLbl}}
+            </button>
+          </div>
+        </div>
+        <!-- Roles -->
+        <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isHost">
+              {{i18n.members.isHostLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isHost" ng-click="isHost(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isHost" ng-click="isHost(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isLead">
+              {{i18n.members.isLeadLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isLeader" ng-click="isLeader(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isLeader" ng-click="isLeader(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label class="font-weight-bold" for="isTrainee">
+              {{i18n.members.isTraineeLbl}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.isTrainee" ng-click="isTrainee(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.isTrainee" ng-click="isTrainee(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Delete Member Button (Only for Admin) -->
+  <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
+    {{response.message}}
+  </div>
+  <div class="row mb-3" ng-if="currentSession.user.type == 'admin'">
+    <div class="col-sm form-group" ng-if="memberEditParams.isEdit">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.members.deleteMemberBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger" ng-click="deleteMember()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-success"
+            data-toggle="collapse" data-target="#collapseDelete"
+            aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>

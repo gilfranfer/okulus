@@ -12,6 +12,10 @@ html {
 	text-decoration: none;
 }
 
+.tx-darkblue{
+	color: #013282;
+}
+
 /** NAVIGATION BAR **/
 .bg-darkblue{
 	background-color: #013282;

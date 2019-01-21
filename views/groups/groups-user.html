@@ -8,7 +8,7 @@
         <!-- <p>{{i18n.user.groups.description}}</p> -->
       </div>
       <div class="mb-3">
-        <input type="text" placeholder="{{i18n.forms.filter.hint}}" class="form-control form-control-lg" ng-model="searchText">
+        <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="searchText">
       </div>
     </div>
   </article>
@@ -25,8 +25,8 @@
                 {{g.group.number}} - {{g.group.name}}
               </a>
             </h4>
-            <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.forms.group.inactive}}</span>
-            <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.forms.group.active}}</span>
+            <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.groups.inactive}}</span>
+            <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.groups.active}}</span>
             <hr>
             <!-- Buttons -->
             <div class="row">
