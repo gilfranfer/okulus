@@ -665,9 +665,8 @@ okulusApp.factory('MembersSvc',
 				}
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
-			//Deprecated
 			getMemberAccessRules: function(whichMember) {
-				return $firebaseArray(membersRef.child(whichMember).child("access"));
+				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.folders.accessRules));
 			},
 			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/
 			addAccessRuleToMember: function(whichMemberId, ruleId, ruleRecord){
