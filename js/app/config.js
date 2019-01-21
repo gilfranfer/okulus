@@ -243,7 +243,8 @@ const rootFolder = "okulusTest";
 const constants = {
 	roles: {
 		user:"user", admin: "admin", type:"type", system: "System",
-		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost"
+		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost",
+		isUser:"isUser"
 	},
 	status: {
 		online:"online", offline:"offline",

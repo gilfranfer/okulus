@@ -1,87 +1,100 @@
+<!-- Group Access Rules, only for admin -->
 <section  ng-show="currentSession.user.type == 'admin'">
-  <div class="card h-100" >
-    <!-- <h4 class="card-header">
-      <a ng-href="#!/groups/edit/{{group.$id}}">
-        #{{group.group.number}} {{group.group.name}}
-      </a>
-    </h4> -->
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">
-        {{i18n.admin.access.title}} {{group.group.name}}
-      </h4>
-      <hr>
-      <p class="card-text">
-        {{i18n.admin.access.description}}
-      </p>
+      <h4 class="card-title">{{i18n.groups.accessTitle}} {{group.name}}</h4>
+    </div>
+  </article>
+
+  <!-- Create Rule Access -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <p class="lead">
+  			{{i18n.groups.newAccessTitle}}
+  		</p>
+      <span>{{i18n.groups.accessDescription}}</span>
       <!-- Active Members List -->
       <form class="mt-3" name="accessForm" novalidate ng-submit="addRule()">
         <div class="row mb-3">
           <div class="col-8">
-            <select id="memberSelect" class="form-control form-control-lg" ng-model="access.memberId" ng-required="true">
-              <option ng-repeat="m in membersAccess" value="{{m.$id}}">
-                {{m.member.shortname}}
+            <select id="userSelect" class="form-control form-control-lg" ng-model="access.memberId" ng-required="true">
+              <option ng-repeat="member in membersList | orderBy:'shortname' track by member.$id" value="{{member.$id}}">
+                {{member.shortname}}
               </option>
             </select>
           </div>
           <div class="col-4">
-            <button type="submit" class="btn btn-lg btn-block btn-success" ng-disabled="accessForm.$invalid">
+            <button type="submit" class="btn btn-lg btn-block btn-success clickable" ng-disabled="accessForm.$invalid">
               {{i18n.btns.addBtn}}
             </button>
           </div>
         </div>
       </form>
+    </div>
+  </article>
 
-      <!-- Alerts -->
-      <div class="alert alert-danger" role="alert" ng-show="response.accessMsgError">
-        {{response.accessMsgError}}
+  <!-- Alerts -->
+  <div ng-include="'views/alerts.html'"></div>
+  <!-- No Records Alert -->
+  <div class="row">
+    <div class="col" ng-show="acessList && acessList.length == 0">
+      <div class="alert alert-danger" role="alert">
+        {{i18n.groups.noRulesMessage}}
       </div>
-      <div class="alert alert-success" role="alert" ng-show="response.accessMsgOk">
-        {{response.accessMsgOk}}
-      </div>
-      <!-- Loading/No Records Alert -->
-      <div class="row">
-        <div class="col" ng-show="acessList && acessList.length == 0">
-          <div class="alert alert-danger" role="alert">
-            {{i18n.admin.access.noRecordsError}}
-          </div>
-        </div>
-      </div>
-
-      <!-- Access Table -->
-      <table class="table table-responsive-sm table-md table-striped" ng-show="acessList && acessList.length > 0">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col"></th>
-            <th scope="col">{{i18n.admin.access.table.memberName}}</th>
-            <th scope="col">{{i18n.admin.access.table.date}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="a in acessList | orderBy:'-date'">
-            <td scope="row">{{$index + 1}}</td>
-            <td scope="row">
-              <button type="button" class="btn-sm btn-danger" name="button" ng-click="deleteRule(a.$id)">
-                {{i18n.btns.deleteBtn}}</button>
-            </td>
-            <td>
-              <a ng-href="#!/members/edit/{{a.memberId}}">
-                {{a.memberName}}
-              </a>
-            </td>
-            <td>{{a.date | date: "MMM dd yyyy hh:mm:ss"}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <!-- Buttons -->
-      <div class="row mb-3">
-        <div class="col">
-          <a class="btn btn-lg btn-block btn-primary" href="#!/groups">
-            {{i18n.btns.returnBtn}}
-          </a>
-        </div>
-      </div>
-
     </div>
   </div>
+  <!-- Show number of loaded Rules -->
+  <div class="alert alert-info" role="alert" ng-show="acessList.length" >
+    {{acessList.length}} {{i18n.groups.loadingRulesSuccess}}
+    <!-- Load all pending Groups  -->
+    <span class="btn-link clickable" ng-click="loadPendingAccessRules()"
+      ng-if="(acessList.length < accessRulesParams.maxPossible)" >
+      {{i18n.groups.loadPendingRules1}}
+      {{accessRulesParams.maxPossible - acessList.length}}
+      {{i18n.groups.loadPendingRules2}}
+    </span>
+  </div>
+
+  <!-- Access Rules Cards -->
+  <article id="rulesList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="rule in acessList | filter:accessRulesParams.searchFilter | orderBy:'number' track by rule.$id">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{rule.memberName}}
+          </h4>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.groups.ruleDate}}:</span> {{rule.date | date: "MMM dd yyyy hh:mm:ss"}}<br>
+          </p>
+          <!-- Delete Group Button -->
+          <div class="row">
+            <div class="col-sm form-group">
+              <button type="button" class="btn btn-block btn-danger clickable"
+              data-toggle="collapse" data-target="#collapseDelete-{{rule.$id}}" aria-expanded="false" aria-controls="collapseDelete-{{rule.$id}}">
+              {{i18n.groups.ruleDeleteBtn}}
+              </button>
+              <div class="collapse" id="collapseDelete-{{rule.$id}}">
+                <div class="alert alert-danger" role="alert">
+                  {{i18n.alerts.confirmDelete}}
+                  <button type="button" class="btn btn-danger clickable" ng-click="deleteRule(rule.$id)">
+                    {{i18n.btns.yesBtn}}
+                  </button>
+                  <button type="button" class="btn btn-success clickable"
+                    data-toggle="collapse" data-target="#collapseDelete-{{rule.$id}}"
+                    aria-expanded="false" aria-controls="collapseDelete-{{rule.$id}}">
+                    {{i18n.btns.noBtn}}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </article>
+
 </section>

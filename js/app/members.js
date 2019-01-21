@@ -545,6 +545,15 @@ okulusApp.factory('MembersSvc',
 					return $firebaseArray(isHostMemberRef.equalTo(true));
 				}
 			},
+			/* Return all Members with isUser:true, using a limit for the query, if specified*/
+			getMembersWithUser: function(limit) {
+				let reference = memberListRef.orderByChild(constants.roles.isUser);
+				if(limit){
+					return $firebaseArray(reference.equalTo(true).limitToLast(limit));
+				}else{
+					return $firebaseArray(reference.equalTo(true));
+				}
+			},
 			/* Get member basic info from firebase and return as object */
 			getMemberBasicDataObject: function(whichMemberId){
 				return $firebaseObject(memberListRef.child(whichMemberId));
@@ -657,16 +666,12 @@ okulusApp.factory('MembersSvc',
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
 			//Deprecated
-			getMember: function(memberId){
-				return $firebaseObject(membersRef.child(memberId));
-			},
-			//Deprecated
 			getMemberAccessRules: function(whichMember) {
 				return $firebaseArray(membersRef.child(whichMember).child("access"));
 			},
-			//Deprecated
-			getMemberReference: function(memberId){
-				return membersRef.child(memberId);
+			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/
+			addAccessRuleToMember: function(whichMemberId, ruleId, ruleRecord){
+				memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules).child(ruleId).set(ruleRecord);
 			},
 			/* Receives the access list from a Group = ( { accessRuleId: {groupId,groupName,date} , ...} ),
 			and use them to delete the groups access from each member in the list.
@@ -679,9 +684,11 @@ okulusApp.factory('MembersSvc',
 					});
 				}
 			},
+			//Deprecated
 			removeMemberReferenceToReport: function(memberId,reportId){
 				membersRef.child(memberId).child("attendance").child(reportId).set(null);
 			},
+			//Deprecated
 			removeReferenceToReport: function(reportId,membersAttendanceList){
 				if(membersAttendanceList){
 					for (const attKey in membersAttendanceList) {
@@ -695,7 +702,7 @@ okulusApp.factory('MembersSvc',
 			 * present in the Member's acess rules folder.
 			getMemberGroups: function(whichMember) {
 				return new Promise((resolve, reject) => {
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
 						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
 					}).then( function(memberRules) {
 						let myGroups = [];

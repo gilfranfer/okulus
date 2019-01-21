@@ -28,6 +28,9 @@ const systemMsgs = {
 		loadingGroupsError:"Error al cargar la lista de Grupos",
 		deletingActiveGroup:"No se puede eliminar un Grupo Activo",
 		groupHasReports:"No se puede eliminar el Grupo porque tiene Reportes asociados.",
+		duplicatedRule:"La regla ya existe.",
+		creatingRuleError:"Error al crear la regla de acceso",
+		deletingRuleError:"Error al eliminar la regla de acceso",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
@@ -37,6 +40,7 @@ const systemMsgs = {
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		working:"Estamos trabajando en tu solicitud ...",
 		/*Members JS*/
 		loadingMember:"Cargando información del Miembro ...",
 		loadingAllMembers:"Cargando Todos los Miembros ...",
@@ -51,12 +55,15 @@ const systemMsgs = {
 		deletingMemberAddress:"Eliminando Dirección del Miembro ...",
 		/*Groups JS*/
 		loadingGroup:"Cargando información del Grupo ...",
+		loadingAccessRules:"Cargando reglas de acceso ...",
 		loadingAllGroups:"Cargando Todos los Grupos ...",
 		loadingActiveGroups:"Cargando Grupos Activos ...",
 		loadingInactiveGroups:"Cargando Grupos Inactivos ...",
 		savingGroupInfo:"Guardando Información del Grupo",
 		deletingGroup:"Eliminando Grupo ...",
 		deletingGroupAddress:"Eliminando Dirección del Grupo ...",
+		creatingRule:"Creando Regla de Acceso ...",
+		deletingRule:"Eliminando Regla de Acceso ...",
 		/*Weeks JS*/
 		loadingWeek:"Cargando información de la Semana ...",
 		loadingAllWeeks:"Cargando Todas los Semanas ...",
@@ -96,6 +103,8 @@ const systemMsgs = {
 		groupStatusUpdated:"Estado del grupo actualizado",
 		groupHostUpdated:"Anfitrión Actualizado",
 		groupLeadUpdated:"Lider Actualizado",
+		ruleCreated:"Regla Creada",
+		ruleRemoved:"Regla Eliminada",
 		/* Weeks JS */
 		statusUpdated:"Estado de la Semana actualizado.",
 		visibilityUpdated:"Visibilidad de la Semana actualizada.",
@@ -324,7 +333,20 @@ okulusApp.run(function($rootScope) {
 				numberLbl:"Número", numberHint:"0", typeLbl:"Tipo",
 				nameLbl:"Nombre", nameHint:"Semillas de Esperanza",
 				mandatoryFields: "Campos Obligatorios",
-				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión"
+				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión",
+				/*Access Rules*/
+				accessTitle:"Control de acccesos al Grupo",
+				newAccessTitle:"Porporcionar Acceso",
+				accessListTitle:"Usuarios con acccesos al Grupo",
+				loadingRulesSuccess: "Reglas de Acceso Cargadas.",
+				loadPendingRules1: "Mostar ", loadPendingRules2: "Reglas restantes.",
+				ruleDate:"Desde",
+				ruleDeleteBtn:"Eliminar Regla",
+				accessDescription: "Proporcionar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros con acceso al sistema.",
+				noRulesMessage: "No hay reglas de acceso en este grupo",
+				table:{
+					memberName:"Miembro", memberId:"Id", date:"Desde"
+				}
 			},
 			address:{
 				legend: "Dirección",
@@ -393,14 +415,6 @@ okulusApp.run(function($rootScope) {
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},
-				access:{
-					title: "Lista de acccesos al Grupo",
-					description: "Otorgar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros que tiene permiso para ser Usuarios del sistema.",
-					noRecordsError: "No hay reglas de acceso en este grupo",
-					table:{
-						memberName:"Miembro", memberId:"Id", date:"Desde"
-					}
-				},
 				dashboard:{
 					counters:{
 						total: "Total",

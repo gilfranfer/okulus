@@ -133,7 +133,7 @@ okulusApp.controller('GroupsUserCntrl',
 
 					//TODO: Get groups from new db folder to reduce data load
 					//Get the Groups the user has access to
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
 					}).then(function (memberRules) {
 						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
@@ -416,9 +416,6 @@ okulusApp.factory('GroupsSvc',
 			getGlobalGroupsCounter: function(){
 				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
 			},
-			getGroupObj: function(groupId){
-				return $firebaseObject(groupListRef.child(groupId));
-			},
 			/* Return all Members, using a limit for the query, if specified*/
 			getAllGroups: function(limit) {
 					if(limit){
@@ -498,14 +495,6 @@ okulusApp.factory('GroupsSvc',
 				decreaseCounter(conunterRef);
 			},
 			//Deprecated
-			loadAllGroupsList: function(){
-				if(!$rootScope.allGroups){
-					console.debug("Creating firebaseArray for Groups");
-					$rootScope.allGroups = $firebaseArray(groupsRef);
-				}
-				return $rootScope.allGroups;
-			},
-			//Deprecated
 			addReportReference: function(report){
 				//Save the report Id in the Group/reports
 				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
@@ -520,11 +509,6 @@ okulusApp.factory('GroupsSvc',
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);
 				ref.set(null);
 			},
-			//Deprecated
-			getAccessRulesForGroup: function (groupId) {
-				let reference = groupsRef.child(groupId).child("access");
-				return $firebaseArray(reference);
-			},
 			/* Receives the member's access rules ( { accessRuleId: {groupId,groupName,date} , ...} ),
 			and use them to delete the member's access to each of those groups.
 			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId
@@ -536,93 +520,95 @@ okulusApp.factory('GroupsSvc',
 					});
 				}
 			}
-		};
+		};//return end
 	}
 ]);
 
+//Mapping: /groups/access
 okulusApp.controller('GroupAccessRulesCntrl',
-	['GroupsSvc', 'MembersSvc', 'AuditSvc','NotificationsSvc','$rootScope', '$scope','$routeParams', '$location','$firebaseAuth','AuthenticationSvc',
-	function(GroupsSvc, MembersSvc, AuditSvc, NotificationsSvc, $rootScope, $scope,$routeParams, $location, $firebaseAuth,AuthenticationSvc){
+	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
+	'GroupsSvc', 'MembersSvc', 'AuditSvc','NotificationsSvc','AuthenticationSvc',
+	function($rootScope, $scope,$routeParams, $location, $firebaseAuth,
+		GroupsSvc, MembersSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
 
-		$scope.response = null;
-		let whichGroup = $routeParams.groupId;
-
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
-						//$scope.membersAccess = MembersSvc.getMembersThatCanBeUser();
-						$scope.acessList = GroupsSvc.getAccessRulesForGroup(whichGroup);
-						$scope.group = GroupsSvc.getGroupObj(whichGroup);
-					}else{
-						$location.path("/error/norecord");
-					}
-				});
-			}
-		});
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAccessRules};
+		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
+				if(user.type == constants.roles.admin && user.memberId){
+					let whichGroup = $routeParams.groupId;
+					$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
+					//Retrieve List of Members that have a User associated
+					$scope.membersList = MembersSvc.getMembersWithUser();
+					//Retrieve List of Users already having access (Some could be invalid Users)
+					$scope.acessList = GroupsSvc.getAccessRulesList(whichGroup);
+					$scope.response = null;
+				}else{
+					$rootScope.response = { error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}
+			});
+		}});
 
 		$scope.addRule = function(){
+			$scope.response = {working: true, message: systemMsgs.inProgress.creatingRule};
+
 			let whichMember = $scope.access.memberId;
-			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
-			let groupName = $scope.group.group.name;
-			let record = { memberName: memberName, memberId: whichMember, date:firebase.database.ServerValue.TIMESTAMP };
+			let memberName = document.getElementById('userSelect').options[document.getElementById('userSelect').selectedIndex].text;
+			let whichGroup = $scope.group.$id;
+			let groupName = $scope.group.name;
 
 			let ruleExists = false;
+			//Review in the current Lists, if a similar rule already exist
 			$scope.acessList.forEach(function(rule) {
 					if(rule.memberId == whichMember){
 						ruleExists = true;
 					}
 			});
-
-			if(!ruleExists){
-				//Use the Group´s access list to add a new record
-				$scope.acessList.$add(record).then(function(ref) {
-					AuditSvc.recordAudit(whichGroup, "access-granted", "groups");
-					//notify the member that got the access
-					MembersSvc.getMember(whichMember).$loaded().then(function(member){
-						console.debug(member);
-						NotificationsSvc.notifySpecificUser(member.user.userId,"access-granted", "groups", whichGroup,null,null);
-					});
-					$scope.response = { accessMsgOk: "Acceso Concedido a " + memberName };
-					//update record. Now to point to the Group
-					var id = ref.key; //use the same push key for the record on member/access folder
-					record = { groupName: groupName, groupId: whichGroup, date:firebase.database.ServerValue.TIMESTAMP };
-					MembersSvc.getMemberReference(whichMember).child("access").child(id).set(record, function(error) {
-						if(error){
-							$scope.response = { accessMsgError: error };
-						}else{
-							AuditSvc.recordAudit(whichMember, "access-granted", "members");
-						}
-					});
-				});
-			}else{
-				$scope.response = { accessMsgError: memberName + " ya tiene acceso al grupo"};
+			if(ruleExists){
+				$scope.response = {error: true, message: systemMsgs.error.duplicatedRule};
+				return;
 			}
 
-		};
-
-		$scope.deleteRule = function(ruleId){
-			var rec = $scope.acessList.$getRecord(ruleId);
-			let whichMember = rec.memberId;
-			$scope.acessList.$remove(rec).then(function(ref) {
-				//rule removed from Groups access folder
-				$scope.response = { accessMsgOk: "Acceso Revocado" };
-				//now removed the same rule from Member access folder
-			  AuditSvc.recordAudit(whichGroup, "access-deleted", "groups");
+			let creationDate = firebase.database.ServerValue.TIMESTAMP;
+			let record = { memberName: memberName, memberId: whichMember, date:creationDate};
+			//Use the Group´s access list to add a new record
+			$scope.acessList.$add(record).then(function(ref) {
+				AuditSvc.recordAudit(whichGroup, constants.actions.grantAccess, constants.folders.groups);
+				//Create cross Reference. The Member must have the same rule in members/details/:memberId/access
+				record = { groupName:groupName, groupId: whichGroup, date:creationDate };
+				MembersSvc.addAccessRuleToMember(whichMember,ref.key,record);
 				//notify the member that got the access
-				MembersSvc.getMember(whichMember).$loaded().then(function(member){
-					NotificationsSvc.notifySpecificUser(member.user.userId,"access-deleted", "groups", whichGroup,null,null);
+				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
+					NotificationsSvc.notifySpecificUser(member.userId, constants.actions.grantAccess, constants.folders.groups, whichGroup);
 				});
-				MembersSvc.getMemberReference(whichMember).child("access").child(ref.key).set(null, function(error) {
-					if(error){
-						$scope.response = { accessMsgError: error };
-					}else{
-						AuditSvc.recordAudit(whichMember, "access-deleted", "members");
-					}
-				});
+				$scope.response = { success: true, message: systemMsgs.success.ruleCreated};
+			}).catch( function(error){
+				$scope.response = { error: true, message: systemMsgs.error.creatingRuleError };
+				console.error(error);
 			});
 		};
 
+		$scope.deleteRule = function(ruleId){
+			$scope.response = {working: true, message: systemMsgs.inProgress.deletingRule};
+
+			let whichGroup = $scope.group.$id;
+			var ruleRecord = $scope.acessList.$getRecord(ruleId);
+			let whichMember = ruleRecord.memberId;
+			$scope.acessList.$remove(ruleRecord).then(function(ref) {
+				AuditSvc.recordAudit(whichGroup, constants.actions.revokeAccess, constants.folders.groups);
+				//Remove the same rule from the Member's access folder
+				MembersSvc.addAccessRuleToMember(whichMember,ref.key,null);
+				//notify the member that got the access
+				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
+					NotificationsSvc.notifySpecificUser(member.userId,constants.actions.revokeAccess, constants.folders.groups, whichGroup);
+				});
+				$scope.response = { success: true, message: systemMsgs.success.ruleRemoved};
+			}).catch( function(error){
+				$scope.response = { error: true, message: systemMsgs.error.deletingRuleError };
+				console.error(error);
+			});
+		};
 
 	}
 ]);
