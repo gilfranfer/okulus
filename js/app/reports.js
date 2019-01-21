@@ -457,7 +457,7 @@ okulusApp.controller('NewReportCntrl', ['$rootScope', '$scope','$routeParams', '
 		$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 
 		$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(whichGroup);
-		GroupsSvc.getGroupObj(whichGroup).$loaded().then(function(groupObj) {
+		GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
 			$scope.reunion.groupname = groupObj.group.name;
 			let hostId = groupObj.group.hostId;
 			if(hostId){
