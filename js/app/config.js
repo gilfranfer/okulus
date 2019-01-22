@@ -271,6 +271,7 @@ const constants = {
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
+		attendance:"attendance",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
 		groupsList:"groups/list", groupsDetails:"groups/details",
@@ -292,6 +293,10 @@ const constants = {
 		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"
+	},
+	dbFields:{
+		baseGroup:"baseGroupId",
+		email:"email"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",

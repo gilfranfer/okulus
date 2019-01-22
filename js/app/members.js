@@ -474,9 +474,7 @@ okulusApp.factory('MembersSvc',
 		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
-		//Deprecated
-		let membersRef = baseRef.child(constants.folders.members);
-
+		
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
 			counterRef.transaction(function(currentCount) {
@@ -572,7 +570,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Returns the member/list containing members with baseGroupId = gropId */
 			getMembersForBaseGroup: function(gropId){
-				let ref = memberDetailsRef.orderByChild("baseGroupId").equalTo(gropId);
+				let ref = memberDetailsRef.orderByChild(constants.dbFields.baseGroup).equalTo(gropId);
 				return $firebaseArray(ref);
 			},
 			/* Push Member Basic Details Object to Firebase*/
@@ -644,7 +642,7 @@ okulusApp.factory('MembersSvc',
 			/* Called From Authetication Service:
 			Return a list with all members having the email passed */
 			getMembersByEmail: function(email){
-				return $firebaseArray(memberListRef.orderByChild("email").equalTo(email));
+				return $firebaseArray(memberListRef.orderByChild(constants.dbFields.email).equalTo(email));
 			},
 			/*  Called From Authetication Service:
 			Update the User reference in the Member Object*/
@@ -679,13 +677,13 @@ okulusApp.factory('MembersSvc',
 			removeAccessRules: function(accessList){
 				if(accessList){
 					accessList.forEach(function(accessRule) {
-						memberDetailsRef.child(accessRule.memberId).child("access").child(accessRule.$id).set(null);
+						memberDetailsRef.child(accessRule.memberId).child(constants.folders.accessRules).child(accessRule.$id).set(null);
 					});
 				}
 			},
 			//Deprecated
 			removeMemberReferenceToReport: function(memberId,reportId){
-				membersRef.child(memberId).child("attendance").child(reportId).set(null);
+				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
 			},
 			//Deprecated
 			removeReferenceToReport: function(reportId,membersAttendanceList){
@@ -693,7 +691,7 @@ okulusApp.factory('MembersSvc',
 					for (const attKey in membersAttendanceList) {
 						// console.debug(attKey);
 						let memberId = membersAttendanceList[attKey].memberId;
-						membersRef.child(memberId).child("attendance").child(reportId).set(null);
+						memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
 					}
 				}
 			},
@@ -733,7 +731,7 @@ okulusApp.factory('MembersSvc',
 					let contacts = [];
 					groups.forEach(function(group) {
 						//get from members folder order by member.baseGroup equals to group.$id
-						let ref = membersRef.orderByChild("member/baseGroup").equalTo(group.$id);
+						let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(group.$id);
 						$firebaseArray(ref).$loaded().then(function(members){
 							members.forEach(function(member) {
 								contacts.push( member );
@@ -746,7 +744,7 @@ okulusApp.factory('MembersSvc',
 			addReportReference: function(memberId,reportId, report){
 				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
-				let ref = membersRef.child(memberId).child("attendance").child(reportId);
+				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId);
 				ref.set({
 					reportId: reportId,
 					weekId:report.reunion.weekId,
