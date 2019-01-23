@@ -13,7 +13,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 					}
 					$scope.weeksList = WeeksSvc.loadVisibleWeeks();
 					//Get the Groups the user has access to
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
 					}).then(function (memberRules) {
 						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
@@ -32,7 +32,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 okulusApp.controller('UserMyContactsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
 	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 		/* Executed everytime we enter to /mycontacts
 		  This function is used to confirm the user has an associated Member */
@@ -47,7 +47,7 @@ okulusApp.controller('UserMyContactsCntrl',
 
 					//TODO: Update this to a less data consuming approach
 					//Get the Members that are in the same group the user has access to
-					GroupsSvc.loadAllGroupsList().$loaded().then( function(allGroups){
+					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
 						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
 					}).then(function (memberRules) {
 						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
@@ -77,16 +77,18 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 					$location.path(constants.pages.error);
 					return;
 				}
+
+				$scope.objectDetails = {};
+				
 				let usersFolder = firebase.database().ref().child(rootFolder).child('users');
 				$scope.userDetails = $firebaseObject(usersFolder.child($routeParams.userId));
 				$scope.userDetails.$loaded().then(function (user){
 					if(user && user.memberId){
-						$scope.audit = user.audit;
-						$scope.userMemberDetails = MembersSvc.getMember(user.memberId);
+						$scope.objectDetails.audit = user.audit;
+						$scope.userMemberDetails =  MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
-						if(user && !user.memberId){
-							let userTitle = (user.isRoot)?"Super Admin":"Usuario sin nombre";
-							$scope.userMemberDetails = {member:{shortname: userTitle}};
+						if(user && user.isRoot){
+							$scope.userMemberDetails =  {shortname:"Super Admin"};
 						}
 					}
 				});
@@ -111,11 +113,11 @@ okulusApp.factory('UsersSvc',
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
 				userObj.shortname = memberShortname;
-				userObj.isValid = true;
+				userObj.isValid = true; //A valid User is the one with a MemberId
 				if(!memberId){
+					userObj.isValid = false;
 					//Force User role, in case it was admin
 					userObj.type = constants.roles.user;
-					userObj.isValid = false;
 				}
 				userObj.$save();
 			},

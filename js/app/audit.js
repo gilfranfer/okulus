@@ -1,7 +1,7 @@
 okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 	function($rootScope, ErrorsSvc, NotificationsSvc){
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let auditRef = firebase.database().ref().child(rootFolder).child("audit");
+		let auditRef = baseRef.child(constants.folders.audit);
 
 		return {
 			/**
@@ -28,34 +28,37 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Proceed to log the Global Audit Record
-				let audit = {action: action, by: user, byId: userId, referenceId:objectId, date: firebase.database.ServerValue.TIMESTAMP};
-		    auditRef.child(on).push().set(audit);
+				let timestamp = firebase.database.ServerValue.TIMESTAMP;
+		    auditRef.child(on).push().set(
+					{action: action, by: user, byId: userId, referenceId:objectId, date: timestamp}
+				);
 
+				let objectAuditRef = baseRef.child(on).child(constants.folders.details).child(objectId).child(constants.folders.audit);
 				//update Audit on the object
 				if(action == 'create'){
-					baseRef.child(on).child(objectId).child("audit").update(
-						{createdById:userId, createdBy:user, createdOn:firebase.database.ServerValue.TIMESTAMP});
+					objectAuditRef.update(
+						{createdById:userId, createdBy:user, createdOn: timestamp});
 				}else if(action != 'delete'){
 					//important to keep the if-else
-					baseRef.child(on).child(objectId).child("audit").update(
-						{lastUpdateById:userId, lastUpdateBy:user, lastUpdateOn:firebase.database.ServerValue.TIMESTAMP});
+					objectAuditRef.update(
+						{lastUpdateById:userId, lastUpdateBy:user, lastUpdateOn: timestamp});
 				}
 				//For Reports
 				if(on =="reports" ){
 					if(action == 'create' || action == 'update' ){
-						baseRef.child(on).child(objectId).child("audit").update(
+						objectAuditRef.update(
 							{ approvedById: null, approvedBy: null, approvedOn: null,
 								rejectedById: null, rejectedBy: null, rejectedOn: null,
 								reportStatus: 'pending'
 							});
 					}else if(action == 'approved'){
-						baseRef.child(on).child(objectId).child("audit").update(
-							{approvedById:userId, approvedBy:user, approvedOn:firebase.database.ServerValue.TIMESTAMP,
+						objectAuditRef.update(
+							{approvedById:userId, approvedBy:user, approvedOn: timestamp,
 								rejectedById: null, rejectedBy: null, rejectedOn: null
 							});
 					}else if( action == 'rejected'){
-						baseRef.child(on).child(objectId).child("audit").update(
-							{rejectedById:userId, rejectedBy:user, rejectedOn:firebase.database.ServerValue.TIMESTAMP,
+						objectAuditRef.update(
+							{rejectedById:userId, rejectedBy:user, rejectedOn: timestamp,
 								approvedById: null, approvedBy: null, approvedOn: null
 							});
 					}
@@ -63,7 +66,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 
 				//Notifications get Triggered from same places as audit
         NotificationsSvc.notifyInterestedUsers(action, on, objectId, user, userId);
-				return baseRef.child(on).child(objectId).child("audit");
+				return objectAuditRef;
 			}
 		};
 	}

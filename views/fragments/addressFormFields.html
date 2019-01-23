@@ -1,0 +1,71 @@
+<fieldset class="mb-4">
+  <!-- Street, number and Zip code-->
+  <div class="form-row">
+    <div class="col-12 col-md-6 form-group">
+      <label class="font-weight-bold" for="street">
+        {{i18n.address.streetLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="street" id="street" class="form-control form-control-lg"
+        placeholder="{{i18n.address.streetHint}}" ng-model="$parent.objectDetails.address.street" ng-required="true">
+    </div>
+    <div class="col-4 col-md-2 form-group">
+      <label class="font-weight-bold" for="extNumber">
+        {{i18n.address.extNumberLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="extNumber" id="extNumber" class="form-control form-control-lg"
+        placeholder="{{i18n.address.extNumberHint}}" ng-model="$parent.objectDetails.address.extNumber" ng-required="true">
+    </div>
+    <div class="col-4 col-md-2 form-group">
+      <label class="font-weight-bold" for="intNumber">
+        {{i18n.address.intNumberLbl}}
+      </label>
+      <input type="text" name="intNumber" id="intNumber" class="form-control form-control-lg"
+        placeholder="{{i18n.address.intNumberHint}}" ng-model="$parent.objectDetails.address.intNumber" ng-required="false">
+    </div>
+    <div class="col-4 col-md-2 form-group">
+      <label class="font-weight-bold" for="zip">
+        {{i18n.address.zipLbl}}
+      </label>
+      <input type="number" min="0" name="zip" id="zip" class="form-control form-control-lg"
+        placeholder="{{i18n.address.zipHint}}" ng-model="$parent.objectDetails.address.zip" ng-required="false">
+    </div>
+  </div>
+
+  <!-- City, State, Country -->
+  <div class="form-row">
+    <div class="col-md-3 col-sm-6 form-group">
+        <label class="font-weight-bold" for="neighborhood">
+          {{i18n.address.neighborhoodLbl}}
+          <span class="text-danger">*</span>
+        </label>
+        <input type="text" name="neighborhood" id="neighborhood" class="form-control form-control-lg"
+          placeholder="{{i18n.address.neighborhoodHint}}" ng-model="$parent.objectDetails.address.neighborhood" ng-required="true">
+      </div>
+    <div class="col-md-3 col-sm-6 form-group">
+      <label class="font-weight-bold" for="city">
+        {{i18n.address.cityLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="city" id="city" class="form-control form-control-lg"
+        placeholder="{{i18n.address.cityHint}}" ng-model="$parent.objectDetails.address.city" ng-required="true">
+    </div>
+    <div class="col-md-3 col-sm-6 form-group">
+      <label class="font-weight-bold" for="state">
+        {{i18n.address.stateLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="state" id="state" class="form-control form-control-lg"
+        placeholder="{{i18n.address.stateHint}}" ng-model="$parent.objectDetails.address.state" ng-required="true">
+    </div>
+    <div class="col-md-3 col-sm-6 form-group">
+      <label class="font-weight-bold" for="country">
+        {{i18n.address.countryLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="country" id="country" class="form-control form-control-lg"
+        placeholder="{{i18n.address.countryHint}}" ng-model="$parent.objectDetails.address.country" ng-required="true">
+    </div>
+  </div>
+</fieldset>

@@ -80,8 +80,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/groups-admin.html',
-				controller: 'GroupsAdminCntrl'
+				templateUrl: 'views/groups/groupsAdmin.html',
+				controller: 'GroupsListCntrl'
 			})
 			.when('/groups/new', {
 				resolve: {
@@ -89,7 +89,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html'
+				templateUrl: 'views/groups/groupEdit.html',
+				controller: 'GroupDetailsCntrl'
 			})
 			.when('/groups/edit/:groupId', {
 				resolve: {
@@ -97,16 +98,16 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html',
+				templateUrl: 'views/groups/groupEdit.html',
 				controller: 'GroupDetailsCntrl'
 			})
-			.when('/groups/details/:groupId', {
+			.when('/groups/view/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/newgroup.html',
+				templateUrl: 'views/groups/groupView.html',
 				controller: 'GroupDetailsCntrl'
 			})
 			.when('/groups/access/:groupId', {
@@ -124,8 +125,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/members-admin.html',
-				controller: 'MembersAdminCntrl'
+				templateUrl: 'views/members/membersAdmin.html',
+				controller: 'MembersListCntrl'
 			})
 			.when('/members/new', {
 				resolve: {
@@ -133,7 +134,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html'
+				templateUrl: 'views/members/memberEdit.html',
+				controller: 'MemberDetailsCntrl'
 			})
 			.when('/members/edit/:memberId', {
 				resolve: {
@@ -141,23 +143,23 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html',
+				templateUrl: 'views/members/memberEdit.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/members/details/:memberId', {
+			.when('/members/view/:memberId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/newmember.html',
+				templateUrl: 'views/members/memberView.html',
 				controller: 'MemberDetailsCntrl'
 			})
 			.when('/users/edit/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
-			.when('/users/details/:userId', {
+			.when('/users/view/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
@@ -179,7 +181,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/reports/newreport.html',
 				controller: 'ReportDetailsCntrl'
 			})
-			.when('/reports/details/:reportId', {
+			.when('/reports/view/:reportId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -194,7 +196,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/weeks/weeks-admin.html',
+				templateUrl: 'views/weeks/weekAdmin.html',
 				controller: "WeeksCntrl"
 			})
 			.when('/weeks/new', {
@@ -205,8 +207,8 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/weeks/weekEdit.html',
 				controller: 'WeekDetailsCntrl'
 			})
-			.when('/weeks/details/:weekId', {
-				templateUrl: 'views/weeks/weekDetails.html',
+			.when('/weeks/view/:weekId', {
+				templateUrl: 'views/weeks/weekView.html',
 				controller: 'WeekDetailsCntrl'
 			})
 			.when('/chats', {
@@ -230,9 +232,6 @@ okulusApp.config(['$routeProvider',
 			.when('/error', {
 				templateUrl: 'views/errors/error-general.html'
 			})
-			.when('/error/norecord', {
-				templateUrl: 'views/errors/error-norecord.html'
-			})
 			.otherwise({
 				redirectTo: '/home'
 			});
@@ -243,34 +242,59 @@ okulusApp.config(['$routeProvider',
 const rootFolder = "okulusTest";
 const constants = {
 	roles: {
-		user:"user", admin: "admin", type:"type", system: "System"
+		user:"user", admin: "admin", type:"type", system: "System",
+		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost",
+		isUser:"isUser"
 	},
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
 		open:"open", closed:"closed",
 		visible:"show", hidden:"hide",
-		readed:"readed"
+		readed:"readed",
+		isActive:"isActive",
+		isOpen:"isOpen", isVisible:"isVisible"
 	},
 	pages: {
 		login:"/login", home:"/home",
 		error: "/error",
-		adminWeeks:"/weeks",
-		adminMonitor:"/admin/monitor"
+		adminWeeks:"/weeks", adminMembers:"/members",
+		adminGroups:"/groups",
+		adminMonitor:"/admin/monitor",
+		memberEdit:"/members/edit/",
+		groupEdit:"/groups/edit/",
+		weekEdit:"/weeks/edit/"
 	},
 	folders:{
-		root:"okulusTest", 
-		audit:"audit", users:"users", weeks:"weeks",
+		root:"okulusTest", counters:"counters", details:"details",
+		audit:"audit", users:"users", weeks:"weeks", roles:"roles",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
-		metadata:"metadata",
+		metadata:"metadata", address:"address", accessRules:"access",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		weeksList:"weeks/list", weeksDetails:"weeks/details",
+		groupsList:"groups/list", groupsDetails:"groups/details",
+		membersList:"members/list", membersDetails:"members/details",
 		notificationsList:"notifications/list",
+		/**Counters*/
+		weeksCounters:"counters/weeks",
+		membersCounters:"counters/members",
+		groupsCounters:"counters/groups",
+		totalWeeksCount:"counters/weeks/total",
+		openWeeksCount:"counters/weeks/open",
+		visibleWeeksCount:"counters/weeks/visible",
+		totalMembersCount:"counters/members/total",
+		activeMembersCount:"counters/members/active",
+		hostMembersCount:"counters/members/hosts",
+		leadMembersCount:"counters/members/leads",
+		traineeMembersCount:"counters/members/trainees",
+		totalGroupsCount:"counters/groups/total",
+		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total"
 	},
 	actions:{
-		create:"create",update:"update",delete:"delte",
+		create:"create",update:"update",delete:"delete",
 		approve:"approved",reject:"rejected",
 		open:"open",close:"closed",show:"show",hide:"hide",
 		grantAccess:"access-granted", revokeAccess:"access-deleted",

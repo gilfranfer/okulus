@@ -1,16 +1,16 @@
 /* Controller linked to the Admin view of Weeks (/weeks) */
 okulusApp.controller('WeeksCntrl',
-	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc', 'AuditSvc', 'UtilsSvc','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuditSvc, UtilsSvc, AuthenticationSvc){
+	['$rootScope', '$scope', '$firebaseAuth', '$location', 'WeeksSvc','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseAuth, $location, WeeksSvc, AuthenticationSvc){
 
 		let unwatch = undefined;
 		/* Executed everytime we enter to /weeks
 		  This function is used to confirm the user is Admin and prepare some initial values */
-		$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 					if(user.type == constants.roles.admin){
-						$rootScope.weeksGlobalCounter = UtilsSvc.getGlobalCounter("weeks");
+						$rootScope.weeksGlobalCounter = WeeksSvc.getGlobalWeeksCounter();
 						$rootScope.weeksGlobalCounter.$loaded().then(
 							function(weekCounters) {
 								$scope.response = undefined;
@@ -19,63 +19,64 @@ okulusApp.controller('WeeksCntrl',
 								if(unwatch){ unwatch(); }
 								unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
 									if($rootScope.weekListParams){
+										let loader = $rootScope.weekListParams.activeWeekLoader;
+										$rootScope.weekListParams = getweekListParams(loader);
 										$scope.response = undefined;
-										$rootScope.weekListParams = getweekListParams($rootScope.weekListParams.activeWeekLoader);
 									}
 								} );
 						});
 					}else{
 						$rootScope.response = {error:true, showHomeButton: true,
-																	message:$rootScope.i18n.error.noAdmin};
+																	message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
 					}
 				});
 		}});
 
-		/* All the following on-demand loaders will limit the initial result list to
-		 the maxQueryListResults value (from $rootScope.config). They will create a
-		 weekListParams object containing the name of the loader used, and determining
-		 the max possible records to display. */
+		/* All the following on-demand loaders (called from html view) will limit the
+		 initial result list to the maxQueryListResults value (from $rootScope.config).
+		 They will create a weekListParams object containing the name of the loader
+		 used, and determining the max possible records to display. */
 		$scope.loadAllWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.weeks.loading};
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAllWeeks};
 			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
 			$rootScope.weeksList = WeeksSvc.getWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadOpenWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingOpenWeeks };
 			$rootScope.weekListParams = getweekListParams("loadOpenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getOpenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadClosedWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingClosedWeeks };
 			$rootScope.weekListParams = getweekListParams("loadClosedWeeksList");
 			$rootScope.weeksList = WeeksSvc.getClosedWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadVisibleWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingVisibleWeeks  };
 			$rootScope.weekListParams = getweekListParams("loadVisibleWeeksList");
 			$rootScope.weeksList = WeeksSvc.getVisibleWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
 		$scope.loadHiddenWeeksList = function () {
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingHiddenWeeks  };
 			$rootScope.weekListParams = getweekListParams("loadHiddenWeeksList");
 			$rootScope.weeksList = WeeksSvc.getHiddenWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
-		/* Use the weekListParams.activeWeekLoader to determin what type of weeks
-		should be loaded, and how. */
+		/* Load ALL the pending weeks. Use the weekListParams.activeWeekLoader to
+		determine what type of weeks should be loaded, and how. */
 		$scope.loadPendingWeeks = function () {
 			let weekLoaderName = $rootScope.weekListParams.activeWeekLoader;
-			$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading  };
 			if(weekLoaderName=="loadAllWeeksList"){
 				$rootScope.weeksList = WeeksSvc.getWeeks();
 			} else if(weekLoaderName=="loadOpenWeeksList"){
@@ -90,18 +91,11 @@ okulusApp.controller('WeeksCntrl',
 			weekListLoaded();
 		};
 
-		/*Toogle the Week Status (isOpen=true/false) */
-		$scope.setWeekOpenStatus = function (weekId, setOpen) {
-			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
-		};
-
-		/*Toogle the Week visibility (isVisible=true/false) */
-		$scope.setWeekVisibility = function (weekId, setVisible) {
-			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
-		};
-
+		/*Build object with Params used in the view.
+		 activeWeekLoader: Will help to identify what type of weeks we want to load (open,closed,visible,hidden,all)
+		 searchFilter: Container for the view filter
+		 title: Title of the Week List will change according to the loader in use
+		 maxPossible: Used to inform the user how many weeks are pending to load */
 		getweekListParams = function (weekLoader) {
 			let weekListParams = {activeWeekLoader:weekLoader, searchFilter:undefined};
 			if(weekLoader == "loadAllWeeksList"){
@@ -136,35 +130,50 @@ okulusApp.controller('WeeksCntrl',
 				console.error(error);
 			});
 		};
+
+		/*Toogle the Week Status (isOpen=true/false) */
+		$scope.setWeekOpenStatus = function (weekId, setOpen) {
+			WeeksSvc.updateWeekStatusInArray(weekId, setOpen);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
+		};
+
+		/*Toogle the Week visibility (isVisible=true/false) */
+		$scope.setWeekVisibility = function (weekId, setVisible) {
+			WeeksSvc.updateWeekVisibilityInArray(weekId, setVisible);
+			$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
+		};
+
 	}
 ]);
 
-okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
+okulusApp.factory('WeeksSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let weeksRef = baseRef.child('weeks');
-		let isOpenWeekRef = weeksRef.orderByChild("isOpen");
-		let isVisibleWeekRef = weeksRef.orderByChild("isVisible");
-		let openWeeksCounterRef = baseRef.child('counters/weeks/open');
-		let visibleWeeksCounterRef = baseRef.child('counters/weeks/visible');
-		let totalWeeksCounterRef = baseRef.child('counters/weeks/total');
+		let weeksDetailsRef = baseRef.child(constants.folders.weeksDetails);
+		let weeksListRef = baseRef.child(constants.folders.weeksList);
+		let isOpenWeekRef = weeksListRef.orderByChild(constants.status.isOpen);
+		let isVisibleWeekRef = weeksListRef.orderByChild(constants.status.isVisible);
+		let openWeeksCounterRef = baseRef.child(constants.folders.openWeeksCount);
+		let visibleWeeksCounterRef = baseRef.child(constants.folders.visibleWeeksCount);
+		let totalWeeksCounterRef = baseRef.child(constants.folders.totalWeeksCount);
 
 		let updateOpenStatusCounterAndAudit = function (isWeekOpen, weekId) {
 			if(isWeekOpen){
-				AuditSvc.recordAudit(weekId, "open", "weeks");
+				AuditSvc.recordAudit(weekId, constants.actions.open, constants.folders.weeks);
 				increaseCounter(openWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, "closed", "weeks");
+				AuditSvc.recordAudit(weekId, constants.actions.close, constants.folders.weeks);
 				decreaseCounter(openWeeksCounterRef);
 			}
 		};
 
 		let updateVisibilityCounterAndAudit = function (isWeekVisible, weekId) {
 			if(isWeekVisible){
-				AuditSvc.recordAudit(weekId, "show", "weeks");
+				AuditSvc.recordAudit(weekId, constants.actions.show, constants.folders.weeks);
 				increaseCounter(visibleWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, "hide", "weeks");
+				AuditSvc.recordAudit(weekId, constants.actions.hide, constants.folders.weeks);
 				decreaseCounter(visibleWeeksCounterRef);
 			}
 		};
@@ -228,14 +237,17 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			},
 			getWeeks: function(limit){
 				if(limit){
-					return $firebaseArray(weeksRef.orderByKey().limitToLast(limit));
+					return $firebaseArray(weeksListRef.orderByKey().limitToLast(limit));
 				}else{
-					return $firebaseArray(weeksRef.orderByKey());
+					return $firebaseArray(weeksListRef.orderByKey());
 				}
 			},
 			/*Return Week Firebase Object*/
 			getWeekObject: function(weekId){
-				return $firebaseObject(weeksRef.child(weekId));
+				return $firebaseObject(weeksListRef.child(weekId));
+			},
+			getWeekAuditObject: function(weekId){
+				return $firebaseObject(weeksDetailsRef.child(weekId).child(constants.folders.audit));
 			},
 			/* Get the Week Object from the firebaseArray in the rootScope
 			(when updating status from Weeks List), update the isOpen value (boolean),
@@ -296,12 +308,15 @@ okulusApp.factory('WeeksSvc', ['$rootScope', '$firebaseArray', '$firebaseObject'
 			/*Used when deleting a Week with Visible Status*/
 			decreaseVisibleWeeksCounter: function () {
 				decreaseCounter(visibleWeeksCounterRef);
+			},
+			getGlobalWeeksCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.weeksCounters));
 			}
 		};//return end
 	}
 ]);
 
-/* Controller linked to /weeks/details/:weekId and /weeks/edit/:weekId
+/* Controller linked to /weeks/view/:weekId and /weeks/edit/:weekId
  * It will load the Week for the id passed */
 okulusApp.controller('WeekDetailsCntrl',
 	['$rootScope','$routeParams','$scope','$location','$firebaseAuth',
@@ -309,28 +324,30 @@ okulusApp.controller('WeekDetailsCntrl',
 	function($rootScope, $routeParams, $scope, $location, $firebaseAuth,
 		AuthenticationSvc, WeeksSvc, ReportsSvc, AuditSvc){
 
-		/* Init. Executed everytime we enter to /weeks/details/:weekId or /weeks/edit/:weekId */
+		/* Init. Executed everytime we enter to /weeks/view/:weekId or /weeks/edit/:weekId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
-				$scope.response = {loading: true, message: $rootScope.i18n.alerts.loading };
-				//Container for Aditional Parameters, used when building the view
-				$scope.weekEditParams = {};
-
+				$scope.response = {loading: true, message: systemMsgs.inProgress.loadingWeek };
+				$scope.objectDetails = {};
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					/* Confirm the user has an associated Member */
-					if(!user.memberId){
+					/* Only Valid Users (with an associated MemberId) can see the content */
+					if(!user.isValid){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
 					}
+
+					let weekId = $routeParams.weekId;
 					/* Edit or View Details of Existing Week */
-					if($routeParams.weekId){
-						$scope.objectDetails = WeeksSvc.getWeekObject($routeParams.weekId);
-						$scope.objectDetails.$loaded().then(function(week){
+					if(weekId){
+						$scope.objectDetails.basicInfo = WeeksSvc.getWeekObject(weekId);
+						$scope.objectDetails.basicInfo.$loaded().then(function(week){
 							if(!week.name){ //If week from DB hasnt name, is because no week was found
-								$rootScope.response = {error: true, message: $rootScope.i18n.error.recordDoesntExist };
-								$location.path(constants.pages.error); return;
+								$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+								$location.path(constants.pages.error);
+								return;
 							}
-							prepareViewForEdit(week);
+							$scope.objectDetails.audit = WeeksSvc.getWeekAuditObject(weekId);
+							$scope.prepareViewForEdit(week);
 						}).catch( function(error){
 							$rootScope.response = { error: true, message: error };
 							$location.path(constants.pages.error);
@@ -338,20 +355,18 @@ okulusApp.controller('WeekDetailsCntrl',
 					}
 					/* New Week Creation */
 					else{
-						$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.newLbl;
-						$scope.weekEditParams.date = new Date();
-						$scope.weekEditParams.dateRequired = true;
-						$scope.weekEditParams.showBadges = false;
-						$scope.response = undefined;
+						$scope.prepareViewForNew();
 					}
 				});
 		}});
 
- 		prepareViewForEdit = function (weekObject) {
+ 		$scope.prepareViewForEdit = function (weekObject) {
+			$scope.weekEditParams = {};
 			$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.modifyLbl;
+			$scope.weekEditParams.isEdit = true;
+			$scope.weekEditParams.weekId = weekObject.$id;
 			$scope.weekEditParams.dateRequired = false;
-			$scope.weekEditParams.showBadges = true;
-			//$scope.audit = weekObject.audit;
+			$scope.response = undefined;
 
 			let weekInput = document.querySelector("#weekDate")
 			if(weekInput){
@@ -365,36 +380,50 @@ okulusApp.controller('WeekDetailsCntrl',
 			$scope.response = undefined;
 		}
 
+		$scope.prepareViewForNew = function () {
+			$scope.weekEditParams = {};
+			$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.newLbl;
+			$scope.weekEditParams.isEdit = false;
+			$scope.weekEditParams.date = new Date();
+			$scope.weekEditParams.dateRequired = true;
+			$scope.response = undefined;
+		};
+
 		/* Toogle the Week Status (isOpen=true/false) */
 		$scope.setWeekOpenStatus = function (setOpen) {
-			$rootScope.weekResponse = null;
-			WeeksSvc.updateWeekStatusInObject($scope.objectDetails,setOpen);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.statusUpdated };
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				WeeksSvc.updateWeekStatusInObject($scope.objectDetails.basicInfo, setOpen);
+				$scope.response = {success:true, message: systemMsgs.success.statusUpdated };
+			}
 		};
 
 		/* Toogle the Week visibility (isVisible=true/false) */
 		$scope.setWeekVisibility = function (setVisible) {
-			$rootScope.weekResponse = null;
-			WeeksSvc.updateWeekVisibilityInObject($scope.objectDetails, setVisible);
-			$scope.response = {success:true, message: $rootScope.i18n.weeks.visibilityUpdated };
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				WeeksSvc.updateWeekVisibilityInObject($scope.objectDetails.basicInfo, setVisible);
+				$scope.response = {success:true, message: systemMsgs.success.visibilityUpdated };
+			}
 		};
 
 		/* Save or Update Week data (Name and Description) */
-		$scope.save = function() {
-			$rootScope.weekResponse = null;
-			if(!$scope.objectDetails){ return; }
+		$scope.saveWeek = function() {
+			clearResponse();
+			if($rootScope.currentSession.user.type != constants.roles.admin
+				|| !$scope.objectDetails.basicInfo){ return; }
 
-			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
+			$scope.response = {working:true, message:systemMsgs.inProgress.savingWeekInfo};
 			//Build week Id from the selected Week in the input
 			let code = document.querySelector("#weekDate").value;
 			let codeSplit = code.split("-W");
 			let weekId = (codeSplit[0]+codeSplit[1]);
 
 			//Update existing Week
-			if($scope.objectDetails.$id){
-				$scope.objectDetails.$save().then(function(ref) {
-					AuditSvc.recordAudit(weekId, "update", "weeks");
-					$scope.response = {success:true, message: $rootScope.i18n.weeks.weekUpdated+" "+weekId };
+			if($scope.objectDetails.basicInfo.$id){
+				$scope.objectDetails.basicInfo.$save().then(function(ref) {
+					AuditSvc.recordAudit(weekId, constants.actions.update, constants.folders.weeks);
+					$scope.response = {success:true, message: systemMsgs.success.weekInfoUpdated};
 				},function(error){
 					console.log("Error:", error);
 					$scope.response = { error:true, message: error };
@@ -404,9 +433,10 @@ okulusApp.controller('WeekDetailsCntrl',
 			else{
 				WeeksSvc.getWeekObject(weekId).$loaded().then(function(week) {
 					if(week.name){
-						$scope.response = {error:true, message: $rootScope.i18n.weeks.weekExists+" "+weekId };
+						$scope.response = {error:true, message: systemMsgs.error.weekExists+" "+weekId };
 					}else{
-						week.name = $scope.objectDetails.name;
+						week.name = $scope.objectDetails.basicInfo.name;
+						week.notes = $scope.objectDetails.basicInfo.notes;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
 						week.isOpen = false;
@@ -414,9 +444,9 @@ okulusApp.controller('WeekDetailsCntrl',
 
 						week.$save().then(function(ref) {
 							WeeksSvc.increaseTotalWeeksCounter();
-							AuditSvc.recordAudit(weekId, "create", "weeks");
+							AuditSvc.recordAudit(weekId, constants.actions.create, constants.folders.weeks);
 							$rootScope.weekResponse = { created:true, message: $rootScope.i18n.weeks.weekCreated+" "+weekId };
-							$location.path("/weeks/edit/"+weekId);
+							$location.path(constants.pages.weekEdit+weekId);
 						},function(error){
 						  console.log("Error:", error);
 							$scope.response = { error:true, message: error };
@@ -428,33 +458,39 @@ okulusApp.controller('WeekDetailsCntrl',
 		};
 
 		/* Delete Week, only when no report is associated to this week */
-		$scope.delete = function() {
-			$rootScope.weekResponse = null;
-			$scope.response = {working:true, message:$rootScope.i18n.alerts.working};
-			let weekId = $scope.objectDetails.$id;
-			/*In future all weeks should have a counter with the number of Existing
-			reports associated to this week */
-			if($scope.objectDetails.reportsCount > 0){
-				$scope.response = {error:true, message: $rootScope.i18n.weeks.deleteError};
-			}else{
-				let isWeekOpen = $scope.objectDetails.isOpen;
-				let isWeekVisible = $scope.objectDetails.isVisible;
-				//proceed with delete
-				$scope.objectDetails.$remove().then(function(ref) {
-					if(isWeekOpen){
-						WeeksSvc.decreaseOpenWeeksCounter();
-					}
-					if(isWeekVisible){
-						WeeksSvc.decreaseVisibleWeeksCounter();
-					}
-					WeeksSvc.decreaseTotalWeeksCounter();
-					AuditSvc.recordAudit(weekId, "delete", "weeks");
-					$rootScope.weekResponse = {deleted:true, message: $rootScope.i18n.weeks.weekDeleted+" "+weekId};
-					$location.path("/weeks");
-				}, function(error) {
-					console.log("Error:", error);
-				});
+		$scope.deleteWeek = function() {
+			clearResponse();
+			let weekInfo = $scope.objectDetails.basicInfo;
+
+			if(weekInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+				$scope.response = {working:true, message: systemMsgs.inProgress.deletingWeek};
+				if($scope.objectDetails.basicInfo.reportsCount > 0){
+					$scope.response = {deleteError:true, message: systemMsgs.error.deleteWeekError};
+				}else{
+					let isWeekOpen = $scope.objectDetails.basicInfo.isOpen;
+					let isWeekVisible = $scope.objectDetails.basicInfo.isVisible;
+					//proceed with delete
+					weekInfo.$remove().then(function(deletedWeekRef) {
+						if(isWeekOpen){
+							WeeksSvc.decreaseOpenWeeksCounter();
+						}
+						if(isWeekVisible){
+							WeeksSvc.decreaseVisibleWeeksCounter();
+						}
+						WeeksSvc.decreaseTotalWeeksCounter();
+						AuditSvc.recordAudit(weekInfo.$id, constants.actions.delete, constants.folders.weeks);
+						deletedWeekId = deletedWeekRef.key;
+						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
+						$location.path(constants.pages.adminWeeks);
+					}, function(error) {
+						console.log("Error:", error);
+					});
+				}
 			}
 		};
 
+		clearResponse = function() {
+			$rootScope.weekResponse = null;
+			$scope.response = null;
+		};
 }]);

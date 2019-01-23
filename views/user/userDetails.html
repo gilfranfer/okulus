@@ -3,7 +3,7 @@
   <div class="card h-100 mb-3">
     <div class="card-body">
       <h4 class="card-title" ng-if="userMemberDetails">
-        {{userMemberDetails.member.shortname}}
+        {{userMemberDetails.shortname}}
       </h4>
       <h4 class="badge badge-success" ng-if="userDetails.type == 'admin'">
         {{i18n.admin.users.adminLbl}}
@@ -17,12 +17,12 @@
   <div class="card h-100 mb-3">
     <div class="card-body">
       <p><span class="font-weight-bold">{{i18n.admin.users.table.user}}: </span>{{userDetails.email}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{userDetails.lastLogin | date: "MMM dd yyyy HH:mm:ss"}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{userDetails.lastLoginOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
       <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{userDetails.lastActivityOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
     </div>
   </div>
 
   <!-- Audit -->
-  <article ng-if="audit" ng-include="'views/fragments/auditDetails.html'"></article>
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
 
 </section>

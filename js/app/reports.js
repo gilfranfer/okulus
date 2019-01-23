@@ -167,10 +167,10 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 	function($scope, $rootScope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
 		//Data Required to populate some Form Selects
 		WeeksSvc.loadOpenWeeks();
-		MembersSvc.loadActiveMembers().$loaded().then(function(activeMembers){
-			$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
-			$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
-			$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
+		MembersSvc.getActiveMembers().$loaded().then(function(activeMembers){
+			//$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
+			//$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
+			//$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
 		});
 
 		$scope.approveReport = function (approved){
@@ -430,7 +430,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 		$scope.showAllMembers = function(){
 			$scope.loadingAllMembers =  true;
 			$scope.groupOnlyMembersList = $scope.groupMembersList;
-			$scope.groupMembersList = MembersSvc.loadAllMembersList();
+			$scope.groupMembersList = MembersSvc.getAllMembers();
 			$scope.groupMembersList.$loaded().then(function() {
 				$scope.loadingAllMembers =  false;
 			});
@@ -457,7 +457,7 @@ okulusApp.controller('NewReportCntrl', ['$rootScope', '$scope','$routeParams', '
 		$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 
 		$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(whichGroup);
-		GroupsSvc.getGroupObj(whichGroup).$loaded().then(function(groupObj) {
+		GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
 			$scope.reunion.groupname = groupObj.group.name;
 			let hostId = groupObj.group.hostId;
 			if(hostId){

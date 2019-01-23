@@ -1,0 +1,55 @@
+<!-- Street, number and Zip code-->
+<div class="form-row">
+  <div class="col-6 col-md-6 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.streetLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.street}}</span>
+  </div>
+  <div class="col-6 col-md-2 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.extNumberLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.extNumber}}</span>
+  </div>
+  <div class="col-6 col-md-2 form-group" ng-if="$parent.objectDetails.address.intNumber">
+    <label class="font-weight-bold">
+      {{i18n.address.intNumberLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.intNumber}}</span>
+  </div>
+  <div class="col-6 col-md-2 form-group" ng-if="$parent.objectDetails.address.zip">
+    <label class="font-weight-bold">
+      {{i18n.address.zipLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.zip}}</span>
+  </div>
+</div>
+
+<!-- City, State, Country -->
+<div class="form-row">
+  <div class="col-6 col-md-3 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.neighborhoodLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.neighborhood}}</span>
+  </div>
+  <div class="col-6 col-md-3 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.cityLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.city}}</span>
+  </div>
+  <div class="col-6 col-md-3 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.stateLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.state}}</span>
+  </div>
+  <div class="col-6 col-md-3 form-group">
+    <label class="font-weight-bold">
+      {{i18n.address.countryLbl}}:
+    </label>
+    <span>{{$parent.objectDetails.address.country}}</span>
+  </div>
+</div>
