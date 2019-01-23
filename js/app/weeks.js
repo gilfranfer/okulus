@@ -195,12 +195,6 @@ okulusApp.factory('WeeksSvc',
 		};
 
 		return {
-			/* Create openWeeks object in rootScope containing all the Weeks with isOpen = true */
-			loadOpenWeeks: function(){
-				if(!$rootScope.openWeeks){
-					$rootScope.openWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
-				}
-			},
 			/* Create visibleWeeks object in rootScope containing all the Weeks with isVisible = true */
 			loadVisibleWeeks: function(){
 				if(!$rootScope.visibleWeeks){
@@ -241,6 +235,10 @@ okulusApp.factory('WeeksSvc',
 				}else{
 					return $firebaseArray(weeksListRef.orderByKey());
 				}
+			},
+			/*Return the Open Week with the highest Id as a Firebase Object*/
+			getGreatestOpenWeekArray: function(weekId){
+				return $firebaseArray(isOpenWeekRef.limitToLast(1));
 			},
 			/*Return Week Firebase Object*/
 			getWeekObject: function(weekId){
@@ -436,7 +434,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.response = {error:true, message: systemMsgs.error.weekExists+" "+weekId };
 					}else{
 						week.name = $scope.objectDetails.basicInfo.name;
-						week.notes = $scope.objectDetails.basicInfo.notes;
+						week.notes = ($scope.objectDetails.basicInfo.notes)?$scope.objectDetails.basicInfo.notes:null;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
 						week.isOpen = false;
