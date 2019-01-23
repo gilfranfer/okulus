@@ -474,7 +474,7 @@ okulusApp.factory('MembersSvc',
 		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
-		
+
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
 			counterRef.transaction(function(currentCount) {
@@ -570,7 +570,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Returns the member/list containing members with baseGroupId = gropId */
 			getMembersForBaseGroup: function(gropId){
-				let ref = memberDetailsRef.orderByChild(constants.dbFields.baseGroup).equalTo(gropId);
+				let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(gropId);
 				return $firebaseArray(ref);
 			},
 			/* Push Member Basic Details Object to Firebase*/
