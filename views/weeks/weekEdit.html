@@ -62,8 +62,9 @@
               {{i18n.weeks.weekDateLbl}}
               <span class="text-danger">*</span>
             </label>
-            <input type="week" id="weekDate" class="form-control form-control-lg"
-                placeholder="" ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
+            <input type="week" id="weekDate" class="form-control form-control-lg" placeholder=""
+              min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
+              ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
           </div>
         </div>
         <!-- Notes -->
