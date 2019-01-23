@@ -356,17 +356,6 @@ okulusApp.factory('MigrationSvc',
 							if(group.reports){
 								detailsRecord.reports = group.reports;
 							}
-							detailsRecord.roles = {};
-							if(group.group.leadId){
-								detailsRecord.roles.leadId = group.group.leadId;
-								detailsRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
-								group.group.leadId = null;
-							}
-							if(group.group.hostId){
-								detailsRecord.roles.hostId = group.group.hostId;
-								detailsRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
-								group.group.hostId = null;
-							}
 							groupsDetailsRef.child(group.$id).set(detailsRecord);
 
 							// basicRecord ( /group, /schedule, /address )
@@ -385,6 +374,19 @@ okulusApp.factory('MigrationSvc',
 							}
 							basicRecord.isActive = (basicRecord.status == "active");
 							basicRecord.status = null;
+
+							basicRecord.roles = {};
+							if(group.group.leadId){
+								basicRecord.roles.leadId = group.group.leadId;
+								basicRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
+								group.group.leadId = null;
+							}
+							if(group.group.hostId){
+								basicRecord.roles.hostId = group.group.hostId;
+								basicRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
+								group.group.hostId = null;
+							}
+							
 							groupsListRef.child(group.$id).set(basicRecord);
 							if(basicRecord.isActive){
 								activeCount++;
