@@ -199,6 +199,9 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			}
 		};
 
+		/*TODO: Before saving check if updatingHost, updatingTrainee, updatingLead, updatingWeek.
+		If any is true, is because they didnt save the change, but still needs to be applied, so
+		we need to update the hostName, traineeName or leadName, or week accordingly*/
 		$scope.saveOrUpdateReport = function(){
 			if($scope.audit && $scope.audit.reportStatus == "approved"){
 				$scope.response = { reportMsgError: "No se puede modificar el reporte porque ya ha sido aprobado"};
@@ -552,6 +555,120 @@ okulusApp.controller('ReportDetailsCntrl',
 						$scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceRemoved};
 					}
 			});
+		};
+
+		/*Called to preare the Select with the Host members*/
+		$scope.prepareForHostUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.reportParams.hostsList){
+				$scope.reportParams.hostsList = MembersSvc.getHostMembers();
+			}
+			$scope.reportParams.hostsList.$loaded().then(function(){
+				clearResponse();
+				$scope.reportParams.updatingHost = true;
+			});
+		};
+
+		/*Update the Report hostId according to Host Selection */
+		$scope.updateHost = function(){
+			clearResponse();
+			let hostId = $scope.objectDetails.basicInfo.hostId;
+			if(hostId){
+				let member = $scope.reportParams.hostsList.$getRecord(hostId);
+				$scope.objectDetails.basicInfo.hostName = member.shortname;
+			}else{
+				$scope.objectDetails.basicInfo.hostId = null;
+				$scope.objectDetails.basicInfo.hostName = null;
+			}
+			$scope.reportParams.updatingHost = false;
+		};
+
+		/*Called to preare the Select with the Lead members*/
+		$scope.prepareForLeadUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.reportParams.leadsList){
+				$scope.reportParams.leadsList = MembersSvc.getLeadMembers();
+			}
+			$scope.reportParams.leadsList.$loaded().then(function(){
+				clearResponse();
+				$scope.reportParams.updatingLead = true;
+			});
+		};
+
+		/*Update the Report leadId according to Lead Selection */
+		$scope.updateLead = function(){
+			clearResponse();
+			let leadId = $scope.objectDetails.basicInfo.leadId;
+			if(leadId){
+				let member = $scope.reportParams.leadsList.$getRecord(leadId);
+				$scope.objectDetails.basicInfo.leadName = member.shortname;
+			}else{
+				$scope.objectDetails.basicInfo.leadId = null;
+				$scope.objectDetails.basicInfo.leadName = null;
+			}
+			$scope.reportParams.updatingLead = false;
+		};
+
+		/*Called to preare the Select with the Lead members*/
+		$scope.prepareForTraineeUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.reportParams.traineesList){
+				$scope.reportParams.traineesList = MembersSvc.getTraineeMembers();
+			}
+			$scope.reportParams.traineesList.$loaded().then(function(){
+				clearResponse();
+				$scope.reportParams.updatingTrainee = true;
+			});
+		};
+
+		/*Update the Report traineeId according to Trainee Selection */
+		$scope.updateTrainee = function(){
+			clearResponse();
+			let traineeId = $scope.objectDetails.basicInfo.traineeId;
+			if(traineeId){
+				let member = $scope.reportParams.traineesList.$getRecord(traineeId);
+				$scope.objectDetails.basicInfo.traineeName = member.shortname;
+			}else{
+				$scope.objectDetails.basicInfo.traineeId = null;
+				$scope.objectDetails.basicInfo.traineeName = null;
+			}
+			$scope.reportParams.updatingTrainee = false;
+		};
+
+		/*Called to preare the Select with the Lead members*/
+		$scope.prepareForWeekUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.reportParams.weeksList){
+				$scope.reportParams.weeksList = WeeksSvc.getOpenWeeks();
+			}
+			$scope.reportParams.weeksList.$loaded().then(function(){
+				clearResponse();
+				$scope.reportParams.updatingWeek = true;
+			});
+		};
+
+		/*Update the Report weekId according to Week Selection */
+		$scope.updateWeek = function(){
+			clearResponse();
+			let weekId = $scope.objectDetails.basicInfo.weekId;
+			if(weekId){
+				let week = $scope.reportParams.weeksList.$getRecord(weekId);
+				$scope.objectDetails.basicInfo.weekName = week.name;
+			}else{
+				$scope.objectDetails.basicInfo.weekId = null;
+				$scope.objectDetails.basicInfo.weekName = null;
+			}
+			$scope.reportParams.updatingWeek = false;
+			console.log($scope.objectDetails.basicInfo);
+		};
+
+		clearResponse = function() {
+			$rootScope.reportResponse = null;
+			$scope.response = null;
 		};
 
 		return;
