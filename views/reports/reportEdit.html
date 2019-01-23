@@ -1,0 +1,492 @@
+<!-- Loading Report Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<section id="reportEdit" ng-show="!response.loading">
+  <!-- Informs a Report was created (used after redirect from reports/new to reports/edit) -->
+  <div class="alert alert-success" role="alert" ng-show="reportResponse.created" >
+    {{reportResponse.message}}
+  </div>
+
+  <!-- Alerts to inform the Revision Status on Existing Report -->
+  <div class="alert alert-danger" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'rejected'">
+    {{i18n.reports.rejectedReport}}
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'approved'">
+    {{i18n.reports.approvedReport}}
+  </div>
+  <div class="alert alert-primary" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'pending'">
+    {{i18n.reports.pendingReport}}
+  </div>
+
+  <!-- Title -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{reportParams.actionLbl}} {{i18n.reports.reportLbl}}
+        <span class="tx-darkblue d-inline">{{reportWeek.name}}</span>
+      </h4>
+    </div>
+  </article>
+
+  <form id="reportForm" name="reportForm" novalidate ng-submit="">
+    <!-- Basic Details Card -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.reports.basicInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Group and Host -->
+        <div class="form-row">
+          <div class="col-12 col-md-6 form-group">
+            <label class="font-weight-bold" for="groupId">
+              {{i18n.reports.groupLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" disabled id="groupId" class="form-control form-control-lg"
+            	ng-model="objectDetails.basicInfo.groupname" ng-required="true"/>
+            <input type="text" disabled hidden ng-model="objectDetails.basicInfo.groupId"/>
+          </div>
+          <div class="col-11 col-md-5 form-group">
+            <label class="font-weight-bold" for="hostId">
+              {{i18n.reports.hostLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostName">
+            <select id="hostId" class="form-control form-control-lg" ng-required="true"
+              ng-if="reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostId">
+              <option ng-repeat="host in reportParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
+            		{{host.shortname}}
+            	</option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <label></label><br>
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="reportParams.updatingHost" ng-click="updateHost()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!reportParams.updatingHost" ng-click="prepareForHostUpdate()" ></i>
+          </div>
+        </div>
+        <!-- Lead and Trainee -->
+        <div class="form-row">
+          <div class="col-11 col-md-5 form-group">
+            <label class="font-weight-bold" for="leadId">
+              {{i18n.reports.leadLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadName">
+            <select id="leadId" class="form-control form-control-lg" ng-required="true"
+              ng-if="reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadId">
+              <option ng-repeat="lead in reportParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
+            		{{lead.shortname}}
+            	</option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <label></label><br>
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="reportParams.updatingLead" ng-click="updateLead()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!reportParams.updatingLead" ng-click="prepareForLeadUpdate()" ></i>
+          </div>
+          <div class="col-11 col-md-5 form-group">
+            <label class="font-weight-bold" for="traineeId">
+              {{i18n.reports.traineeLbl}}
+            </label>
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeName">
+            <select id="traineeId" class="form-control form-control-lg" ng-required="false"
+              ng-if="reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeId">
+              <option ng-repeat="trainee in reportParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
+            		{{trainee.shortname}}
+            	</option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <label></label><br>
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="reportParams.updatingTrainee" ng-click="updateTrainee()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!reportParams.updatingTrainee" ng-click="prepareForTraineeUpdate()" ></i>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Report Details -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.reports.detailsInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Week and Date -->
+        <div class="form-row">
+          <div class="col-11 col-md-5 form-group">
+            <label class="font-weight-bold" for="week">
+              {{i18n.reports.weekLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!reportParams.updatingWeek" ng-model="objectDetails.basicInfo.weekName">
+            <select id="week" class="form-control form-control-lg" ng-required="true"
+              ng-if="reportParams.updatingWeek" ng-model="objectDetails.basicInfo.weekId">
+              <option ng-repeat="week in reportParams.weeksList | orderBy:'week.$id' track by week.$id" value="{{week.$id}}" >
+            		{{week.name}}
+            	</option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <label></label><br>
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="reportParams.updatingWeek" ng-click="updateWeek()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!reportParams.updatingWeek" ng-click="prepareForWeekUpdate()" ></i>
+          </div>
+          <div class="col-12 col-md-6 form-group">
+            <label class="font-weight-bold" for="date">
+              {{i18n.reports.dateLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
+              class="form-control form-control-lg" placeholder="{{i18n.reports.dateHint}}"
+              ng-model="objectDetails.basicInfo.dateObj" ng-required="true">
+          </div>
+        </div>
+        <!-- Report Status -->
+        <div class="form-row">
+          <div class="col-sm form-group">
+            <label class="font-weight-bold" for="status">
+              {{i18n.reports.statusLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="status" class="form-control form-control-lg"
+              ng-model="objectDetails.basicInfo.status" ng-required="true">
+              <option value="completed">
+                {{i18n.reports.okStatusLbl}}
+              </option>
+              <option value="canceled">
+                {{i18n.reports.cancelStatusLbl}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div ng-show="objectDetails.basicInfo.status == 'completed'">
+        <!-- Duration and money -->
+        <div class="form-row">
+          <div class="col-sm form-group">
+            <label class="font-weight-bold" for="duration">
+              {{i18n.reports.durationLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="duration" name="duration" class="form-control form-control-lg"
+              type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
+              ng-model="objectDetails.basicInfo.duration" ng-required="objectDetails.basicInfo.status == 'completed'">
+          </div>
+          <div class="col-sm form-group" ng-if="config.showMoneyFiled">
+            <label class="font-weight-bold" for="money">
+              {{i18n.reports.moneyLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <span class="input-group-addon">$</span>
+              <input type="number" id="money" min="0" step=".10" class="form-control form-control-lg"
+                ng-model="objectDetails.basicInfo.money" ng-required="objectDetails.basicInfo.status == 'completed'">
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Study Details -->
+    <article class="card mb-3" ng-show="objectDetails.basicInfo.status == 'completed'">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.reports.studyTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Study title and Serie -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="study">
+              {{i18n.reports.studyLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="study" name="study" class="form-control form-control-lg"
+              placeholder="{{i18n.reports.studyHint}}" ng-model="objectDetails.study.study" ng-required="objectDetails.basicInfo.status == 'completed'">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="series">
+              {{i18n.reports.seriesLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="series" name="series" class="form-control form-control-lg"
+              placeholder="{{i18n.reports.seriesHint}}" ng-model="objectDetails.study.series" ng-required="objectDetails.basicInfo.status == 'completed'">
+          </div>
+        </div>
+        <!-- Study Notes -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="studyNotes">
+              {{i18n.reports.studyNotesLbl}}
+            </label>
+            <textarea id="studyNotes" name="notes" class="form-control form-control-lg"
+              placeholder="{{i18n.reports.studyNotesHint}}" ng-model="objectDetails.study.studyNotes" ng-required="false">
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Attendance -->
+    <article class="card mb-3" ng-show="objectDetails.basicInfo.status == 'completed'">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.reports.attendanceLegend}}</legend>
+          </div>
+        </div>
+        <hr>
+
+        <!-- Members Title -->
+        <div class="row">
+          <div class="col-8">
+            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
+            <!-- <button class="btn btn-link clickable" ng-show="!showingAllMembers" ng-click="showAllMembers()">{{i18n.reports.allMembersLbl}}</button> -->
+            <!-- <button class="btn btn-link clickable" ng-show="showingAllMembers" ng-click="showGroupMembers()">{{i18n.reports.groupMembersLbl}}</button> -->
+          </div>
+        </div>
+        <!-- Members Select -->
+        <div class="row mb-4">
+          <div class="col-8">
+            <select id="memberSelect" class="form-control form-control-lg"
+                ng-model="reportParams.addMemberId" ng-required="false">
+              <option ng-repeat="member in reportParams.groupMembersList | orderBy:'name' track by member.id" value="{{member.id}}">
+                {{member.name}}
+              </option>
+            </select>
+          </div>
+          <div class="col-4">
+            <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+        <!-- Members Table -->
+        <div class="pre-scrollable">
+          <table class="table table-md table-striped">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <span class="badge badge-danger">{{objectDetails.attendance.members.length}}</span>
+                  {{i18n.reports.membersAttendance}}</th>
+                <th scope="col">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="element in objectDetails.attendance.members">
+                <td scope="row">
+                  {{element.memberName}}
+                </td>
+                <td scope="row">
+                  <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
+                    {{i18n.btns.deleteBtn}}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Alerts -->
+        <div class="row">
+          <div class="col">
+            <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
+              {{i18n.alerts.loading}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+              {{response.membersListOk}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+              {{response.membersListError}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.members || objectDetails.attendance.members.length == 0">
+              {{i18n.reports.noMembersList}}
+            </div>
+          </div>
+        </div>
+
+        <!-- Guests Title -->
+        <div class="row mt-4">
+          <div class="col-8">
+            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}</label>
+          </div>
+        </div>
+        <!-- Guest Input -->
+        <div class="row mb-4">
+          <div class="col-8">
+            <input type="text" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/>
+            <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
+          </div>
+          <div class="col-4">
+            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-success" ng-disabled="!reportParams.addGuestName">
+              {{i18n.btns.addBtn}}
+            </button>
+            <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
+              {{i18n.btns.addBtn}}
+            </button> -->
+          </div>
+        </div>
+        <!-- Guests Table -->
+        <div class="pre-scrollable">
+          <table class="table table-md table-striped">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <span class="badge badge-danger">{{objectDetails.attendance.guests.length}}</span>
+                  {{i18n.reports.guestsAttendance}}</th>
+                <th scope="col">&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="element in objectDetails.attendance.guests">
+                <td scope="row">
+                  {{element.guestName}}
+                </td>
+                <td scope="row">
+                  <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
+                    {{i18n.btns.deleteBtn}}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Alerts -->
+        <div class="row">
+          <div class="col">
+            <!-- Alerts -->
+            <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.guests || (objectDetails.attendance.guests && objectDetails.attendance.guests.length == 0)">
+              {{i18n.reports.noGuestsList}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+              {{response.guestsListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+              {{response.guestsListOk}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Notes and Comments -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.reports.notesLegend}}</legend>
+          </div>
+        </div>
+        <hr>
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="study">
+              {{i18n.reports.commentsLbl}}
+              <span ng-if="objectDetails.basicInfo.status == 'canceled'" class="text-danger">*</span>
+            </label>
+            <textarea id="notes" name="notes" class="form-control form-control-lg"
+            placeholder="{{i18n.reports.notesHint}}" ng-model="objectDetails.basicInfo.notes" ng-required="objectDetails.basicInfo.status == 'canceled'">
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </article>
+    <!-- <span class="text-danger">* {{i18n.groups.mandatoryFields}}</span> -->
+  </form>
+
+  <!-- Save Button -->
+  <div class="form-row mb-3" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+    <div class="col-sm form-group" >
+      <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+        ng-disabled="reportForm.$invalid || reportForm.$pristine"
+        ng-show="!reportForm.$invalid && !reportForm.$pristine">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+  </div>
+  <!-- approve and Reject Buttons -->
+  <div class="form-row mb-3" ng-if="currentSession.user.type == 'admin' && objectDetails.basicInfo.reportId">
+    <!-- Show Approve button if reviewStatus is Pending or Rejected -->
+    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport(true)">
+        {{i18n.btns.approveBtn}}
+      </button>
+    </div>
+    <!-- Show Reject button if reviewStatus is Pending or Approved -->
+    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'rejected'">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="approveReport(false)">
+        {{i18n.btns.rejectBtn}}
+      </button>
+    </div>
+  </div>
+
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Alert/Error row -->
+  <div class="form-row">
+    <div class="col">
+      <!-- Loading Alert -->
+      <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
+        {{response.reportMsgOk}}
+      </div>
+      <div class="alert alert-danger" role="alert" ng-show="response.reportMsgError">
+        {{response.reportMsgError}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete -->
+  <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
+    {{response.message}}
+  </div>
+  <div class="row mb-3"  ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+    <div class="col-sm form-group" ng-if="reportParams.isEdit">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable"
+          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+        {{i18n.reports.deleteBtn}}
+      </button>
+      <div  class="collapse" id="collapseDelete">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.alerts.confirmDelete}}
+          <button type="button" class="btn btn-danger clickable" ng-click="delete()">
+            {{i18n.btns.yesBtn}}
+          </button>
+          <button type="button" class="btn btn-success clickable"
+            data-toggle="collapse" data-target="#collapseDelete"
+            aria-expanded="false" aria-controls="collapseDelete">
+            {{i18n.btns.noBtn}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

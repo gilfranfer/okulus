@@ -63,13 +63,13 @@
               </a>
             </td>
             <td class="text-danger" ng-if="report.audit.reportStatus == 'rejected'">
-              {{i18n.forms.report.rejectedStatusLbl}}
+              {{i18n.reports.rejectedStatusLbl}}
             </td>
             <td class="text-success" ng-if="report.audit.reportStatus == 'approved'">
-              {{i18n.forms.report.approvedStatusLbl}}
+              {{i18n.reports.approvedStatusLbl}}
             </td>
             <td class="text-dark" ng-if="!report.audit.reportStatus || report.audit.reportStatus == 'pending'">
-              {{i18n.forms.report.pendingStatusLbl}}
+              {{i18n.reports.pendingStatusLbl}}
             </td>
             <td scope="row">
               {{report.reunion.groupname}}
@@ -78,10 +78,10 @@
               {{report.reunion.weekId}}
             </td>
             <td class="text-danger" ng-if="report.reunion.status == 'canceled'">
-              {{i18n.forms.report.cancelStatusLbl}}
+              {{i18n.reports.cancelStatusLbl}}
             </td>
             <td class="text-success" ng-if="report.reunion.status == 'completed'">
-              {{i18n.forms.report.okStatusLbl}}
+              {{i18n.reports.okStatusLbl}}
             </td>
             <td>{{report.reunion.duration}} min</td>
             <td>${{report.reunion.money}}</td>

@@ -169,8 +169,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				controller: 'NewReportCntrl',
-				templateUrl: 'views/reports/newreport.html'
+				controller: 'ReportDetailsCntrl',
+				templateUrl: 'views/reports/reportEdit.html'
 			})
 			.when('/reports/edit/:reportId', {
 				resolve: {
@@ -250,6 +250,7 @@ const constants = {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
 		open:"open", closed:"closed",
+		completed:"completed", cancelled:"cancelled",
 		visible:"show", hidden:"hide",
 		readed:"readed",
 		isActive:"isActive",
@@ -312,15 +313,14 @@ const constants = {
 okulusApp.run(function($rootScope) {
 		$rootScope.config ={
 			/*The Max lenght a firebaseArray should have in the initial request*/
-			maxQueryListResults: 20,
+			maxQueryListResults: 50,
 			/*After this number of records, the Filter box will be visible*/
-			minResultsToshowFilter: 3,
+			minResultsToshowFilter: 2,
+			/*Some fileds can be hiden*/
+			showMoneyFiled: true,
 			/*Date range limits*/
-			bday:{maxDate:"2019-12-31",minDate:"1900-01-01"},
-			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
-			reports:{
-						maxDate:"2019-12-31",minDate:"2018-01-01",
-						minDuration:"0", maxDuration:"300"
-					}
+			bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
+			reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
+						minDuration:"0", maxDuration:"300" }
 		};
 });

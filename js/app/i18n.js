@@ -33,7 +33,9 @@ const systemMsgs = {
 		deletingRuleError:"Error al eliminar la regla de acceso",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
-		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
+		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
+		/*Reports*/
+		duplicatedAttendance:"ya está en la lista de asistencia."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -72,7 +74,10 @@ const systemMsgs = {
 		loadingVisibleWeeks:"Cargando Semanas Visibles ...",
 		loadingHiddenWeeks:"Cargando Semanas Ocultas ...",
 		savingWeekInfo:"Guardando Información de la Semana",
-		deletingWeek:"Eliminando Semana"
+		deletingWeek:"Eliminando Semana",
+		/* Reports JS */
+		loadingReport:"Cargando Reporte ...",
+
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -109,7 +114,10 @@ const systemMsgs = {
 		statusUpdated:"Estado de la Semana actualizado.",
 		visibilityUpdated:"Visibilidad de la Semana actualizada.",
 		weekInfoUpdated:"Semana Actualizada",
-		weekDeleted:"Se ha eliminado la semana"
+		weekDeleted:"Se ha eliminado la semana",
+		/* Reports JS */
+		attendanceAdded:"agregado a la lista.",
+		attendanceRemoved:"fue removido de la lista."
 	}
 };
 
@@ -222,6 +230,38 @@ okulusApp.run(function($rootScope) {
 					deleteForAllBtn:"Eliminar para todos",
 					editMessageTitle:"Editar Mensaje"
 				}
+			},
+			reports:{
+				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
+				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
+				detailsInfoTitle:"Detalles de la Reunión",
+				studyTitle:"Información del estudio",
+				/*Form Labels*/
+				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
+				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
+				durationLbl: "Duración (min)", weekLbl:"Semana", moneyLbl: "Ofrenda",
+				statusLbl:"Estado de la Reunión",
+				studyNotesLbl:"Notas del estudio", studyNotesHint:"Agregar notas sobre el estudio",
+				commentsLbl:"Comentarios",
+				deleteBtn:"Eliminar Reporte",
+				newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
+				basicDataLegend: "Detalles de la Reunión",
+				title:"Datos generales de la Reunión",
+				cancelStatusLbl:"Reunión Cancelada", okStatusLbl:"Reunión Realizada",
+				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
+				notesLegend: "Comentarios sobre la Reunión", notesHint: "Agregar notas y comentarios de la reunión",
+				attendanceLegend: "Asistencia",
+				membersAttendance:"Miembros que asistieron",
+				guestsAttendance:"Invitados que asistieron",
+				membersLbl: "Miembros", guestsLbl: "Invitados",
+				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
+				maleLbl: "Hombres", femaleLbl: "Mujeres",
+				maleAbrev: "H", femaleAbrev: "M",
+				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
+				studyLbl: "Titulo", seriesLbl: "Serie",
+				noMembersList:"No se ha registrado la asistencia de Miembros",
+				noGuestsList:"No se ha registrado la asistencia de Invitados",
+				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
 			},
 			weeks:{
 				title: "Administrador de Semanas",
@@ -387,31 +427,7 @@ okulusApp.run(function($rootScope) {
 			},
 			forms:{
 				searchHint:"Buscar ...",
-				filterHint:"Filtrar resultados...",
-				report:{
-					newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
-					basicDataLegend: "Detalles de la Reunión",
-					title:"Datos generales de la Reunión",
-					groupLbl:"Grupo", leadLbl: "Siervo",
-					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
-					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
-					durationLbl: "Duración (min)",
-					weekLbl:"Semana", moneyLbl: "Ofrenda",
-					statusLbl:"Estado de la Reunión",
-					cancelStatusLbl:"Cancelada", okStatusLbl:"Completada",
-					pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
-					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
-					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
-					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados",
-					allMembersLbl:"Ver todos los miembros", groupMembersLbl:"Ver miembros del Grupo",
-					maleLbl: "Hombres", femaleLbl: "Mujeres",
-					maleAbrev: "H", femaleAbrev: "M",
-					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
-					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie",
-					noMembersList:"No se ha registrado la asistencia de Miembros",
-					noGuestsList:"No se ha registrado la asistencia de Invitados",
-					approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
-				}
+				filterHint:"Filtrar resultados..."
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},

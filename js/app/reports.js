@@ -165,14 +165,8 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
 	function($scope, $rootScope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
-		//Data Required to populate some Form Selects
-		WeeksSvc.loadOpenWeeks();
-		MembersSvc.getActiveMembers().$loaded().then(function(activeMembers){
-			//$scope.hostsList = MembersSvc.filterActiveHosts(activeMembers);
-			//$scope.leadsList = MembersSvc.filterActiveLeads(activeMembers);
-			//$scope.traineesList = MembersSvc.filterActiveTrainees(activeMembers);
-		});
 
+		/* Approve or Reject Report, according to the boolean passed as parameter */
 		$scope.approveReport = function (approved){
 			if ($scope.reportId){
 				$scope.working = true;
@@ -213,18 +207,18 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				$scope.working = true;
 
 				if($scope.reunion.status == "canceled"){
-					$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
+					$scope.objectDetails.attendance = { total: 0, guests:{total:0}, members:{total:0} };
 					$scope.reunion.duration = 0;
 					$scope.reunion.money = 0;
 				}
 
-				let membersAttendanceList = $scope.attendance.members.list;
-				let guestsAttendanceList = $scope.attendance.guests.list;
-				let record = {reunion: $scope.reunion, attendance: $scope.attendance};
+				let membersAttendanceList = $scope.objectDetails.attendance.members;
+				let guestsAttendanceList = $scope.objectDetails.attendance.guests;
+				let record = {reunion: $scope.reunion, attendance: $scope.objectDetails.attendance};
 				record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
 
-				record.attendance.members.list = null;
-				record.attendance.guests.list = null;
+				record.attendance.members = null;
+				record.attendance.guests = null;
 				record.attendance.members.total = membersAttendanceList?membersAttendanceList.length:0;
 				record.attendance.guests.total = guestsAttendanceList?guestsAttendanceList.length:0;
 				record.attendance.total = record.attendance.guests.total + 	record.attendance.members.total ;
@@ -275,10 +269,10 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 				let obj = ReportsSvc.getReportObj(repRef.key);
 				obj.$loaded().then(function() {
 					if(membersAttendanceList){
-						$scope.attendance.members.list = Object.values(membersAttendanceList);
+						$scope.objectDetails.attendance.members = Object.values(membersAttendanceList);
 					}
 					if(guestsAttendanceList){
-						$scope.attendance.guests.list = Object.values(guestsAttendanceList);
+						$scope.objectDetails.attendance.guests = Object.values(guestsAttendanceList);
 					}
 
 					$scope.reportId = repRef.key;
@@ -318,7 +312,7 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
 							let reportId = reportObj.$id;
 							let groupId = reportObj.reunion.groupId;
-							let membersAttendanceList = reportObj.attendance.members.list;
+							let membersAttendanceList = reportObj.attendance.members;
 							//if report is not approved
 							reportObj.$remove().then(function(ref) {
 								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
@@ -339,141 +333,228 @@ okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$
 			}
 		};
 
-		$scope.addMemberAttendance = function () {
-			let whichMember = $scope.addmemberId;
-			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+		// $scope.addGuests = function () {
+		// 	let guestNumber = Number($scope.reportParams.addGuestName);
+		// 	let guestName = "Invitado ";
+		// 	if(!$scope.objectDetails.attendance.guests){
+		// 		$scope.objectDetails.attendance.guests = [];
+		// 	}
+		// 	while(guestNumber>0){
+		// 		let name = guestName + guestNumber;
+		// 		$scope.objectDetails.attendance.guests.push({guestName:name});
+		// 		guestNumber --;
+		// 	}
+		// 	$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
+		// 	$scope.reportParams.addGuestName = "";
+		// };
 
-			if(!$scope.attendance.members.list){
-				$scope.attendance.members.list = [];
-			}
-			let memberExist = false;
-			$scope.attendance.members.list.forEach(function(member) {
-					if(member.memberId == whichMember){
-						memberExist = true;
-					}
+	}
+]);
+
+/* Controller linked to '/reports/new/:groupId' /reports/view/:reportId and /reports/edit/:reportId
+ * It will load the Report for the id passed */
+okulusApp.controller('ReportDetailsCntrl',
+['$rootScope','$scope','$routeParams', '$location','$firebaseAuth',
+ 'ReportsSvc', 'GroupsSvc', 'WeeksSvc','MembersSvc','AuditSvc','AuthenticationSvc',
+	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
+		ReportsSvc, GroupsSvc, WeeksSvc, MembersSvc,AuditSvc,AuthenticationSvc){
+
+
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingReport };
+			$scope.objectDetails = {};
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				/* Only Valid Users (with an associated MemberId) can see the content */
+				if(!user.isValid){
+					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
+					return;
+				}
+
+				let whichReport = $routeParams.reportId;
+				let whichGroup = $routeParams.groupId;
+				// console.log(whichReport,whichGroup);
+
+				/* When Group Id available, we are comming from /reports/new/:groupId */
+				if(whichGroup){
+					$scope.prepareViewForNew(whichGroup);
+				}
+				/* Prepare for Edit or View Details of Existing Report */
+				else{
+					$scope.prepareViewForEdit(whichReport,whichGroup);
+				}
 			});
-			if(memberExist){
-				$scope.response = { membersListError: memberName + " ya está en la lista"};
-			}else{
-				$scope.attendance.members.list.push({memberId:whichMember,memberName:memberName});
-				$scope.response = { membersListOk: memberName + " agregado a la lista"};
+		}});
 
+		$scope.prepareViewForNew = function (whichGroup) {
+			$scope.objectDetails.basicInfo = { dateObj: new Date(), reviewStatus:undefined};
+			$scope.objectDetails.study = {};
+			$scope.objectDetails.audit = undefined;
+			$scope.objectDetails.attendance = { guests:[], members:[] };
+			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.newLbl,
+															isEdit: false, reportId: undefined,
+															//For member attendance
+															groupMembersList: new Array() };
+
+			//Get the most recent (by Id) week, with Status Open
+			WeeksSvc.getGreatestOpenWeekArray().$loaded().then(function(weekList) {
+				if(weekList.length == 1){
+					let week = weekList[0];
+					$scope.objectDetails.basicInfo.weekId = week.$id;
+					$scope.objectDetails.basicInfo.weekName = week.name;
+				}
+			});
+
+			//Get Group Basic Object to Pre-populate some report fields
+			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
+				$scope.objectDetails.basicInfo.groupId = groupObj.$id;
+				$scope.objectDetails.basicInfo.groupname = groupObj.name;
+				$scope.objectDetails.basicInfo.status = constants.status.completed;
+
+				if(groupObj.roles){
+					if(groupObj.roles.leadId){
+						$scope.objectDetails.basicInfo.leadId = groupObj.roles.leadId;
+						$scope.objectDetails.basicInfo.leadName = groupObj.roles.leadName;
+						/*Push the Lead in the groupMembersList, because sometimes the lead
+						doesnt have the same baseGroupId */
+						$scope.reportParams.groupMembersList.push({name:groupObj.roles.leadName,id:groupObj.roles.leadId});
+					}
+					if(groupObj.roles.traineeId){
+						$scope.objectDetails.basicInfo.traineeId = groupObj.roles.traineeId;
+						$scope.objectDetails.basicInfo.traineeName = groupObj.roles.traineeName;
+						/*Push the trainee in the groupMembersList, because sometimes the trainee
+						doesnt have the same baseGroupId */
+						$scope.reportParams.groupMembersList.push({name:groupObj.roles.traineeName,id:groupObj.roles.traineeId});
+					}
+					if(groupObj.roles.hostId){
+						$scope.objectDetails.basicInfo.hostId = groupObj.roles.hostId;
+						$scope.objectDetails.basicInfo.hostName = groupObj.roles.hostName;
+						/*Push the host in the groupMembersList, because sometimes the host
+						doesnt have the same baseGroupId */
+						$scope.reportParams.groupMembersList.push({name:groupObj.roles.hostName,id:groupObj.roles.hostId});
+					}
+				}
+
+				/* Get List of Members with this group as baseGroup, and add them to the
+				attendance list (including inactive members).*/
+				MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
+					let leadId =
+					list.forEach(function(member){
+						//Avoid duplicated Elements in Member attendance List (lead, host, and trainee where added previously)
+						if(member.$id != groupObj.roles.leadId
+								&& member.$id != groupObj.roles.traineeId
+								&& member.$id != groupObj.roles.hostId){
+							$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id});
+						}
+					});
+				});
+
+				$scope.response = undefined;
+			}).catch(function(error) {
+				$rootScope.response = { error: true, message: error };
+				$location.path(constants.pages.error);
+			});
+
+		};
+
+		$scope.prepareViewForEdit = function (whichReport,whichGroup) {
+			$scope.reportParams = {};
+			$scope.reportParams.actionLbl = $rootScope.i18n.reports.modifyLbl;
+			$scope.reportParams.isEdit = true;
+			$scope.reportParams.reportId = reportObject.$id;
+			$scope.response = undefined;
+		};
+
+		/* Called from view */
+		$scope.addSelectedMemberToAttendancelist = function () {
+			let memberId = $scope.reportParams.addMemberId;
+			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+			addMemberAttendance(memberId,memberName);
+		};
+
+		/* Add a member to the attendace list
+		1. Create a new Member attendace List, if doesnt exist
+		2. When a list is already present, iterate to find if the member is already there
+		3. Push the member to the attendace list
+		4. Remove member from  "removedMembersMap", if there */
+		addMemberAttendance = function(memberId,memberName){
+			let memberExist = false;
+			$scope.objectDetails.attendance.members.forEach(function(member){
+				if(member.memberId == memberId){
+					memberExist = true;
+				}
+			});
+
+			if(memberExist){
+				$scope.response = { membersListError: memberName + " "+ systemMsgs.error.duplicatedAttendance};
+			}else{
+				$scope.objectDetails.attendance.members.push({memberId:memberId,memberName:memberName});
+				$scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceAdded};
+				/* The removedMembersMap is used to track the members that must be removed from the report,
+				and the report should be removed from /member/details/:memberId/attendance
+				This is useful when editing an existing report, because an user could:
+				1. remove a member from the attendace list (this will add the member Id in removedMembersMap),
+				2. and then add the member again. In this case we must delete the member from removedMembersMap */
 				if($scope.removedMembersMap){
-					$scope.removedMembersMap.delete(whichMember);
+					$scope.removedMembersMap.delete(memberId);
 				}
 			}
+		}
+
+		/* Remove a Member from the attendace list */
+		$scope.removeMemberAttendance = function (whichMember) {
+			let memberName = whichMember.memberName;
+			let memberId = whichMember.memberId;
+			$scope.objectDetails.attendance.members.forEach(function(member,idx) {
+				if(member.memberId == memberId){
+  				$scope.objectDetails.attendance.members.splice(idx, 1);
+					$scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceRemoved};
+
+					if(!$scope.removedMembersMap){
+						$scope.removedMembersMap = new Map();
+					}
+					/*The removedMembersMap will be used when saving the report to identify
+					 Members to be removed from the attendance list. Useful when editing an existing report */
+					if(!$scope.removedMembersMap.get(memberId) ){
+						$scope.removedMembersMap.set(memberId,memberId);
+					}
+				}
+			});
 		};
 
-		$scope.addGuests = function () {
-			let guestNumber = Number($scope.addGuestName);
-			let guestName = "Invitado ";
-			if(!$scope.attendance.guests.list){
-				$scope.attendance.guests.list = [];
-			}
-			while(guestNumber>0){
-				let name = guestName + guestNumber;
-				$scope.attendance.guests.list.push({guestName:name});
-				guestNumber --;
-			}
-			$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
-			$scope.addGuestName = "";
+		/* Called from view */
+		$scope.addGuestToAttendanceList = function () {
+			let guestName = $scope.reportParams.addGuestName;
+			addGuestAttendance(guestName);
+			$scope.reportParams.addGuestName = "";
 		};
 
-		$scope.addGuestAttendance = function () {
-			let guestName = $scope.addGuestName;
-			if(!$scope.attendance.guests.list){
-				$scope.attendance.guests.list = [];
-			}
+		addGuestAttendance = function(guestName){
 			let guestExist = false;
-			$scope.attendance.guests.list.forEach(function(member) {
+			$scope.objectDetails.attendance.guests.forEach(function(member) {
 					if(member.guestName == guestName){
 						guestExist = true;
 					}
 			});
 			if(guestExist){
-				$scope.response = { guestsListError: guestName + " ya está en la lista"};
+				$scope.response = { guestsListError: guestName + " " + systemMsgs.error.duplicatedAttendance};
 			}else{
-				$scope.attendance.guests.list.push({guestName:guestName});
-				$scope.response = { guestsListOk: guestName + " agregado a la lista"};
+				$scope.objectDetails.attendance.guests.push({guestName:guestName});
+				$scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceAdded};
 			}
-			 $scope.addGuestName = "";
 		};
 
-		$scope.removeMemberAttendance = function (whichMember) {
-			let memberName = whichMember.memberName;
-			let memberId = whichMember.memberId;
-			$scope.attendance.members.list.forEach(function(member,idx) {
-					if(member.memberId == memberId){
-    				$scope.attendance.members.list.splice(idx, 1);
-						$scope.response = { membersListOk: memberName + " fue removido de la lista"};
-
-						if(!$scope.removedMembersMap){
-							$scope.removedMembersMap = new Map();
-						}
-						if( !$scope.removedMembersMap.get(memberId) ){
-							$scope.removedMembersMap.set(memberId,memberId);
-						}
-					}
-			});
-		};
-
-		$scope.removeGuestAttendance = function (whichMember) {
-			let guestName = whichMember.guestName;
-			$scope.attendance.guests.list.forEach(function(member,idx) {
+		$scope.removeGuestAttendance = function (whichGuest) {
+			let guestName = whichGuest.guestName;
+			$scope.objectDetails.attendance.guests.forEach(function(member,idx) {
 					if(member.guestName == guestName){
-    				$scope.attendance.guests.list.splice(idx, 1);
-						$scope.response = { guestsListOk: guestName + " fue removido de la lista"};
+    				$scope.objectDetails.attendance.guests.splice(idx, 1);
+						$scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceRemoved};
 					}
 			});
 		};
 
-		$scope.showAllMembers = function(){
-			$scope.loadingAllMembers =  true;
-			$scope.groupOnlyMembersList = $scope.groupMembersList;
-			$scope.groupMembersList = MembersSvc.getAllMembers();
-			$scope.groupMembersList.$loaded().then(function() {
-				$scope.loadingAllMembers =  false;
-			});
-			$scope.showingAllMembers = true;
-		};
-
-		$scope.showGroupMembers = function(){
-			$scope.loadingAllMembers =  true;
-			$scope.groupMembersList = $scope.groupOnlyMembersList;
-			$scope.groupMembersList.$loaded().then(function() {
-				$scope.loadingAllMembers =  false;
-			});
-			$scope.showingAllMembers = false;
-		};
-
-	}
-]);
-
-okulusApp.controller('NewReportCntrl', ['$rootScope', '$scope','$routeParams', '$location','GroupsSvc','MembersSvc',
-	function($rootScope, $scope, $routeParams, $location, GroupsSvc, MembersSvc){
-		$rootScope.response = null;
-		let whichGroup = $routeParams.groupId;
-		$scope.reunion = { dateObj: new Date(), groupId: whichGroup, status:"completed"};
-		$scope.attendance = { total: 0, guests:{total:0}, members:{total:0} };
-
-		$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(whichGroup);
-		GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
-			$scope.reunion.groupname = groupObj.group.name;
-			let hostId = groupObj.group.hostId;
-			if(hostId){
-				$scope.reunion.hostId = hostId;
-			}
-			$scope.reunion.leadId = groupObj.group.leadId;
-		}).catch(function(error) {
-			$location.path("/error/norecord");
-			$scope.reunion.groupname = "Group Not Available";
-		});
-	}
-]);
-
-okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location', 'GroupsSvc', 'ReportsSvc','WeeksSvc','MembersSvc',
-	function($scope, $routeParams, $location, GroupsSvc, ReportsSvc, WeeksSvc, MembersSvc){
-		let whichReport = $routeParams.reportId;
+		return;
 
 		/* When opening "Edit" page from the Reports List, we can use the
 		"allReports" firebaseArray from rootScope to get the specific Group data */
@@ -503,12 +584,12 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 					$scope.reunion.dateObj = new Date(record.reunion.date.year, record.reunion.date.month-1, record.reunion.date.day);
 				}
 
-				$scope.attendance = record.attendance;
-				if($scope.attendance.members.list){
-					$scope.attendance.members.list = Object.values(record.attendance.members.list);
+				$scope.objectDetails.attendance = record.attendance;
+				if($scope.objectDetails.attendance.members){
+					$scope.objectDetails.attendance.members = Object.values(record.attendance.members);
 				}
-				if($scope.attendance.guests.list){
-					$scope.attendance.guests.list = Object.values(record.attendance.guests.list);
+				if($scope.objectDetails.attendance.guests){
+					$scope.objectDetails.attendance.guests = Object.values(record.attendance.guests);
 				}
 				$scope.reportWeek = WeeksSvc.getWeekObject( record.reunion.weekId );
 				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
@@ -517,6 +598,26 @@ okulusApp.controller('ReportDetailsCntrl', ['$scope','$routeParams', '$location'
 				$location.path( "/error/norecord" );
 			}
 		}
+
+		// Load all Members for the attendace select
+		// $scope.showAllMembers = function(){
+		// 	$scope.loadingAllMembers =  true;
+		// 	$scope.groupOnlyMembersList = $scope.groupMembersList;
+		// 	$scope.groupMembersList = MembersSvc.getAllMembers();
+		// 	$scope.groupMembersList.$loaded().then(function() {
+		// 		$scope.loadingAllMembers =  false;
+		// 	});
+		// 	$scope.showingAllMembers = true;
+		// };
+		//
+		// $scope.showGroupMembers = function(){
+		// 	$scope.loadingAllMembers =  true;
+		// 	$scope.groupMembersList = $scope.groupOnlyMembersList;
+		// 	$scope.groupMembersList.$loaded().then(function() {
+		// 		$scope.loadingAllMembers =  false;
+		// 	});
+		// 	$scope.showingAllMembers = false;
+		// };
 
 	}
 ]);
