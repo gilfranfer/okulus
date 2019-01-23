@@ -85,10 +85,11 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 				$scope.userDetails.$loaded().then(function (user){
 					if(user && user.memberId){
 						$scope.objectDetails.audit = user.audit;
-						$scope.userMemberDetails =  MembersSvc.getMemberBasicDataObject(user.memberId);
+						$scope.userMemberDetails = MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
-						if(user && user.isRoot){
-							$scope.userMemberDetails =  {shortname:"Super Admin"};
+						if(user && !user.memberId){
+							let userTitle = (user.isRoot)?"Super Admin":"Usuario sin nombre";
+							$scope.userMemberDetails = {member:{shortname: userTitle}};
 						}
 					}
 				});
