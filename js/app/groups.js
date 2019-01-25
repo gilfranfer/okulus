@@ -494,14 +494,12 @@ okulusApp.factory('GroupsSvc',
 				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
 				decreaseCounter(conunterRef);
 			},
-			//Deprecated
-			addReportReference: function(report){
-				//Save the report Id in the Group/reports
-				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
-				ref.set({
-					reportId:report.$id,
-					weekId:report.reunion.weekId,
-					date:report.reunion.dateObj
+			/* Called after Report Creation, to add some Report details in the
+			 Group folder: /groups/details/:groupId/reports */
+			addReportReferenceToGroup: function(report){
+				let groupReportsFolder = groupDetailsRef.child(report.groupId).child(constants.folders.reports);
+				groupReportsFolder.child(report.$id).set({
+					reportId:report.$id, weekId:report.weekId,date:report.date
 				});
 			},
 			//Deprecated

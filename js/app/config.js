@@ -249,8 +249,9 @@ const constants = {
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
+		approved:"approved", rejected:"rejected", pendingReview:"pending",
 		open:"open", closed:"closed",
-		completed:"completed", cancelled:"cancelled",
+		completed:"completed", canceled:"canceled",
 		visible:"show", hidden:"hide",
 		readed:"readed",
 		isActive:"isActive",
@@ -264,6 +265,7 @@ const constants = {
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/",
 		groupEdit:"/groups/edit/",
+		reportEdit:"/reports/edit/",
 		weekEdit:"/weeks/edit/"
 	},
 	folders:{
@@ -272,11 +274,13 @@ const constants = {
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
-		attendance:"attendance",
+		attendance:"attendance", study:"study",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
 		groupsList:"groups/list", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
+		reportsList:"reports/list", reportsDetails:"reports/details",
+		membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 		notificationsList:"notifications/list",
 		/**Counters*/
 		weeksCounters:"counters/weeks",
@@ -293,7 +297,11 @@ const constants = {
 		totalGroupsCount:"counters/groups/total",
 		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
-		totalNotifCount:"counters/notifications/total"
+		totalNotifCount:"counters/notifications/total",
+		totalReportsCount:"counters/reports/total",
+		pendingReportsCount:"counters/reports/pending",
+		aprovedReportsCount:"counters/reports/aproved",
+		rejectedReportsCount:"counters/reports/rejected"
 	},
 	dbFields:{
 		baseGroup:"baseGroupId",

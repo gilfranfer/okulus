@@ -464,8 +464,8 @@ okulusApp.controller('MemberDetailsCntrl',
 ]);
 
 okulusApp.factory('MembersSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
 		let memberListRef = baseRef.child(constants.folders.membersList);
@@ -663,6 +663,7 @@ okulusApp.factory('MembersSvc',
 				}
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
+			/* returns $firebaseArray with all access rules in /members/details/:whichMember/access folder*/
 			getMemberAccessRules: function(whichMember) {
 				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.folders.accessRules));
 			},
@@ -681,6 +682,24 @@ okulusApp.factory('MembersSvc',
 					});
 				}
 			},
+			/* Called when settign the Report's Members attendance List.
+			 It will set information about a reunion (report) to the Member */
+			addReportReferenceToMember: function(memberId,report){
+				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(report.$id);
+				ref.set({
+					reportId: report.$id,
+					weekId:report.weekId,
+					date:report.date,
+					groupId:report.groupId,
+					groupName:report.groupname
+				});
+			},
+			/* Called when settign the Report's Members attendance List.
+			 It will set information about a reunion (report) to the Member */
+			removeReportReferenceFromMember: function(memberId,report){
+				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(report.$id).set(null);
+			},
+
 			//Deprecated
 			removeMemberReferenceToReport: function(memberId,reportId){
 				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
@@ -741,16 +760,17 @@ okulusApp.factory('MembersSvc',
 					resolve(contacts);
 				});
 			},
+			//Deprecated
 			addReportReference: function(memberId,reportId, report){
 				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
 				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId);
 				ref.set({
 					reportId: reportId,
-					weekId:report.reunion.weekId,
-					date:report.reunion.dateObj,
-					groupId:report.reunion.groupId,
-					groupName:report.reunion.groupname
+					weekId:report.weekId,
+					date:report.dateObj,
+					groupId:report.groupId,
+					groupName:report.groupname
 				});
 			}
 		};

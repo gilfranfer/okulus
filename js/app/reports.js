@@ -163,205 +163,13 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 
 }]);
 
-okulusApp.controller('ReportFormCntrl', ['$scope','$rootScope','$routeParams','$location','GroupsSvc', 'MembersSvc', 'WeeksSvc', 'UtilsSvc', 'AuditSvc','ReportsSvc',
-	function($scope, $rootScope, $routeParams, $location,GroupsSvc, MembersSvc, WeeksSvc, UtilsSvc, AuditSvc, ReportsSvc){
-
-		/* Approve or Reject Report, according to the boolean passed as parameter */
-		$scope.approveReport = function (approved){
-			if ($scope.reportId){
-				$scope.working = true;
-
-				repRef = ReportsSvc.getReportReference($scope.reportId);
-				let response = undefined;
-				let action = undefined;
-
-				if(approved){
-					response = { reportMsgOk: "Reporte Aprobado"};
-					action = "approved";
-				}else{
-					response = { reportMsgError: "Reporte Rechazado"};
-					action = "rejected";
-				}
-
-				repRef.child("audit").update({reportStatus:action}, function(error) {
-					if(error){
-						$scope.response = { reportMsgError: error};
-					}else{
-						$scope.audit.reportStatus = action;
-						$scope.response = response;
-						AuditSvc.recordAudit(repRef.key, action, "reports");
-						$scope.audit.reportStatus = action;
-						$scope.working = false;
-						/*For some reason the message is not displayed until you interact with any form element*/
-					}
-				});
-
-			}
-		};
-
-		/*TODO: Before saving check if updatingHost, updatingTrainee, updatingLead, updatingWeek.
-		If any is true, is because they didnt save the change, but still needs to be applied, so
-		we need to update the hostName, traineeName or leadName, or week accordingly*/
-		$scope.saveOrUpdateReport = function(){
-			if($scope.audit && $scope.audit.reportStatus == "approved"){
-				$scope.response = { reportMsgError: "No se puede modificar el reporte porque ya ha sido aprobado"};
-			}
-			else{
-				$scope.working = true;
-
-				if($scope.reunion.status == "canceled"){
-					$scope.objectDetails.attendance = { total: 0, guests:{total:0}, members:{total:0} };
-					$scope.reunion.duration = 0;
-					$scope.reunion.money = 0;
-				}
-
-				let membersAttendanceList = $scope.objectDetails.attendance.members;
-				let guestsAttendanceList = $scope.objectDetails.attendance.guests;
-				let record = {reunion: $scope.reunion, attendance: $scope.objectDetails.attendance};
-				record.reunion.date = UtilsSvc.buildDateJson(record.reunion.dateObj);
-
-				record.attendance.members = null;
-				record.attendance.guests = null;
-				record.attendance.members.total = membersAttendanceList?membersAttendanceList.length:0;
-				record.attendance.guests.total = guestsAttendanceList?guestsAttendanceList.length:0;
-				record.attendance.total = record.attendance.guests.total + 	record.attendance.members.total ;
-
-				let reportRef = undefined;
-				let successMessage = undefined;
-				let action = undefined;
-				if( $scope.reportId ){
-					/* When a value for reportId is present in the scope, the user is on Edit mode*/
-					repRef = ReportsSvc.getReportReference($scope.reportId);
-					successMessage = "Reporte Actualizado";
-					action = "update";
-				}else{
-					/* Otherwise we are going to create a NEW record */
-					repRef = ReportsSvc.getNewReportReference();
-					successMessage = "Reporte Creado";
-					action = "create";
-					record.audit = {reportStatus:"pending"};
-		    	}
-
-				repRef.update(record, function(error) {
-					if(error){
-						$scope.working = false;
-						$scope.response = { reportMsgError: error};
-					}else{
-						if(membersAttendanceList){
-							membersAttendanceList.forEach(function(element) {
-								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
-								//console.debug(repRef.key);
-								MembersSvc.addReportReference(element.memberId,repRef.key,record);
-							});
-						}
-						if(guestsAttendanceList){
-							guestsAttendanceList.forEach(function(element) {
-								repRef.child("attendance/guests/list").push({guestName:element.guestName});
-							});
-						}
-						if($scope.removedMembersMap){
-							$scope.removedMembersMap.forEach(function(value, key) {
-								MembersSvc.removeMemberReferenceToReport(value,repRef.key);
-							});
-						}
-						/*For some reason the message is not displayed until you interact with any form element*/
-					}
-				});
-
-				//adding trick below to ensure message is displayed
-				let obj = ReportsSvc.getReportObj(repRef.key);
-				obj.$loaded().then(function() {
-					if(membersAttendanceList){
-						$scope.objectDetails.attendance.members = Object.values(membersAttendanceList);
-					}
-					if(guestsAttendanceList){
-						$scope.objectDetails.attendance.guests = Object.values(guestsAttendanceList);
-					}
-
-					$scope.reportId = repRef.key;
-					$scope.working = false;
-					$scope.response = { reportMsgOk: successMessage};
-					AuditSvc.recordAudit(repRef.key, action, "reports");
-					if($scope.audit){
-						$scope.audit.reportStatus = "pending";
-					}
-					if(action == "create"){
-						GroupsSvc.addReportReference(obj);
-						ReportsSvc.increasePendingReportCounter();
-						$rootScope.response = $scope.response
-						$location.path("reports/edit/"+repRef.key);
-					}
-
-				});
-			}
-
-		};
-
-		/* A Report can be deleted by Admin
-		 When deleting a Report:
-			1. Decrease the Report Status counter
-			2. Remove report reference from group/reports
-			3. Remove report reference from member/reports
-		*/
-		$scope.delete = function(){
-			if($rootScope.currentSession.user.type == 'user'){
-				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
-			}else if($scope.audit && $scope.audit.reportStatus == "approved"){
-				$scope.response = { reportMsgError: "No se puede eliminar el reporte porque ya ha sido aprobado"};
-			}else{
-				if($scope.reportId){
-					$scope.working = true;
-
-					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
-							let reportId = reportObj.$id;
-							let groupId = reportObj.reunion.groupId;
-							let membersAttendanceList = reportObj.attendance.members;
-							//if report is not approved
-							reportObj.$remove().then(function(ref) {
-								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
-								AuditSvc.recordAudit(ref.key, "delete", "reports");
-								ReportsSvc.decreasePendingReportCounter();
-								//remove the report reference from the group
-								GroupsSvc.removeReportReference(reportId,groupId);
-								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
-								$scope.working = true;
-								$location.path( "/admin/dashboard");
-							}, function(error) {
-								$scope.working = false;
-								$rootScope.response = { reportMsgError: err};
-								// console.debug("Error:", error);
-							});
-					});
-				}
-			}
-		};
-
-		// $scope.addGuests = function () {
-		// 	let guestNumber = Number($scope.reportParams.addGuestName);
-		// 	let guestName = "Invitado ";
-		// 	if(!$scope.objectDetails.attendance.guests){
-		// 		$scope.objectDetails.attendance.guests = [];
-		// 	}
-		// 	while(guestNumber>0){
-		// 		let name = guestName + guestNumber;
-		// 		$scope.objectDetails.attendance.guests.push({guestName:name});
-		// 		guestNumber --;
-		// 	}
-		// 	$scope.response = { guestsListOk: guestNumber + " agregados a la lista"};
-		// 	$scope.reportParams.addGuestName = "";
-		// };
-
-	}
-]);
-
 /* Controller linked to '/reports/new/:groupId' /reports/view/:reportId and /reports/edit/:reportId
  * It will load the Report for the id passed */
 okulusApp.controller('ReportDetailsCntrl',
 ['$rootScope','$scope','$routeParams', '$location','$firebaseAuth',
- 'ReportsSvc', 'GroupsSvc', 'WeeksSvc','MembersSvc','AuditSvc','AuthenticationSvc',
+ 'ReportsSvc', 'GroupsSvc', 'WeeksSvc','MembersSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
-		ReportsSvc, GroupsSvc, WeeksSvc, MembersSvc,AuditSvc,AuthenticationSvc){
-
+		ReportsSvc, GroupsSvc, WeeksSvc, MembersSvc,UtilsSvc,AuditSvc,AuthenticationSvc){
 
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingReport };
@@ -390,14 +198,19 @@ okulusApp.controller('ReportDetailsCntrl',
 		}});
 
 		$scope.prepareViewForNew = function (whichGroup) {
-			$scope.objectDetails.basicInfo = { dateObj: new Date(), reviewStatus:undefined};
+
+			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.newLbl,
+															isEdit: false, reportId: undefined };
+			//To Control member attendance
+			$scope.reportParams.groupMembersList = new Array()
+
+			// /reports/list
+			$scope.objectDetails.basicInfo = { dateObj: new Date(), reviewStatus:null};
+			// reports/details
 			$scope.objectDetails.study = {};
 			$scope.objectDetails.audit = undefined;
 			$scope.objectDetails.attendance = { guests:[], members:[] };
-			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.newLbl,
-															isEdit: false, reportId: undefined,
-															//For member attendance
-															groupMembersList: new Array() };
+
 
 			//Get the most recent (by Id) week, with Status Open
 			WeeksSvc.getGreatestOpenWeekArray().$loaded().then(function(weekList) {
@@ -666,32 +479,255 @@ okulusApp.controller('ReportDetailsCntrl',
 			console.log($scope.objectDetails.basicInfo);
 		};
 
+		/* Create or Save Changes in a Report */
+		$scope.saveReport = function(){
+			//Validating Report
+			$scope.response = { working:true, message: systemMsgs.inProgress.validatingReport };
+
+			//Reports in Approved Status cannot be modified
+			if( $scope.objectDetails.basicInfo.reviewStatus  == constants.status.approved){
+				$scope.response = { error:true, message: systemMsgs.error.savingApprovedReport };
+				return;
+			}
+
+			/* Before saving check if updatingHost, updatingTrainee, updatingLead, updatingWeek.
+			Any of those values could be true because the user didnt click the save button,
+			so, we must update the hostName, traineeName, leadName, or weekName accordingly
+			to avoid mismatch in the id and name.*/
+			if($scope.reportParams.updatingHost){
+				$scope.updateHost();
+			}
+			if($scope.reportParams.updatingLead){
+				$scope.updateLead();
+			}
+			if($scope.reportParams.updatingTrainee){
+				$scope.updateTrainee();
+			}
+			if($scope.reportParams.updatingWeek){
+				$scope.updateWeek();
+			}
+
+			//Preparing Report
+			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
+			$scope.objectDetails.basicInfo.date = UtilsSvc.buildDateJson($scope.objectDetails.basicInfo.dateObj);
+			let membersAttendanceList = $scope.objectDetails.attendance.members;
+			let guestsAttendanceList = $scope.objectDetails.attendance.guests;
+
+			/* When a Report is marked as "Cancelled Reunion", some data must be
+			 set to default values (Important when editing existing report)*/
+			if($scope.objectDetails.basicInfo.status == constants.status.canceled){
+				$scope.objectDetails.study = {};
+				$scope.objectDetails.attendance = { guests:[], members:[] };
+
+				$scope.objectDetails.basicInfo.duration = 0;
+				$scope.objectDetails.basicInfo.money = 0;
+				$scope.objectDetails.basicInfo.membersAttendance = 0;
+				$scope.objectDetails.basicInfo.guestsAttendance = 0;
+				$scope.objectDetails.basicInfo.totalAttendance = 0;
+			}else{
+				$scope.objectDetails.basicInfo.membersAttendance = membersAttendanceList?membersAttendanceList.length:0;
+				$scope.objectDetails.basicInfo.guestsAttendance = guestsAttendanceList?guestsAttendanceList.length:0;
+				$scope.objectDetails.basicInfo.totalAttendance = $scope.objectDetails.basicInfo.membersAttendance + $scope.objectDetails.basicInfo.guestsAttendance;
+			}
+
+			//Refernce to persist the report
+			//let reportRef = undefined;
+			//Message after save is successful
+			let successMessage = undefined;
+
+			$scope.response = { working:true, message: systemMsgs.inProgress.savingReport };
+			if($scope.reportParams.isEdit){
+				//Save changes in the loaded $firebaseObject itself
+				reportRef = ReportsSvc.getReportBasicRef($scope.reportParams.reportId);
+				successMessage = systemMsgs.success.reportUpdated;
+				action = constants.actions.update;
+
+				if($scope.objectDetails.basicInfo.reviewStatus == constants.status.rejected){
+					//decrease Rejected Reports Count
+					//Change this report to Pendind status
+					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pendingReview;
+					//Increase Pending Reports to review Count
+				}
+
+				$scope.objectDetails.basicInfo.$save().then(function(){
+					//Set the Attendance List
+					//Create Audit record (update)
+
+					/*When editing a report, some members from the original list culd have been removed,
+					  so we need to remove the reference to the Report from the Member */
+					//ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap);
+				});
+
+			}else{
+				//create a new Report
+				let reportRef = ReportsSvc.getNewReportBasicRef();
+				let reportBasicInfo = $scope.objectDetails.basicInfo;
+				let reportStudyInfo = $scope.objectDetails.study
+				//New Reports get created with reviewStatus = pending
+				reportBasicInfo.reviewStatus = constants.status.pendingReview;
+				//Persisit objecto to DB
+				reportRef.set(reportBasicInfo);
+
+				//Get Object after creation, and perform the rest of pendind tasks
+				let reportObj = ReportsSvc.getReportBasicObj(reportRef.key);
+				reportObj.$loaded().then(function(report){
+					ReportsSvc.increaseTotalReportsCount();
+					ReportsSvc.increasePendingReportsCount();
+					//Members ans Guests attendace list is added separately from the report basic info
+					ReportsSvc.setReportStudyInfo(reportStudyInfo,report.$id);
+					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
+					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
+					//Save a reference to this Report in the /group/details/reports folder
+					GroupsSvc.addReportReferenceToGroup(report);
+					AuditSvc.recordAudit(report.$id, constants.actions.create, constants.folders.reports);
+					$rootScope.reportResponse = { success:true, message: systemMsgs.success.reportCreated };
+					$location.path(constants.pages.reportEdit+report.$id);
+				});
+			}
+
+			return;
+
+			/* detailsRecord will be persisted in /reports/details/:reportId
+			Attendance is always set to null, to clean that folder in DB.
+			The actual attendance list will be pushed later on the flow */
+			let detailsRecord = { study: $scope.objectDetails.study, attendance: null };
+
+			//Persisting Report
+			$scope.response = { working:true, message: systemMsgs.inProgress.savingReport };
+
+
+				repRef.update(record, function(error) {
+					if(error){
+						$scope.working = false;
+						$scope.response = { reportMsgError: error};
+					}else{
+						if(membersAttendanceList){
+							membersAttendanceList.forEach(function(element) {
+								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
+								//console.debug(repRef.key);
+								MembersSvc.addReportReference(element.memberId,repRef.key,record);
+							});
+						}
+						if(guestsAttendanceList){
+							guestsAttendanceList.forEach(function(element) {
+								repRef.child("attendance/guests/list").push({guestName:element.guestName});
+							});
+						}
+						if($scope.removedMembersMap){
+							$scope.removedMembersMap.forEach(function(value, key) {
+								MembersSvc.removeMemberReferenceToReport(value,repRef.key);
+							});
+						}
+						/*For some reason the message is not displayed until you interact with any form element*/
+					}
+				});
+
+				//adding trick below to ensure message is displayed
+				// let obj = ReportsSvc.getReportObj(repRef.key);
+				// obj.$loaded().then(function() {
+				// 	if(membersAttendanceList){
+				// 		$scope.objectDetails.attendance.members = Object.values(membersAttendanceList);
+				// 	}
+				// 	if(guestsAttendanceList){
+				// 		$scope.objectDetails.attendance.guests = Object.values(guestsAttendanceList);
+				// 	}
+				//
+				// 	$scope.reportId = repRef.key;
+				// 	$scope.working = false;
+				// 	$scope.response = { reportMsgOk: successMessage};
+				// 	AuditSvc.recordAudit(repRef.key, action, "reports");
+				// 	if($scope.audit){
+				// 		$scope.audit.reportStatus = "pending";
+				// 	}
+				// 	if(action == "create"){
+				// 		GroupsSvc.addReportReference(obj);
+				// 		ReportsSvc.increasePendingReportCounter();
+				// 		$rootScope.response = $scope.response
+				// 		$location.path("reports/edit/"+repRef.key);
+				// 	}
+				//
+				// });
+
+		};
+
+		/* A Report can be deleted by Admin
+		 When deleting a Report:
+			1. Decrease the Report Status counter
+			2. Remove report reference from group/reports
+			3. Remove report reference from member/reports
+		*/
+		$scope.delete = function(){
+			if($rootScope.currentSession.user.type == 'user'){
+				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
+			}else if($scope.audit && $scope.audit.reportStatus == constants.status.approved){
+				$scope.response = { reportMsgError: "No se puede eliminar el reporte porque ya ha sido aprobado"};
+			}else{
+				if($scope.reportId){
+					$scope.working = true;
+
+					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
+							let reportId = reportObj.$id;
+							let groupId = reportObj.reunion.groupId;
+							let membersAttendanceList = reportObj.attendance.members;
+							//if report is not approved
+							reportObj.$remove().then(function(ref) {
+								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
+								AuditSvc.recordAudit(ref.key, "delete", "reports");
+								ReportsSvc.decreasePendingReportCounter();
+								//remove the report reference from the group
+								GroupsSvc.removeReportReference(reportId,groupId);
+								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+								$scope.working = true;
+								$location.path( "/admin/dashboard");
+							}, function(error) {
+								$scope.working = false;
+								$rootScope.response = { reportMsgError: err};
+								// console.debug("Error:", error);
+							});
+					});
+				}
+			}
+		};
+
+		/* Approve or Reject Report, according to the boolean passed as parameter */
+		$scope.approveReport = function (approved){
+			if ($scope.reportId){
+				$scope.working = true;
+
+				repRef = ReportsSvc.getReportReference($scope.reportId);
+				let response = undefined;
+				let action = undefined;
+
+				if(approved){
+					response = { reportMsgOk: "Reporte Aprobado"};
+					action = constants.status.approved;
+				}else{
+					response = { reportMsgError: "Reporte Rechazado"};
+					action = "rejected";
+				}
+
+				repRef.child("audit").update({reportStatus:action}, function(error) {
+					if(error){
+						$scope.response = { reportMsgError: error};
+					}else{
+						$scope.audit.reportStatus = action;
+						$scope.response = response;
+						AuditSvc.recordAudit(repRef.key, action, "reports");
+						$scope.audit.reportStatus = action;
+						$scope.working = false;
+						/*For some reason the message is not displayed until you interact with any form element*/
+					}
+				});
+
+			}
+		};
+
 		clearResponse = function() {
 			$rootScope.reportResponse = null;
 			$scope.response = null;
 		};
 
-		return;
-
-		/* When opening "Edit" page from the Reports List, we can use the
-		"allReports" firebaseArray from rootScope to get the specific Group data */
-		if( ReportsSvc.allReportsLoaded() ){
-			let record = ReportsSvc.getReportFromArray(whichReport);
-			putRecordOnScope(record);
-		}
-		/* But, when using a direct link to an "Edit" page, or when refresing (f5),
-		we will not have the "allReports" firebaseArray Loaded in the rootScope.
-		Instead of loading all the Report, what could be innecessary,
-		we can use firebaseObject to get only the required group data */
-		else{
-			let obj = ReportsSvc.getReportObj(whichReport);
-			obj.$loaded().then(function() {
-				putRecordOnScope(obj);
-			}).catch(function(error) {
-		    $location.path( "/error/norecord" );
-		  });
-		}
-
+		//Deprecated
 		function putRecordOnScope(record){
 			if(record && record.reunion){
 				$scope.reportId = record.$id;
@@ -714,57 +750,108 @@ okulusApp.controller('ReportDetailsCntrl',
 			}else{
 				$location.path( "/error/norecord" );
 			}
-		}
+		};
 
-		// Load all Members for the attendace select
-		// $scope.showAllMembers = function(){
-		// 	$scope.loadingAllMembers =  true;
-		// 	$scope.groupOnlyMembersList = $scope.groupMembersList;
-		// 	$scope.groupMembersList = MembersSvc.getAllMembers();
-		// 	$scope.groupMembersList.$loaded().then(function() {
-		// 		$scope.loadingAllMembers =  false;
-		// 	});
-		// 	$scope.showingAllMembers = true;
-		// };
-		//
-		// $scope.showGroupMembers = function(){
-		// 	$scope.loadingAllMembers =  true;
-		// 	$scope.groupMembersList = $scope.groupOnlyMembersList;
-		// 	$scope.groupMembersList.$loaded().then(function() {
-		// 		$scope.loadingAllMembers =  false;
-		// 	});
-		// 	$scope.showingAllMembers = false;
-		// };
+}]);
 
-	}
-]);
+okulusApp.factory('ReportsSvc',
+	['$rootScope', '$firebaseArray', '$firebaseObject', 'MembersSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, MembersSvc){
 
-okulusApp.factory('ReportsSvc', ['$rootScope', '$firebaseArray', '$firebaseObject',
-	function($rootScope, $firebaseArray, $firebaseObject){
+		let baseRef = firebase.database().ref().child(rootFolder);
+		let reportsListRef = baseRef.child(constants.folders.reportsList);
+		let reportsDetailsRef = baseRef.child(constants.folders.reportsDetails);
+		let reportsRef = baseRef.child('reports');
+		let counterRef = baseRef.child('counters/reports');
 
-		let reportsRef = firebase.database().ref().child(rootFolder).child('reports');
-		let counterRef = firebase.database().ref().child(rootFolder).child('counters/reports');
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				if(currentCount>0)
+					return currentCount - 1;
+				return currentCount;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				return currentCount + 1;
+			});
+		};
 
 		return {
+			/*Return the reference to an exisitng Report's Basic Info */
+			getReportBasicRef: function(reportId){
+				return reportsListRef.child(reportId);
+			},
+			/*Create a new Key in reports/list and return it */
+			getNewReportBasicRef: function(){
+				return reportsListRef.push();
+			},
+			/* Return a $firebaseObject from reports/list s*/
+			getReportBasicObj: function(reportId){
+				return $firebaseObject(reportsListRef.child(reportId));
+			},
+			/* Increment the number of Reports with reviewStatus = "pending"  */
+			increasePendingReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Increment the number of total Reports */
+			increaseTotalReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.totalReportsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Set the members attendance list in the /reports/details/:reportId/attendance/members folder */
+			setMembersAttendaceList: function(attendanceList, report) {
+				if(attendanceList){
+					attendanceList.forEach(function(member) {
+						reportsDetailsRef.child(report.$id).child(constants.folders.membersAttendance).child(member.memberId).set(
+							{memberId:member.memberId, memberName:member.memberName}
+						);
+						MembersSvc.addReportReferenceToMember(member.memberId, report);
+					});
+				}
+			},
+			/* Set the guests attendance list in the /reports/details/:reportId/attendance/guests folder */
+			setGuestAttendaceList: function(attendanceList, report) {
+				if(attendanceList){
+					attendanceList.forEach(function(guest) {
+						reportsDetailsRef.child(report.$id).child(constants.folders.guestsAttendance).push({guestName:guest.guestName});
+					});
+				}
+			},
+			/* Save the Report Study info in /reports/details/:reportId/study/ */
+			setReportStudyInfo: function(reportStudyInfo, reportId) {
+				reportsDetailsRef.child(reportId).child(constants.folders.study).set(reportStudyInfo);
+			},
+			/* Set the guests attendance list in the /reports/details/:reportId/attendance/guests folder */
+			removeReportRefereceFromMembers: function(membersMap, report) {
+				if(membersMap){
+					membersMap.forEach(function(value, key) {
+						//both value and key are = memberId
+						MembersSvc.removeReportReferenceFromMember(value, report.$id);
+					});
+				}
+			},
+
+
 			allReportsLoaded: function() {
 				return $rootScope.allReports != null;
 			},
 			getReportFromArray: function(reportId){
 				return $rootScope.allReports.$getRecord(reportId);
 			},
+			//Deprecated
 			getReportObj: function(reportId){
 				return $firebaseObject(reportsRef.child(reportId));
 			},
+			//Deprecated
 			loadAllReports: function(){
 				if(!$rootScope.allReports){
 					$rootScope.allReports = $firebaseArray(reportsRef);
 				}
-			},
-			getReportReference: function(reportId){
-				return reportsRef.child(reportId);
-			},
-			getNewReportReference: function(){
-				return reportsRef.push();
 			},
 			getReportsForWeek: function(weekId){
 				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);

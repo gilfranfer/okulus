@@ -35,7 +35,8 @@ const systemMsgs = {
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
 		/*Reports*/
-		duplicatedAttendance:"ya está en la lista de asistencia."
+		duplicatedAttendance:"ya está en la lista de asistencia.",
+		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -77,7 +78,9 @@ const systemMsgs = {
 		deletingWeek:"Eliminando Semana",
 		/* Reports JS */
 		loadingReport:"Cargando Reporte ...",
-
+		savingReport:"Guardando Reporte ...",
+		preparingReport:"Preparando Reporte ...",
+		validatingReport:"Validando Reporte ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -117,7 +120,9 @@ const systemMsgs = {
 		weekDeleted:"Se ha eliminado la semana",
 		/* Reports JS */
 		attendanceAdded:"agregado a la lista.",
-		attendanceRemoved:"fue removido de la lista."
+		attendanceRemoved:"fue removido de la lista.",
+		reportUpdated:"Reporte Actualizado",
+		reportCreated:"Reporte Creado"
 	}
 };
 

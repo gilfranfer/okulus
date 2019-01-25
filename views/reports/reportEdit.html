@@ -105,6 +105,7 @@
               ng-if="!reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeName">
             <select id="traineeId" class="form-control form-control-lg" ng-required="false"
               ng-if="reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeId">
+              <option value=""></option>
               <option ng-repeat="trainee in reportParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
             		{{trainee.shortname}}
             	</option>
@@ -422,12 +423,19 @@
     <!-- <span class="text-danger">* {{i18n.groups.mandatoryFields}}</span> -->
   </form>
 
+  <div class="col-sm form-group" >
+    <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+      ng-click="saveReport()">
+      TEmporal BUtton
+    </button>
+  </div>
   <!-- Save Button -->
   <div class="form-row mb-3" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
     <div class="col-sm form-group" >
       <button type="button" class="btn btn-lg btn-block btn-warning clickable"
         ng-disabled="reportForm.$invalid || reportForm.$pristine"
-        ng-show="!reportForm.$invalid && !reportForm.$pristine">
+        ng-show="!reportForm.$invalid && !reportForm.$pristine"
+        ng-click="saveReport()">
         {{i18n.btns.saveBtn}}
       </button>
     </div>
@@ -448,6 +456,9 @@
     </div>
   </div>
 
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
 
@@ -457,9 +468,6 @@
       <!-- Loading Alert -->
       <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
         {{response.reportMsgOk}}
-      </div>
-      <div class="alert alert-danger" role="alert" ng-show="response.reportMsgError">
-        {{response.reportMsgError}}
       </div>
     </div>
   </div>
