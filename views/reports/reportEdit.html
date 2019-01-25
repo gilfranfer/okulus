@@ -269,7 +269,8 @@
         <!-- Members Title -->
         <div class="row">
           <div class="col-8">
-            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
+            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}:</label>
+            <span class="badge badge-danger">{{objectDetails.attendance.members.length}}</span>
             <!-- <button class="btn btn-link clickable" ng-show="!showingAllMembers" ng-click="showAllMembers()">{{i18n.reports.allMembersLbl}}</button> -->
             <!-- <button class="btn btn-link clickable" ng-show="showingAllMembers" ng-click="showGroupMembers()">{{i18n.reports.groupMembersLbl}}</button> -->
           </div>
@@ -295,18 +296,19 @@
           <table class="table table-md table-striped">
             <thead>
               <tr>
-                <th scope="col">
+                <!-- <th scope="col">
                   <span class="badge badge-danger">{{objectDetails.attendance.members.length}}</span>
-                  {{i18n.reports.membersAttendance}}</th>
-                <th scope="col">&nbsp;</th>
+                  {{i18n.reports.membersAttendance}}
+                </th>
+                <th scope="col">&nbsp;</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="element in objectDetails.attendance.members">
-                <td scope="row">
+              <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.members | orderBy:'memberName' track by element.memberId">
+                <td class="col-6" scope="row">
                   {{element.memberName}}
                 </td>
-                <td scope="row">
+                <td class="col-6" scope="row">
                   <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
                     {{i18n.btns.deleteBtn}}
                   </button>
@@ -336,7 +338,8 @@
         <!-- Guests Title -->
         <div class="row mt-4">
           <div class="col-8">
-            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}</label>
+            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}:</label>
+            <span class="badge badge-danger">{{objectDetails.attendance.guests.length}}</span>
           </div>
         </div>
         <!-- Guest Input -->
@@ -358,19 +361,19 @@
         <div class="pre-scrollable">
           <table class="table table-md table-striped">
             <thead>
-              <tr>
+              <!-- <tr>
                 <th scope="col">
                   <span class="badge badge-danger">{{objectDetails.attendance.guests.length}}</span>
                   {{i18n.reports.guestsAttendance}}</th>
                 <th scope="col">&nbsp;</th>
-              </tr>
+              </tr> -->
             </thead>
             <tbody>
-              <tr ng-repeat="element in objectDetails.attendance.guests">
-                <td scope="row">
+              <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.guests | orderBy:'guestName'">
+                <td class="col-6" scope="row">
                   {{element.guestName}}
                 </td>
-                <td scope="row">
+                <td class="col-6" scope="row">
                   <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
                     {{i18n.btns.deleteBtn}}
                   </button>
@@ -423,12 +426,6 @@
     <!-- <span class="text-danger">* {{i18n.groups.mandatoryFields}}</span> -->
   </form>
 
-  <div class="col-sm form-group" >
-    <button type="button" class="btn btn-lg btn-block btn-warning clickable"
-      ng-click="saveReport()">
-      TEmporal BUtton
-    </button>
-  </div>
   <!-- Save Button -->
   <div class="form-row mb-3" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
     <div class="col-sm form-group" >
@@ -465,16 +462,6 @@
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
-
-  <!-- Alert/Error row -->
-  <div class="form-row">
-    <div class="col">
-      <!-- Loading Alert -->
-      <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
-        {{response.reportMsgOk}}
-      </div>
-    </div>
-  </div>
 
   <!-- Delete -->
   <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >

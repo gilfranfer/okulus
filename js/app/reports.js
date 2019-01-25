@@ -279,7 +279,6 @@ okulusApp.controller('ReportDetailsCntrl',
 		pushMemberToAttendanceSelectList = function (memberObj) {
 			let memberExist = false;
 			$scope.reportParams.groupMembersList.forEach(function(member){
-				console.log(member, memberObj.id);
 				if(member.id == memberObj.id){
 					memberExist = true;
 				}
@@ -307,7 +306,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.objectDetails.audit = ReportsSvc.getReportAuditObject(report.$id);
 				$scope.objectDetails.atten = ReportsSvc.getReportAttendanceObject(report.$id);
 				$scope.objectDetails.atten.$loaded().then(function(attendanceObj){
-					$scope.objectDetails.attendance = {};
+					$scope.objectDetails.attendance = { guests:[], members:[] };
 					if(attendanceObj.members){
 						$scope.objectDetails.attendance.members = Object.values(attendanceObj.members);
 					}
@@ -356,7 +355,8 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.response = { membersListError: memberName + " "+ systemMsgs.error.duplicatedAttendance};
 			}else{
 				$scope.objectDetails.attendance.members.push({memberId:memberId,memberName:memberName});
-				$scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceAdded};
+				// $scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceAdded};
+				$scope.response = null;
 				/* The removedMembersMap is used to track the members that must be removed from the report,
 				and the report should be removed from /member/details/:memberId/attendance
 				This is useful when editing an existing report, because an user could:
@@ -375,7 +375,8 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.objectDetails.attendance.members.forEach(function(member,idx) {
 				if(member.memberId == memberId){
   				$scope.objectDetails.attendance.members.splice(idx, 1);
-					$scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceRemoved};
+					// $scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceRemoved};
+					$scope.response = null;
 
 					if(!$scope.removedMembersMap){
 						$scope.removedMembersMap = new Map();
@@ -407,7 +408,8 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.response = { guestsListError: guestName + " " + systemMsgs.error.duplicatedAttendance};
 			}else{
 				$scope.objectDetails.attendance.guests.push({guestName:guestName});
-				$scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceAdded};
+				$scope.response = null;
+				// $scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceAdded};
 			}
 		};
 
@@ -416,7 +418,8 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.objectDetails.attendance.guests.forEach(function(member,idx) {
 					if(member.guestName == guestName){
     				$scope.objectDetails.attendance.guests.splice(idx, 1);
-						$scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceRemoved};
+						$scope.response = null;
+						// $scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceRemoved};
 					}
 			});
 		};
