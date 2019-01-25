@@ -25,7 +25,7 @@
     <div class="card-body">
       <h4 class="card-title">
         {{reportParams.actionLbl}} {{i18n.reports.reportLbl}}
-        <span class="tx-darkblue d-inline">{{reportWeek.name}}</span>
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.weekName}}</span>
       </h4>
     </div>
   </article>
@@ -162,7 +162,7 @@
             </label>
             <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
               class="form-control form-control-lg" placeholder="{{i18n.reports.dateHint}}"
-              ng-model="objectDetails.basicInfo.dateObj" ng-required="true">
+              ng-model="reportParams.dateObj" ng-required="true">
           </div>
         </div>
         <!-- Report Status -->
@@ -458,6 +458,10 @@
 
   <!-- Alerts to inform user on progress or result -->
   <div ng-include="'views/alerts.html'"></div>
+  <!-- Informs a Report was created (used after redirect from reports/new to reports/edit) -->
+  <div class="alert alert-success" role="alert" ng-show="reportResponse.created" >
+    {{reportResponse.message}}
+  </div>
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>

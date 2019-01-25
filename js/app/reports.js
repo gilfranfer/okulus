@@ -192,26 +192,22 @@ okulusApp.controller('ReportDetailsCntrl',
 				}
 				/* Prepare for Edit or View Details of Existing Report */
 				else{
-					$scope.prepareViewForEdit(whichReport,whichGroup);
+					$scope.prepareViewForEdit(whichReport);
 				}
 			});
 		}});
 
 		$scope.prepareViewForNew = function (whichGroup) {
-
 			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.newLbl,
-															isEdit: false, reportId: undefined };
-			//To Control member attendance
+															isEdit: false, reportId: undefined, dateObj: new Date() };
+			//To Control list of available members for attendance
 			$scope.reportParams.groupMembersList = new Array()
-
 			// /reports/list
-			$scope.objectDetails.basicInfo = { dateObj: new Date(), reviewStatus:null};
+			$scope.objectDetails.basicInfo = { reviewStatus:null};
 			// reports/details
 			$scope.objectDetails.study = {};
 			$scope.objectDetails.audit = undefined;
 			$scope.objectDetails.attendance = { guests:[], members:[] };
-
-
 			//Get the most recent (by Id) week, with Status Open
 			WeeksSvc.getGreatestOpenWeekArray().$loaded().then(function(weekList) {
 				if(weekList.length == 1){
@@ -220,65 +216,120 @@ okulusApp.controller('ReportDetailsCntrl',
 					$scope.objectDetails.basicInfo.weekName = week.name;
 				}
 			});
-
 			//Get Group Basic Object to Pre-populate some report fields
 			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
 				$scope.objectDetails.basicInfo.groupId = groupObj.$id;
 				$scope.objectDetails.basicInfo.groupname = groupObj.name;
 				$scope.objectDetails.basicInfo.status = constants.status.completed;
-
-				if(groupObj.roles){
-					if(groupObj.roles.leadId){
-						$scope.objectDetails.basicInfo.leadId = groupObj.roles.leadId;
-						$scope.objectDetails.basicInfo.leadName = groupObj.roles.leadName;
-						/*Push the Lead in the groupMembersList, because sometimes the lead
-						doesnt have the same baseGroupId */
-						$scope.reportParams.groupMembersList.push({name:groupObj.roles.leadName,id:groupObj.roles.leadId});
+				return GroupsSvc.getGroupRolesObject(whichGroup).$loaded();
+			}).then(function(groupRoles) {
+				//Pre-populate roles
+				if(groupRoles){
+					if(groupRoles.leadId){
+						$scope.objectDetails.basicInfo.leadId = groupRoles.leadId;
+						$scope.objectDetails.basicInfo.leadName = groupRoles.leadName;
 					}
-					if(groupObj.roles.traineeId){
-						$scope.objectDetails.basicInfo.traineeId = groupObj.roles.traineeId;
-						$scope.objectDetails.basicInfo.traineeName = groupObj.roles.traineeName;
-						/*Push the trainee in the groupMembersList, because sometimes the trainee
-						doesnt have the same baseGroupId */
-						$scope.reportParams.groupMembersList.push({name:groupObj.roles.traineeName,id:groupObj.roles.traineeId});
+					if(groupRoles.traineeId){
+						$scope.objectDetails.basicInfo.traineeId = groupRoles.traineeId;
+						$scope.objectDetails.basicInfo.traineeName = groupRoles.traineeName;
 					}
-					if(groupObj.roles.hostId){
-						$scope.objectDetails.basicInfo.hostId = groupObj.roles.hostId;
-						$scope.objectDetails.basicInfo.hostName = groupObj.roles.hostName;
-						/*Push the host in the groupMembersList, because sometimes the host
-						doesnt have the same baseGroupId */
-						$scope.reportParams.groupMembersList.push({name:groupObj.roles.hostName,id:groupObj.roles.hostId});
+					if(groupRoles.hostId){
+						$scope.objectDetails.basicInfo.hostId = groupRoles.hostId;
+						$scope.objectDetails.basicInfo.hostName = groupRoles.hostName;
 					}
+				}else{
+					//To avoid problems when calling prepareMembersForAttendaceListSelect
+					groupRoles = {};
 				}
-
-				/* Get List of Members with this group as baseGroup, and add them to the
-				attendance list (including inactive members).*/
-				MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
-					let leadId =
-					list.forEach(function(member){
-						//Avoid duplicated Elements in Member attendance List (lead, host, and trainee where added previously)
-						if(member.$id != groupObj.roles.leadId
-								&& member.$id != groupObj.roles.traineeId
-								&& member.$id != groupObj.roles.hostId){
-							$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id});
-						}
-					});
-				});
-
+				prepareMembersForAttendaceListSelect(whichGroup, groupRoles);
 				$scope.response = undefined;
 			}).catch(function(error) {
+				console.error(error);
 				$rootScope.response = { error: true, message: error };
 				$location.path(constants.pages.error);
 			});
-
 		};
 
-		$scope.prepareViewForEdit = function (whichReport,whichGroup) {
-			$scope.reportParams = {};
-			$scope.reportParams.actionLbl = $rootScope.i18n.reports.modifyLbl;
-			$scope.reportParams.isEdit = true;
-			$scope.reportParams.reportId = reportObject.$id;
-			$scope.response = undefined;
+		/* Create a one "normal" Array list to hold all the members (include inactive) with baseGroup = thisGroup
+		 plus, the Group's Lead, Host, Trainee (because sometimes those roles have a different baseGroup)*/
+		prepareMembersForAttendaceListSelect = function (whichGroup,roles) {
+			if(roles.leadId){
+				$scope.reportParams.groupMembersList.push({name:roles.leadName,id:roles.leadId});
+			}
+			if(roles.hostId){
+				$scope.reportParams.groupMembersList.push({name:roles.hostName,id:roles.hostId});
+			}
+			if(roles.traineeId){
+				$scope.reportParams.groupMembersList.push({name:roles.traineeName,id:roles.traineeId});
+			}
+			MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
+				console.log("getMembersForBaseGroup");
+				list.forEach(function(member){
+					//Avoid duplicated Elements in Member attendance List (lead, host, and trainee where added previously)
+					if(member.$id != undefined && member.$id != roles.leadId  && member.$id != roles.traineeId && member.$id != roles.hostId){
+						$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id});
+					}
+				});
+			});
+		};
+
+		/*Used when updating the Lead, Host, or Trainee; to add it in the list for attendance,
+		beacuse maybe the selected member has a different basegGroup. Do not add duplicated
+		members in the list, to avoid angular duplicity error while painting the select options*/
+		pushMemberToAttendanceSelectList = function (memberObj) {
+			let memberExist = false;
+			$scope.reportParams.groupMembersList.forEach(function(member){
+				console.log(member, memberObj.id);
+				if(member.id == memberObj.id){
+					memberExist = true;
+				}
+			});
+			if(!memberExist){
+				$scope.reportParams.groupMembersList.push({name:memberObj.name, id:memberObj.id});
+			}
+		};
+
+		$scope.prepareViewForEdit = function (whichReport) {
+			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.modifyLbl,
+															isEdit: true, reportId: whichReport };
+			//To Control list of available members for attendance
+			$scope.reportParams.groupMembersList = new Array()
+
+			$scope.objectDetails.basicInfo = ReportsSvc.getReportBasicObj(whichReport);
+			$scope.objectDetails.basicInfo.$loaded().then(function(report){
+				if(report.$value === null){
+					$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+					$location.path(constants.pages.error);
+					return;
+				}
+
+				$scope.objectDetails.study = ReportsSvc.getReportStudyObject(report.$id);
+				$scope.objectDetails.audit = ReportsSvc.getReportAuditObject(report.$id);
+				$scope.objectDetails.atten = ReportsSvc.getReportAttendanceObject(report.$id);
+				$scope.objectDetails.atten.$loaded().then(function(attendanceObj){
+					$scope.objectDetails.attendance = {};
+					if(attendanceObj.members){
+						$scope.objectDetails.attendance.members = Object.values(attendanceObj.members);
+					}
+					if(attendanceObj.guests){
+						$scope.objectDetails.attendance.guests = Object.values(attendanceObj.guests);
+					}
+				});
+				//Prepare dateObj to populate the date input field
+				if(report.date){
+					$scope.reportParams.dateObj = new Date(report.date.year, report.date.month-1, report.date.day);
+				}
+
+				let roles = {leadId:report.leadId, leadName: report.leadName,
+							traineeId: report.traineeId, traineeName: report.traineeName,
+							hostId: report.hostId, hostName: report.hostName,}
+				prepareMembersForAttendaceListSelect(report.groupId, roles);
+				$scope.response = undefined;
+			}).catch( function(error){
+				console.error(error);
+				$rootScope.response = { error: true, message: error };
+				$location.path(constants.pages.error);
+			});
 		};
 
 		/* Called from view */
@@ -390,6 +441,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(hostId){
 				let member = $scope.reportParams.hostsList.$getRecord(hostId);
 				$scope.objectDetails.basicInfo.hostName = member.shortname;
+				pushMemberToAttendanceSelectList({id:hostId, name: member.shortname})
 			}else{
 				$scope.objectDetails.basicInfo.hostId = null;
 				$scope.objectDetails.basicInfo.hostName = null;
@@ -417,6 +469,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(leadId){
 				let member = $scope.reportParams.leadsList.$getRecord(leadId);
 				$scope.objectDetails.basicInfo.leadName = member.shortname;
+				pushMemberToAttendanceSelectList({id:leadId, name: member.shortname})
 			}else{
 				$scope.objectDetails.basicInfo.leadId = null;
 				$scope.objectDetails.basicInfo.leadName = null;
@@ -444,6 +497,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(traineeId){
 				let member = $scope.reportParams.traineesList.$getRecord(traineeId);
 				$scope.objectDetails.basicInfo.traineeName = member.shortname;
+				pushMemberToAttendanceSelectList({id:traineeId, name: member.shortname})
 			}else{
 				$scope.objectDetails.basicInfo.traineeId = null;
 				$scope.objectDetails.basicInfo.traineeName = null;
@@ -509,16 +563,27 @@ okulusApp.controller('ReportDetailsCntrl',
 
 			//Preparing Report
 			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
-			$scope.objectDetails.basicInfo.date = UtilsSvc.buildDateJson($scope.objectDetails.basicInfo.dateObj);
+			$scope.objectDetails.basicInfo.date = UtilsSvc.buildDateJson($scope.reportParams.dateObj);
 			let membersAttendanceList = $scope.objectDetails.attendance.members;
 			let guestsAttendanceList = $scope.objectDetails.attendance.guests;
 
-			/* When a Report is marked as "Cancelled Reunion", some data must be
+			/* When a Report is marked as "Canceled Reunion", some data must be
 			 set to default values (Important when editing existing report)*/
 			if($scope.objectDetails.basicInfo.status == constants.status.canceled){
+
+				//All Members in Attendance list, if any, need to be moved to "removedMembersMap"
+				//so we can delete the report reference in the Member
+				if($scope.objectDetails.attendance.members){
+					if(!$scope.removedMembersMap){
+						$scope.removedMembersMap = new Map();
+					}
+					$scope.objectDetails.attendance.members.forEach(function(member,idx) {
+						$scope.removedMembersMap.set(memberId,memberId);
+					});
+				}
+
 				$scope.objectDetails.study = {};
 				$scope.objectDetails.attendance = { guests:[], members:[] };
-
 				$scope.objectDetails.basicInfo.duration = 0;
 				$scope.objectDetails.basicInfo.money = 0;
 				$scope.objectDetails.basicInfo.membersAttendance = 0;
@@ -530,39 +595,45 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.objectDetails.basicInfo.totalAttendance = $scope.objectDetails.basicInfo.membersAttendance + $scope.objectDetails.basicInfo.guestsAttendance;
 			}
 
-			//Refernce to persist the report
-			//let reportRef = undefined;
-			//Message after save is successful
-			let successMessage = undefined;
-
 			$scope.response = { working:true, message: systemMsgs.inProgress.savingReport };
+			//Save Updates
 			if($scope.reportParams.isEdit){
-				//Save changes in the loaded $firebaseObject itself
-				reportRef = ReportsSvc.getReportBasicRef($scope.reportParams.reportId);
-				successMessage = systemMsgs.success.reportUpdated;
-				action = constants.actions.update;
-
 				if($scope.objectDetails.basicInfo.reviewStatus == constants.status.rejected){
 					//decrease Rejected Reports Count
+					ReportsSvc.decreaseRejectedReportsCount();
 					//Change this report to Pendind status
 					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pendingReview;
-					//Increase Pending Reports to review Count
+					//Increase Pending Reports Count
+					ReportsSvc.increasePendingReportsCount();
 				}
 
-				$scope.objectDetails.basicInfo.$save().then(function(){
-					//Set the Attendance List
-					//Create Audit record (update)
+				//Clean the attendace folders
+				$scope.objectDetails.atten.members = null;
+				$scope.objectDetails.atten.guests = null;
+				$scope.objectDetails.atten.$save();
 
-					/*When editing a report, some members from the original list culd have been removed,
+				//Save changes in the loaded $firebaseObject itself
+				$scope.objectDetails.basicInfo.$save().then(function(ref){
+					$scope.objectDetails.study.$save();
+					let report = $scope.objectDetails.basicInfo;
+					//Members ans Guests attendace list is added separately from the report basic info
+					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
+					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
+					/*When editing a report, some members from the original list could have been removed,
 					  so we need to remove the reference to the Report from the Member */
-					//ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap);
-				});
+					ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap, report.$id );
 
-			}else{
-				//create a new Report
+					//Save a reference to this Report in the /group/details/reports folder
+					//GroupsSvc.addReportReferenceToGroup(report);
+					AuditSvc.recordAudit(report.$id, constants.actions.update, constants.folders.reports);
+					$scope.response = { success:true, message: systemMsgs.success.reportUpdated };
+				});
+			}
+			//Save new Report
+			else{
 				let reportRef = ReportsSvc.getNewReportBasicRef();
 				let reportBasicInfo = $scope.objectDetails.basicInfo;
-				let reportStudyInfo = $scope.objectDetails.study
+				let reportStudyInfo = $scope.objectDetails.study;
 				//New Reports get created with reviewStatus = pending
 				reportBasicInfo.reviewStatus = constants.status.pendingReview;
 				//Persisit objecto to DB
@@ -573,81 +644,21 @@ okulusApp.controller('ReportDetailsCntrl',
 				reportObj.$loaded().then(function(report){
 					ReportsSvc.increaseTotalReportsCount();
 					ReportsSvc.increasePendingReportsCount();
-					//Members ans Guests attendace list is added separately from the report basic info
 					ReportsSvc.setReportStudyInfo(reportStudyInfo,report.$id);
+					//Members ans Guests attendace list is added separately from the report basic info
 					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
 					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
+					//No need to removeReportRefereceFromMembers when creating a new report
+					//ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap,report.$id);
+
 					//Save a reference to this Report in the /group/details/reports folder
 					GroupsSvc.addReportReferenceToGroup(report);
 					AuditSvc.recordAudit(report.$id, constants.actions.create, constants.folders.reports);
-					$rootScope.reportResponse = { success:true, message: systemMsgs.success.reportCreated };
+					$rootScope.reportResponse = { created:true, message: systemMsgs.success.reportCreated };
 					$location.path(constants.pages.reportEdit+report.$id);
 				});
 			}
-
 			return;
-
-			/* detailsRecord will be persisted in /reports/details/:reportId
-			Attendance is always set to null, to clean that folder in DB.
-			The actual attendance list will be pushed later on the flow */
-			let detailsRecord = { study: $scope.objectDetails.study, attendance: null };
-
-			//Persisting Report
-			$scope.response = { working:true, message: systemMsgs.inProgress.savingReport };
-
-
-				repRef.update(record, function(error) {
-					if(error){
-						$scope.working = false;
-						$scope.response = { reportMsgError: error};
-					}else{
-						if(membersAttendanceList){
-							membersAttendanceList.forEach(function(element) {
-								repRef.child("attendance/members/list").child(element.memberId).set({memberId:element.memberId,memberName:element.memberName});
-								//console.debug(repRef.key);
-								MembersSvc.addReportReference(element.memberId,repRef.key,record);
-							});
-						}
-						if(guestsAttendanceList){
-							guestsAttendanceList.forEach(function(element) {
-								repRef.child("attendance/guests/list").push({guestName:element.guestName});
-							});
-						}
-						if($scope.removedMembersMap){
-							$scope.removedMembersMap.forEach(function(value, key) {
-								MembersSvc.removeMemberReferenceToReport(value,repRef.key);
-							});
-						}
-						/*For some reason the message is not displayed until you interact with any form element*/
-					}
-				});
-
-				//adding trick below to ensure message is displayed
-				// let obj = ReportsSvc.getReportObj(repRef.key);
-				// obj.$loaded().then(function() {
-				// 	if(membersAttendanceList){
-				// 		$scope.objectDetails.attendance.members = Object.values(membersAttendanceList);
-				// 	}
-				// 	if(guestsAttendanceList){
-				// 		$scope.objectDetails.attendance.guests = Object.values(guestsAttendanceList);
-				// 	}
-				//
-				// 	$scope.reportId = repRef.key;
-				// 	$scope.working = false;
-				// 	$scope.response = { reportMsgOk: successMessage};
-				// 	AuditSvc.recordAudit(repRef.key, action, "reports");
-				// 	if($scope.audit){
-				// 		$scope.audit.reportStatus = "pending";
-				// 	}
-				// 	if(action == "create"){
-				// 		GroupsSvc.addReportReference(obj);
-				// 		ReportsSvc.increasePendingReportCounter();
-				// 		$rootScope.response = $scope.response
-				// 		$location.path("reports/edit/"+repRef.key);
-				// 	}
-				//
-				// });
-
 		};
 
 		/* A Report can be deleted by Admin
@@ -673,7 +684,7 @@ okulusApp.controller('ReportDetailsCntrl',
 							reportObj.$remove().then(function(ref) {
 								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
 								AuditSvc.recordAudit(ref.key, "delete", "reports");
-								ReportsSvc.decreasePendingReportCounter();
+						//ReportsSvc.decreasePendingReportCounter();
 								//remove the report reference from the group
 								GroupsSvc.removeReportReference(reportId,groupId);
 								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
@@ -727,31 +738,6 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.response = null;
 		};
 
-		//Deprecated
-		function putRecordOnScope(record){
-			if(record && record.reunion){
-				$scope.reportId = record.$id;
-				$scope.audit = record.audit;
-				$scope.reunion = record.reunion;
-				if(record.reunion.date){
-					$scope.reunion.dateObj = new Date(record.reunion.date.year, record.reunion.date.month-1, record.reunion.date.day);
-				}
-
-				$scope.objectDetails.attendance = record.attendance;
-				if($scope.objectDetails.attendance.members){
-					$scope.objectDetails.attendance.members = Object.values(record.attendance.members);
-				}
-				if($scope.objectDetails.attendance.guests){
-					$scope.objectDetails.attendance.guests = Object.values(record.attendance.guests);
-				}
-				$scope.reportWeek = WeeksSvc.getWeekObject( record.reunion.weekId );
-				$scope.groupMembersList = MembersSvc.getMembersForBaseGroup(record.reunion.groupId);
-
-			}else{
-				$location.path( "/error/norecord" );
-			}
-		};
-
 }]);
 
 okulusApp.factory('ReportsSvc',
@@ -782,6 +768,7 @@ okulusApp.factory('ReportsSvc',
 
 		return {
 			/*Return the reference to an exisitng Report's Basic Info */
+			//Deprecated
 			getReportBasicRef: function(reportId){
 				return reportsListRef.child(reportId);
 			},
@@ -792,6 +779,23 @@ okulusApp.factory('ReportsSvc',
 			/* Return a $firebaseObject from reports/list s*/
 			getReportBasicObj: function(reportId){
 				return $firebaseObject(reportsListRef.child(reportId));
+			},
+			/* Get report audit from firebase and return as object */
+			getReportAuditObject: function(whichReportId){
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.audit));
+			},
+			/* Get report attendace list from firebase and return as object */
+			getReportAttendanceObject: function(whichReportId){
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.attendance));
+			},
+			/* Get report study from firebase and return as object */
+			getReportStudyObject: function(whichReportId){
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.study));
+			},
+			/* Increment the number of Reports with reviewStatus = "pending"  */
+			decreaseRejectedReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				decreaseCounter(conunterRef);
 			},
 			/* Increment the number of Reports with reviewStatus = "pending"  */
 			increasePendingReportsCount: function() {
@@ -827,43 +831,30 @@ okulusApp.factory('ReportsSvc',
 				reportsDetailsRef.child(reportId).child(constants.folders.study).set(reportStudyInfo);
 			},
 			/* Set the guests attendance list in the /reports/details/:reportId/attendance/guests folder */
-			removeReportRefereceFromMembers: function(membersMap, report) {
+			removeReportRefereceFromMembers: function(membersMap, reportId) {
 				if(membersMap){
 					membersMap.forEach(function(value, key) {
 						//both value and key are = memberId
-						MembersSvc.removeReportReferenceFromMember(value, report.$id);
+						MembersSvc.removeReportReferenceFromMember(value, reportId);
 					});
 				}
 			},
 
-
-			allReportsLoaded: function() {
-				return $rootScope.allReports != null;
-			},
-			getReportFromArray: function(reportId){
-				return $rootScope.allReports.$getRecord(reportId);
-			},
 			//Deprecated
 			getReportObj: function(reportId){
-				return $firebaseObject(reportsRef.child(reportId));
-			},
-			//Deprecated
-			loadAllReports: function(){
-				if(!$rootScope.allReports){
-					$rootScope.allReports = $firebaseArray(reportsRef);
-				}
+				return $firebaseObject(reportsListRef.child(reportId));
 			},
 			getReportsForWeek: function(weekId){
-				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId);
+				let ref = reportsListRef.orderByChild("weekId").equalTo(weekId);
 				return $firebaseArray(ref);
 			},
 			/*Returns firebaseArray with the Reports for the given week, but limited to a specified amount */
 			getReportsForWeekWithLimit: function(weekId, limit){
-				let ref = reportsRef.orderByChild("reunion/weekId").equalTo(weekId).limitToLast(limit);
+				let ref = reportsListRef.orderByChild("weekId").equalTo(weekId).limitToLast(limit);
 				return $firebaseArray(ref);
 			},
 			getReportsforWeeksPeriod: function(fromWeek, toWeek){
-				let query = reportsRef.orderByChild("reunion/weekId").startAt(fromWeek).endAt(toWeek);
+				let query = reportsListRef.orderByChild("weekId").startAt(fromWeek).endAt(toWeek);
 				/*if(groupId){
 					Not possible to combien more than one orderByChild
 					console.debug("Try second query for group "+groupId)
@@ -871,24 +862,6 @@ okulusApp.factory('ReportsSvc',
 					return $firebaseArray(query2);
 				}*/
 				return $firebaseArray(query);
-			},
-			getMembersAttendaceListForReport: function (whichReport) {
-				let attendanceListRef = reportsRef.child(whichReport).child("attendance/memberss/list");
-				return $firebaseArray(attendanceListRef);
-			},
-			increasePendingReportCounter: function() {
-				$firebaseObject(counterRef).$loaded().then(
-					function( counter ){
-						counter.pending = counter.pending+1;
-						counter.$save();
-					});
-			},
-			decreasePendingReportCounter: function() {
-				$firebaseObject(counterRef).$loaded().then(
-					function( counter ){
-						counter.pending = counter.pending-1;
-						counter.$save();
-					});
 			}
 		};
 	}
