@@ -18,6 +18,10 @@
   <div class="alert alert-success" role="alert" ng-show="reportResponse.created" >
     {{reportResponse.message}}
   </div>
+  <!-- Informs a Report was deletef (used after redirect from reports/edit to reports/new) -->
+  <div class="alert alert-success" role="alert" ng-show="reportResponse.deleted" >
+    {{reportResponse.message}}
+  </div>
 
   <!-- Alerts to inform the Revision Status on Existing Report -->
   <div class="alert alert-danger" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'rejected'">
@@ -434,15 +438,15 @@
   <div class="form-row mb-3" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
     <div class="col-sm form-group" >
       <button type="button" class="btn btn-lg btn-block btn-warning clickable"
-        ng-disabled="reportForm.$invalid || reportForm.$pristine"
-        ng-show="!reportForm.$invalid && !reportForm.$pristine"
+        ng-disabled="reportForm.$invalid || (reportForm.$pristine && !reportParams.forceSaveBtnShow)"
+        ng-show="(!reportForm.$invalid && !reportForm.$pristine) || reportParams.forceSaveBtnShow "
         ng-click="saveReport()">
         {{i18n.btns.saveBtn}}
       </button>
     </div>
   </div>
   <!-- Admin Buttons -->
-  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin' && reportParams.isEdit">
     <!-- Show Approve button if reviewStatus is Pending or Rejected -->
     <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
       <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport()">

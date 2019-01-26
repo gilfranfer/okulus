@@ -128,6 +128,7 @@ const systemMsgs = {
 		attendanceRemoved:"fue removido de la lista.",
 		reportUpdated:"Reporte Actualizado",
 		reportCreated:"Reporte Creado",
+		reportDeleted:"Reporte Eliminado",
 		reportApproved:"Reporte Aprobado",
 		reportRejected:"Reporte Rechazado"
 	}

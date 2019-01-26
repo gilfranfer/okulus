@@ -47,7 +47,7 @@
           <label class="font-weight-bold">
             {{i18n.reports.dateLbl}}:
           </label>
-          <span>{{reportParams.dateObj}}</span>
+          <span>{{reportParams.dateObj.getTime() | date: "MMMM dd, yyyy"}}</span>
         </div>
       </div>
       <div class="form-row">
@@ -82,10 +82,10 @@
           <span>{{objectDetails.basicInfo.duration}}</span>
         </div>
         <div class="col-md form-group">
-          <label class="font-weight-bold">
+          <label class="font-weight-bold" ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">
             {{i18n.reports.moneyLbl}}:
           </label>
-          <span>{{objectDetails.basicInfo.money}}</span>
+          <span  ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">${{objectDetails.basicInfo.money}}</span>
         </div>
       </div>
     </div>

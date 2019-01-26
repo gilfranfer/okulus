@@ -502,6 +502,12 @@ okulusApp.factory('GroupsSvc',
 					reportId:report.$id, weekId:report.weekId,date:report.date
 				});
 			},
+			/* Called when deleting Report, to remove the Report details from the
+			 Group folder: /groups/details/:groupId/reports */
+			removeReportReferenceFromGroup: function(groupId,reportId){
+				let groupReportsFolder = groupDetailsRef.child(groupId).child(constants.folders.reports);
+				groupReportsFolder.child(reportId).set(null);
+			},
 			//Deprecated
 			removeReportReference: function(reportId,groupId){
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);

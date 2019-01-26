@@ -266,6 +266,7 @@ const constants = {
 		memberEdit:"/members/edit/",
 		groupEdit:"/groups/edit/",
 		reportEdit:"/reports/edit/",
+		reportNew:"/reports/new/",
 		weekEdit:"/weeks/edit/"
 	},
 	folders:{
@@ -325,7 +326,7 @@ okulusApp.run(function($rootScope) {
 			/*After this number of records, the Filter box will be visible*/
 			minResultsToshowFilter: 2,
 			/*Some fileds can be hiden*/
-			showMoneyFiled: true,
+			showMoneyFiled: false,
 			/*Date range limits*/
 			bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
 			reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
