@@ -664,76 +664,93 @@ okulusApp.controller('ReportDetailsCntrl',
 			return;
 		};
 
-		/* A Report can be deleted by Admin
-		 When deleting a Report:
-			1. Decrease the Report Status counter
-			2. Remove report reference from group/reports
-			3. Remove report reference from member/reports
+		/* When deleting a Report:
+			- Remove the Report from /report/list and /report/details
+			- Decrease the Report Status (approved, rejected, pendidng) count, and total count
+			- Create Audit for Report Removed
+			- Remove the Report reference from the Group
+			- Remove the Report reference from all Members in Attendance List
 		*/
-		$scope.delete = function(){
-			if($rootScope.currentSession.user.type == 'user'){
-				$scope.response = { reportMsgError: "Para eliminar este reporte, contacta al administrador"};
-			}else if($scope.audit && $scope.audit.reportStatus == constants.status.approved){
-				$scope.response = { reportMsgError: "No se puede eliminar el reporte porque ya ha sido aprobado"};
+		$scope.removeReport = function(){
+			$scope.response = { working:true, message: systemMsgs.inProgress.removingReport };
+			//Normal Users only can remove reports pending to approve
+			if($rootScope.currentSession.user.type != 'admin' && $scope.objectDetails.basicInfo.reviewStatus != 'pending' ){
+				$scope.response = { error:true, message: systemMsgs.error.userRemovingReport };
+			}
+			//Even admins cannot remove a report if it is already approved
+			else if( $scope.objectDetails.basicInfo.reviewStatus == constants.status.approved){
+				$scope.response = { error:true, message: systemMsgs.error.cantRemoveApprovedReport };
 			}else{
-				if($scope.reportId){
-					$scope.working = true;
+				//Admin removing a Pending or Rejected report or User removing a Pending Report
 
-					ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
-							let reportId = reportObj.$id;
-							let groupId = reportObj.reunion.groupId;
-							let membersAttendanceList = reportObj.attendance.members;
-							//if report is not approved
-							reportObj.$remove().then(function(ref) {
-								$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
-								AuditSvc.recordAudit(ref.key, "delete", "reports");
-						//ReportsSvc.decreasePendingReportCounter();
-								//remove the report reference from the group
-								GroupsSvc.removeReportReference(reportId,groupId);
-								MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
-								$scope.working = true;
-								$location.path( "/admin/dashboard");
-							}, function(error) {
-								$scope.working = false;
-								$rootScope.response = { reportMsgError: err};
-								// console.debug("Error:", error);
-							});
-					});
-				}
+				//Remove /report/list and /report/details
+				//Audit on Report Delete
+				//Decrease total reports count
+				//Decrease pending or rejected count
+				//Remove the Report reference from the Group
+				//Remove the Report reference from all Members in Attendance List
+				//Redirect
+
+					// ReportsSvc.getReportObj($scope.reportId).$loaded().then( function (reportObj) {
+					// 		let reportId = reportObj.$id;
+					// 		let groupId = reportObj.reunion.groupId;
+					// 		let membersAttendanceList = reportObj.attendance.members;
+					// 		//if report is not approved
+					// 		reportObj.$remove().then(function(ref) {
+					// 			$rootScope.response = { reportMsgOk: "Reporte Eliminado"};
+					// 			AuditSvc.recordAudit(ref.key, "delete", "reports");
+					// 	//ReportsSvc.decreasePendingReportCounter();
+					// 			//remove the report reference from the group
+					// 			GroupsSvc.removeReportReference(reportId,groupId);
+					// 			MembersSvc.removeReferenceToReport(reportId,membersAttendanceList);
+					// 			$scope.working = true;
+					// 			$location.path( "/admin/dashboard");
+					// 		}, function(error) {
+					// 			$scope.working = false;
+					// 			$rootScope.response = { reportMsgError: err};
+					// 			// console.debug("Error:", error);
+					// 		});
+					// });
+
 			}
 		};
 
-		/* Approve or Reject Report, according to the boolean passed as parameter */
-		$scope.approveReport = function (approved){
-			if ($scope.reportId){
-				$scope.working = true;
+		$scope.approveReport = function(){
+			$rootScope.response = { working:true, message: systemMsgs.inProgress.approvingReport };
 
-				repRef = ReportsSvc.getReportReference($scope.reportId);
-				let response = undefined;
-				let action = undefined;
-
-				if(approved){
-					response = { reportMsgOk: "Reporte Aprobado"};
-					action = constants.status.approved;
-				}else{
-					response = { reportMsgError: "Reporte Rechazado"};
-					action = "rejected";
+			let originalStatus = $scope.objectDetails.basicInfo.reviewStatus;
+			$scope.objectDetails.basicInfo.reviewStatus = constants.status.approved;
+			$scope.objectDetails.basicInfo.$save().then(function(ref){
+				//increase approved count
+				ReportsSvc.increaseApprovedReportsCount();
+				//decrease pending or rejected count
+				if(originalStatus == constants.status.pendingReview){
+					ReportsSvc.decreasePendingReportsCount();
+				}else if(originalStatus == constants.status.rejected){
+					ReportsSvc.decreaseRejectedReportsCount();
 				}
+				AuditSvc.recordAudit(ref.key, constants.actions.approve, constants.folders.reports);
+				$rootScope.response = { success:true, message: systemMsgs.success.reportApproved };
+			});
+		};
 
-				repRef.child("audit").update({reportStatus:action}, function(error) {
-					if(error){
-						$scope.response = { reportMsgError: error};
-					}else{
-						$scope.audit.reportStatus = action;
-						$scope.response = response;
-						AuditSvc.recordAudit(repRef.key, action, "reports");
-						$scope.audit.reportStatus = action;
-						$scope.working = false;
-						/*For some reason the message is not displayed until you interact with any form element*/
-					}
-				});
+		$scope.rejectReport = function(){
+			$rootScope.response = { working:true, message: systemMsgs.inProgress.rejectingReport };
 
-			}
+			let originalStatus = $scope.objectDetails.basicInfo.reviewStatus;
+			$scope.objectDetails.basicInfo.reviewStatus = constants.status.rejected;
+			$scope.objectDetails.basicInfo.$save().then(function(ref){
+				//increase rejected count
+				ReportsSvc.increaseRejectedReportsCount();
+				//decrease pending or approved count
+				if(originalStatus == constants.status.pendingReview){
+					ReportsSvc.decreasePendingReportsCount();
+				}else if(originalStatus == constants.status.approved){
+					ReportsSvc.decreaseApprovedReportsCount();
+				}
+				AuditSvc.recordAudit(ref.key, constants.actions.reject, constants.folders.reports);
+				$rootScope.response = { success:true, message: systemMsgs.success.reportRejected };
+			});
 		};
 
 		clearResponse = function() {
@@ -795,9 +812,24 @@ okulusApp.factory('ReportsSvc',
 			getReportStudyObject: function(whichReportId){
 				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.study));
 			},
-			/* Increment the number of Reports with reviewStatus = "pending"  */
+			/* Increment the number of Reports with reviewStatus = "approved"  */
+			increaseApprovedReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.approvedReportsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Reduce the number of Reports with reviewStatus = "approved"  */
+			decreaseApprovedReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.approvedReportsCount);
+				decreaseCounter(conunterRef);
+			},
+			/* Increment the number of Reports with reviewStatus = "rejected"  */
+			increaseRejectedReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.rejectedReportsCount);
+				increaseCounter(conunterRef);
+			},
+			/* Reduce the number of Reports with reviewStatus = "rejected"  */
 			decreaseRejectedReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				let conunterRef = baseRef.child(constants.folders.rejectedReportsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Increment the number of Reports with reviewStatus = "pending"  */
@@ -805,10 +837,20 @@ okulusApp.factory('ReportsSvc',
 				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
 				increaseCounter(conunterRef);
 			},
+			/* Reduce the number of Reports with reviewStatus = "pending"  */
+			decreasePendingReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				decreaseCounter(conunterRef);
+			},
 			/* Increment the number of total Reports */
 			increaseTotalReportsCount: function() {
 				let conunterRef = baseRef.child(constants.folders.totalReportsCount);
 				increaseCounter(conunterRef);
+			},
+			/* Reduce the number of total Reports */
+			decreaseTotalReportsCount: function() {
+				let conunterRef = baseRef.child(constants.folders.totalReportsCount);
+				decreaseCounter(conunterRef);
 			},
 			/* Set the members attendance list in the /reports/details/:reportId/attendance/members folder */
 			setMembersAttendaceList: function(attendanceList, report) {

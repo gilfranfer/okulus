@@ -4,6 +4,16 @@
 </div>
 
 <section id="reportEdit" ng-show="!response.loading">
+  <!-- Title -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{reportParams.actionLbl}} {{i18n.reports.reportLbl}}
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.weekName}}</span>
+      </h4>
+    </div>
+  </article>
+
   <!-- Informs a Report was created (used after redirect from reports/new to reports/edit) -->
   <div class="alert alert-success" role="alert" ng-show="reportResponse.created" >
     {{reportResponse.message}}
@@ -19,16 +29,6 @@
   <div class="alert alert-primary" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'pending'">
     {{i18n.reports.pendingReport}}
   </div>
-
-  <!-- Title -->
-  <article class="card mb-3">
-    <div class="card-body">
-      <h4 class="card-title">
-        {{reportParams.actionLbl}} {{i18n.reports.reportLbl}}
-        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.weekName}}</span>
-      </h4>
-    </div>
-  </article>
 
   <form id="reportForm" name="reportForm" novalidate ng-submit="">
     <!-- Basic Details Card -->
@@ -269,8 +269,10 @@
         <!-- Members Title -->
         <div class="row">
           <div class="col-8">
-            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}:</label>
-            <span class="badge badge-danger">{{objectDetails.attendance.members.length}}</span>
+            <h5>
+              <span class="badge badge-primary">{{objectDetails.attendance.members.length}}</span>
+              <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
+            </h5>
             <!-- <button class="btn btn-link clickable" ng-show="!showingAllMembers" ng-click="showAllMembers()">{{i18n.reports.allMembersLbl}}</button> -->
             <!-- <button class="btn btn-link clickable" ng-show="showingAllMembers" ng-click="showGroupMembers()">{{i18n.reports.groupMembersLbl}}</button> -->
           </div>
@@ -286,7 +288,7 @@
             </select>
           </div>
           <div class="col-4">
-            <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
               {{i18n.btns.addBtn}}
             </button>
           </div>
@@ -338,8 +340,10 @@
         <!-- Guests Title -->
         <div class="row mt-4">
           <div class="col-8">
-            <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}:</label>
-            <span class="badge badge-danger">{{objectDetails.attendance.guests.length}}</span>
+            <h5>
+              <span class="badge badge-primary">{{objectDetails.attendance.guests.length}}</span>
+              <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}</label>
+            </h5>
           </div>
         </div>
         <!-- Guest Input -->
@@ -349,7 +353,7 @@
             <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
           </div>
           <div class="col-4">
-            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-success" ng-disabled="!reportParams.addGuestName">
+            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary" ng-disabled="!reportParams.addGuestName">
               {{i18n.btns.addBtn}}
             </button>
             <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
@@ -437,17 +441,17 @@
       </button>
     </div>
   </div>
-  <!-- approve and Reject Buttons -->
-  <div class="form-row mb-3" ng-if="currentSession.user.type == 'admin' && objectDetails.basicInfo.reportId">
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
     <!-- Show Approve button if reviewStatus is Pending or Rejected -->
     <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
-      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport(true)">
+      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport()">
         {{i18n.btns.approveBtn}}
       </button>
     </div>
     <!-- Show Reject button if reviewStatus is Pending or Approved -->
     <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'rejected'">
-      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="approveReport(false)">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectReport()">
         {{i18n.btns.rejectBtn}}
       </button>
     </div>
@@ -467,16 +471,19 @@
   <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
     {{response.message}}
   </div>
-  <div class="row mb-3"  ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
-    <div class="col-sm form-group" ng-if="reportParams.isEdit">
+  <div class="row mb-3"
+    ng-if="reportParams.isEdit &&
+          ( (currentSession.user.type =='admin' && objectDetails.basicInfo.reviewStatus != 'approved')
+            || (currentSession.user.type !='admin' && objectDetails.basicInfo.reviewStatus == 'pending')  )">
+    <div class="col">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable"
-          data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
+      data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
         {{i18n.reports.deleteBtn}}
       </button>
       <div  class="collapse" id="collapseDelete">
         <div class="alert alert-danger" role="alert">
           {{i18n.alerts.confirmDelete}}
-          <button type="button" class="btn btn-danger clickable" ng-click="delete()">
+          <button type="button" class="btn btn-danger clickable" ng-click="removeReport()">
             {{i18n.btns.yesBtn}}
           </button>
           <button type="button" class="btn btn-success clickable"

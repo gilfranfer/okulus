@@ -36,7 +36,9 @@ const systemMsgs = {
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
 		/*Reports*/
 		duplicatedAttendance:"ya está en la lista de asistencia.",
-		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado"
+		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
+		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
+		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -80,7 +82,10 @@ const systemMsgs = {
 		loadingReport:"Cargando Reporte ...",
 		savingReport:"Guardando Reporte ...",
 		preparingReport:"Preparando Reporte ...",
-		validatingReport:"Validando Reporte ..."
+		validatingReport:"Validando Reporte ...",
+		approvingReport:"Aprobando Reporte ...",
+		rejectingReport:"Rechazando Reporte ...",
+		removingReport:"Eliminando Reporte ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -122,7 +127,9 @@ const systemMsgs = {
 		attendanceAdded:"agregado a la lista.",
 		attendanceRemoved:"fue removido de la lista.",
 		reportUpdated:"Reporte Actualizado",
-		reportCreated:"Reporte Creado"
+		reportCreated:"Reporte Creado",
+		reportApproved:"Reporte Aprobado",
+		reportRejected:"Reporte Rechazado"
 	}
 };
 
@@ -240,7 +247,7 @@ okulusApp.run(function($rootScope) {
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
-				studyTitle:"Información del estudio",
+				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
 				/*Form Labels*/
 				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
 				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",

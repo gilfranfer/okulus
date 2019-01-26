@@ -187,7 +187,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/reports/newreport.html',
+				templateUrl: 'views/reports/reportView.html',
 				controller: 'ReportDetailsCntrl'
 			})
 			.when('/weeks', {
@@ -300,7 +300,7 @@ const constants = {
 		totalNotifCount:"counters/notifications/total",
 		totalReportsCount:"counters/reports/total",
 		pendingReportsCount:"counters/reports/pending",
-		aprovedReportsCount:"counters/reports/aproved",
+		approvedReportsCount:"counters/reports/approved",
 		rejectedReportsCount:"counters/reports/rejected"
 	},
 	dbFields:{
