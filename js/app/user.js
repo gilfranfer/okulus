@@ -67,10 +67,15 @@ okulusApp.controller('UserMyContactsCntrl',
 ]);
 
 //To redirect from Audit Table
-okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$location','$firebaseObject','$firebaseAuth',
-																				'AuthenticationSvc','MembersSvc',
-	function($rootScope,$routeParams,$scope,$location,$firebaseObject, $firebaseAuth,AuthenticationSvc,MembersSvc){
+okulusApp.controller('UserEditCntrl',
+	['$rootScope','$routeParams','$scope','$location','$firebaseObject','$firebaseAuth',
+		'AuthenticationSvc','MembersSvc', 'UsersSvc',
+	function($rootScope,$routeParams,$scope,$location,$firebaseObject,$firebaseAuth,
+					AuthenticationSvc,MembersSvc,UsersSvc){
+
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
+			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
@@ -78,42 +83,52 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 					return;
 				}
 
-				$scope.objectDetails = {};
+				$scope.objectDetails.basicInfo = UsersSvc.getUserBasicDataObject($routeParams.userId);
+				$scope.objectDetails.basicInfo.$loaded().then(function (user){
+					if(!user || !user.email){
+						$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+						return;
+					}
 
-				let usersFolder = firebase.database().ref().child(rootFolder).child('users');
-				$scope.userDetails = $firebaseObject(usersFolder.child($routeParams.userId));
-				$scope.userDetails.$loaded().then(function (user){
-					if(user && user.memberId){
-						$scope.objectDetails.audit = user.audit;
-						$scope.userMemberDetails = MembersSvc.getMemberBasicDataObject(user.memberId);
+					$scope.objectDetails.audit = UsersSvc.getUserAuditObject(user.$id);
+					if(user.memberId){
+						console.log(user.memberId);
+						$scope.objectDetails.member = MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
-						// if(user && user.isRoot){
-						// 	$scope.userMemberDetails =  {shortname:"Super Admin"};
-						// }
-						if(user && !user.memberId){
-							let userTitle = (user.isRoot)?"Super Admin":"Usuario sin nombre";
-							$scope.userMemberDetails = {shortname: userTitle};
-						}
+						//it might be root, or a brand new user that didnt find a member
+						$scope.objectDetails.member = (user.isRoot)?{shortname: constants.roles.rootName }:{shortname: constants.roles.userDefaultName};
 					}
 				});
+
 			});
 		}});
+
 }]);
 
 okulusApp.factory('UsersSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let usersRef = firebase.database().ref().child(rootFolder).child(constants.folders.users);
+		let usersRef = firebase.database().ref().child(rootFolder).child(constants.folders.usersList);
+		let usersDetailsRef = firebase.database().ref().child(rootFolder).child(constants.folders.usersDetails);
 		let validUsersRef = usersRef.orderByChild("isValid").equalTo(true);
 
 		return {
-			/*Valid Users are the ones with a MemberId associated*/
+			/* Valid Users are the ones with a MemberId associated. Currently used to initiate a chat */
 			loadValidUsersList: function(){
 				if(!$rootScope.allValidUsersList){
 					$rootScope.allValidUsersList = $firebaseArray(validUsersRef);
 				}
 				return $rootScope.allValidUsersList;
 			},
+			/* Get basic info from firebase and return as object */
+			getUserBasicDataObject: function(whichUserId){
+				return $firebaseObject(usersRef.child(whichUserId));
+			},
+			/* Get audit from firebase and return as object */
+			getUserAuditObject: function(whichUserId){
+				return $firebaseObject(usersDetailsRef.child(whichUserId).child(constants.folders.audit));
+			},
+			/* Set the member Id and Member name in the User, to link them */
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
 				userObj.shortname = memberShortname;
@@ -126,11 +141,11 @@ okulusApp.factory('UsersSvc',
 				userObj.$save();
 			},
 			createUser: function(userId, userEmail, userType){
+				let timestamp = firebase.database.ServerValue.TIMESTAMP;
 				let record = {
 					email: userEmail, type: userType,
-					lastLoginOn: firebase.database.ServerValue.TIMESTAMP,
-					lastActivityOn: firebase.database.ServerValue.TIMESTAMP,
-					sessionStatus: "online"
+					lastLoginOn: timestamp, lastActivityOn: timestamp,
+					sessionStatus: constants.status.online
 				};
 				usersRef.child(userId).set(record);
 			}

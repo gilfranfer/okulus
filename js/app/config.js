@@ -253,7 +253,8 @@ const constants = {
 	roles: {
 		user:"user", admin: "admin", type:"type", system: "System",
 		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost",
-		isUser:"isUser"
+		isUser:"isUser",
+		userDefaultName:"Usuario sin miembro asociado", rootName:"Super Administrador"
 	},
 	status: {
 		online:"online", offline:"offline",
@@ -286,6 +287,7 @@ const constants = {
 		metadata:"metadata", address:"address", accessRules:"access",
 		attendance:"attendance", study:"study",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		usersList:"users/list", usersDetails:"users/details",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
 		groupsList:"groups/list", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
