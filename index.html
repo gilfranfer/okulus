@@ -14,7 +14,7 @@
 	<body ng-controller="AuthenticationCntrl">
     <header ng-include="'views/navigation.html'"></header>
     <!-- Message when User has not validated his email -->
-    <div class="alert alert-danger" role="alert" ng-show="emailNotVerifiedError">
+    <div class="alert alert-danger" role="alert" ng-show="constants.config.isProdEnv && !currentSession.emailVerified">
       <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
       <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
         {{i18n.emailValidation.verify}}
