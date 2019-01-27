@@ -36,20 +36,20 @@
           <h4 class="card-title">{{i18n.msgCenter.title}}</h4>
           <hr>
           <div class="pre-scrollable mb-4">
-            <div class="row" ng-repeat="m in messages | orderBy:'audit.createdOn':true track by m.$id" >
-                <div class="alert alert-{{m.type}} ml-4 mr-4">
-                  {{m.message}}
+            <div class="row" ng-repeat="message in msgCenterMessages | orderBy:'createdOn':true track by message.$id" >
+                <div class="alert alert-{{message.type}} ml-4 mr-4">
+                  {{message.message}}
                   <br>
                   <hr style="margin-bottom: 0;">
                   <span class="small font-weight-light">
-                    {{m.audit.createdBy}} -
-                    {{m.audit.createdOn | date: "HH:mm dd/MM/yy"}}
+                    {{message.createdBy}} -
+                    {{message.createdOn | date: "HH:mm dd/MM/yy"}}
                   </span>
                   <br>
                   <!-- Show Delete option when message was created by current User -->
                   <span class="small font-weight-light clickable"
-                      ng-click="removeMessage(m.$id)"
-                      ng-if="(m.audit.createdBy == currentSession.user.email) || (
+                      ng-click="removeMessage(message.$id)"
+                      ng-if="(message.createdBy == currentSession.user.email) || (
                               currentSession.user.type == 'admin')">
                     {{i18n.msgCenter.deleteMsg}}
                   </span>
@@ -57,6 +57,9 @@
             </div>
           </div>
           <!-- Alerts -->
+          <div class="alert alert-danger" ng-show="!msgCenterMessages || msgCenterMessages.length<=0">
+            {{i18n.msgCenter.noMessages}}
+          </div>
           <div ng-include="'views/alerts.html'"></div>
           <!-- Create Messages -->
           <div class="mt-4" ng-show="currentSession.user.type == 'admin'">

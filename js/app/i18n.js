@@ -3,6 +3,7 @@ const systemMsgs = {
 	error:{
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
 		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
+		noPrivilegesShort: "No cuentas con los permisos necesarios.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
@@ -38,7 +39,11 @@ const systemMsgs = {
 		duplicatedAttendance:"ya está en la lista de asistencia.",
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
-		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado"
+		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
+		/*Message Center*/
+		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
+		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
+		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -88,7 +93,10 @@ const systemMsgs = {
 		removingReport:"Eliminando Reporte ...",
 		/* Admin Dash */
 		loadingAdminDash:"Cargando Escritorio",
-		searchingReports:"Buscando Reportes"
+		searchingReports:"Buscando Reportes",
+		/*Message Center*/
+		postingMessage: "Publicando mensaje ...",
+		deletingMessage: "Eliminando mensaje ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -134,7 +142,10 @@ const systemMsgs = {
 		reportDeleted:"Reporte Eliminado",
 		reportApproved:"Reporte Aprobado",
 		reportRejected:"Reporte Rechazado",
-		reportsRetrieved:"Reportes Encontrados"
+		reportsRetrieved:"Reportes Encontrados",
+		/*Message Center*/
+		postingMessageSuccess:"El mensaje ha sido publicado.",
+		deleteMessageSuccess: "El mensaje ha sido eliminado.",
 	}
 };
 
@@ -188,17 +199,7 @@ okulusApp.run(function($rootScope) {
 				title: "Mensajes del Administrador",
 				instruction: "Usa el cuadro de texto para redactar un mensaje a los usuarios:",
 				importanMsg: "Mensaje Importante", deleteMsg: "X Eliminar Mensaje",
-				loadingMessages: "Cargando mensajes ...",
-				loadingError: "Error al cargar los mensajes. Intentelo más tarde.",
-				noMessages: "No hay mensajes.",
-				createInProgress: "Publicando mensaje ...",
-				createSuccess: "El mensaje ha sido publicado.",
-				createError: "Error al crear el mensaje. Intentelo más tarde.",
-				deleteInProgress: "Eliminando mensaje ...",
-				deleteSuccess: "El mensaje ha sido eliminado.",
-				deleteError: "Error al eliminar el mensaje. Intentelo más tarde.",
-				onlyAdmin: "Debes ser administrador.",
-				sendBtn: "Enviar"
+				noMessages: "No hay mensajes.", sendBtn: "Enviar"
 			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"Por:", noRecords:"No tienes ninguna notificación",

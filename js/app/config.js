@@ -281,6 +281,7 @@ const constants = {
 		groupsList:"groups/list", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
 		reportsList:"reports/list", reportsDetails:"reports/details",
+		messagesList:"messages/list",
 		membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 		notificationsList:"notifications/list",
 		/**Counters*/
