@@ -20,7 +20,7 @@ okulusApp.controller('GroupsListCntrl',
 							if(unwatch){ unwatch(); }
 							unwatch = $rootScope.groupsGlobalCount.$watch( function(data){
 								if($rootScope.adminGroupsParams){
-									let loader = $rootScope.adminGroupsParams.activeGroupsLoader;
+									let loader = $rootScope.adminGroupsParams.activeLoader;
 									$rootScope.adminGroupsParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
@@ -423,7 +423,7 @@ okulusApp.factory('GroupsSvc',
 			getGlobalGroupsCounter: function(){
 				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
 			},
-			/* Return all Members, using a limit for the query, if specified*/
+			/* Return all Groups, using a limit for the query, if specified*/
 			getAllGroups: function(limit) {
 					if(limit){
 						return $firebaseArray(groupListRef.orderByKey().limitToLast(limit));

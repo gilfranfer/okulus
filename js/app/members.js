@@ -15,12 +15,12 @@ okulusApp.controller('MembersListCntrl',
 						function(membersCount) {
 							$scope.response = undefined;
 							/* Adding a Watch to the membersGlobalCount to detect changes.
-							The idea is to update the maxPossible value from membersListParams.*/
+							The idea is to update the maxPossible value from adminMembersParams.*/
 							if(unwatch){ unwatch(); }
 							unwatch = $rootScope.membersGlobalCount.$watch( function(data){
-								if($rootScope.membersListParams){
-									let loader = $rootScope.membersListParams.activeMembersLoader;
-									$rootScope.membersListParams = getParamsByLoader(loader);
+								if($rootScope.adminMembersParams){
+									let loader = $rootScope.adminMembersParams.activeMembersLoader;
+									$rootScope.adminMembersParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
 							});

@@ -163,6 +163,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
+			.when('/reports', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/reports/reportsAdmin.html',
+				controller: 'ReportsListCntrl'
+			})
 			.when('/reports/new/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -286,20 +295,21 @@ const constants = {
 		notificationsList:"notifications/list",
 		/**Counters*/
 		weeksCounters:"counters/weeks",
-		membersCounters:"counters/members",
-		groupsCounters:"counters/groups",
 		totalWeeksCount:"counters/weeks/total",
 		openWeeksCount:"counters/weeks/open",
 		visibleWeeksCount:"counters/weeks/visible",
+		membersCounters:"counters/members",
 		totalMembersCount:"counters/members/total",
 		activeMembersCount:"counters/members/active",
 		hostMembersCount:"counters/members/hosts",
 		leadMembersCount:"counters/members/leads",
 		traineeMembersCount:"counters/members/trainees",
+		groupsCounters:"counters/groups",
 		totalGroupsCount:"counters/groups/total",
 		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
 		totalNotifCount:"counters/notifications/total",
+		reportsCounters:"counters/reports",
 		totalReportsCount:"counters/reports/total",
 		pendingReportsCount:"counters/reports/pending",
 		approvedReportsCount:"counters/reports/approved",
@@ -307,7 +317,8 @@ const constants = {
 	},
 	dbFields:{
 		baseGroup:"baseGroupId",
-		email:"email"
+		email:"email",
+		reviewStatus:"reviewStatus"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",

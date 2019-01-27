@@ -36,6 +36,8 @@ const systemMsgs = {
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
 		/*Reports*/
+		noReportsError:"No se encontraron Reportes",
+		loadingReportsError:"Error al cargar la lista de Reportes",
 		duplicatedAttendance:"ya está en la lista de asistencia.",
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
@@ -84,6 +86,11 @@ const systemMsgs = {
 		savingWeekInfo:"Guardando Información de la Semana",
 		deletingWeek:"Eliminando Semana",
 		/* Reports JS */
+		loadingAllReports:"Cargando Todos los Reportes ...",
+		loadingApprovedReports:"Cargando Reportes Aprobados ...",
+		loadingRejectedReports:"Cargando Reportes Rechazados ...",
+		loadingPendingReports:"Cargando Reportes Pendientes de Revisar ...",
+		loadingAllReports:"Cargando Todos los Reportes...",
 		loadingReport:"Cargando Reporte ...",
 		savingReport:"Guardando Reporte ...",
 		preparingReport:"Preparando Reporte ...",
@@ -143,6 +150,10 @@ const systemMsgs = {
 		reportApproved:"Reporte Aprobado",
 		reportRejected:"Reporte Rechazado",
 		reportsRetrieved:"Reportes Encontrados",
+		allReportsTitle:"Reportes Existentes",
+		approvedReportsTitle:"Reportes Aprobados",
+		rejectedReportsTitle:"Reportes Rechazados",
+		pendingReportsTitle:"Reportes Pendientes de Revisión",
 		/*Message Center*/
 		postingMessageSuccess:"El mensaje ha sido publicado.",
 		deleteMessageSuccess: "El mensaje ha sido eliminado.",
@@ -250,6 +261,8 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			reports:{
+				/* Admin Reports */
+				adminTitle:"Administrador de Reportes",
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
@@ -257,6 +270,7 @@ okulusApp.run(function($rootScope) {
 				newBtn:"Crear Reporte", loadBtn:"Mostrar Reportes",
 				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
+				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
 				/*Form Labels*/
 				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
 				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
@@ -272,8 +286,9 @@ okulusApp.run(function($rootScope) {
 				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 				notesLegend: "Comentarios sobre la Reunión", notesHint: "Agregar notas y comentarios de la reunión",
 				attendanceLegend: "Asistencia",
-				membersAttendance:"Miembros que asistieron",
-				guestsAttendance:"Invitados que asistieron",
+				membersAttendanceLbl:"Asistencia de Miembros",
+				guestsAttendanceLbl:"Asistencia de Invitados",
+				totalAttendanceLbl:"Asistencia  Total",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
 				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
 				maleLbl: "Hombres", femaleLbl: "Mujeres",

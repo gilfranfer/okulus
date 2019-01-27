@@ -1,3 +1,131 @@
+//Mapping: /groups
+okulusApp.controller('ReportsListCntrl',
+	['$rootScope','$scope','$firebaseAuth','$location','ReportsSvc', 'AuthenticationSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,ReportsSvc,AuthenticationSvc){
+
+		let unwatch = undefined;
+		/* Executed everytime we enter to /groups
+		  This function is used to confirm the user is Admin */
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
+				if(user.type == constants.roles.admin){
+					/*Load Report Counters and Set Watch*/
+					$rootScope.reportsGlobalCount = ReportsSvc.getGlobalReportsCounter();
+					$rootScope.reportsGlobalCount.$loaded().then(
+						function(reportsCount) {
+							$scope.response = undefined;
+							/* Adding a Watch to the reportsGlobalCount to detect changes.
+							The idea is to update the maxPossible value from adminReportsParams.*/
+							if(unwatch){ unwatch(); }
+							unwatch = $rootScope.reportsGlobalCount.$watch( function(data){
+								if($rootScope.adminReportsParams){
+									let loader = $rootScope.adminReportsParams.activeLoader;
+									$rootScope.adminReportsParams = getParamsByLoader(loader);
+									$scope.response = undefined;
+								}
+							});
+					});
+				}else{
+					$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}
+			});
+		}});
+
+		/* All the following on-demand loaders (called from html view) will limit the
+		 initial result list to the maxQueryListResults value (from $rootScope.config).
+		 They will create a params object containing the name of the loader used,
+		 and determining the max possible records to display. */
+		$scope.loadAllReportsList = function () {
+			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllReports};
+			$rootScope.adminReportsParams = getParamsByLoader("AllReportsLoader");
+			$rootScope.adminReportsList = ReportsSvc.getAllReports();
+			whenReportsRetrieved();
+		};
+
+		$scope.loadApprovedReportsList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingApprovedReports};
+ 			$rootScope.adminReportsParams = getParamsByLoader("ApprovedReportsLoader");
+ 			$rootScope.adminReportsList = ReportsSvc.getApprovedReports($rootScope.config.maxQueryListResults);
+ 			whenReportsRetrieved();
+		};
+
+		$scope.loadRejectedReportsList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingRejectedReports};
+ 			$rootScope.adminReportsParams = getParamsByLoader("RejectedReportsLoader");
+ 			$rootScope.adminReportsList = ReportsSvc.getRejectedReports($rootScope.config.maxQueryListResults);
+ 			whenReportsRetrieved();
+		};
+
+		$scope.loadPendingReportsList = function () {
+ 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingPendingReports};
+ 			$rootScope.adminReportsParams = getParamsByLoader("PendingReportsLoader");
+ 			$rootScope.adminReportsList = ReportsSvc.getPendingReports($rootScope.config.maxQueryListResults);
+ 			whenReportsRetrieved();
+		};
+
+		/* Load ALL pending reports. Use the adminReportsParams.activeLoader
+		to determine what type of reports should be loaded, and how. */
+		$scope.loadPendingReports = function () {
+			let loaderName = $rootScope.adminReportsParams.activeLoader;
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+			if(loaderName=="AllReportsLoader"){
+				$rootScope.adminReportsList = ReportsSvc.getAllReports();
+			} else if(loaderName=="ApprovedReportsLoader"){
+				$rootScope.adminReportsList = ReportsSvc.getApprovedReports();
+			} else if(loaderName=="RejectedReportsLoader"){
+				$rootScope.adminReportsList = ReportsSvc.getRejectedReports();
+			} else if(loaderName=="PendingReportsLoader"){
+				$rootScope.adminReportsList = ReportsSvc.getPendingReports();
+			}
+			whenReportsRetrieved();
+		};
+
+		/*Build object with Params used in the view.
+		 activeLoader: Will help to identify what type of reports we want to load.
+		 searchFilter: Container for the view filter
+		 title: Title of the Reports List will change according to the loader in use
+		 maxPossible: Used to inform the user how many elements are pending to load */
+		getParamsByLoader = function (loaderName) {
+			let params = {activeLoader:loaderName, searchFilter:undefined};
+			if(loaderName == "AllReportsLoader"){
+				params.title= systemMsgs.success.allReportsTitle;
+				params.maxPossible = $rootScope.reportsGlobalCount.total;
+			}
+			else if(loaderName == "ApprovedReportsLoader"){
+				params.title= systemMsgs.success.approvedReportsTitle;
+				params.maxPossible = $rootScope.reportsGlobalCount.approved;
+			}
+			else if(loaderName == "RejectedReportsLoader"){
+				params.title= systemMsgs.success.rejectedReportsTitle;
+				params.maxPossible = $rootScope.reportsGlobalCount.rejected;
+			}
+			else if(loaderName == "PendingReportsLoader"){
+				params.title= systemMsgs.success.pendingReportsTitle;
+				params.maxPossible = $rootScope.reportsGlobalCount.pending;
+			}
+			return params;
+		};
+
+		/*Prepares the response after the reports list is loaded */
+		whenReportsRetrieved = function () {
+			$rootScope.adminReportsList.$loaded().then(function(reports) {
+				$scope.response = undefined;
+				$rootScope.reportResponse = null;
+				if(!reports.length){
+					$scope.response = { error: true, message: systemMsgs.error.noReportsError };
+				}
+			}).catch( function(error){
+				$scope.response = { error: true, message: systemMsgs.error.loadingReportsError };
+				console.error(error);
+			});
+		};
+
+	}
+]);
+
 //Controls the reportsFinder and reportsDashboard
 okulusApp.controller('ReportsDashCntrl',
 	['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
@@ -794,8 +922,7 @@ okulusApp.factory('ReportsSvc',
 		let baseRef = firebase.database().ref().child(rootFolder);
 		let reportsListRef = baseRef.child(constants.folders.reportsList);
 		let reportsDetailsRef = baseRef.child(constants.folders.reportsDetails);
-		let reportsRef = baseRef.child('reports');
-		let counterRef = baseRef.child('counters/reports');
+		let reportReviewStatus = baseRef.child(constants.folders.reportsList).orderByChild(constants.dbFields.reviewStatus);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -814,6 +941,41 @@ okulusApp.factory('ReportsSvc',
 		};
 
 		return {
+			getGlobalReportsCounter: function(){
+				return $firebaseObject(baseRef.child(constants.folders.reportsCounters));
+			},
+			/* Return all Reports, using a limit for the query, if specified*/
+			getAllReports: function(limit) {
+				if(limit){
+					return $firebaseArray(reportsListRef.orderByKey().limitToLast(limit));
+				}else{
+					return $firebaseArray(reportsListRef.orderByKey());
+				}
+			},
+			/* Return all Reports with reviewStatus:'approved', using a limit for the query, if specified*/
+			getApprovedReports: function(limit) {
+				if(limit){
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.approved).limitToLast(limit));
+				}else{
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.approved));
+				}
+			},
+			/* Return all Reports with reviewStatus:'pending', using a limit for the query, if specified*/
+			getPendingReports: function(limit) {
+				if(limit){
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pendingReview).limitToLast(limit));
+				}else{
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pendingReview));
+				}
+			},
+			/* Return all Reports with reviewStatus:'rejected', using a limit for the query, if specified*/
+			getRejectedReports: function(limit) {
+				if(limit){
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.rejected).limitToLast(limit));
+				}else{
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.rejected));
+				}
+			},
 			/*Return the reference to an exisitng Report's Basic Info */
 			//Deprecated
 			getReportBasicRef: function(reportId){
