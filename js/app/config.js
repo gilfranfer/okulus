@@ -335,6 +335,7 @@ const constants = {
 /* Configurations that, in future versions, can be modified by System Admin*/
 okulusApp.run(function($rootScope) {
 		$rootScope.config ={
+			appName:"Grupos de Vecindad",
 			/*The Max lenght a firebaseArray should have in the initial request*/
 			maxQueryListResults: 50,
 			/*After this number of records, the Filter box will be visible*/
