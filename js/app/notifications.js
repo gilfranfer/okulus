@@ -73,7 +73,7 @@ okulusApp.factory('NotificationsSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 		let baseRef = firebase.database().ref().child(rootFolder);
-		let usersRef = baseRef.child( constants.folders.users );
+		let usersRef = baseRef.child( constants.folders.usersList );
 		let notificationsRef = baseRef.child(constants.folders.notificationsList);
 		let adminUsersRef = usersRef.orderByChild(constants.roles.type).equalTo(constants.roles.admin);
 
@@ -211,7 +211,6 @@ okulusApp.factory('NotificationsSvc',
 						  TODO:Add notification according to their Preferences */
 						getAdminUsers().$loaded().then(function(admins){
 							admins.forEach(function(admin) {
-								// console.log("notifying admins");
 								if(admin.memberId && notifiedUsers.indexOf(admin.$id) < 0){
 									pushNotification(admin.$id, notification);
 								}
