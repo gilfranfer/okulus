@@ -1,8 +1,48 @@
-//Controller For reportSelector view
-okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
+//Controls the reportsFinder and reportsDashboard
+okulusApp.controller('ReportsDashCntrl',
+	['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
 		//Default chart Orientation (portrait or landscape)
 		$scope.chartOrientation = 'landscape';
+
+		/* Main method invoked to search reports for the selected weeks and groups */
+		$scope.getReportsForSelectedWeeks = function(){
+			$scope.response = {loading:true, message:systemMsgs.inProgress.searchingReports};
+			let isAdminDashView= $scope.adminViewActive;
+			// $scope.propertyName = 'groupname';
+			// $scope.reverse = true;
+
+			/* Get User Input */
+			let selectedGroups = $scope.selectedGroups;
+			let fromWeek = $scope.weekfrom;
+			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
+			$rootScope.weekto = toWeek;
+
+			$scope.reportsArray  = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
+			$scope.reportsArray.$loaded().then(function(reports){
+				//console.debug("Start to filter Reports", reports);
+				// console.log(selectedGroups);
+				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
+				/* reportsArray has all reports for the week period,  even for groups where
+					the member doesnt have access, so we need to apply some filters before */
+				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
+				$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
+			});
+			$scope.reportsArray.$watch(function(event){ notifyReportAdded(event); });
+
+			return;
+
+
+			/* If user didnt select a group, but only has access to 1 groups
+				 then we better select that group for him
+			if(!selectedGroups && $scope.groupsList.length == 1){
+				selectedGroups = [$scope.groupsList[0].$id];
+				$scope.specificGroups = selectedGroups;
+			}*/
+
+
+
+		};
 
 		updateCharts = function(selectedGroupIds,weeksElapsed){
 			// console.debug(selectedGroupIds);
@@ -17,7 +57,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				goodWeekAttendanceIndicator *= weeksElapsed;
 				excelentWeekAttendanceIndicator *= weeksElapsed;
 			}
-			ChartsSvc.buildCharts($scope.reportsForSelectedWeek, selectedGroupIds, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
+			//ChartsSvc.buildCharts($scope.reportsForSelectedWeek, selectedGroupIds, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
 			$scope.reunionSummary = ChartsSvc.getReunionTotals();
 		};
 
@@ -35,7 +75,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 				$scope.reportsArray.forEach( function(report){
 					let found = false;
 					for (i = 0; i < selectedGroupIds.length; i++) {
-					    if(selectedGroupIds[i] == report.reunion.groupId){
+					    if(selectedGroupIds[i] == report.groupId){
 					    	found = true;
 					        break;
 					    }
@@ -53,7 +93,7 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		filterReportsForUser = function(accessGroups){
 			let reportsList = [];
 			$scope.reportsForSelectedWeek.forEach( function(report){
-				if(accessGroups.has(report.reunion.groupId)){
+				if(accessGroups.has(report.groupId)){
 					reportsList.push(report);
 				}
 			});
@@ -90,43 +130,6 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 			}
 		};
 
-		$scope.getReportsForSelectedWeeks = function (isAdminDashView) {
-			$scope.response = null;
-			$scope.propertyName = 'reunion.groupname';
-			$scope.reverse = true;
-			$scope.loadingReports = true;
-
-			/* Get User Input */
-			let fromWeek = $scope.weekfrom;
-			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
-			let selectedGroups = $scope.specificGroups;
-			$rootScope.weekfrom = fromWeek;
-			$rootScope.weekto = toWeek;
-			$rootScope.specificGroups = selectedGroups;
-
-			/* If user didnt select a group, but only has access to 1 groups
-				 then we better select that group for him
-			if(!selectedGroups && $scope.groupsList.length == 1){
-				selectedGroups = [$scope.groupsList[0].$id];
-				$scope.specificGroups = selectedGroups;
-			}*/
-
-			let reportsArray = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
-			$scope.reportsArray = reportsArray;
-
-			/* reportsArray has all reports for the week period,  even for groups where
-				the member doesnt have access, so we need to apply some filters before
-			 */
-			reportsArray.$loaded().then( function( reports ) {
-				//console.debug("Start to filter Reports");
-				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
-				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
-				reportsArray.$watch(function(event){ notifyReportAdded(event); });
-				$scope.loadingReports = false;
-			});
-
-		};
-
 		$scope.sortBy = function(propertyName) {
 			$scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
 			$scope.propertyName = propertyName;
@@ -144,14 +147,14 @@ okulusApp.controller('ReportsDashCntrl', ['$rootScope','$scope', 'WeeksSvc','Rep
 		notifyReportAdded = function(event){
 			let reportId = event.key;
 			ReportsSvc.getReportObj(reportId).$loaded().then(function (report) {
-				if( report.reunion.weekId >= $rootScope.weekfrom && report.reunion.weekId <= $rootScope.weekto ){
+				if( report.weekId >= $rootScope.weekfrom && report.weekId <= $rootScope.weekto ){
 					let message = "";
 					if(event.event == "child_added"){
-						message = "Se ha creado un nuevo Reporte para la semana "+report.reunion.weekId
-																								+ " del grupo "+report.reunion.groupname;
+						message = "Se ha creado un nuevo Reporte para la semana "+report.weekId
+																								+ " del grupo "+report.groupname;
 					}else if(event.event == "child_changed"){
-						message = "Se ha modificado un Reporte para la semana "+report.reunion.weekId
-																								+ " del grupo "+report.reunion.groupname;;
+						message = "Se ha modificado un Reporte para la semana "+report.weekId
+																								+ " del grupo "+report.groupname;;
 					}
 					$scope.response = { reportAddedMsg:message };
 					// console.debug(event);
@@ -253,14 +256,15 @@ okulusApp.controller('ReportDetailsCntrl',
 		/* Create a one "normal" Array list to hold all the members (include inactive) with baseGroup = thisGroup
 		 plus, the Group's Lead, Host, Trainee (because sometimes those roles have a different baseGroup)*/
 		prepareMembersForAttendaceListSelect = function (whichGroup,roles) {
+
 			if(roles.leadId){
-				$scope.reportParams.groupMembersList.push({name:roles.leadName,id:roles.leadId});
+				pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName})
 			}
 			if(roles.hostId){
-				$scope.reportParams.groupMembersList.push({name:roles.hostName,id:roles.hostId});
+				pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName})
 			}
 			if(roles.traineeId){
-				$scope.reportParams.groupMembersList.push({name:roles.traineeName,id:roles.traineeId});
+				pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName})
 			}
 			MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
 				list.forEach(function(member){
@@ -533,7 +537,6 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.objectDetails.basicInfo.weekName = null;
 			}
 			$scope.reportParams.updatingWeek = false;
-			console.log($scope.objectDetails.basicInfo);
 		};
 
 		/* Create or Save Changes in a Report */
@@ -568,6 +571,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			//Preparing Report
 			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
 			$scope.objectDetails.basicInfo.date = UtilsSvc.buildDateJson($scope.reportParams.dateObj);
+			$scope.objectDetails.basicInfo.dateMilis = $scope.reportParams.dateObj.getTime();
 			let membersAttendanceList = $scope.objectDetails.attendance.members;
 			let guestsAttendanceList = $scope.objectDetails.attendance.guests;
 

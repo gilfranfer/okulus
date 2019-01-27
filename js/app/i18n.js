@@ -85,7 +85,10 @@ const systemMsgs = {
 		validatingReport:"Validando Reporte ...",
 		approvingReport:"Aprobando Reporte ...",
 		rejectingReport:"Rechazando Reporte ...",
-		removingReport:"Eliminando Reporte ..."
+		removingReport:"Eliminando Reporte ...",
+		/* Admin Dash */
+		loadingAdminDash:"Cargando Escritorio",
+		searchingReports:"Buscando Reportes"
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -130,7 +133,8 @@ const systemMsgs = {
 		reportCreated:"Reporte Creado",
 		reportDeleted:"Reporte Eliminado",
 		reportApproved:"Reporte Aprobado",
-		reportRejected:"Reporte Rechazado"
+		reportRejected:"Reporte Rechazado",
+		reportsRetrieved:"Reportes Encontrados"
 	}
 };
 
@@ -249,6 +253,9 @@ okulusApp.run(function($rootScope) {
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
 				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
+				newBtn:"Crear Reporte", loadBtn:"Mostrar Reportes",
+				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
+				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				/*Form Labels*/
 				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
 				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
@@ -290,7 +297,7 @@ okulusApp.run(function($rootScope) {
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",
         /*Buttons*/
-        loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
+        loadBtn:"Mostrar Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
         openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
@@ -442,6 +449,17 @@ okulusApp.run(function($rootScope) {
 				searchHint:"Buscar ...",
 				filterHint:"Filtrar resultados..."
 			},
+			adminDash:{
+				title:"Escritorio del Administrador"
+			},
+			reportFinder:{
+				title: "Buscador de Reportes", weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
+				description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
+				chartOrientation:"Orientación de las Gráficas", chartLandscape:"Horizontal", chartPortrait: "Vertical",
+				selectAllGroups:"Seleccionar todos los grupos", findReportsBtn:"Buscar Reportes",
+				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
+				resultsLoaded: "Reportes encontrados"
+			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				dashboard:{
@@ -470,14 +488,7 @@ okulusApp.run(function($rootScope) {
 						money: "Ofrenda",
 						attendance: "Asistencia", view: "Ver"
 					},
-					weekSection:{
-						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
-						from: "De la Semana:", to:"a la Semana:", group:"Grupo", allGroups: "Todos los Grupos",
-						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
-						resultsLoaded: "Reportes encontrados"
-					},
-					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
-					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
+					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
 				},
 				audit:{
 					title: "Auditoria de la Información", select: "Seleccionar Área a Auditar:",

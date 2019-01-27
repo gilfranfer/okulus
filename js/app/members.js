@@ -694,8 +694,7 @@ okulusApp.factory('MembersSvc',
 					groupName:report.groupname
 				});
 			},
-			/* Called when settign the Report's Members attendance List.
-			 It will set information about a reunion (report) to the Member */
+			/*  */
 			removeReportReferenceFromMember: function(memberId, reportId){
 				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
 			},

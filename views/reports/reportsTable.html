@@ -20,8 +20,8 @@
           <tr>
             <th scope="col"></th>
             <th scope="col">
-              <span style="cursos:pointer" ng-click="sortBy('audit.reportStatus')">{{i18n.admin.dashboard.reportTable.reportStatus}}</span>
-              <span class="sortorder" ng-show="propertyName === 'audit.reportStatus'" ng-class="{reverse: reverse}"></span>
+              <span style="cursos:pointer" ng-click="sortBy('reviewStatus')">{{i18n.admin.dashboard.reportTable.reportStatus}}</span>
+              <span class="sortorder" ng-show="propertyName === 'reviewStatus'" ng-class="{reverse: reverse}"></span>
             </th>
             <th scope="col">
               <span style="cursos:pointer" ng-click="sortBy('reunion.groupname')">{{i18n.admin.dashboard.reportTable.group}}</span>
@@ -62,31 +62,31 @@
                 {{i18n.admin.dashboard.reportTable.view}}
               </a>
             </td>
-            <td class="text-danger" ng-if="report.audit.reportStatus == 'rejected'">
+            <td class="text-danger" ng-if="report.reviewStatus == 'rejected'">
               {{i18n.reports.rejectedStatusLbl}}
             </td>
-            <td class="text-success" ng-if="report.audit.reportStatus == 'approved'">
+            <td class="text-success" ng-if="report.reviewStatus == 'approved'">
               {{i18n.reports.approvedStatusLbl}}
             </td>
-            <td class="text-dark" ng-if="!report.audit.reportStatus || report.audit.reportStatus == 'pending'">
+            <td class="text-dark" ng-if="!report.reviewStatus || report.reviewStatus == 'pending'">
               {{i18n.reports.pendingStatusLbl}}
             </td>
             <td scope="row">
-              {{report.reunion.groupname}}
+              {{report.groupname}}
             </td>
             <td scope="row">
-              {{report.reunion.weekId}}
+              {{report.weekId}}
             </td>
-            <td class="text-danger" ng-if="report.reunion.status == 'canceled'">
+            <td class="text-danger" ng-if="report.status == 'canceled'">
               {{i18n.reports.cancelStatusLbl}}
             </td>
-            <td class="text-success" ng-if="report.reunion.status == 'completed'">
+            <td class="text-success" ng-if="report.status == 'completed'">
               {{i18n.reports.okStatusLbl}}
             </td>
-            <td>{{report.reunion.duration}} min</td>
-            <td>${{report.reunion.money}}</td>
-            <td>{{report.attendance.total}}</td>
-            <td>{{report.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</td>
+            <td>{{report.duration}} min</td>
+            <td>${{report.money}}</td>
+            <td>{{report.totalAttendance}}</td>
+            <td>{{report.dateMilis | date: "MMMM dd, yyyy"}}</td>
           </tr>
         </tbody>
       </table>

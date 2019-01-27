@@ -8,7 +8,7 @@ okulusApp.controller('NotificationCenterCntrl',
 			if(!authUser) return;
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.memberId){
+				if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;

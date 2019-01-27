@@ -195,43 +195,47 @@ okulusApp.controller('MonitorCntrl',
 
 }]);
 
-okulusApp.controller('AdminDashCntrl', ['$rootScope','$scope','$firebaseObject',
-							'WeeksSvc','GroupsSvc','$firebaseAuth','$location','AuthenticationSvc',
-	function($rootScope, $scope, $firebaseObject, WeeksSvc, GroupsSvc,$firebaseAuth,$location,AuthenticationSvc){
-		$scope.loadingReportSelector = true;
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    		if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (obj) {
-					if($rootScope.currentSession.user.type == 'admin'){
+//Mapping: /admin/dashboard
+//Load all the elements for the Admin Dashboard
+okulusApp.controller('AdminDashCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth','$firebaseObject',
+		'WeeksSvc','GroupsSvc','AdminDashSvc','AuthenticationSvc',
+	function($rootScope, $scope,$location, $firebaseAuth, $firebaseObject,
+		WeeksSvc, GroupsSvc, AdminDashSvc, AuthenticationSvc){
 
-						$scope.adminViewActive = true;
-						$scope.weeksList = WeeksSvc.loadVisibleWeeks();
-						$scope.groupsList = GroupsSvc.getAllGroups();
-						$scope.groupsList.$loaded().then(function () {
-							$scope.loadingReportSelector = false;
-						});
+		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAdminDash};
+		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
+				if(user.type == constants.roles.admin){
+					//This param will help in the Reports Search process
+					$scope.adminViewActive = true;
+					$scope.globalCount = AdminDashSvc.getGlobalCounters();
+					$scope.globalCount.$loaded().then(function(counter){
+						$scope.response = null;
+					});
+					//Load Weeks that will be visilbe to the Admin in the Report Finder
+					$scope.weeksList = WeeksSvc.getAllWeeks();
+					//Load Groups that will be visilbe to the Admin in the Report Finder
+					$scope.groupsList = GroupsSvc.getAllGroups();
+				}else{
+					$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}
+			});
+		}});
+}]);
 
-						let countersRef = firebase.database().ref().child(rootFolder).child('counters');
-						$scope.globalCounter = $firebaseObject(countersRef);
-						$scope.globalCounter.$loaded().then(
-							function (counter) {
-								// console.debug(counter);
-								if(!counter || !counter.members){
-									counter.members = {active:0,inactive:0};
-									counter.groups = {active:0,inactive:0};
-									counter.reports = {approved:0,pending:0,rejected:0};
-									$scope.globalCounter.$save();
-								}
-							}
-						);
-
-					}else{
-						$location.path("/error/norecord");
-					}
-				});
-			}
-		});
-
+okulusApp.factory('AdminDashSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
+		let baseRef = firebase.database().ref().child(rootFolder);
+		
+		return {
+			getGlobalCounters: function(){
+				return $firebaseObject(baseRef.child(constants.folders.counters));
+			},
+		};
 }]);
 
 okulusApp.factory('MigrationSvc',

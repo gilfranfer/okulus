@@ -195,10 +195,11 @@ okulusApp.factory('WeeksSvc',
 		};
 
 		return {
-			/* Create visibleWeeks object in rootScope containing all the Weeks with isVisible = true */
-			loadVisibleWeeks: function(){
-				if(!$rootScope.visibleWeeks){
-					$rootScope.visibleWeeks = $firebaseArray(isVisibleWeekRef.equalTo(true));
+			getAllWeeks: function(limit){
+				if(limit){
+					return $firebaseArray(weeksListRef.limitToLast(limit));
+				}else{
+					return $firebaseArray(weeksListRef);
 				}
 			},
 			getOpenWeeks: function(limit){

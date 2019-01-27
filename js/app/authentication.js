@@ -295,7 +295,7 @@ okulusApp.controller('HomeCntrl',
 					$location.path(constants.pages.adminMonitor);
 				}else if($rootScope.redirectFronRegister){
 					$rootScope.redirectFronRegister = undefined;
-				}else if(!user.memberId){
+				}else if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}

@@ -1,0 +1,91 @@
+<article id="reportFinder">
+  <form name="weekForm" class="mb-3" novalidate>
+    <!-- Report Finder -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <!-- title -->
+        <h4 class="card-title">{{i18n.reportFinder.title}}</h4>
+        <hr>
+        <!-- description -->
+        <p class="card-text">{{i18n.reportFinder.description}}</p>
+        <!-- Weeks Titles -->
+        <div class="row mt-3">
+          <div class="col">
+            <label for="weekFromSelect">{{i18n.reportFinder.weekFrom}}</label>
+          </div>
+          <div class="col">
+            <label for="weekToSelect">{{i18n.reportFinder.weekTo}}</label>
+          </div>
+        </div>
+        <!-- Weeks Selector -->
+        <div class="row mb-3">
+          <div class="col">
+            <select id="weekFromSelect" class="form-control form-control-lg" ng-model="$parent.weekfrom" ng-required="true">
+              <option ng-repeat="week in weeksList | orderBy:'week.$id':true track by week.$id" value="{{week.$id}}" >
+                {{week.$id}} - {{week.name}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <select id="weekToSelect" class="form-control form-control-lg" ng-model="$parent.weekto" ng-required="false">
+              <option value="0"></option>
+              <option ng-repeat="week in weeksList | orderBy:'week.$id':true track by week.$id" value="{{week.$id}}" >
+                {{week.$id}} - {{week.name}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <!-- Group and Chart Orientation Titles -->
+        <div class="row">
+          <div class="col">
+            <label for="specificGroupSelect">{{i18n.reportFinder.groupsList}}</label>
+          </div>
+          <div class="col">
+            <label for="charOrientation">{{i18n.reportFinder.chartOrientation}}</label>
+          </div>
+        </div>
+          <!-- Group Selector -->
+          <div class="row mb-3">
+            <div class="col">
+              <select multiple id="specificGroupSelect" class="form-control" ng-model="$parent.selectedGroups" ng-required="true">
+                <option ng-repeat="group in groupsList | orderBy:'number' track by group.$id" value="{{group.$id}}" >
+                  {{group.number}} - {{group.name}}
+                </option>
+              </select>
+              <button type="button" class="btn btn-link clickable" ng-click="selectAllGroups()">{{i18n.reportFinder.selectAllGroups}}</button>
+            </div>
+            <div class="col">
+              <div class="form-check">
+                <input class="" type="radio" name="chartOrientation" id="inlineRadio1" value="landscape" ng-model="$parent.chartOrientation">
+                <label class="form-check-label" for="inlineRadio1">{{i18n.reportFinder.chartLandscape}}</label>
+              </div>
+              <div class="form-check">
+                <input class="" type="radio" name="chartOrientation" id="inlineRadio2" value="portrait" ng-model="$parent.chartOrientation">
+                <label class="form-check-label" for="inlineRadio2">{{i18n.reportFinder.chartPortrait}}</label>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- Error Alert: Week From less than Week To -->
+    <div class="row mb-3">
+      <div class="col" ng-show="(weekto>0 && weekfrom > weekto)">
+        <div class="alert alert-danger" role="alert">
+          {{i18n.reportFinder.weeksOrderError}}
+        </div>
+      </div>
+    </div>
+    <!-- Load Button -->
+    <div class="row mb-3">
+      <div class="col">
+        <!-- ng-disabled="weekForm.$invalid || (weekto>0 && weekfrom > weekto)" -->
+        <button type="button" class="btn btn-lg btn-block btn-success clickable"
+          ng-click="getReportsForSelectedWeeks()">
+          {{i18n.reportFinder.findReportsBtn}}
+        </button>
+      </div>
+    </div>
+  </form>
+  <div ng-include="'views/alerts.html'"></div>
+</article>

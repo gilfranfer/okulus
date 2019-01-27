@@ -13,11 +13,11 @@
     </div>
   </article>
 
-  <article id="groupsList">
+  <!-- <article id="groupsList">
     <div class="row">
       <div class="col-md-6 mb-3"
         ng-repeat="g in myGroupsList | filter:searchText | orderBy:'group.number' track by g.$id">
-        <!-- Group card -->
+        <!-- Group card
         <div class="card h-100">
           <div class="card-body">
             <h4 class="card-title">
@@ -28,7 +28,7 @@
             <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.groups.inactive}}</span>
             <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.groups.active}}</span>
             <hr>
-            <!-- Buttons -->
+            <!-- Buttons
             <div class="row">
               <div class="col mb-2" ng-if="g.group.status == 'active'">
                 <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-warning">
@@ -41,4 +41,51 @@
       </div>
     </div>
 
+  </article> -->
+
+  <article id="groupsList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="group in myGroupsList | filter:adminGroupsParams.searchFilter | orderBy:'number' track by group.$id">
+      <!-- Group card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/groups/edit/{{group.$id}}">
+              {{group.number}} - {{group.name}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="group.isActive">{{i18n.groups.activeStatusLbl}}</span>
+          <span class="badge badge-danger" ng-if="!group.isActive">{{i18n.groups.inactiveStatusLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.groups.typeLbl}}:</span>{{group.type}}<br>
+            <span class="font-weight-bold">{{i18n.groups.scheduleLbl}}:</span>{{group.weekday}}, {{group.time}}<br>
+            <span class="font-weight-bold">{{i18n.contact.phoneLbl}}:</span> <a href="tel:{{group.phone}}">{{group.phone}}</a><br>
+            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{group.email}}">{{group.email}}</a><br>
+            <span class="font-weight-bold">{{i18n.address.legend}}:</span><br>
+            {{group.address.street}} #{{group.address.extNumber}},
+            <span ng-if="group.address.intNumber">Int {{group.address.intNumber}}.</span>
+            <span ng-if="group.address.neighborhood">{{i18n.address.neighborhoodLbl}} {{group.address.neighborhood}}.</span>
+            {{group.address.city}} {{group.address.state}}, {{group.address.country}}.
+            <span ng-if="group.address.zip">{{i18n.address.zipLbl}} {{group.address.zip}}.</span><br>
+          </p>
+          <hr>
+          <!-- Buttons -->
+          <div class="row">
+            <div class="col mb-2" ng-if="group.isActive">
+              <a ng-href="#!/reports/new/{{group.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.addReport}}
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" >
+              <a ng-href="#!/groups/access/{{group.$id}}" class="btn btn-block btn-warning">
+                {{i18n.btns.accessRules}}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </article>

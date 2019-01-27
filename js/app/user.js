@@ -6,7 +6,7 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
+					if(!user.isValid){
 						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
@@ -39,7 +39,7 @@ okulusApp.controller('UserMyContactsCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
-					if(!user.memberId){
+					if(!user.isValid){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
@@ -72,14 +72,14 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 	function($rootScope,$routeParams,$scope,$location,$firebaseObject, $firebaseAuth,AuthenticationSvc,MembersSvc){
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.memberId){
+				if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
 
 				$scope.objectDetails = {};
-				
+
 				let usersFolder = firebase.database().ref().child(rootFolder).child('users');
 				$scope.userDetails = $firebaseObject(usersFolder.child($routeParams.userId));
 				$scope.userDetails.$loaded().then(function (user){
@@ -87,9 +87,12 @@ okulusApp.controller('UserEditCntrl', ['$rootScope','$routeParams','$scope','$lo
 						$scope.objectDetails.audit = user.audit;
 						$scope.userMemberDetails = MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
+						// if(user && user.isRoot){
+						// 	$scope.userMemberDetails =  {shortname:"Super Admin"};
+						// }
 						if(user && !user.memberId){
 							let userTitle = (user.isRoot)?"Super Admin":"Usuario sin nombre";
-							$scope.userMemberDetails = {member:{shortname: userTitle}};
+							$scope.userMemberDetails = {shortname: userTitle};
 						}
 					}
 				});
