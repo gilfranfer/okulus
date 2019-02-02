@@ -1,0 +1,139 @@
+<!-- Admin Reports List View -->
+<section id="adminReportsList" ng-show="currentSession.user.type == 'admin'">
+
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.reports.adminTitle}}</h4>
+    </div>
+  </article>
+
+  <!-- Badges -->
+  <article class="row">
+    <div class="col mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="row">
+            <!-- <h4 class="col">
+              <span class="badge badge-primary">{{reportsGlobalCount.total}}</span>
+              <span class="btn-link clickable" ng-click="loadAllReportsList()">{{i18n.reports.totalReports}}</span>
+            </h4> -->
+            <h4 class="col">
+              <span class="badge badge-primary">{{reportsGlobalCount.pending}}</span>
+              <span class="btn-link clickable" ng-click="loadPendingReportsList()">{{i18n.reports.pendingReports}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-success">{{reportsGlobalCount.approved}}</span>
+              <span class="btn-link clickable" ng-click="loadApprovedReportsList()">{{i18n.reports.approvedReports}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-danger">{{reportsGlobalCount.rejected}}</span>
+              <span class="btn-link clickable" ng-click="loadRejectedReportsList()">{{i18n.reports.rejectedReports}}</span>
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Buttons -->
+  <div class="row">
+    <div class="col mb-3">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllReportsList()">
+        {{i18n.reports.loadBtn}}
+      </a>
+    </div>
+    <div class="col mb-3">
+      <a href="#!/reports/new" class="btn btn-lg btn-block btn-primary">
+        {{i18n.reports.newBtn}}
+      </a>
+    </div>
+  </div>
+
+  <!-- Alerts to show Response Message (Used after redirect from Report Delete) -->
+  <div class="alert alert-success" role="alert" ng-show="reportResponse.deleted">
+    {{reportResponse.message}}
+  </div>
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="adminReportsList.length">
+    <div class="card-body">
+      <p class="lead">
+  			{{adminReportsParams.title}}
+  		</p>
+      <div class="row" ng-show="adminReportsList.length > config.minResultsToshowFilter">
+        <div class="col">
+          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
+            ng-model="adminReportsParams.searchFilter">
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Show number of loaded Reports -->
+  <div class="alert alert-info" role="alert" ng-show="adminReportsList.length" >
+    {{adminReportsList.length}} {{i18n.reports.loadingSuccess}}
+    <!-- Load all pending Reports  -->
+    <span class="btn-link clickable" ng-click="loadPendingReports()"
+      ng-if="(adminReportsList.length < adminReportsParams.maxPossible)" >
+      {{i18n.reports.loadPending1}}
+      {{adminReportsParams.maxPossible - adminReportsList.length}}
+      {{i18n.reports.loadPending2}}
+    </span>
+  </div>
+
+  <!-- Reports Cards -->
+  <article id="reportsList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':true track by report.$id">
+      <!-- Report card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/reports/edit/{{report.$id}}">
+              {{report.groupname}}
+            </a>
+          </h4>
+          <hr>
+          <span class="badge badge-primary" ng-if="report.reviewStatus=='pending'">{{i18n.reports.reportLbl}} {{i18n.reports.pendingStatusLbl}}</span>
+          <span class="badge badge-success" ng-if="report.reviewStatus=='approved'">{{i18n.reports.reportLbl}} {{i18n.reports.approvedStatusLbl}}</span>
+          <span class="badge badge-danger" ng-if="!report.reviewStatus=='rejected'">{{i18n.reports.reportLbl}} {{i18n.reports.rejectedStatusLbl}}</span>
+          <br><br>
+          <span class="font-weight-bold">{{i18n.reports.weekLbl}}:</span> {{report.weekName}} <br>
+          <span class="font-weight-bold">{{i18n.reports.dateLbl}}:</span> {{report.dateMilis | date: "MMMM dd, yyyy"}} <br>
+          <span class="font-weight-bold text-danger" ng-if="report.status == 'canceled'">
+            {{i18n.reports.cancelStatusLbl}}
+          </span>
+          <span class="font-weight-bold text-success" ng-if="report.status == 'completed'">
+            {{i18n.reports.okStatusLbl}}
+          </span><br>
+          <br>
+          <span class="font-weight-bold">{{i18n.reports.membersAttendanceLbl}}:</span> {{report.membersAttendance}} <br>
+          <span class="font-weight-bold">{{i18n.reports.guestsAttendanceLbl}}:</span> {{report.guestsAttendance}} <br>
+          <span class="font-weight-bold">{{i18n.reports.totalAttendanceLbl}}:</span> {{report.totalAttendance}} <br>
+          <br>
+          <span class="font-weight-bold">{{i18n.reports.durationLbl}}:</span> {{report.duration}}<br>
+          <span ng-show="config.showMoneyFiled" class="font-weight-bold">{{i18n.reports.moneyLbl}}:</span> {{report.money}}<br>
+          <!-- <hr> -->
+          <!-- Buttons -->
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Load all pending Reports  -->
+  <div class="row mb-3" ng-show="adminReportsList.length">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{adminReportsList.length}} {{i18n.reports.loadingSuccess}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingReports()"
+        ng-if="(adminReportsList.length < adminReportsParams.maxPossible)" >
+        {{i18n.reports.loadPending1}}
+        {{adminReportsParams.maxPossible - adminReportsList.length}}
+        {{i18n.reports.loadPending2}}
+      </span>
+    </div>
+  </div>
+</section>

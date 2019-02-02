@@ -109,11 +109,11 @@
           <span class="badge badge-primary" ng-if="week.isVisible">{{i18n.weeks.showLbl}}</span>
           <span class="badge badge-dark"    ng-if="!week.isVisible">{{i18n.weeks.hideLbl}}</span>
           <hr>
-          <p>
-            <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{week.name}} <br>
-            <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{week.year}} <br>
-            <span class="font-weight-bold">{{i18n.weeks.weekLbl}}:</span> {{week.weekNumber}}
-          </p>
+          <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{week.name}} <br>
+          <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{week.year}} <br>
+          <span class="font-weight-bold">{{i18n.weeks.weekLbl}}:</span> {{week.weekNumber}} <br>
+          <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span>
+          <p>{{week.notes}}</p>
           <!-- Buttons -->
           <div class="row">
             <div class="col mb-2" ng-show="!week.isOpen">

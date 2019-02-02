@@ -163,14 +163,23 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
+			.when('/reports', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/reports/reportsAdmin.html',
+				controller: 'ReportsListCntrl'
+			})
 			.when('/reports/new/:groupId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				controller: 'NewReportCntrl',
-				templateUrl: 'views/reports/newreport.html'
+				controller: 'ReportDetailsCntrl',
+				templateUrl: 'views/reports/reportEdit.html'
 			})
 			.when('/reports/edit/:reportId', {
 				resolve: {
@@ -178,8 +187,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/reports/newreport.html',
-				controller: 'ReportDetailsCntrl'
+				controller: 'ReportDetailsCntrl',
+				templateUrl: 'views/reports/reportEdit.html'
 			})
 			.when('/reports/view/:reportId', {
 				resolve: {
@@ -187,7 +196,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/reports/newreport.html',
+				templateUrl: 'views/reports/reportView.html',
 				controller: 'ReportDetailsCntrl'
 			})
 			.when('/weeks', {
@@ -244,12 +253,15 @@ const constants = {
 	roles: {
 		user:"user", admin: "admin", type:"type", system: "System",
 		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost",
-		isUser:"isUser"
+		isUser:"isUser",
+		userDefaultName:"Usuario sin miembro asociado", rootName:"Super Administrador"
 	},
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
+		approved:"approved", rejected:"rejected", pendingReview:"pending",
 		open:"open", closed:"closed",
+		completed:"completed", canceled:"canceled",
 		visible:"show", hidden:"hide",
 		readed:"readed",
 		isActive:"isActive",
@@ -263,6 +275,8 @@ const constants = {
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/",
 		groupEdit:"/groups/edit/",
+		reportEdit:"/reports/edit/",
+		reportNew:"/reports/new/",
 		weekEdit:"/weeks/edit/"
 	},
 	folders:{
@@ -271,27 +285,43 @@ const constants = {
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 		metadata:"metadata", address:"address", accessRules:"access",
+		attendance:"attendance", study:"study",
 		unreadChats:"unreadChats",unreadCount:"unreadCount",
+		usersList:"users/list", usersDetails:"users/details",
 		weeksList:"weeks/list", weeksDetails:"weeks/details",
 		groupsList:"groups/list", groupsDetails:"groups/details",
 		membersList:"members/list", membersDetails:"members/details",
+		reportsList:"reports/list", reportsDetails:"reports/details",
+		messagesList:"messages/list",
+		membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 		notificationsList:"notifications/list",
 		/**Counters*/
 		weeksCounters:"counters/weeks",
-		membersCounters:"counters/members",
-		groupsCounters:"counters/groups",
 		totalWeeksCount:"counters/weeks/total",
 		openWeeksCount:"counters/weeks/open",
 		visibleWeeksCount:"counters/weeks/visible",
+		membersCounters:"counters/members",
 		totalMembersCount:"counters/members/total",
 		activeMembersCount:"counters/members/active",
 		hostMembersCount:"counters/members/hosts",
 		leadMembersCount:"counters/members/leads",
 		traineeMembersCount:"counters/members/trainees",
+		groupsCounters:"counters/groups",
 		totalGroupsCount:"counters/groups/total",
 		activeGroupsCount:"counters/groups/active",
 		unredNotifCount:"counters/notifications/unreaded",
-		totalNotifCount:"counters/notifications/total"
+		totalNotifCount:"counters/notifications/total",
+		reportsCounters:"counters/reports",
+		totalReportsCount:"counters/reports/total",
+		pendingReportsCount:"counters/reports/pending",
+		approvedReportsCount:"counters/reports/approved",
+		rejectedReportsCount:"counters/reports/rejected"
+	},
+	dbFields:{
+		baseGroup:"baseGroupId",
+		email:"email",
+		reviewStatus:"reviewStatus",
+		weekId:"weekId"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
@@ -306,16 +336,18 @@ const constants = {
 /* Configurations that, in future versions, can be modified by System Admin*/
 okulusApp.run(function($rootScope) {
 		$rootScope.config ={
+			appName:"Grupos de Vecindad",
+			goodAttendanceNumber:8,
+			excelentAttendanceNumber:14,
 			/*The Max lenght a firebaseArray should have in the initial request*/
-			maxQueryListResults: 20,
+			maxQueryListResults: 50,
 			/*After this number of records, the Filter box will be visible*/
-			minResultsToshowFilter: 3,
+			minResultsToshowFilter: 2,
+			/*Some fileds can be hiden*/
+			showMoneyFiled: true,
 			/*Date range limits*/
-			bday:{maxDate:"2019-12-31",minDate:"1900-01-01"},
-			week:{maxDate:"2019-12-31",minDate:"2018-01-01"},
-			reports:{
-						maxDate:"2019-12-31",minDate:"2018-01-01",
-						minDuration:"0", maxDuration:"300"
-					}
+			bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
+			reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
+						minDuration:"0", maxDuration:"300" }
 		};
 });

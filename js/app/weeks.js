@@ -40,7 +40,7 @@ okulusApp.controller('WeeksCntrl',
 		$scope.loadAllWeeksList = function () {
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAllWeeks};
 			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
-			$rootScope.weeksList = WeeksSvc.getWeeks($rootScope.config.maxQueryListResults);
+			$rootScope.weeksList = WeeksSvc.getWeeks();
 			weekListLoaded();
 		};
 
@@ -195,16 +195,11 @@ okulusApp.factory('WeeksSvc',
 		};
 
 		return {
-			/* Create openWeeks object in rootScope containing all the Weeks with isOpen = true */
-			loadOpenWeeks: function(){
-				if(!$rootScope.openWeeks){
-					$rootScope.openWeeks = $firebaseArray(isOpenWeekRef.equalTo(true));
-				}
-			},
-			/* Create visibleWeeks object in rootScope containing all the Weeks with isVisible = true */
-			loadVisibleWeeks: function(){
-				if(!$rootScope.visibleWeeks){
-					$rootScope.visibleWeeks = $firebaseArray(isVisibleWeekRef.equalTo(true));
+			getAllWeeks: function(limit){
+				if(limit){
+					return $firebaseArray(weeksListRef.limitToLast(limit));
+				}else{
+					return $firebaseArray(weeksListRef);
 				}
 			},
 			getOpenWeeks: function(limit){
@@ -241,6 +236,10 @@ okulusApp.factory('WeeksSvc',
 				}else{
 					return $firebaseArray(weeksListRef.orderByKey());
 				}
+			},
+			/*Return the Open Week with the highest Id as a Firebase Object*/
+			getGreatestOpenWeekArray: function(weekId){
+				return $firebaseArray(isOpenWeekRef.limitToLast(1));
 			},
 			/*Return Week Firebase Object*/
 			getWeekObject: function(weekId){
@@ -436,7 +435,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.response = {error:true, message: systemMsgs.error.weekExists+" "+weekId };
 					}else{
 						week.name = $scope.objectDetails.basicInfo.name;
-						week.notes = $scope.objectDetails.basicInfo.notes;
+						week.notes = ($scope.objectDetails.basicInfo.notes)?$scope.objectDetails.basicInfo.notes:null;
 						week.year = codeSplit[0];
 						week.weekNumber = codeSplit[1];
 						week.isOpen = false;

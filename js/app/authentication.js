@@ -241,7 +241,7 @@ okulusApp.controller('RegistrationCntrl',
 /* Service methods for Authetication related tasks. */
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$firebaseAuth',
 	function($rootScope,$firebaseObject,$firebaseAuth){
-		let usersFolder = firebase.database().ref().child(rootFolder).child( constants.folders.users )
+		let usersFolder = firebase.database().ref().child(rootFolder).child( constants.folders.usersList )
 		var auth = $firebaseAuth();
 
 		return{
@@ -295,7 +295,7 @@ okulusApp.controller('HomeCntrl',
 					$location.path(constants.pages.adminMonitor);
 				}else if($rootScope.redirectFronRegister){
 					$rootScope.redirectFronRegister = undefined;
-				}else if(!user.memberId){
+				}else if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}

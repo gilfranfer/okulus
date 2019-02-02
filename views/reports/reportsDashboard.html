@@ -1,0 +1,248 @@
+<!-- Alerts -->
+<div class="row">
+  <!-- No Reports Found -->
+  <div class="col" ng-show="!response.loading && reportsToDisplay && reportsToDisplay.length == 0">
+    <div class="alert alert-danger" role="alert">
+      {{i18n.admin.dashboard.noReportsError}}
+    </div>
+  </div>
+  <!-- Reports Found -->
+  <div class="col" ng-show="!response.loading && reportsToDisplay && reportsToDisplay.length > 0">
+    <div class="alert alert-success" role="alert">
+      {{reportsToDisplay.length}} {{i18n.reportFinder.resultsLoaded}}
+    </div>
+  </div>
+</div>
+
+<div ng-show="reportsToDisplay && reportsToDisplay.length > 0">
+  <!-- Summary Cards -->
+  <article class="row mb-3" >
+    <!-- Reports Summary -->
+    <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.navigation.admin.reports}}</h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-success">{{reunionSummary.approvedReports}}</span>
+              <span>{{i18n.reports.approvedLbl}}</span>
+              <br>
+              <span class="badge badge-danger">{{reunionSummary.rejectedReports}}</span>
+              <span>{{i18n.reports.rejectedLbl}}</span>
+              <br>
+              <span class="badge badge-primary">{{reunionSummary.pendingReports}}</span>
+              <span>{{i18n.reports.pendingLbl}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Reunions Summary -->
+    <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.navigation.admin.reunions}}</h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-success">{{reunionSummary.completedReunions}}</span>
+              <span>{{i18n.reports.completedLbl}}</span>
+              <br>
+              <span class="badge badge-danger">{{reunionSummary.canceledReunions}}</span>
+              <span>{{i18n.reports.canceledLbl}}</span>
+              <br>
+              <span class="badge badge-primary">{{reunionSummary.totalReports}}</span>
+              <span>{{i18n.reportFinder.totalLbl}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- attendance Summary -->
+    <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.reportFinder.attendanceSummaryTitle}}</h4>
+          <hr>
+          <div class="col">
+            <span class="badge badge-success">{{reunionSummary.membersAttendance}}</span>
+            <span>{{i18n.reports.membersLbl}}</span>
+            <br>
+            <span class="badge badge-success">{{reunionSummary.guestsAttendance}}</span>
+            <span>{{i18n.reports.guestsLbl}}</span>
+            <br>
+            <span class="badge badge-primary">{{reunionSummary.totalAttendance}}</span>
+            <span>{{i18n.reportFinder.totalLbl}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Reports Table -->
+  <article class="row mb-3">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.reportFinder.reportsListTitle}}</h4>
+          <hr>
+          <!-- Search -->
+          <div class="row mb-3">
+            <div class="col">
+              <input type="text" placeholder="{{i18n.forms.searchHint}}"
+                      class="form-control form-control-lg" ng-model="filterText">
+            </div>
+          </div>
+          <!-- Reports Table -->
+          <div class="pre-scrollable mb-4">
+          <table class="table table-responsive-s table-md table-striped">
+            <thead class="">
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('reviewStatus')">{{i18n.reportFinder.table.reportStatus}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reviewStatus'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('reunion.groupname')">{{i18n.reportFinder.table.group}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reunion.groupname'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('reunion.weekId')">{{i18n.reportFinder.table.week}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reunion.weekId'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('reunion.status')">{{i18n.reportFinder.table.reunionStatus}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reunion.status'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('reunion.duration')">{{i18n.reportFinder.table.duration}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reunion.duration'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col" ng-if="config.showMoneyFiled">
+                  <span style="cursos:pointer" ng-click="sortBy('reunion.money')">{{i18n.reportFinder.table.money}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'reunion.money'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('attendance.total')">{{i18n.reportFinder.table.attendance}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'attendance.total'" ng-class="{reverse: reverse}"></span>
+                </th>
+                <th scope="col">
+                  <span style="cursos:pointer" ng-click="sortBy('createdOn')">{{i18n.reportFinder.table.date}}</span>
+                  <span class="sortorder" ng-show="propertyName === 'createdOn'" ng-class="{reverse: reverse}"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="report in reportsToDisplay | filter:filterText | orderBy:propertyName:reverse track by report.$id">
+                <!-- <td scope="row">{{$index + 1}}</td> -->
+                <!-- Report Status -->
+                <td scope="row">
+                  <a class="clickable fas fa-lg fa-eye"  target="_blank"
+                    ng-href="#!/reports/edit/{{report.$id}}"></a>
+                </td>
+                <td class="text-danger" ng-if="report.reviewStatus == 'rejected'">
+                  {{i18n.reports.rejectedStatusLbl}}
+                </td>
+                <td class="text-success" ng-if="report.reviewStatus == 'approved'">
+                  {{i18n.reports.approvedStatusLbl}}
+                </td>
+                <td class="text-dark" ng-if="!report.reviewStatus || report.reviewStatus == 'pending'">
+                  {{i18n.reports.pendingStatusLbl}}
+                </td>
+                <td scope="row">
+                  {{report.groupname}}
+                </td>
+                <td scope="row">
+                  {{report.weekId}}
+                </td>
+                <td class="text-danger" ng-if="report.status == 'canceled'">
+                  {{i18n.reports.cancelStatusLbl}}
+                </td>
+                <td class="text-success" ng-if="report.status == 'completed'">
+                  {{i18n.reports.okStatusLbl}}
+                </td>
+                <td>{{report.duration}} min</td>
+                <td ng-if="config.showMoneyFiled">${{report.money}}</td>
+                <td>{{report.totalAttendance}}</td>
+                <td>{{report.dateMilis | date: "MMMM dd, yyyy"}}</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Attendance Charts -->
+  <article class="row mb-3">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.reportFinder.attendanceChartsTitle}}
+          </h4>
+          <hr>
+          <div class="row mt-4">
+            <div class="col mb-3">
+              <div id="attendanceByGroupContainer" style="width:100%;"></div>
+            </div>
+          </div>
+          <div class="row mt-4">
+            <div class="col-sm mb-3">
+              <div id="attendancePieContainer" style="width:100%; height:300px;"></div>
+            </div>
+            <div class="col-sm mb-3">
+              <div id="reunionsPieContainer" style="width:100%; height:300px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Duration Chart -->
+  <article class="row mb-3">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.reportFinder.durationChartsTitle}}
+          </h4>
+          <hr>
+          <div class="row mt-4">
+            <div class="col-md mb-3">
+              <div id="durationContainer" style="width:100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Money Chart -->
+  <article class="row mb-3" ng-if="config.showMoneyFiled">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.reportFinder.moneyChartsTitle}}
+          </h4>
+          <hr>
+          <div class="row mt-4">
+            <div class="col-md mb-3">
+              <div id="moneyContainer" style="width:100%;"></div>
+            </div>
+          </div>
+          <!-- <div class="row mt-4">
+            <div class="col mb-3">
+              <div id="moneyScatterContainer" style="width:100%;"></div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </article>
+</div>

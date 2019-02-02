@@ -1,0 +1,250 @@
+<!-- Loading Report Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<section id="reportView" ng-show="!response.loading">
+
+  <!-- Title -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{objectDetails.basicInfo.groupname}} - {{i18n.weeks.weekLbl}}
+        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.weekName}}</span>
+      </h4>
+    </div>
+  </article>
+
+  <!-- Alerts to inform the Revision Status on Existing Report -->
+  <div class="alert alert-danger" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'rejected'">
+    {{i18n.reports.rejectedReport}}
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'approved'">
+    {{i18n.reports.approvedReport}}
+  </div>
+  <div class="alert alert-primary" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'pending'">
+    {{i18n.reports.pendingReport}}
+  </div>
+
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.reports.basicDataLegend}}</legend>
+        </div>
+      </div>
+      <hr>
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.weekLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.weekName}}</span>
+        </div>
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.dateLbl}}:
+          </label>
+          <span>{{reportParams.dateObj.getTime() | date: "MMMM dd, yyyy"}}</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.hostName">
+          <label class="font-weight-bold">
+            {{i18n.reports.hostLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.hostName}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.leadName">
+          <label class="font-weight-bold">
+            {{i18n.reports.leadLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.leadName}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.basicInfo.traineeName">
+          <label class="font-weight-bold">
+            {{i18n.reports.traineeLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.traineeName}}</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md form-group">
+          <span class="badge badge-success" ng-if="objectDetails.basicInfo.status=='completed'">{{i18n.reports.okStatusLbl}}</span>
+          <span class="badge badge-danger" ng-if="objectDetails.basicInfo.status=='canceled'">{{i18n.reports.cancelStatusLbl}}</span>
+        </div>
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.durationLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.duration}}</span>
+        </div>
+        <div class="col-md form-group">
+          <label class="font-weight-bold" ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">
+            {{i18n.reports.moneyLbl}}:
+          </label>
+          <span  ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">${{objectDetails.basicInfo.money}}</span>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Study Details -->
+  <article class="card mb-3" ng-show="objectDetails.basicInfo.status == 'completed'">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.reports.studyTitle}}</legend>
+        </div>
+      </div>
+      <hr>
+      <!-- Study title and Serie -->
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.studyLbl}}:
+          </label>
+          <span>{{objectDetails.study.study}}</span>
+        </div>
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.seriesLbl}}:
+          </label>
+          <span>{{objectDetails.study.series}}</span>
+        </div>
+      </div>
+      <!-- Study Notes -->
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label class="font-weight-bold">
+            {{i18n.reports.studyNotesLbl}}:
+          </label>
+          <p>{{objectDetails.study.studyNotes}}</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Attendance -->
+  <article class="card mb-3" ng-show="objectDetails.basicInfo.status == 'completed'">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.reports.attendanceLegend}}</legend>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <!-- Members Table -->
+        <div class="col">
+          <div class="pre-scrollable">
+            <table class="table table-md table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <h5>
+                      <span class="badge badge-primary">{{objectDetails.attendance.members.length}}</span>
+                      <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
+                    </h5>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.members || objectDetails.attendance.members.length == 0">
+                  {{i18n.reports.noMembersList}}
+                </div>
+                <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.members | orderBy:'memberName' track by element.memberId">
+                  <td class="col-6" scope="row">
+                    {{element.memberName}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Guests Table -->
+        <div class="col">
+          <div class="pre-scrollable">
+            <table class="table table-md table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <h5>
+                      <span class="badge badge-primary">{{objectDetails.attendance.guests.length}}</span>
+                      <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}</label>
+                    </h5>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.guests || (objectDetails.attendance.guests && objectDetails.attendance.guests.length == 0)">
+                  {{i18n.reports.noGuestsList}}
+                </div>
+                <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.guests | orderBy:'guestName'">
+                  <td class="col-6" scope="row">
+                    {{element.guestName}}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Notes and Comments -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.reports.notesLegend}}</legend>
+        </div>
+      </div>
+      <hr>
+      <div class="form-row">
+        <div class="col-md form-group">
+          <label class="font-weight-bold" for="study">
+            {{i18n.reports.commentsLbl}}:
+          </label>
+          <p>{{objectDetails.basicInfo.notes}}</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Audit -->
+  <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
+
+  <!-- Admin Buttons -->
+  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
+    <!-- Show Approve button if reviewStatus is Pending or Rejected -->
+    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport()">
+        {{i18n.btns.approveBtn}}
+      </button>
+    </div>
+    <!-- Show Reject button if reviewStatus is Pending or Approved -->
+    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'rejected'">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectReport()">
+        {{i18n.btns.rejectBtn}}
+      </button>
+    </div>
+    <!-- Edit -->
+    <div class="col">
+      <a href="#!/reports/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
+        {{i18n.reports.editBtn}}
+      </a>
+    </div>
+  </div>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
+</section>

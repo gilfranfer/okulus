@@ -3,6 +3,7 @@ const systemMsgs = {
 	error:{
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
 		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
+		noPrivilegesShort: "No cuentas con los permisos necesarios.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
@@ -33,7 +34,18 @@ const systemMsgs = {
 		deletingRuleError:"Error al eliminar la regla de acceso",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
-		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes."
+		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
+		/*Reports*/
+		noReportsError:"No se encontraron Reportes",
+		loadingReportsError:"Error al cargar la lista de Reportes",
+		duplicatedAttendance:"ya está en la lista de asistencia.",
+		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
+		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
+		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
+		/*Message Center*/
+		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
+		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
+		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -72,7 +84,26 @@ const systemMsgs = {
 		loadingVisibleWeeks:"Cargando Semanas Visibles ...",
 		loadingHiddenWeeks:"Cargando Semanas Ocultas ...",
 		savingWeekInfo:"Guardando Información de la Semana",
-		deletingWeek:"Eliminando Semana"
+		deletingWeek:"Eliminando Semana",
+		/* Reports JS */
+		loadingAllReports:"Cargando Todos los Reportes ...",
+		loadingApprovedReports:"Cargando Reportes Aprobados ...",
+		loadingRejectedReports:"Cargando Reportes Rechazados ...",
+		loadingPendingReports:"Cargando Reportes Pendientes de Revisar ...",
+		loadingAllReports:"Cargando Todos los Reportes...",
+		loadingReport:"Cargando Reporte ...",
+		savingReport:"Guardando Reporte ...",
+		preparingReport:"Preparando Reporte ...",
+		validatingReport:"Validando Reporte ...",
+		approvingReport:"Aprobando Reporte ...",
+		rejectingReport:"Rechazando Reporte ...",
+		removingReport:"Eliminando Reporte ...",
+		/* Admin Dash */
+		loadingAdminDash:"Cargando Escritorio",
+		searchingReports:"Buscando Reportes",
+		/*Message Center*/
+		postingMessage: "Publicando mensaje ...",
+		deletingMessage: "Eliminando mensaje ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -109,7 +140,23 @@ const systemMsgs = {
 		statusUpdated:"Estado de la Semana actualizado.",
 		visibilityUpdated:"Visibilidad de la Semana actualizada.",
 		weekInfoUpdated:"Semana Actualizada",
-		weekDeleted:"Se ha eliminado la semana"
+		weekDeleted:"Se ha eliminado la semana",
+		/* Reports JS */
+		attendanceAdded:"agregado a la lista.",
+		attendanceRemoved:"fue removido de la lista.",
+		reportUpdated:"Reporte Actualizado",
+		reportCreated:"Reporte Creado",
+		reportDeleted:"Reporte Eliminado",
+		reportApproved:"Reporte Aprobado",
+		reportRejected:"Reporte Rechazado",
+		reportsRetrieved:"Reportes Encontrados",
+		allReportsTitle:"Reportes Existentes",
+		approvedReportsTitle:"Reportes Aprobados",
+		rejectedReportsTitle:"Reportes Rechazados",
+		pendingReportsTitle:"Reportes Pendientes de Revisión",
+		/*Message Center*/
+		postingMessageSuccess:"El mensaje ha sido publicado.",
+		deleteMessageSuccess: "El mensaje ha sido eliminado.",
 	}
 };
 
@@ -148,7 +195,8 @@ okulusApp.run(function($rootScope) {
 					menu: "Administrador", dashboard:"Escritorio",
 					groups: "Grupos", members: "Miembros",
 					weeks: "Semanas", reports: "Reportes",
-					monitor:"Monitor", config:"Configuración"
+					monitor:"Monitor", config:"Configuración",
+					reunions:"Reuniones"
 				}
 			},
 			profile:{
@@ -163,17 +211,7 @@ okulusApp.run(function($rootScope) {
 				title: "Mensajes del Administrador",
 				instruction: "Usa el cuadro de texto para redactar un mensaje a los usuarios:",
 				importanMsg: "Mensaje Importante", deleteMsg: "X Eliminar Mensaje",
-				loadingMessages: "Cargando mensajes ...",
-				loadingError: "Error al cargar los mensajes. Intentelo más tarde.",
-				noMessages: "No hay mensajes.",
-				createInProgress: "Publicando mensaje ...",
-				createSuccess: "El mensaje ha sido publicado.",
-				createError: "Error al crear el mensaje. Intentelo más tarde.",
-				deleteInProgress: "Eliminando mensaje ...",
-				deleteSuccess: "El mensaje ha sido eliminado.",
-				deleteError: "Error al eliminar el mensaje. Intentelo más tarde.",
-				onlyAdmin: "Debes ser administrador.",
-				sendBtn: "Enviar"
+				noMessages: "No hay mensajes.", sendBtn: "Enviar"
 			},
 			notifications:{
 				title:"Centro de Notificaciones", by:"Por:", noRecords:"No tienes ninguna notificación",
@@ -223,6 +261,47 @@ okulusApp.run(function($rootScope) {
 					editMessageTitle:"Editar Mensaje"
 				}
 			},
+			reports:{
+				/* Admin Reports */
+				adminTitle:"Administrador de Reportes",
+				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
+				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
+				detailsInfoTitle:"Detalles de la Reunión",
+				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
+				newBtn:"Crear Reporte", loadBtn:"Mostrar Reportes",
+				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
+				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
+				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
+				/*Form Labels*/
+				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
+				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
+				durationLbl: "Duración (min)", weekLbl:"Semana", moneyLbl: "Ofrenda",
+				statusLbl:"Estado de la Reunión",
+				studyNotesLbl:"Notas del estudio", studyNotesHint:"Agregar notas sobre el estudio",
+				commentsLbl:"Comentarios",
+				deleteBtn:"Eliminar Reporte",
+				newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
+				basicDataLegend: "Detalles de la Reunión",
+				title:"Datos generales de la Reunión",
+				cancelStatusLbl:"Reunión Cancelada", okStatusLbl:"Reunión Realizada",
+				canceledLbl: "Canceladas", completedLbl:"Completadas",
+				pendingLbl: "Pendientes", approvedLbl:"Aprobados", rejectedLbl:"Rechazados",
+				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
+				notesLegend: "Comentarios sobre la Reunión", notesHint: "Agregar notas y comentarios de la reunión",
+				attendanceLegend: "Asistencia",
+				membersAttendanceLbl:"Asistencia de Miembros",
+				guestsAttendanceLbl:"Asistencia de Invitados",
+				totalAttendanceLbl:"Asistencia  Total",
+				membersLbl: "Miembros", guestsLbl: "Invitados",
+				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
+				maleLbl: "Hombres", femaleLbl: "Mujeres",
+				maleAbrev: "H", femaleAbrev: "M",
+				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
+				studyLbl: "Titulo", seriesLbl: "Serie",
+				noMembersList:"No se ha registrado la asistencia de Miembros",
+				noGuestsList:"No se ha registrado la asistencia de Invitados",
+				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
+			},
 			weeks:{
 				title: "Administrador de Semanas",
 				basicInfoTitle:"Información Básica",
@@ -237,7 +316,7 @@ okulusApp.run(function($rootScope) {
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",
         /*Buttons*/
-        loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
+        loadBtn:"Mostrar Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
         openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
@@ -387,68 +466,47 @@ okulusApp.run(function($rootScope) {
 			},
 			forms:{
 				searchHint:"Buscar ...",
-				filterHint:"Filtrar resultados...",
-				report:{
-					newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
-					basicDataLegend: "Detalles de la Reunión",
-					title:"Datos generales de la Reunión",
-					groupLbl:"Grupo", leadLbl: "Siervo",
-					coLeadLbl: "Aprendiz", hostLbl: "Anfitrión",
-					dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
-					durationLbl: "Duración (min)",
-					weekLbl:"Semana", moneyLbl: "Ofrenda",
-					statusLbl:"Estado de la Reunión",
-					cancelStatusLbl:"Cancelada", okStatusLbl:"Completada",
-					pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
-					notesLegend: "Notas", notesHint: "Agregar notas y comentarios de la reunión",
-					attendanceLegend: "Asistencia",  attendanceList:"Lista de asistencia",
-					membersLbl: "Miembros del Grupo", guestsLbl: "Invitados",
-					allMembersLbl:"Ver todos los miembros", groupMembersLbl:"Ver miembros del Grupo",
-					maleLbl: "Hombres", femaleLbl: "Mujeres",
-					maleAbrev: "H", femaleAbrev: "M",
-					adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
-					studyLegend: "Estudio", studyLbl: "Titulo", seriesLbl: "Serie",
-					noMembersList:"No se ha registrado la asistencia de Miembros",
-					noGuestsList:"No se ha registrado la asistencia de Invitados",
-					approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
+				filterHint:"Filtrar resultados..."
+			},
+			adminDash:{
+				title:"Escritorio del Administrador"
+			},
+			reportFinder:{
+				title: "Buscador de Reportes",
+				selectGroupLbl:"Seleccione los grupos", selectWeekLbl:"Seleccione las semanas",
+				weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
+				description:"Puedes seleccionar una o mas semanas, así como uno o más grupos, para ver los Reportes y los gráficos de análisis.",
+				chartOrientation:"Orientación de las Gráficas", chartLandscape:"Horizontal", chartPortrait: "Vertical",
+				selectAllGroups:"Seleccionar todos los grupos", findReportsBtn:"Buscar Reportes",
+				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
+				resultsLoaded: "Reportes encontrados",
+				reportsListTitle: "Lista de Reportes",
+				attendanceSummaryTitle: "Asistencia",
+				attendanceChartsTitle: "Gráficas de Reuniones y Asistencia",
+				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
+				totalLbl: "Total",
+				table:{
+					group:"Grupo", report:"", week:"Semana",
+					date:"Fecha de Creación",
+					reunionStatus:"Reunión", reportStatus:"Reporte",
+					duration: "Duración", money: "Ofrenda",
+					attendance: "Asistencia", view: "Ver"
 				}
+			},
+			charts:{
+				attendanceTitle:"Personas Ministradas",
+				reunionsLbl:"Reuniones", completedLbl:"Completadas", canceledLbl:"Canceladas",
+				attendanceLbl:"Asistencia",
+				attendanceGuestsSerie:"Invitados",
+				attendanceMemberstSerie:"Miembros",
+				durationTitle:"Minutos Ministrados",
+				durationLbl:"Duración",
+				moneyTitle:"Ofrenda"
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				dashboard:{
-					counters:{
-						total: "Total",
-						active:"Activos", inactive:"Inactivos",
-						approved:"Aprobados", pending:"Pendientes", rejected: "Rechazados",
-						totalMembers: "Miembros", totalGuests: "Invitados",
-						totalDuration:"Minutos Ministrados", totalMoney:"Ofrenda",
-						successReunions: "Completadas", canceledReunions: "Canceladas"
-					},
-					titles:{
-						weekSection: "Buscador de Reportes",
-						reportsList: "Lista de Reportes", reportsSummary: "Reportes", reunionsSummary: "Reuniones",
-						attendanceSummary:"Asistentes", othersSummary:"Otros",
-						attendanceCharts: "Gráficas de Reuniones y Asistencia",
-						moneyCharts: "Gráfica de Ofrenda",	durationCharts: "Gráfica de Duración"
-					},
-					reportTable:{
-						report:"", week:"Semana",
-						date:"Fecha de Creación",
-						group:"Grupo",
-						reunionStatus:"Reunión",
-						reportStatus:"Reporte",
-						duration: "Duración",
-						money: "Ofrenda",
-						attendance: "Asistencia", view: "Ver"
-					},
-					weekSection:{
-						description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
-						from: "De la Semana:", to:"a la Semana:", group:"Grupo", allGroups: "Todos los Grupos",
-						chartOrientation:"Gráficas", chartOrientationLandscape:"Horizontal", chartOrientationPortrait: "Vertical",
-						resultsLoaded: "Reportes encontrados"
-					},
-					noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
-					weeksOrderError: "Verifica el orden de las Semanas seleccionadas"
+					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
 				},
 				audit:{
 					title: "Auditoria de la Información", select: "Seleccionar Área a Auditar:",

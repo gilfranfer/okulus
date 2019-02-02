@@ -9,7 +9,7 @@
         <label class="font-weight-bold">{{i18n.audit.creation}}</label><br>
         <span>
           <a ng-if="objectDetails.audit.createdById" href="#!/users/edit/{{objectDetails.audit.createdById}}">{{objectDetails.audit.createdBy}}</a>
-          <span ng-if="!objectDetails.audit.createdById">{{objectDaudit.createdBy}}</span>
+          <span ng-if="!objectDetails.audit.createdById">{{objectDetails.audit.createdBy}}</span>
         </span><br>
         <span>{{objectDetails.audit.createdOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
@@ -17,7 +17,7 @@
         <label class="font-weight-bold">{{i18n.audit.update}}</label><br>
         <span>
           <a ng-if="objectDetails.audit.lastUpdateById" href="#!/users/edit/{{objectDetails.audit.lastUpdateById}}">{{objectDetails.audit.lastUpdateBy}}</a>
-          <span ng-if="!objectDetails.audit.lastUpdateById">{{objectDaudit.lastUpdateBy}}</span>
+          <span ng-if="!objectDetails.audit.lastUpdateById">{{objectDetails.audit.lastUpdateBy}}</span>
         </span><br>
         <span>{{objectDetails.audit.lastUpdateOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
@@ -25,7 +25,7 @@
         <label class="font-weight-bold">{{i18n.audit.approval}}</label><br>
         <span>
           <a ng-if="objectDetails.audit.approvedById" href="#!/users/edit/{{objectDetails.audit.approvedById}}">{{objectDetails.audit.approvedBy}}</a>
-          <span ng-if="!objectDetails.audit.approvedById">{{objectDaudit.approvedBy}}</span>
+          <span ng-if="!objectDetails.audit.approvedById">{{objectDetails.audit.approvedBy}}</span>
         </span><br>
         <span>{{objectDetails.audit.approvedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>
@@ -33,7 +33,7 @@
         <label class="font-weight-bold">{{i18n.audit.rejection}}</label><br>
         <span>
           <a ng-if="objectDetails.audit.rejectedById" href="#!/users/edit/{{objectDetails.audit.rejectedById}}">{{objectDetails.audit.rejectedBy}}</a>
-          <span ng-if="!objectDetails.audit.rejectedById">{{objectDaudit.rejectedBy}}</span>
+          <span ng-if="!objectDetails.audit.rejectedById">{{objectDetails.audit.rejectedBy}}</span>
         </span><br>
         <span>{{objectDetails.audit.rejectedOn | date: "MMM dd yyyy hh:mm a"}}</span>
       </div>

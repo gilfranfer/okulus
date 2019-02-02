@@ -15,12 +15,12 @@ okulusApp.controller('MembersListCntrl',
 						function(membersCount) {
 							$scope.response = undefined;
 							/* Adding a Watch to the membersGlobalCount to detect changes.
-							The idea is to update the maxPossible value from membersListParams.*/
+							The idea is to update the maxPossible value from adminMembersParams.*/
 							if(unwatch){ unwatch(); }
 							unwatch = $rootScope.membersGlobalCount.$watch( function(data){
-								if($rootScope.membersListParams){
-									let loader = $rootScope.membersListParams.activeMembersLoader;
-									$rootScope.membersListParams = getParamsByLoader(loader);
+								if($rootScope.adminMembersParams){
+									let loader = $rootScope.adminMembersParams.activeMembersLoader;
+									$rootScope.adminMembersParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
 							});
@@ -40,7 +40,7 @@ okulusApp.controller('MembersListCntrl',
 		$scope.loadAllMembersList = function () {
  			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllMembers};
  			$rootScope.adminMembersParams = getParamsByLoader("AllMembersLoader");
- 			$rootScope.adminMembersList = MembersSvc.getAllMembers($rootScope.config.maxQueryListResults);
+ 			$rootScope.adminMembersList = MembersSvc.getAllMembers();
  			whenMembersRetrieved();
 		};
 
@@ -464,8 +464,8 @@ okulusApp.controller('MemberDetailsCntrl',
 ]);
 
 okulusApp.factory('MembersSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let baseRef = firebase.database().ref().child(rootFolder);
 		let memberListRef = baseRef.child(constants.folders.membersList);
@@ -474,8 +474,6 @@ okulusApp.factory('MembersSvc',
 		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
 		let isHostMemberRef = memberListRef.orderByChild(constants.roles.isHost);
-		//Deprecated
-		let membersRef = baseRef.child(constants.folders.members);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -572,7 +570,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Returns the member/list containing members with baseGroupId = gropId */
 			getMembersForBaseGroup: function(gropId){
-				let ref = memberDetailsRef.orderByChild("baseGroupId").equalTo(gropId);
+				let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(gropId);
 				return $firebaseArray(ref);
 			},
 			/* Push Member Basic Details Object to Firebase*/
@@ -644,7 +642,7 @@ okulusApp.factory('MembersSvc',
 			/* Called From Authetication Service:
 			Return a list with all members having the email passed */
 			getMembersByEmail: function(email){
-				return $firebaseArray(memberListRef.orderByChild("email").equalTo(email));
+				return $firebaseArray(memberListRef.orderByChild(constants.dbFields.email).equalTo(email));
 			},
 			/*  Called From Authetication Service:
 			Update the User reference in the Member Object*/
@@ -665,6 +663,7 @@ okulusApp.factory('MembersSvc',
 				}
 				memberListRef.child(memberId).update({isUser:isUser, userId:userId});
 			},
+			/* returns $firebaseArray with all access rules in /members/details/:whichMember/access folder*/
 			getMemberAccessRules: function(whichMember) {
 				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.folders.accessRules));
 			},
@@ -679,13 +678,30 @@ okulusApp.factory('MembersSvc',
 			removeAccessRules: function(accessList){
 				if(accessList){
 					accessList.forEach(function(accessRule) {
-						memberDetailsRef.child(accessRule.memberId).child("access").child(accessRule.$id).set(null);
+						memberDetailsRef.child(accessRule.memberId).child(constants.folders.accessRules).child(accessRule.$id).set(null);
 					});
 				}
 			},
+			/* Called when settign the Report's Members attendance List.
+			 It will set information about a reunion (report) to the Member */
+			addReportReferenceToMember: function(memberId,report){
+				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(report.$id);
+				ref.set({
+					reportId: report.$id,
+					weekId:report.weekId,
+					date:report.date,
+					groupId:report.groupId,
+					groupName:report.groupname
+				});
+			},
+			/*  */
+			removeReportReferenceFromMember: function(memberId, reportId){
+				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
+			},
+
 			//Deprecated
 			removeMemberReferenceToReport: function(memberId,reportId){
-				membersRef.child(memberId).child("attendance").child(reportId).set(null);
+				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
 			},
 			//Deprecated
 			removeReferenceToReport: function(reportId,membersAttendanceList){
@@ -693,7 +709,7 @@ okulusApp.factory('MembersSvc',
 					for (const attKey in membersAttendanceList) {
 						// console.debug(attKey);
 						let memberId = membersAttendanceList[attKey].memberId;
-						membersRef.child(memberId).child("attendance").child(reportId).set(null);
+						memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
 					}
 				}
 			},
@@ -733,7 +749,7 @@ okulusApp.factory('MembersSvc',
 					let contacts = [];
 					groups.forEach(function(group) {
 						//get from members folder order by member.baseGroup equals to group.$id
-						let ref = membersRef.orderByChild("member/baseGroup").equalTo(group.$id);
+						let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(group.$id);
 						$firebaseArray(ref).$loaded().then(function(members){
 							members.forEach(function(member) {
 								contacts.push( member );
@@ -743,16 +759,17 @@ okulusApp.factory('MembersSvc',
 					resolve(contacts);
 				});
 			},
+			//Deprecated
 			addReportReference: function(memberId,reportId, report){
 				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
-				let ref = membersRef.child(memberId).child("attendance").child(reportId);
+				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId);
 				ref.set({
 					reportId: reportId,
-					weekId:report.reunion.weekId,
-					date:report.reunion.dateObj,
-					groupId:report.reunion.groupId,
-					groupName:report.reunion.groupname
+					weekId:report.weekId,
+					date:report.dateObj,
+					groupId:report.groupId,
+					groupName:report.groupname
 				});
 			}
 		};

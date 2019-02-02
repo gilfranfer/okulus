@@ -1,62 +1,159 @@
-<!-- Groups and Members Summaires -->
-<section name="summaries" class="row">
-  <article id="groupSummary" class="col-sm mb-3">
-    <div class="card h-100">
-      <div class="card-body">
-        <h4 class="card-title">
-          {{i18n.navigation.admin.groups}}
-        </h4>
-        <hr>
-        <div class="mb-3" ng-if="globalCounter.groups">
-          <h4><span class="badge badge-success">{{globalCounter.groups.active}}</span>
-            {{i18n.admin.dashboard.counters.active}} </h4>
-          <h4><span class="badge badge-danger">{{globalCounter.groups.inactive}}</span>
-            {{i18n.admin.dashboard.counters.inactive}} </h4>
-          <h4><span class="badge badge-primary">{{globalCounter.groups.active + globalCounter.groups.inactive}}</span>
-            {{i18n.admin.dashboard.counters.total}} </h4>
-        </div>
-        <a href="#!/groups/new" class="btn btn-success btn-lg btn-block">
-          {{i18n.btns.newBtn}}
-        </a>
-        <a href="#!/groups" class="btn btn-primary btn-lg btn-block">
-          {{i18n.btns.viewBtn}} {{i18n.navigation.admin.groups}}
-        </a>
-      </div>
+<section id="adminDashboard" ng-show="currentSession.user.type == 'admin'">
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.adminDash.title}}</h4>
     </div>
   </article>
 
-  <article id="memberSummary" class="col-sm mb-3">
-    <div class="card h-100">
-      <div class="card-body">
-        <h4 class="card-title">
-          {{i18n.navigation.admin.members}}
-        </h4>
-        <hr>
-        <div class="mb-3" ng-if="globalCounter.members">
-          <h4><span class="badge badge-success">{{globalCounter.members.active}}</span>
-          {{i18n.admin.dashboard.counters.active}} </h4>
-          <h4><span class="badge badge-danger">{{globalCounter.members.inactive}}</span>
-          {{i18n.admin.dashboard.counters.inactive}} </h4>
-          <h4><span class="badge badge-primary">{{globalCounter.members.active + globalCounter.members.inactive}}</span>
-            {{i18n.admin.dashboard.counters.total}} </h4>
+  <!-- Summaries -->
+  <section id="summaries" class="row" ng-show="!response.loading">
+    <article id="reportSummary" class="col-sm-6 col-lg-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.navigation.admin.reports}}
+          </h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-primary">{{globalCount.reports.pending}}</span>
+              <span>{{i18n.reports.pendingReports}}</span>
+              <br>
+              <span class="badge badge-success">{{globalCount.reports.approved}}</span>
+              <span>{{i18n.reports.approvedReports}}</span>
+              <br>
+              <span class="badge badge-danger">{{globalCount.reports.rejected}}</span>
+              <span>{{i18n.reports.rejectedReports}}</span>
+            </div>
+          </div>
         </div>
-        <a href="#!/members/new" class="btn btn-success btn-lg btn-block">
-          {{i18n.btns.newBtn}}
-        </a>
-        <a href="#!/members" class="btn btn-primary btn-lg btn-block">
-          {{i18n.btns.newBtn}} {{i18n.navigation.admin.members}}
-        </a>
       </div>
-    </div>
-  </article>
-</section>
+      <div class="row mt-3">
+        <div class="col">
+          <button ng-click="openGroupModal()" class="btn btn-primary btn-block clickable" ng-disabled="true">
+            {{i18n.reports.newBtn}}
+          </button>
+        <!-- </div>
+        <div class="col"> -->
+          <a href="#!/reports" class="btn btn-warning btn-block">
+            {{i18n.reports.loadBtn}}
+          </a>
+        </div>
+      </div>
+    </article>
+    <article id="weekSummary" class="col-sm-6 col-lg-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.navigation.admin.weeks}}
+          </h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-primary">{{globalCount.weeks.total}}</span>
+              <span>{{i18n.weeks.totalWeeks}}</span>
+              <br>
+              <span class="badge badge-success">{{globalCount.weeks.open}}</span>
+              <span>{{i18n.weeks.openWeeks}}</span>
+              <br>
+              <span class="badge badge-danger">{{globalCount.weeks.total - globalCount.weeks.open}}</span>
+              <span>{{i18n.weeks.closedWeeks}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <a href="#!/weeks/new" class="btn btn-primary btn-block">
+            {{i18n.weeks.newBtn}}
+          </a>
+        <!-- </div>
+        <div class="col"> -->
+          <a href="#!/weeks" class="btn btn-warning btn-block">
+            {{i18n.weeks.loadBtn}}
+          </a>
+        </div>
+      </div>
+    </article>
+    <article id="groupSummary" class="col-sm-6 col-lg-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.navigation.admin.groups}}
+          </h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-primary">{{globalCount.groups.total}}</span>
+              <span>{{i18n.groups.totalGroups}}</span>
+              <br>
+              <span class="badge badge-success">{{globalCount.groups.active}}</span>
+              <span>{{i18n.groups.activeGroups}}</span>
+              <br>
+              <span class="badge badge-danger">{{globalCount.groups.total - globalCount.groups.active}}</span>
+              <span>{{i18n.groups.inactiveGroups}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <a href="#!/groups/new" class="btn btn-primary btn-block">
+            {{i18n.groups.newBtn}}
+          </a>
+        <!-- </div>
+        <div class="col"> -->
+          <a href="#!/groups" class="btn btn-warning btn-block">
+            {{i18n.groups.loadBtn}}
+          </a>
+        </div>
+      </div>
+    </article>
+    <article id="memberSummary" class="col-sm-6 col-lg-3 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">
+            {{i18n.navigation.admin.members}}
+          </h4>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <span class="badge badge-primary">{{globalCount.members.total}}</span>
+              <span>{{i18n.members.totalMembers}}</span>
+              <br>
+              <span class="badge badge-success">{{globalCount.members.active}}</span>
+              <span>{{i18n.members.activeMembers}}</span>
+              <br>
+              <span class="badge badge-danger">{{globalCount.members.total - globalCount.members.active}}</span>
+              <span>{{i18n.members.inactiveMembers}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <a href="#!/members/new" class="btn btn-primary btn-block">
+            {{i18n.members.newBtn}}
+          </a>
+        <!-- </div>
+        <div class="col"> -->
+          <a href="#!/members" class="btn btn-warning btn-block">
+            {{i18n.members.loadBtn}}
+          </a>
+        </div>
+      </div>
+    </article>
+  </section>
 
-<section ng-controller="ReportsDashCntrl">
-  <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
-    {{response.reportMsgOk}}
-  </div>
-  <article ng-include="'views/reports/reportSelector.html'"></article>
-  <article ng-include="'views/reports/reportsSummary.html'"></article>
-  <article ng-include="'views/reports/reportsTable.html'"></article>
-  <article ng-include="'views/reports/reportCharts.html'"></article>
+  <div ng-include="'views/alerts.html'"></div>
+
+  <section ng-controller="ReportsDashCntrl">
+    <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
+      {{response.reportMsgOk}}
+    </div>
+    <!-- Reports Finder -->
+    <div ng-include="'views/reports/reportsFinder.html'"></div>
+    <div ng-include="'views/reports/reportsDashboard.html'"></div>
+  </section>
 </section>

@@ -48,8 +48,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 					if(action == 'create' || action == 'update' ){
 						objectAuditRef.update(
 							{ approvedById: null, approvedBy: null, approvedOn: null,
-								rejectedById: null, rejectedBy: null, rejectedOn: null,
-								reportStatus: 'pending'
+								rejectedById: null, rejectedBy: null, rejectedOn: null
 							});
 					}else if(action == 'approved'){
 						objectAuditRef.update(

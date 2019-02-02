@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"  ng-app="okulusApp">
   <head>
-  	<title>PIB Xalapa - Grupos Familiares</title>
+  	<title>Grupos</title>
   	<meta charset="UTF-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -14,7 +14,7 @@
 	<body ng-controller="AuthenticationCntrl">
     <header ng-include="'views/navigation.html'"></header>
     <!-- Message when User has not validated his email -->
-    <div class="alert alert-danger" role="alert" ng-show="emailNotVerifiedError">
+    <div class="alert alert-danger" role="alert" ng-show="constants.config.isProdEnv && !currentSession.emailVerified">
       <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
       <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
         {{i18n.emailValidation.verify}}
@@ -50,7 +50,6 @@
     <script src="js/app/weeks.js"></script>
     <script src="js/app/admin.js"></script>
     <script src="js/app/user.js"></script>
-    <script src="js/app/charts.js"></script>
     <script src="js/app/util.js"></script>
     <script src="js/app/audit.js"></script>
     <script src="js/app/notifications.js"></script>

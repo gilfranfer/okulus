@@ -2,13 +2,13 @@
 
   <div class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title" ng-if="userMemberDetails">
-        {{userMemberDetails.shortname}}
+      <h4 class="card-title">
+        {{objectDetails.member.shortname}}
       </h4>
-      <h4 class="badge badge-success" ng-if="userDetails.type == 'admin'">
+      <h4 class="badge badge-success" ng-if="objectDetails.basicInfo.type == 'admin'">
         {{i18n.admin.users.adminLbl}}
       </h4>
-      <h4 class="badge badge-primary" ng-if="userDetails.type == 'user'">
+      <h4 class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">
         {{i18n.admin.users.userLbl}}
       </h4>
     </div>
@@ -16,9 +16,9 @@
 
   <div class="card h-100 mb-3">
     <div class="card-body">
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.user}}: </span>{{userDetails.email}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{userDetails.lastLoginOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{userDetails.lastActivityOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.user}}: </span>{{objectDetails.basicInfo.email}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{objectDetails.basicInfo.lastLoginOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{objectDetails.basicInfo.lastActivityOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
     </div>
   </div>
 

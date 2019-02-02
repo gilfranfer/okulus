@@ -1,0 +1,61 @@
+<article id="reportFinder">
+  <form name="weekForm" class="mb-3" novalidate>
+    <!-- Report Finder -->
+    <div class="card mb-3">
+      <div class="card-body">
+        <!-- title -->
+        <h4 class="card-title">{{i18n.reportFinder.title}}</h4>
+        <hr>
+        <!-- description -->
+        <p class="card-text mb-3">{{i18n.reportFinder.description}}</p>
+        <!-- Weeks Titles -->
+        <div class="row mb-3">
+          <!-- Weeks Select -->
+          <div class="col">
+            <label class="font-weight-bold" for="weeksSelect">{{i18n.reportFinder.selectWeekLbl}}:</label>
+            <select multiple id="weeksSelect" class="form-control form-control-lg" ng-model="$parent.selectedWeeks" ng-required="true">
+              <option ng-repeat="week in weeksList | orderBy:'$id':true track by week.$id" value="{{week.$id}}" >
+                {{week.name}}, ({{week.$id}})
+              </option>
+            </select>
+          </div>
+          <!-- Groups Select -->
+          <div class="col">
+            <label class="font-weight-bold" for="groupsSelect">{{i18n.reportFinder.selectGroupLbl}}:</label>
+            <select multiple id="groupsSelect" class="form-control form-control-lg" ng-model="$parent.selectedGroups" ng-required="true">
+              <option ng-repeat="group in groupsList | orderBy:'number' track by group.$id" value="{{group.$id}}" >
+                {{group.number}}. {{group.name}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <!-- Charts Orientation -->
+        <div class="row mb-3">
+          <div class="col">
+            <label class="font-weight-bold" for="charOrientation">{{i18n.reportFinder.chartOrientation}}:</label>
+            <div class="form-check">
+              <input class="" type="radio" name="chartOrientation" id="inlineRadio1" value="landscape" ng-model="$parent.chartOrientation">
+              <label class="form-check-label" for="inlineRadio1">{{i18n.reportFinder.chartLandscape}}</label>
+            </div>
+            <div class="form-check">
+              <input class="" type="radio" name="chartOrientation" id="inlineRadio2" value="portrait" ng-model="$parent.chartOrientation">
+              <label class="form-check-label" for="inlineRadio2">{{i18n.reportFinder.chartPortrait}}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load Button -->
+    <div class="row mb-3">
+      <div class="col">
+        <!-- ng-disabled="!weekForm.$pristine && weekForm.$invalid" -->
+        <button type="button" class="btn btn-lg btn-block btn-success clickable"
+          ng-click="getReportsForSelectedWeeks()">
+          {{i18n.reportFinder.findReportsBtn}}
+        </button>
+      </div>
+    </div>
+  </form>
+  <div ng-include="'views/alerts.html'"></div>
+</article>

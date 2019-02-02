@@ -20,7 +20,7 @@ okulusApp.controller('GroupsListCntrl',
 							if(unwatch){ unwatch(); }
 							unwatch = $rootScope.groupsGlobalCount.$watch( function(data){
 								if($rootScope.adminGroupsParams){
-									let loader = $rootScope.adminGroupsParams.activeGroupsLoader;
+									let loader = $rootScope.adminGroupsParams.activeLoader;
 									$rootScope.adminGroupsParams = getParamsByLoader(loader);
 									$scope.response = undefined;
 								}
@@ -41,7 +41,7 @@ okulusApp.controller('GroupsListCntrl',
 		$scope.loadAllGroupsList = function () {
 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllGroups};
 			$rootScope.adminGroupsParams = getParamsByLoader("AllGroupsLoader");
-			$rootScope.adminGroupsList = GroupsSvc.getAllGroups($rootScope.config.maxQueryListResults);
+			$rootScope.adminGroupsList = GroupsSvc.getAllGroups();
 			whenGroupsRetrieved();
 		};
 
@@ -125,24 +125,31 @@ okulusApp.controller('GroupsUserCntrl',
 		$firebaseAuth().$onAuthStateChanged(function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.memberId){
+					if(!user.isValid){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
 					}
 
-					//TODO: Get groups from new db folder to reduce data load
+					$rootScope.myGroupsList = new Array();
 					//Get the Groups the user has access to
-					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						$rootScope.myGroupsList = filteredGroups;
-						$scope.loadingGroups = false;
-						if(!filteredGroups.length){
-							$scope.response = {noGroupsFound:true};
-						}
+					MembersSvc.getAccessRulesList(user.memberId).$loaded().then(function(rules){
+						rules.forEach(function(rule) {
+							console.log(rule.groupId);
+							$rootScope.myGroupsList.push( GroupsSvc.getGroupBasicDataObject(rule.groupId) );
+						});
 					});
+
+					// GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
+					// 	return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
+					// }).then(function (memberRules) {
+					// 	let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
+					// 	$rootScope.myGroupsList = filteredGroups;
+					// 	$scope.loadingGroups = false;
+					// 	if(!filteredGroups.length){
+					// 		$scope.response = {noGroupsFound:true};
+					// 	}
+					// });
 
 				});
 			}
@@ -416,7 +423,7 @@ okulusApp.factory('GroupsSvc',
 			getGlobalGroupsCounter: function(){
 				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
 			},
-			/* Return all Members, using a limit for the query, if specified*/
+			/* Return all Groups, using a limit for the query, if specified*/
 			getAllGroups: function(limit) {
 					if(limit){
 						return $firebaseArray(groupListRef.orderByKey().limitToLast(limit));
@@ -494,15 +501,19 @@ okulusApp.factory('GroupsSvc',
 				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
 				decreaseCounter(conunterRef);
 			},
-			//Deprecated
-			addReportReference: function(report){
-				//Save the report Id in the Group/reports
-				let ref = groupsRef.child(report.reunion.groupId).child("reports").child(report.$id);
-				ref.set({
-					reportId:report.$id,
-					weekId:report.reunion.weekId,
-					date:report.reunion.dateObj
+			/* Called after Report Creation, to add some Report details in the
+			 Group folder: /groups/details/:groupId/reports */
+			addReportReferenceToGroup: function(report){
+				let groupReportsFolder = groupDetailsRef.child(report.groupId).child(constants.folders.reports);
+				groupReportsFolder.child(report.$id).set({
+					reportId:report.$id, weekId:report.weekId,date:report.date
 				});
+			},
+			/* Called when deleting Report, to remove the Report details from the
+			 Group folder: /groups/details/:groupId/reports */
+			removeReportReferenceFromGroup: function(groupId,reportId){
+				let groupReportsFolder = groupDetailsRef.child(groupId).child(constants.folders.reports);
+				groupReportsFolder.child(reportId).set(null);
 			},
 			//Deprecated
 			removeReportReference: function(reportId,groupId){
