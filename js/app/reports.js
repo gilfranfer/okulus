@@ -128,134 +128,306 @@ okulusApp.controller('ReportsListCntrl',
 
 //Controls the reportsFinder and reportsDashboard
 okulusApp.controller('ReportsDashCntrl',
-	['$rootScope','$scope', 'WeeksSvc','ReportsSvc', 'ChartsSvc', 'GroupsSvc','MembersSvc',
-	function ($rootScope, $scope, WeeksSvc, ReportsSvc, ChartsSvc, GroupsSvc,MembersSvc) {
+	['$rootScope','$scope', 'WeeksSvc','ReportsSvc','GroupsSvc','MembersSvc',
+	function ($rootScope, $scope, WeeksSvc, ReportsSvc, GroupsSvc,MembersSvc) {
 		//Default chart Orientation (portrait or landscape)
 		$scope.chartOrientation = 'landscape';
+		//This will save the result from the report Finder
+		$scope.rawReportsFound = undefined;
 
 		/* Main method invoked to search reports for the selected weeks and groups */
 		$scope.getReportsForSelectedWeeks = function(){
 			$scope.response = {loading:true, message:systemMsgs.inProgress.searchingReports};
-			let isAdminDashView= $scope.adminViewActive;
-			// $scope.propertyName = 'groupname';
-			// $scope.reverse = true;
+			$scope.propertyName = 'groupname';
+			$scope.reverse = true;
 
-			/* Get User Input */
-			let selectedGroups = $scope.selectedGroups;
-			let fromWeek = $scope.weekfrom;
-			let toWeek = (!$scope.weekto || $scope.weekto==="0")?fromWeek:$scope.weekto;
-			$rootScope.weekto = toWeek;
+			//Build Maps that will be used to filter out unnecessary reports
+			let selectedGroupsMap = new Map();
+			let selectedWeeksMap = new Map();
+			$scope.selectedGroups.forEach( function(groupId){ selectedGroupsMap.set(groupId,groupId); });
+			$scope.selectedWeeks.forEach( function(weekId){ selectedWeeksMap.set(weekId,weekId); });
 
-			$scope.reportsArray  = ReportsSvc.getReportsforWeeksPeriod(fromWeek, toWeek);
-			$scope.reportsArray.$loaded().then(function(reports){
-				//console.debug("Start to filter Reports", reports);
-				// console.log(selectedGroups);
-				let weeksElapsed = ($rootScope.weekto -  $rootScope.weekfrom)+1;
-				/* reportsArray has all reports for the week period,  even for groups where
-					the member doesnt have access, so we need to apply some filters before */
-				filterReportsAndUpdateCharts(selectedGroups,isAdminDashView,weeksElapsed);
-				$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
+			/*Weeks are sorted in the view from newest to oldest, based on their id
+			(ex: 201905,..., 201901), so the firs element in the list is the newest week,
+			and the last element is the oldest one. */
+			let selectedWeeks = $scope.selectedWeeks;
+			let newestWeek = selectedWeeks[0];
+			let oldestWeek = selectedWeeks[(selectedWeeks.length-1)];
+
+			/* Fetch reports from DB. Result will contain reports for the specified week period,
+			including the weeks in "hidden" status that could be in the middle of the selected period.
+			Result can also contain reports for groups that were not selected by the user, so we'll
+			need to filter those reports out. We'll keep the response from DB in rawReportsFound
+			an will try to reuse in future searches.*/
+			$scope.rawReportsFound = ReportsSvc.getReportsforWeeksPeriod(oldestWeek, newestWeek);
+			$scope.rawReportsFound.$loaded().then(function(reports){
+				buildReportsDashboard(reports, selectedGroupsMap, selectedWeeksMap, $scope.chartOrientation);
+				$scope.response = null;
+				//$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
 			});
-			$scope.reportsArray.$watch(function(event){ notifyReportAdded(event); });
 
+			/* Add a Watch to detect when new reports are created in DB */
+			$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
 			return;
-
-
-			/* If user didnt select a group, but only has access to 1 groups
-				 then we better select that group for him
-			if(!selectedGroups && $scope.groupsList.length == 1){
-				selectedGroups = [$scope.groupsList[0].$id];
-				$scope.specificGroups = selectedGroups;
-			}*/
-
-
-
 		};
 
-		updateCharts = function(selectedGroupIds,weeksElapsed){
-			// console.debug(selectedGroupIds);
-
-			let goodWeekAttendanceIndicator = 8;
-			let excelentWeekAttendanceIndicator = 14;
-			/* weeksElapsed is used to modify the reference values "goodWeekAttendanceIndicator" and "excelentWeekAttendanceIndicator"
-			Those values are week-based, so they need to be multiplied by the number of weeks selected in the Reports Search.
-			When only ONE Specefic group was selected, then we do not need to modify those values because we will be displaying the
-			data with the Weeks as Category, that means, in this case we are not accumulating the totals across weeks. */
-			if(selectedGroupIds.length > 1){
-				goodWeekAttendanceIndicator *= weeksElapsed;
-				excelentWeekAttendanceIndicator *= weeksElapsed;
+		//TODO: Fix Money sum, When the firts report is not having monet, the subsecuent are not accumulating
+		buildReportsDashboard = function(reports, selectedGroups, selectedWeeks, chartOrientation){
+			/* The value of "goodAttendanceNumber" and "excelentAttendanceNumber" are week-based,
+			so they mustbe multiplied by the number of selected weeks, ONLY when more than
+			one group was selected, because the data will be displayed with the Groups as
+			Category, and the attendance will be the sum of all attendance in the week period).
+			When only ONE group is selected we'll be displaying the data with the Weeks as Category,
+			so in this case we are not accumulating the totals across weeks. */
+			let goodAttendanceIndicator = $rootScope.config.goodAttendanceNumber;
+			let excelentAttendanceIndicator = $rootScope.config.excelentAttendanceNumber;
+			if(selectedGroups.length > 1){
+				let numberOfWeeks = selectedWeeks.length;
+				goodAttendanceIndicator *= numberOfWeeks;
+				excelentAttendanceIndicator *= numberOfWeeks;
 			}
-			//ChartsSvc.buildCharts($scope.reportsForSelectedWeek, selectedGroupIds, $scope.chartOrientation, goodWeekAttendanceIndicator,excelentWeekAttendanceIndicator);
-			$scope.reunionSummary = ChartsSvc.getReunionTotals();
-		};
 
-		/* if a group was selected on the search view, we need to filter the $scope.reportsArray.
-		   because at this point, it contains all reports for all groups for the selected weeks period */
-		filterReportsForGroup = function(selectedGroupIds){
-			if(selectedGroupIds.length == $scope.groupsList.length){
-				//All groups option selected
-				$scope.reportsForSelectedWeek = $scope.reportsArray;
-				// console.debug("All Groups Selected");
-			}else{
-				//One or more groups selected
-				// console.debug("Some groups selected");
-				let reportsList = [];
-				$scope.reportsArray.forEach( function(report){
-					let found = false;
-					for (i = 0; i < selectedGroupIds.length; i++) {
-					    if(selectedGroupIds[i] == report.groupId){
-					    	found = true;
-					        break;
-					    }
-					}
-					if(found){
-						reportsList.push(report);
-					}
-				});
-				$scope.reportsForSelectedWeek = reportsList;
-			}
-		};
-
-		/* Use $scope.reportsForSelectedWeek and remove reports for groups where
-			 the currentSession.member doesnt have access*/
-		filterReportsForUser = function(accessGroups){
-			let reportsList = [];
-			$scope.reportsForSelectedWeek.forEach( function(report){
-				if(accessGroups.has(report.groupId)){
-					reportsList.push(report);
+			let reportsToDisplay = [];
+			let detailsMap = new Map();
+			let reunionParams = {
+				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
+				completedReunions: 0, canceledReunions: 0,
+				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
+				totalMoney: 0.0, totalDuration:0,
+				goodAttendanceIndicator: goodAttendanceIndicator,
+				excelentAttendanceIndicator: excelentAttendanceIndicator
+			};
+			/* For each report fetched from DB, confirm is a valid report and add it to
+			the list of reportsToDisplay. A report is valid when its weekId and groupId
+			exists in the user's selection (selectedGroups and selectedWeeks).
+			Use Data from each report to update the totals in reunionParams.
+			The  detailsMap will be prepared to ne used, later on, as the Chart series */
+			reports.forEach(function(report, index){
+				/*Discard reports with weekId or groupId that are not on the User selection*/
+				if( !selectedWeeks.has(report.weekId) || !selectedGroups.has(report.groupId) ){
+					return;
 				}
+
+				reportsToDisplay.push(report);
+				reunionParams.totalReports++;
+				//Increment Counters according to the Report Review Status
+				if(report.reviewStatus == constants.status.approved){
+					reunionParams.approvedReports++;
+				} else if(report.reviewStatus == constants.status.pendingReview){
+					reunionParams.pendingReports++;
+				} else if(report.reviewStatus == constants.status.rejected){
+					reunionParams.rejectedReports++;
+					/* Data from Rejected Reports will not be considered because t will
+					introduce irrelevant or incorrect values to the totals */
+					return;
+				}
+				//Increment Counters according to the Report Reunion Status
+				if(report.status == constants.status.completed){
+					reunionParams.completedReunions++;
+				}else if(report.status == constants.status.canceled){
+					reunionParams.canceledReunions++;
+				}
+				//Update total attendance (summary), duration and money
+				reunionParams.totalAttendance += report.totalAttendance;
+				reunionParams.membersAttendance += report.membersAttendance;
+				reunionParams.guestsAttendance += report.guestsAttendance;
+				reunionParams.totalDuration += report.duration;
+				if(report.money){
+					reunionParams.totalMoney += parseFloat(report.money).toFixed(2);
+				}
+
+				let mapKey = undefined;
+				let mapElement = undefined;
+				/* There are two approaches to build the Charts, according to the user selection:
+				1. When only 1 group was selected, we'll use the Weeks as Categories for the Charts,
+				so the user can see the progress of the selected group through the week period.
+				In this case, the weekId will be the key in the Map.*/
+				if(selectedGroups.size == 1){
+					let str = report.weekId;
+					let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
+					mapKey = formattedWeekId;
+				}
+				/* 2. When selecting more than one group, we'll use the Group Names as Categories for the Charts,
+				so the user can compare the performance of all groups, observing the totals for each
+				group in the week period.
+				In this case, the groupname will be the key in the Map. */
+				else if(selectedGroups.size > 1){
+					mapKey = report.groupname;
+				}
+
+				/* The map might already have the key because of:
+				1. When the mapKey is the week: There are more than one report for the same week and group combination.
+				2. When the mapKeyis the groupname: There are more than one report for the group (not necessarily for the same week)
+				In this case, we accumulate the values.*/
+				if(detailsMap.has(mapKey)){
+					mapElement = detailsMap.get(mapKey);
+					mapElement.guests += report.guestsAttendance;
+					mapElement.members += report.membersAttendance;
+					mapElement.duration += report.duration;
+					if(report.money && mapElement.money){
+						mapElement.money += report.money;
+					}
+				}else{
+					if(!report.money){
+						report.money = 0;
+					}
+					mapElement = {guests:report.guestsAttendance, members:report.membersAttendance,
+												 duration:report.duration, money:report.money};
+				}
+
+				detailsMap.set(mapKey,mapElement);
+				//For Money Scatter Charts
+				//moneyData.push( [report.money, guests+members] );
 			});
-			return reportsList;
+
+			//For the Summary Cards
+			$scope.reunionSummary = reunionParams;
+			//For the Reports table
+			$scope.reportsToDisplay = reportsToDisplay;
+			//Build the Charts
+			buildAllCharts(reunionParams, detailsMap, chartOrientation);
 		};
 
-		/* Filter reports according to member access list, so he can only see
-		reports linked to the groups he has access to.
-		groupdId will have a value if the user selected at least one group on the view
-		isAdminDashView is to identify if the Reports Search is comming from Admins Dashboard or User My Groups
-		weeksElapsed will give us the number of weeks selected (weekTo - WeekFrom) */
-		filterReportsAndUpdateCharts = function (selectedGroupIds, isAdminDashView, weeksElapsed) {
-			filterReportsForGroup(selectedGroupIds);
-			let memberId = $rootScope.currentSession.user.memberId;
-			if(!memberId && $rootScope.currentSession.user.isRoot){
-				/* A root user doesnt have a member associated in the system, but has Admin privileges
-				 	 so we can go ahead and show all information. */
-				updateCharts(selectedGroupIds,weeksElapsed);
-			}else{
-				let accessRules = MembersSvc.getMemberAccessRules($rootScope.currentSession.user.memberId);
-				let accessGroups = new Map();
-				accessRules.$loaded().then(function(rules) {
-					rules.forEach( function(rule){
-						accessGroups.set(rule.groupId,rule);
-					});
-					if($rootScope.currentSession.user.type == 'admin' && isAdminDashView){
-						//Reports should not be filtered for the Admi when comming from "Admin Dashboard"
-						//Even an Admin will get his Reports Filtered when using "My Groups" view (isAdminDashView = false)
-					}else{
-						$scope.reportsForSelectedWeek = filterReportsForUser(accessGroups);
-					}
-					updateCharts(selectedGroupIds,weeksElapsed);
-				});
+		buildAllCharts  = function(reunionParams, detailsMap, chartOrientation){
+			//Array Holders for Categories and Data Series
+			let categories = [];
+			let guestsSeries = [];
+			let membersSeries = [];
+			let moneySeries = [];
+			let durationSeries = [];
+			let series = 0;
+
+			/* Using the Map to build Data Series*/
+			detailsMap.forEach(function(reunion, key){
+				categories.push(key);
+				guestsSeries.push(reunion.guests);
+				membersSeries.push(reunion.members);
+				moneySeries.push(reunion.money);
+				durationSeries.push(reunion.duration);
+				series++;
+			});
+
+			//Build Chart Config Objects
+			var attendanceByGroupOptions = {
+				//chart: attendanceChart,
+				title: { text: '' }, legend: { reversed: true }, credits: { enabled: false },
+				xAxis: { categories: categories },
+				yAxis: {
+					min:0, title: { text: $rootScope.i18n.charts.attendanceTitle },
+					stackLabels: { enabled: true,
+						style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
+					},
+					plotLines: [
+						//lines for good attendance indicator
+						{ value:reunionParams.goodAttendanceIndicator,
+							color: 'red', width: 1, dashStyle: 'solid',
+							label: {text: '', align:'center', style:{color: 'gray'}}
+						},
+						//lines for excelent attendance indicator
+						{ value: reunionParams.excelentAttendanceIndicator,
+							color: 'black', width: 1, dashStyle: 'dash',
+							label: {text: '', align:'center', style:{color: 'gray'}}
+						}
+					]
+				},
+				plotOptions: { series: {stacking: 'normal'} },
+				series: [
+					{ name: $rootScope.i18n.charts.attendanceGuestsSerie, color: 'rgba(40,167,69,.8)', data: guestsSeries },
+					{ name: $rootScope.i18n.charts.attendanceMemberstSerie, color: 'rgba(0,123,255,.8)', data: membersSeries }
+				]
+			};
+			var attendancePieOptions = {
+					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+					title: { text: $rootScope.i18n.charts.attendanceLbl}, credits: { enabled: false },
+					tooltip: {  pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>' },
+					plotOptions: {
+							pie: {
+								dataLabels: { enabled: false },
+								showInLegend: true, colors: ['rgba(0,123,255,.8)','rgba(40,167,69,.8)']
+							}
+					},
+					series: [{
+							type: 'pie', name: $rootScope.i18n.charts.attendanceLbl,
+							innerSize: '20%',
+							data: [
+									[$rootScope.i18n.charts.attendanceMemberstSerie, reunionParams.membersAttendance],
+									[$rootScope.i18n.charts.attendanceGuestsSerie, reunionParams.guestsAttendance]
+							]
+					}]
+			};
+			var reunionsPieOptions = {
+					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+					title: { text: $rootScope.i18n.charts.reunionsLbl}, credits: { enabled: false },
+					tooltip: {  pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>' },
+					plotOptions: {
+							pie: {
+								dataLabels: { enabled: false },
+								showInLegend: true, colors: ['rgba(40,167,69,.8)','#dc3545']
+							}
+					},
+					series: [{
+							type: 'pie', name: $rootScope.i18n.charts.reunionsLbl,
+							innerSize: '20%',
+							data: [
+									[$rootScope.i18n.charts.completedLbl, reunionParams.completedReunions],
+									[$rootScope.i18n.charts.canceledLbl, reunionParams.canceledReunions]
+							]
+					}]
+			};
+			var durationByGroupOptions = {
+					//chart: areaCharts,
+					title: { text: '' },credits: { enabled: false },
+					xAxis: { categories: categories },
+					yAxis: { min:0, title: { text: $rootScope.i18n.charts.durationTitle},
+									stackLabels: { enabled: true,
+											style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
+									}
+								},
+					legend: { reversed: true },
+					series: [ { name: $rootScope.i18n.charts.durationLbl, data: durationSeries } ]
+			};
+			var moneyByGroupOptions = {
+					//chart: areaCharts,
+					credits: { enabled: false },
+					title: { text: '' },
+					xAxis: { categories: categories },
+					yAxis: { min:0, title: { text: $rootScope.i18n.charts.moneyTitle },
+									stackLabels: { enabled: true,
+											style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
+									}
+								},
+					legend: { reversed: true },
+					series: [ { name: $rootScope.i18n.charts.moneyTitle , data: moneySeries } ]
+			};
+
+			if( chartOrientation == 'landscape'){
+				attendanceByGroupOptions.chart =  { type: 'column', height:600};
+				attendanceByGroupOptions.yAxis.opposite =  false;
+				attendanceByGroupOptions.xAxis.labels =  {rotation: -90};
+
+				durationByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+				durationByGroupOptions.yAxis.opposite =  false;
+
+				// moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+				// moneyByGroupOptions.yAxis.opposite =  false;
+			}else{ //portrait
+				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(groups*15)) };
+				attendanceByGroupOptions.yAxis.opposite =  true;
+				attendanceByGroupOptions.xAxis.labels =  {rotation: 0};
+
+				durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+				durationByGroupOptions.yAxis.opposite =  true;
+
+				// moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+				// moneyByGroupOptions.yAxis.opposite =  true;
 			}
+
+			//Paint Charts
+			Highcharts.chart('attendanceByGroupContainer', attendanceByGroupOptions);
+			Highcharts.chart('attendancePieContainer', attendancePieOptions);
+			Highcharts.chart('reunionsPieContainer', reunionsPieOptions);
+			Highcharts.chart('durationContainer', durationByGroupOptions);
+			Highcharts.chart('moneyContainer', moneyByGroupOptions);
 		};
 
 		$scope.sortBy = function(propertyName) {
@@ -1076,29 +1248,23 @@ okulusApp.factory('ReportsSvc',
 					});
 				}
 			},
-
+			/* Return all reports with WeedId in the provided period (both sides inclusive)*/
+			getReportsforWeeksPeriod: function(fromWeek, toWeek){
+				let query = reportsListRef.orderByChild(constants.dbFields.weekId).startAt(fromWeek).endAt(toWeek);
+				return $firebaseArray(query);
+			},
 			//Deprecated
 			getReportObj: function(reportId){
 				return $firebaseObject(reportsListRef.child(reportId));
 			},
 			getReportsForWeek: function(weekId){
-				let ref = reportsListRef.orderByChild("weekId").equalTo(weekId);
+				let ref = reportsListRef.orderByChild(constants.dbFields.weekId).equalTo(weekId);
 				return $firebaseArray(ref);
 			},
 			/*Returns firebaseArray with the Reports for the given week, but limited to a specified amount */
 			getReportsForWeekWithLimit: function(weekId, limit){
-				let ref = reportsListRef.orderByChild("weekId").equalTo(weekId).limitToLast(limit);
+				let ref = reportsListRef.orderByChild(constants.dbFields.weekId).equalTo(weekId).limitToLast(limit);
 				return $firebaseArray(ref);
-			},
-			getReportsforWeeksPeriod: function(fromWeek, toWeek){
-				let query = reportsListRef.orderByChild("weekId").startAt(fromWeek).endAt(toWeek);
-				/*if(groupId){
-					Not possible to combien more than one orderByChild
-					console.debug("Try second query for group "+groupId)
-					let query2 = query.orderByChild("reunion/groupId").equalTo(groupId);
-					return $firebaseArray(query2);
-				}*/
-				return $firebaseArray(query);
 			}
 		};
 	}

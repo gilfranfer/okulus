@@ -196,7 +196,7 @@ okulusApp.controller('MonitorCntrl',
 }]);
 
 //Mapping: /admin/dashboard
-//Load all the elements for the Admin Dashboard
+//Load all the elements for the Admin Dashboard and Admin Report Finder
 okulusApp.controller('AdminDashCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','$firebaseObject',
 		'WeeksSvc','GroupsSvc','AdminDashSvc','AuthenticationSvc',
@@ -207,16 +207,30 @@ okulusApp.controller('AdminDashCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
 				if(user.type == constants.roles.admin){
-					//This param will help in the Reports Search process
-					$scope.adminViewActive = true;
+					//Counter to build the Summary cards
 					$scope.globalCount = AdminDashSvc.getGlobalCounters();
 					$scope.globalCount.$loaded().then(function(counter){
 						$scope.response = null;
 					});
+
+					//This param will help in the Reports Search process
+					$scope.adminViewActive = true;
 					//Load Weeks that will be visilbe to the Admin in the Report Finder
 					$scope.weeksList = WeeksSvc.getAllWeeks();
+					$scope.selectedWeeks = [];
+					//To preselect the latest week in the view
+					$scope.weeksList.$loaded().then(function(weeks){
+						$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
+					});
 					//Load Groups that will be visilbe to the Admin in the Report Finder
 					$scope.groupsList = GroupsSvc.getAllGroups();
+					$scope.selectedGroups = [];
+					//To preselect all the groups in the view
+					$scope.groupsList.$loaded().then(function(groups){
+						groups.forEach(function(group){
+							$scope.selectedGroups.push(group.$id);
+						});
+					});
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
 																	message:systemMsgs.error.noPrivileges};
@@ -230,7 +244,7 @@ okulusApp.factory('AdminDashSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 		let baseRef = firebase.database().ref().child(rootFolder);
-		
+
 		return {
 			getGlobalCounters: function(){
 				return $firebaseObject(baseRef.child(constants.folders.counters));

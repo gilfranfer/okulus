@@ -195,7 +195,8 @@ okulusApp.run(function($rootScope) {
 					menu: "Administrador", dashboard:"Escritorio",
 					groups: "Grupos", members: "Miembros",
 					weeks: "Semanas", reports: "Reportes",
-					monitor:"Monitor", config:"Configuración"
+					monitor:"Monitor", config:"Configuración",
+					reunions:"Reuniones"
 				}
 			},
 			profile:{
@@ -283,6 +284,8 @@ okulusApp.run(function($rootScope) {
 				basicDataLegend: "Detalles de la Reunión",
 				title:"Datos generales de la Reunión",
 				cancelStatusLbl:"Reunión Cancelada", okStatusLbl:"Reunión Realizada",
+				canceledLbl: "Canceladas", completedLbl:"Completadas",
+				pendingLbl: "Pendientes", approvedLbl:"Aprobados", rejectedLbl:"Rechazados",
 				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 				notesLegend: "Comentarios sobre la Reunión", notesHint: "Agregar notas y comentarios de la reunión",
 				attendanceLegend: "Asistencia",
@@ -469,41 +472,40 @@ okulusApp.run(function($rootScope) {
 				title:"Escritorio del Administrador"
 			},
 			reportFinder:{
-				title: "Buscador de Reportes", weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
-				description:"Elige una semana, o un rango de semanas, para ver los Reportes y los gráficos de análisis. Puedes elegir uno o más grupos para comparar.",
+				title: "Buscador de Reportes",
+				selectGroupLbl:"Seleccione los grupos", selectWeekLbl:"Seleccione las semanas",
+				weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
+				description:"Puedes seleccionar una o mas semanas, así como uno o más grupos, para ver los Reportes y los gráficos de análisis.",
 				chartOrientation:"Orientación de las Gráficas", chartLandscape:"Horizontal", chartPortrait: "Vertical",
 				selectAllGroups:"Seleccionar todos los grupos", findReportsBtn:"Buscar Reportes",
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
-				resultsLoaded: "Reportes encontrados"
+				resultsLoaded: "Reportes encontrados",
+				reportsListTitle: "Lista de Reportes",
+				attendanceSummaryTitle: "Asistencia",
+				attendanceChartsTitle: "Gráficas de Reuniones y Asistencia",
+				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
+				totalLbl: "Total",
+				table:{
+					group:"Grupo", report:"", week:"Semana",
+					date:"Fecha de Creación",
+					reunionStatus:"Reunión", reportStatus:"Reporte",
+					duration: "Duración", money: "Ofrenda",
+					attendance: "Asistencia", view: "Ver"
+				}
+			},
+			charts:{
+				attendanceTitle:"Personas Ministradas",
+				reunionsLbl:"Reuniones", completedLbl:"Completadas", canceledLbl:"Canceladas",
+				attendanceLbl:"Asistencia",
+				attendanceGuestsSerie:"Invitados",
+				attendanceMemberstSerie:"Miembros",
+				durationTitle:"Minutos Ministrados",
+				durationLbl:"Duración",
+				moneyTitle:"Ofrenda"
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				dashboard:{
-					counters:{
-						total: "Total",
-						active:"Activos", inactive:"Inactivos",
-						approved:"Aprobados", pending:"Pendientes", rejected: "Rechazados",
-						totalMembers: "Miembros", totalGuests: "Invitados",
-						totalDuration:"Minutos Ministrados", totalMoney:"Ofrenda",
-						successReunions: "Completadas", canceledReunions: "Canceladas"
-					},
-					titles:{
-						weekSection: "Buscador de Reportes",
-						reportsList: "Lista de Reportes", reportsSummary: "Reportes", reunionsSummary: "Reuniones",
-						attendanceSummary:"Asistentes", othersSummary:"Otros",
-						attendanceCharts: "Gráficas de Reuniones y Asistencia",
-						moneyCharts: "Gráfica de Ofrenda",	durationCharts: "Gráfica de Duración"
-					},
-					reportTable:{
-						report:"", week:"Semana",
-						date:"Fecha de Creación",
-						group:"Grupo",
-						reunionStatus:"Reunión",
-						reportStatus:"Reporte",
-						duration: "Duración",
-						money: "Ofrenda",
-						attendance: "Asistencia", view: "Ver"
-					},
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
 				},
 				audit:{

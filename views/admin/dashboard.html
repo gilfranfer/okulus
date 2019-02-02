@@ -16,22 +16,16 @@
           </h4>
           <hr>
           <div class="row">
-            <span class="col">
+            <div class="col">
               <span class="badge badge-primary">{{globalCount.reports.pending}}</span>
               <span>{{i18n.reports.pendingReports}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-success">{{globalCount.reports.approved}}</span>
               <span>{{i18n.reports.approvedReports}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-danger">{{globalCount.reports.rejected}}</span>
               <span>{{i18n.reports.rejectedReports}}</span>
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -56,22 +50,16 @@
           </h4>
           <hr>
           <div class="row">
-            <span class="col">
+            <div class="col">
               <span class="badge badge-primary">{{globalCount.weeks.total}}</span>
               <span>{{i18n.weeks.totalWeeks}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-success">{{globalCount.weeks.open}}</span>
               <span>{{i18n.weeks.openWeeks}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-danger">{{globalCount.weeks.total - globalCount.weeks.open}}</span>
               <span>{{i18n.weeks.closedWeeks}}</span>
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -96,24 +84,17 @@
           </h4>
           <hr>
           <div class="row">
-            <span class="col">
+            <div class="col">
               <span class="badge badge-primary">{{globalCount.groups.total}}</span>
               <span>{{i18n.groups.totalGroups}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-success">{{globalCount.groups.active}}</span>
               <span>{{i18n.groups.activeGroups}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-danger">{{globalCount.groups.total - globalCount.groups.active}}</span>
               <span>{{i18n.groups.inactiveGroups}}</span>
-            </span>
+            </div>
           </div>
-
         </div>
       </div>
       <div class="row mt-3">
@@ -137,22 +118,16 @@
           </h4>
           <hr>
           <div class="row">
-            <span class="col">
+            <div class="col">
               <span class="badge badge-primary">{{globalCount.members.total}}</span>
               <span>{{i18n.members.totalMembers}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-success">{{globalCount.members.active}}</span>
               <span>{{i18n.members.activeMembers}}</span>
-            </span>
-          </div>
-          <div class="row">
-            <span class="col">
+              <br>
               <span class="badge badge-danger">{{globalCount.members.total - globalCount.members.active}}</span>
               <span>{{i18n.members.inactiveMembers}}</span>
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -179,9 +154,6 @@
     </div>
     <!-- Reports Finder -->
     <div ng-include="'views/reports/reportsFinder.html'"></div>
-    <!-- <div ng-include="'views/reports/reportsDashboard.html'"></div>   -->
-    <article ng-include="'views/reports/reportsSummary.html'"></article>
-    <article ng-include="'views/reports/reportsTable.html'"></article>
-    <article ng-include="'views/reports/reportCharts.html'"></article>
+    <div ng-include="'views/reports/reportsDashboard.html'"></div>
   </section>
 </section>

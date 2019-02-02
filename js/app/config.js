@@ -320,7 +320,8 @@ const constants = {
 	dbFields:{
 		baseGroup:"baseGroupId",
 		email:"email",
-		reviewStatus:"reviewStatus"
+		reviewStatus:"reviewStatus",
+		weekId:"weekId"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
@@ -336,12 +337,14 @@ const constants = {
 okulusApp.run(function($rootScope) {
 		$rootScope.config ={
 			appName:"Grupos de Vecindad",
+			goodAttendanceNumber:8,
+			excelentAttendanceNumber:14,
 			/*The Max lenght a firebaseArray should have in the initial request*/
 			maxQueryListResults: 50,
 			/*After this number of records, the Filter box will be visible*/
 			minResultsToshowFilter: 2,
 			/*Some fileds can be hiden*/
-			showMoneyFiled: false,
+			showMoneyFiled: true,
 			/*Date range limits*/
 			bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
 			reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
