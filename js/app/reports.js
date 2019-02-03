@@ -517,6 +517,12 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 			//Get Group Basic Object to Pre-populate some report fields
 			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
+				if(!groupObj.isActive){
+					$rootScope.response = { error: true, message: systemMsgs.error.inactiveGroup, showHomeButton: true };
+					$location.path(constants.pages.error);
+					$location.path();
+					return;
+				}
 				$scope.objectDetails.basicInfo.groupId = groupObj.$id;
 				$scope.objectDetails.basicInfo.groupname = groupObj.name;
 				$scope.objectDetails.basicInfo.status = constants.status.completed;

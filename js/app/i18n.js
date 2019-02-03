@@ -42,6 +42,7 @@ const systemMsgs = {
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
 		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
+		inactiveGroup:"No se pueden crear Reportes en Grupos Inactivos",
 		/*Message Center*/
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
 		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
