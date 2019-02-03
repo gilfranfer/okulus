@@ -280,7 +280,7 @@ const constants = {
 		weekEdit:"/weeks/edit/"
 	},
 	folders:{
-		root:"okulusTest", counters:"counters", details:"details",
+		root:"okulusTest", config:"config", counters:"counters", details:"details",
 		audit:"audit", users:"users", weeks:"weeks", roles:"roles",
 		groups:"groups", members:"members", reports:"reports",
 		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
@@ -333,21 +333,25 @@ const constants = {
 	config:{isProdEnv: false}
 };
 
-/* Configurations that, in future versions, can be modified by System Admin*/
+/* Load Configurations frm DB */
 okulusApp.run(function($rootScope) {
-		$rootScope.config ={
-			appName:"Grupos de Vecindad",
-			goodAttendanceNumber:8,
-			excelentAttendanceNumber:14,
-			/*The Max lenght a firebaseArray should have in the initial request*/
-			maxQueryListResults: 50,
-			/*After this number of records, the Filter box will be visible*/
-			minResultsToshowFilter: 2,
-			/*Some fileds can be hiden*/
-			showMoneyFiled: true,
-			/*Date range limits*/
-			bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
-			reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
-						minDuration:"0", maxDuration:"300" }
-		};
+	let confReference = firebase.database().ref().child(rootFolder).child(constants.folders.config);
+	confReference.once('value').then( function(snapshot){
+		$rootScope.config = (snapshot.val() );
+	});
+	// $rootScope.config ={
+	// 	appName:"Grupos de Vecindad",
+	// 	goodAttendanceNumber:8,
+	// 	excelentAttendanceNumber:14,
+	// 	/*The Max lenght a firebaseArray should have in the initial request*/
+	// 	maxQueryListResults: 50,
+	// 	/*After this number of records, the Filter box will be visible*/
+	// 	minResultsToshowFilter: 2,
+	// 	/*Some fileds can be hiden*/
+	// 	showMoneyFiled: true,
+	// 	/*Date range limits*/
+	// 	bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
+	// 	reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
+	// 				minDuration:"0", maxDuration:"300" }
+	// };
 });
