@@ -42,10 +42,12 @@ const systemMsgs = {
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
 		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
+		inactiveGroup:"No se pueden crear Reportes en Grupos Inactivos",
 		/*Message Center*/
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
 		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
-		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente."
+		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente.",
+		reportsWatch:"Uno o mas reportes, relacionados con su búsqueda, han sido modificados."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -292,6 +294,9 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
 				totalAttendanceLbl:"Asistencia  Total",
+				membersAttendanceDirections:"Selecciona el miembro de la lista, o agrega todos dando",
+				guestsAttendanceDirections:"Escribe el nombre del invitado",
+				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
 				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
 				maleLbl: "Hombres", femaleLbl: "Mujeres",
@@ -426,6 +431,9 @@ okulusApp.run(function($rootScope) {
 				table:{
 					memberName:"Miembro", memberId:"Id", date:"Desde"
 				}
+			},
+			groupModal:{
+				title:"Seleccionar Grupo"
 			},
 			address:{
 				legend: "Dirección",

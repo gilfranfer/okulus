@@ -161,17 +161,18 @@ okulusApp.controller('ReportsDashCntrl',
 			an will try to reuse in future searches.*/
 			$scope.rawReportsFound = ReportsSvc.getReportsforWeeksPeriod(oldestWeek, newestWeek);
 			$scope.rawReportsFound.$loaded().then(function(reports){
+				$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
 				buildReportsDashboard(reports, selectedGroupsMap, selectedWeeksMap, $scope.chartOrientation);
+				$scope.selectedGroupsMap = selectedGroupsMap;
+				$scope.selectedWeeksMap = selectedWeeksMap;
 				$scope.response = null;
 				//$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
 			});
 
 			/* Add a Watch to detect when new reports are created in DB */
-			$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
 			return;
 		};
 
-		//TODO: Fix Money sum, When the firts report is not having monet, the subsecuent are not accumulating
 		buildReportsDashboard = function(reports, selectedGroups, selectedWeeks, chartOrientation){
 			/* The value of "goodAttendanceNumber" and "excelentAttendanceNumber" are week-based,
 			so they mustbe multiplied by the number of selected weeks, ONLY when more than
@@ -181,8 +182,8 @@ okulusApp.controller('ReportsDashCntrl',
 			so in this case we are not accumulating the totals across weeks. */
 			let goodAttendanceIndicator = $rootScope.config.goodAttendanceNumber;
 			let excelentAttendanceIndicator = $rootScope.config.excelentAttendanceNumber;
-			if(selectedGroups.length > 1){
-				let numberOfWeeks = selectedWeeks.length;
+			if(selectedGroups.size > 1){
+				let numberOfWeeks = selectedWeeks.size;
 				goodAttendanceIndicator *= numberOfWeeks;
 				excelentAttendanceIndicator *= numberOfWeeks;
 			}
@@ -193,7 +194,7 @@ okulusApp.controller('ReportsDashCntrl',
 				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
 				completedReunions: 0, canceledReunions: 0,
 				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
-				totalMoney: 0.0, totalDuration:0,
+				totalMoney: 0.00, totalDuration:0,
 				goodAttendanceIndicator: goodAttendanceIndicator,
 				excelentAttendanceIndicator: excelentAttendanceIndicator
 			};
@@ -233,7 +234,7 @@ okulusApp.controller('ReportsDashCntrl',
 				reunionParams.guestsAttendance += report.guestsAttendance;
 				reunionParams.totalDuration += report.duration;
 				if(report.money){
-					reunionParams.totalMoney += parseFloat(report.money).toFixed(2);
+					reunionParams.totalMoney += (parseFloat(report.money));
 				}
 
 				let mapKey = undefined;
@@ -264,7 +265,7 @@ okulusApp.controller('ReportsDashCntrl',
 					mapElement.guests += report.guestsAttendance;
 					mapElement.members += report.membersAttendance;
 					mapElement.duration += report.duration;
-					if(report.money && mapElement.money){
+					if(report.money){
 						mapElement.money += report.money;
 					}
 				}else{
@@ -279,7 +280,6 @@ okulusApp.controller('ReportsDashCntrl',
 				//For Money Scatter Charts
 				//moneyData.push( [report.money, guests+members] );
 			});
-
 			//For the Summary Cards
 			$scope.reunionSummary = reunionParams;
 			//For the Reports table
@@ -306,7 +306,6 @@ okulusApp.controller('ReportsDashCntrl',
 				durationSeries.push(reunion.duration);
 				series++;
 			});
-
 			//Build Chart Config Objects
 			var attendanceByGroupOptions = {
 				//chart: attendanceChart,
@@ -400,6 +399,7 @@ okulusApp.controller('ReportsDashCntrl',
 					series: [ { name: $rootScope.i18n.charts.moneyTitle , data: moneySeries } ]
 			};
 
+			//adjust some char config according to the Chart Orientation
 			if( chartOrientation == 'landscape'){
 				attendanceByGroupOptions.chart =  { type: 'column', height:600};
 				attendanceByGroupOptions.yAxis.opposite =  false;
@@ -407,19 +407,24 @@ okulusApp.controller('ReportsDashCntrl',
 
 				durationByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
 				durationByGroupOptions.yAxis.opposite =  false;
+				durationByGroupOptions.xAxis.labels =  {rotation: -90};
 
-				// moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
-				// moneyByGroupOptions.yAxis.opposite =  false;
-			}else{ //portrait
-				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(groups*15)) };
+				moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+				moneyByGroupOptions.yAxis.opposite =  false;
+				moneyByGroupOptions.xAxis.labels =  {rotation: -90};
+			}else{
+				//portrait
+				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(seriesx*15)) };
 				attendanceByGroupOptions.yAxis.opposite =  true;
 				attendanceByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+				durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(seriesx*20)) };
 				durationByGroupOptions.yAxis.opposite =  true;
+				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				// moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
-				// moneyByGroupOptions.yAxis.opposite =  true;
+				moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(seriesx*20)) };
+				moneyByGroupOptions.yAxis.opposite =  true;
+				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 			}
 
 			//Paint Charts
@@ -444,22 +449,12 @@ okulusApp.controller('ReportsDashCntrl',
 			$scope.specificGroups = allgroups;
 		};
 
+		/* Detect when changes happen to reports in the User's selected week period */
 		notifyReportAdded = function(event){
 			let reportId = event.key;
-			ReportsSvc.getReportObj(reportId).$loaded().then(function (report) {
-				if( report.weekId >= $rootScope.weekfrom && report.weekId <= $rootScope.weekto ){
-					let message = "";
-					if(event.event == "child_added"){
-						message = "Se ha creado un nuevo Reporte para la semana "+report.weekId
-																								+ " del grupo "+report.groupname;
-					}else if(event.event == "child_changed"){
-						message = "Se ha modificado un Reporte para la semana "+report.weekId
-																								+ " del grupo "+report.groupname;;
-					}
-					$scope.response = { reportAddedMsg:message };
-					// console.debug(event);
-				}else{
-					// console.debug("Update on other week");
+			ReportsSvc.getReportBasicObj(reportId).$loaded().then(function(report){
+				if($scope.selectedGroupsMap.has(report.groupId) && $scope.selectedWeeksMap.has(report.weekId)){
+					$scope.response = {error:true, message: systemMsgs.error.reportsWatch};
 				}
 			});
 		};
@@ -521,6 +516,12 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 			//Get Group Basic Object to Pre-populate some report fields
 			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
+				if(!groupObj.isActive){
+					$rootScope.response = { error: true, message: systemMsgs.error.inactiveGroup, showHomeButton: true };
+					$location.path(constants.pages.error);
+					$location.path();
+					return;
+				}
 				$scope.objectDetails.basicInfo.groupId = groupObj.$id;
 				$scope.objectDetails.basicInfo.groupname = groupObj.name;
 				$scope.objectDetails.basicInfo.status = constants.status.completed;
@@ -639,6 +640,12 @@ okulusApp.controller('ReportDetailsCntrl',
 			let memberId = $scope.reportParams.addMemberId;
 			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
 			addMemberAttendance(memberId,memberName);
+		};
+
+		$scope.addAllMembersToAteendace = function () {
+			$scope.reportParams.groupMembersList.forEach(function(member){
+				addMemberAttendance(member.id,member.name);
+			});
 		};
 
 		/* Add a member to the attendace list

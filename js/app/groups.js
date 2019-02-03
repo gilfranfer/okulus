@@ -135,21 +135,9 @@ okulusApp.controller('GroupsUserCntrl',
 					//Get the Groups the user has access to
 					MembersSvc.getAccessRulesList(user.memberId).$loaded().then(function(rules){
 						rules.forEach(function(rule) {
-							console.log(rule.groupId);
 							$rootScope.myGroupsList.push( GroupsSvc.getGroupBasicDataObject(rule.groupId) );
 						});
 					});
-
-					// GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-					// 	return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					// }).then(function (memberRules) {
-					// 	let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-					// 	$rootScope.myGroupsList = filteredGroups;
-					// 	$scope.loadingGroups = false;
-					// 	if(!filteredGroups.length){
-					// 		$scope.response = {noGroupsFound:true};
-					// 	}
-					// });
 
 				});
 			}

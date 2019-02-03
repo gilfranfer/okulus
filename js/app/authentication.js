@@ -284,12 +284,19 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
-	['$scope','$rootScope','$location','$firebaseAuth', 'AuthenticationSvc', 'MessageCenterSvc',
-	function($scope,$rootScope,$location, $firebaseAuth,AuthenticationSvc, MessageCenterSvc){
+	['$scope','$rootScope','$location','$firebaseAuth',
+	'MembersSvc','AuthenticationSvc', 'MessageCenterSvc',
+	function($scope,$rootScope,$location, $firebaseAuth,
+		MembersSvc, AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+				//Get Member Access Rules
+				if(user.isValid){
+					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+				}
+
 				if(user.isRoot){
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);
@@ -301,6 +308,17 @@ okulusApp.controller('HomeCntrl',
 				}
 			});
 		});
+
+		/* Assuming the member has only 1 access rule */
+		$scope.quickReportLauncher = function(){
+			let groupId = $rootScope.currentSession.accessRules[0].groupId;
+			$location.path(constants.pages.reportNew + groupId);
+		};
+
+		$scope.closeGroupSelectModal = function(rule){
+			let groupId = rule.groupId;
+			$location.path(constants.pages.reportNew + groupId);
+		};
 
 	}]
 );

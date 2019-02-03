@@ -1,29 +1,40 @@
 /* Controller linked to /myreports
  * It will load the lists (weeks, groups, member rules) required for the view to work */
-okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc', '$location', '$rootScope','$scope','$firebaseAuth','AuthenticationSvc',
-	function(MembersSvc, GroupsSvc, WeeksSvc,$location, $rootScope,$scope,$firebaseAuth,AuthenticationSvc){
-		$scope.loadingReportSelector = true;
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.isValid){
-						$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
-						$location.path(constants.pages.error);
-						return;
-					}
-					$scope.weeksList = WeeksSvc.loadVisibleWeeks();
-					//Get the Groups the user has access to
-					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						$scope.groupsList = filteredGroups;
-						$scope.loadingReportSelector = false;
-					});
-					// MembersSvc.getMemberGroups(user.memberId);
+okulusApp.controller('UserMyReportsCntrl',
+	['$location', '$rootScope','$scope','$firebaseAuth', 'MembersSvc', 'GroupsSvc', 'WeeksSvc', 'AuthenticationSvc',
+	function($location, $rootScope,$scope,$firebaseAuth, MembersSvc, GroupsSvc, WeeksSvc, AuthenticationSvc){
+
+		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAdminDash};
+		$firebaseAuth().$onAuthStateChanged( function(authUser){if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
+				if(!user.isValid){
+					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+					$location.path(constants.pages.error);
+					return;
+				}
+
+				$scope.weeksList = WeeksSvc.getVisibleWeeks();
+				$scope.selectedWeeks = [];
+				//To preselect the latest week in the view
+				$scope.weeksList.$loaded().then(function(weeks){
+					$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
 				});
-			}
-		});
+
+				$scope.groupsList = [];
+				$scope.selectedGroups = [];
+				$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+				$rootScope.currentSession.accessRules.$loaded().then(function(rules){
+					//Get members from each group
+					rules.forEach(function(rule){
+						$scope.groupsList.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
+						$scope.selectedGroups.push(rule.groupId);
+					});
+					$scope.response = null;
+				});
+
+
+			});
+		}});
 	}
 ]);
 
@@ -32,12 +43,11 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 okulusApp.controller('UserMyContactsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
 	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
-		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 		/* Executed everytime we enter to /mycontacts
 		  This function is used to confirm the user has an associated Member */
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){if(authUser){
+				$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
 					if(!user.isValid){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
@@ -45,26 +55,24 @@ okulusApp.controller('UserMyContactsCntrl',
 						return;
 					}
 
-					//TODO: Update this to a less data consuming approach
-					//Get the Members that are in the same group the user has access to
-					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						return MembersSvc.getMembersInGroups(filteredGroups)
-					}).then(function(contacts){
-						$scope.membersList = contacts;
-						$scope.loadingMembers = false;
-						if(!$scope.membersList.length){
-							$scope.response = {noMembersFound:true};
-						}
+					/* Get the Member Rules*/
+					$scope.membersList = [];
+					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+					$rootScope.currentSession.accessRules.$loaded().then(function(rules){
+						//Get members from each group
+						rules.forEach(function(rule){
+							let groupMembers = MembersSvc.getMembersForBaseGroup(rule.groupId);
+							groupMembers.$loaded().then(function(members){
+								members.forEach(function(member){$scope.membersList.push(member)});
+							});
+						});
+						$scope.response = null;
 					});
 
 				});
-			}
-		});
-	}
-]);
+		}});
+
+}]);
 
 //To redirect from Audit Table
 okulusApp.controller('UserEditCntrl',

@@ -22,8 +22,16 @@
         <div class="card-body">
           <h4 class="card-title">{{i18n.launchpad.title}}</h4>
           <hr>
-          <a ng-href="#!/profile" class="btn btn-lg btn-block btn-warning">
-            {{i18n.launchpad.createReport}}</a>
+          <button class="btn btn-lg btn-block btn-warning clickable"
+            ng-click="quickReportLauncher()"  ng-show="currentSession.accessRules.length == 1">
+            {{i18n.launchpad.createReport}}
+          </button>
+          <div ng-include="'views/groups/groupSelectModal.html'"></div>
+          <button class="btn btn-lg btn-block btn-warning clickable"
+            ng-show="currentSession.accessRules.length > 1"
+            data-toggle="modal" data-target="#groupSelectModal">
+            {{i18n.launchpad.createReport}}
+          </button>
         </div>
       </div>
     </div>
