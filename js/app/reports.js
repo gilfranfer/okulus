@@ -182,8 +182,8 @@ okulusApp.controller('ReportsDashCntrl',
 			so in this case we are not accumulating the totals across weeks. */
 			let goodAttendanceIndicator = $rootScope.config.goodAttendanceNumber;
 			let excelentAttendanceIndicator = $rootScope.config.excelentAttendanceNumber;
-			if(selectedGroups.length > 1){
-				let numberOfWeeks = selectedWeeks.length;
+			if(selectedGroups.size > 1){
+				let numberOfWeeks = selectedWeeks.size;
 				goodAttendanceIndicator *= numberOfWeeks;
 				excelentAttendanceIndicator *= numberOfWeeks;
 			}
@@ -306,7 +306,6 @@ okulusApp.controller('ReportsDashCntrl',
 				durationSeries.push(reunion.duration);
 				series++;
 			});
-
 			//Build Chart Config Objects
 			var attendanceByGroupOptions = {
 				//chart: attendanceChart,
@@ -641,6 +640,12 @@ okulusApp.controller('ReportDetailsCntrl',
 			let memberId = $scope.reportParams.addMemberId;
 			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
 			addMemberAttendance(memberId,memberName);
+		};
+
+		$scope.addAllMembersToAteendace = function () {
+			$scope.reportParams.groupMembersList.forEach(function(member){
+				addMemberAttendance(member.id,member.name);
+			});
 		};
 
 		/* Add a member to the attendace list

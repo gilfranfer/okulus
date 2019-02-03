@@ -290,6 +290,10 @@
                 {{member.name}}
               </option>
             </select>
+            <small class="form-text text-muted">
+              {{i18n.reports.membersAttendanceDirections}}
+              <span class="btn-link clickable" ng-click="addAllMembersToAteendace()">{{i18n.reports.clicHere}}</span>
+            </small>
           </div>
           <div class="col-4">
             <button type="button" class="btn btn-lg btn-block btn-primary clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
@@ -354,10 +358,13 @@
         <div class="row mb-4">
           <div class="col-8">
             <input type="text" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/>
+            <small id="" class="form-text text-muted">
+              {{i18n.reports.guestsAttendanceDirections}}
+            </small>
             <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
           </div>
           <div class="col-4">
-            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary" ng-disabled="!reportParams.addGuestName">
+            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary clickable" ng-disabled="!reportParams.addGuestName">
               {{i18n.btns.addBtn}}
             </button>
             <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
