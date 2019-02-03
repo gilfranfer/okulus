@@ -32,12 +32,11 @@ okulusApp.controller('UserMyReportsCntrl', ['MembersSvc', 'GroupsSvc', 'WeeksSvc
 okulusApp.controller('UserMyContactsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','MembersSvc', 'GroupsSvc', 'AuthenticationSvc',
 	function($rootScope,$scope,$location,$firebaseAuth, MembersSvc, GroupsSvc, AuthenticationSvc){
-		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 		/* Executed everytime we enter to /mycontacts
 		  This function is used to confirm the user has an associated Member */
-		$firebaseAuth().$onAuthStateChanged( function(authUser){
-    	if(authUser){
+		$firebaseAuth().$onAuthStateChanged( function(authUser){if(authUser){
+				$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
 					if(!user.isValid){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
@@ -45,26 +44,24 @@ okulusApp.controller('UserMyContactsCntrl',
 						return;
 					}
 
-					//TODO: Update this to a less data consuming approach
-					//Get the Members that are in the same group the user has access to
-					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-						return MembersSvc.getMemberAccessRules(user.memberId).$loaded();
-					}).then(function (memberRules) {
-						let filteredGroups = MembersSvc.filterMemberGroupsFromRules(memberRules, $rootScope.allGroups);
-						return MembersSvc.getMembersInGroups(filteredGroups)
-					}).then(function(contacts){
-						$scope.membersList = contacts;
-						$scope.loadingMembers = false;
-						if(!$scope.membersList.length){
-							$scope.response = {noMembersFound:true};
-						}
+					/* Get the Member Rules*/
+					$scope.membersList = [];
+					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+					$rootScope.currentSession.accessRules.$loaded().then(function(rules){
+						//Get members from each group
+						rules.forEach(function(rule){
+							let groupMembers = MembersSvc.getMembersForBaseGroup(rule.groupId);
+							groupMembers.$loaded().then(function(members){
+								members.forEach(function(member){$scope.membersList.push(member)});
+							});
+						});
+						$scope.response = null;
 					});
 
 				});
-			}
-		});
-	}
-]);
+		}});
+
+}]);
 
 //To redirect from Audit Table
 okulusApp.controller('UserEditCntrl',
