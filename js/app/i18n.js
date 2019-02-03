@@ -427,6 +427,9 @@ okulusApp.run(function($rootScope) {
 					memberName:"Miembro", memberId:"Id", date:"Desde"
 				}
 			},
+			groupModal:{
+				title:"Seleccionar Grupo"
+			},
 			address:{
 				legend: "Dirección",
 				streetLbl:"Calle", streetHint:"",

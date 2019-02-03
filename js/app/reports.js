@@ -171,7 +171,6 @@ okulusApp.controller('ReportsDashCntrl',
 			return;
 		};
 
-		//TODO: Fix Money sum, When the firts report is not having monet, the subsecuent are not accumulating
 		buildReportsDashboard = function(reports, selectedGroups, selectedWeeks, chartOrientation){
 			/* The value of "goodAttendanceNumber" and "excelentAttendanceNumber" are week-based,
 			so they mustbe multiplied by the number of selected weeks, ONLY when more than
@@ -193,7 +192,7 @@ okulusApp.controller('ReportsDashCntrl',
 				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
 				completedReunions: 0, canceledReunions: 0,
 				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
-				totalMoney: 0.0, totalDuration:0,
+				totalMoney: 0.00, totalDuration:0,
 				goodAttendanceIndicator: goodAttendanceIndicator,
 				excelentAttendanceIndicator: excelentAttendanceIndicator
 			};
@@ -233,7 +232,7 @@ okulusApp.controller('ReportsDashCntrl',
 				reunionParams.guestsAttendance += report.guestsAttendance;
 				reunionParams.totalDuration += report.duration;
 				if(report.money){
-					reunionParams.totalMoney += parseFloat(report.money).toFixed(2);
+					reunionParams.totalMoney += (parseFloat(report.money));
 				}
 
 				let mapKey = undefined;
@@ -264,7 +263,7 @@ okulusApp.controller('ReportsDashCntrl',
 					mapElement.guests += report.guestsAttendance;
 					mapElement.members += report.membersAttendance;
 					mapElement.duration += report.duration;
-					if(report.money && mapElement.money){
+					if(report.money){
 						mapElement.money += report.money;
 					}
 				}else{
@@ -279,7 +278,6 @@ okulusApp.controller('ReportsDashCntrl',
 				//For Money Scatter Charts
 				//moneyData.push( [report.money, guests+members] );
 			});
-
 			//For the Summary Cards
 			$scope.reunionSummary = reunionParams;
 			//For the Reports table
@@ -400,6 +398,7 @@ okulusApp.controller('ReportsDashCntrl',
 					series: [ { name: $rootScope.i18n.charts.moneyTitle , data: moneySeries } ]
 			};
 
+			//adjust some char config according to the Chart Orientation
 			if( chartOrientation == 'landscape'){
 				attendanceByGroupOptions.chart =  { type: 'column', height:600};
 				attendanceByGroupOptions.yAxis.opposite =  false;
@@ -407,19 +406,24 @@ okulusApp.controller('ReportsDashCntrl',
 
 				durationByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
 				durationByGroupOptions.yAxis.opposite =  false;
+				durationByGroupOptions.xAxis.labels =  {rotation: -90};
 
-				// moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
-				// moneyByGroupOptions.yAxis.opposite =  false;
-			}else{ //portrait
-				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(groups*15)) };
+				moneyByGroupOptions.chart = { type: 'area', inverted: false, height:600 };
+				moneyByGroupOptions.yAxis.opposite =  false;
+				moneyByGroupOptions.xAxis.labels =  {rotation: -90};
+			}else{
+				//portrait
+				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(seriesx*15)) };
 				attendanceByGroupOptions.yAxis.opposite =  true;
 				attendanceByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
+				durationByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(seriesx*20)) };
 				durationByGroupOptions.yAxis.opposite =  true;
+				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				// moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(groups*20)) };
-				// moneyByGroupOptions.yAxis.opposite =  true;
+				moneyByGroupOptions.chart = { type: 'area', inverted: true, height: (300+(seriesx*20)) };
+				moneyByGroupOptions.yAxis.opposite =  true;
+				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 			}
 
 			//Paint Charts
