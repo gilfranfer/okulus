@@ -161,13 +161,15 @@ okulusApp.controller('ReportsDashCntrl',
 			an will try to reuse in future searches.*/
 			$scope.rawReportsFound = ReportsSvc.getReportsforWeeksPeriod(oldestWeek, newestWeek);
 			$scope.rawReportsFound.$loaded().then(function(reports){
+				$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
 				buildReportsDashboard(reports, selectedGroupsMap, selectedWeeksMap, $scope.chartOrientation);
+				$scope.selectedGroupsMap = selectedGroupsMap;
+				$scope.selectedWeeksMap = selectedWeeksMap;
 				$scope.response = null;
 				//$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
 			});
 
 			/* Add a Watch to detect when new reports are created in DB */
-			$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
 			return;
 		};
 
@@ -448,22 +450,12 @@ okulusApp.controller('ReportsDashCntrl',
 			$scope.specificGroups = allgroups;
 		};
 
+		/* Detect when changes happen to reports in the User's selected week period */
 		notifyReportAdded = function(event){
 			let reportId = event.key;
-			ReportsSvc.getReportObj(reportId).$loaded().then(function (report) {
-				if( report.weekId >= $rootScope.weekfrom && report.weekId <= $rootScope.weekto ){
-					let message = "";
-					if(event.event == "child_added"){
-						message = "Se ha creado un nuevo Reporte para la semana "+report.weekId
-																								+ " del grupo "+report.groupname;
-					}else if(event.event == "child_changed"){
-						message = "Se ha modificado un Reporte para la semana "+report.weekId
-																								+ " del grupo "+report.groupname;;
-					}
-					$scope.response = { reportAddedMsg:message };
-					// console.debug(event);
-				}else{
-					// console.debug("Update on other week");
+			ReportsSvc.getReportBasicObj(reportId).$loaded().then(function(report){
+				if($scope.selectedGroupsMap.has(report.groupId) && $scope.selectedWeeksMap.has(report.weekId)){
+					$scope.response = {error:true, message: systemMsgs.error.reportsWatch};
 				}
 			});
 		};

@@ -45,7 +45,8 @@ const systemMsgs = {
 		/*Message Center*/
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
 		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
-		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente."
+		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente.",
+		reportsWatch:"Uno o mas reportes, relacionados con su búsqueda, han sido modificados."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
