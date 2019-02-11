@@ -74,6 +74,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/monitor.html',
 				controller: 'MonitorCntrl'
 			})
+			.when('/admin/config', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				controller: 'ConfigCntrl',
+				templateUrl: 'views/admin/configs.html'
+			})
 			.when('/groups', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -335,23 +344,99 @@ const constants = {
 
 /* Load Configurations frm DB */
 okulusApp.run(function($rootScope) {
+	console.log("Getting configurations from DB");
 	let confReference = firebase.database().ref().child(rootFolder).child(constants.folders.config);
 	confReference.once('value').then( function(snapshot){
-		$rootScope.config = (snapshot.val() );
+		$rootScope.config = (snapshot.val());
+		$rootScope.config.todayDate = "2020-01-01";
 	});
 	// $rootScope.config ={
 	// 	appName:"Grupos de Vecindad",
-	// 	goodAttendanceNumber:8,
-	// 	excelentAttendanceNumber:14,
 	// 	/*The Max lenght a firebaseArray should have in the initial request*/
 	// 	maxQueryListResults: 50,
 	// 	/*After this number of records, the Filter box will be visible*/
 	// 	minResultsToshowFilter: 2,
-	// 	/*Some fileds can be hiden*/
-	// 	showMoneyFiled: true,
 	// 	/*Date range limits*/
-	// 	bday:{ minDate:"1900-01-01", maxDate:"2019-12-31" },
-	// 	reports:{ minDate:"2018-01-01", maxDate:"2019-12-31",
-	// 				minDuration:"0", maxDuration:"300" }
+	// 	members:{ minBDate:"1900-01-01" },
+	// 	reports:{
+	// 		minDate:"2018-01-01",
+	// 		goodAttendanceNumber:8, excelentAttendanceNumber:14,
+	// 		minDuration:"0", maxDuration:"300",
+	//		showMoneyField: true
+	//	}
 	// };
 });
+
+/* Controller linked to the Admin view of Weeks (/weeks) */
+okulusApp.controller('ConfigCntrl',
+	['$rootScope', '$scope', '$firebaseAuth', '$location', 'ConfigSvc','AuthenticationSvc',
+	function($rootScope, $scope, $firebaseAuth, $location, ConfigSvc, AuthenticationSvc){
+
+		/* Executed everytime we enter to /config
+		  This function is used to confirm the user is Admin and prepare some initial values */
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
+				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+					if(user.type == constants.roles.admin){
+						$scope.configObj = ConfigSvc.getConfigurationsObj();
+						$scope.configObj.$loaded().then(function(configDb){
+							/* This is the format of the date in the DB: YYYY-MM-DD
+							JS Date works with months starting from 0 (0-11), so we need to
+							decrease the month from DB by one, to display it properly */
+							$scope.temporal = [];
+							//Report's Min Date
+							let dateSplit = configDb.reports.minDate.split("-");
+							let month = (Number(dateSplit[1])-1);
+							$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+
+							//Member's Min Birthdate
+							dateSplit = configDb.members.minBirthdate.split("-");
+							month = (Number(dateSplit[1])-1);
+							$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+
+							$scope.response = null;
+						});
+					}else{
+						$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+						$location.path(constants.pages.error);
+					}
+				});
+		}});
+
+		$scope.saveConfigs = function(){
+			$scope.response = {working: true, message: systemMsgs.inProgress.savingConfig };
+
+			/* Use the Temp dates to build the actual date that will be persisted to the DB*/
+			let minDate = $scope.temporal.minDateTemp;
+			let year = minDate.getFullYear();
+			let month = (minDate.getMonth()<9)?"0"+(minDate.getMonth()+1):minDate.getMonth()+1;
+			let day = (minDate.getDate()<10)?"0"+(minDate.getDate()):minDate.getDate();
+			$scope.configObj.reports.minDate = year + "-" + month + "-" + day;
+
+			minDate = $scope.temporal.minBDateTemp;
+			year = minDate.getFullYear();
+			month = (minDate.getMonth()<9)?"0"+(minDate.getMonth()+1):minDate.getMonth()+1;
+			day = (minDate.getDate()<10)?"0"+(minDate.getDate()):minDate.getDate();
+			$scope.configObj.members.minBirthdate = year + "-" + month + "-" + day;
+
+			$scope.configObj.$save().then(function(){
+				$scope.response = {success:true, message:systemMsgs.success.configSaved};
+			});
+		};
+
+}]);
+
+okulusApp.factory('ConfigSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+		let configRef = firebase.database().ref().child(rootFolder).child(constants.folders.config);
+
+		return {
+			getConfigurationsObj: function(){
+				return $firebaseObject(configRef);
+			}
+		};//return end
+
+	}
+]);
