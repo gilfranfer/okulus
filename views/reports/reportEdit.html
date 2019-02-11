@@ -164,7 +164,7 @@
               {{i18n.reports.dateLbl}}
               <span class="text-danger">*</span>
             </label>
-            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.reports.maxDate}}"
+            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.todayDate}}"
               class="form-control form-control-lg" placeholder="{{i18n.reports.dateHint}}"
               ng-model="reportParams.dateObj" ng-required="true">
           </div>
@@ -200,7 +200,7 @@
               type="number" min="{{config.reports.minDuration}}" max="{{config.reports.maxDuration}}"
               ng-model="objectDetails.basicInfo.duration" ng-required="objectDetails.basicInfo.status == 'completed'">
           </div>
-          <div class="col-sm form-group" ng-if="config.showMoneyFiled">
+          <div class="col-sm form-group" ng-if="config.reports.showMoneyField">
             <label class="font-weight-bold" for="money">
               {{i18n.reports.moneyLbl}}
               <span class="text-danger">*</span>

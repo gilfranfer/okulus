@@ -82,10 +82,10 @@
           <span>{{objectDetails.basicInfo.duration}}</span>
         </div>
         <div class="col-md form-group">
-          <label class="font-weight-bold" ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">
+          <label class="font-weight-bold" ng-show="config.reports.showMoneyField || objectDetails.basicInfo.money">
             {{i18n.reports.moneyLbl}}:
           </label>
-          <span  ng-show="config.showMoneyFiled || objectDetails.basicInfo.money">${{objectDetails.basicInfo.money}}</span>
+          <span  ng-show="config.reports.showMoneyField || objectDetails.basicInfo.money">${{objectDetails.basicInfo.money}}</span>
         </div>
       </div>
     </div>

@@ -180,8 +180,8 @@ okulusApp.controller('ReportsDashCntrl',
 			Category, and the attendance will be the sum of all attendance in the week period).
 			When only ONE group is selected we'll be displaying the data with the Weeks as Category,
 			so in this case we are not accumulating the totals across weeks. */
-			let goodAttendanceIndicator = $rootScope.config.goodAttendanceNumber;
-			let excelentAttendanceIndicator = $rootScope.config.excelentAttendanceNumber;
+			let goodAttendanceIndicator = $rootScope.config.reports.goodAttendanceNumber;
+			let excelentAttendanceIndicator = $rootScope.config.reports.excelentAttendanceNumber;
 			if(selectedGroups.size > 1){
 				let numberOfWeeks = selectedWeeks.size;
 				goodAttendanceIndicator *= numberOfWeeks;

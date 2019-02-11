@@ -120,7 +120,7 @@
                   <span style="cursos:pointer" ng-click="sortBy('reunion.duration')">{{i18n.reportFinder.table.duration}}</span>
                   <span class="sortorder" ng-show="propertyName === 'reunion.duration'" ng-class="{reverse: reverse}"></span>
                 </th>
-                <th scope="col" ng-if="config.showMoneyFiled">
+                <th scope="col" ng-if="config.reports.showMoneyField">
                   <span style="cursos:pointer" ng-click="sortBy('reunion.money')">{{i18n.reportFinder.table.money}}</span>
                   <span class="sortorder" ng-show="propertyName === 'reunion.money'" ng-class="{reverse: reverse}"></span>
                 </th>
@@ -164,7 +164,7 @@
                   {{i18n.reports.okStatusLbl}}
                 </td>
                 <td>{{report.duration}} min</td>
-                <td ng-if="config.showMoneyFiled">${{report.money}}</td>
+                <td ng-if="config.reports.showMoneyField">${{report.money}}</td>
                 <td>{{report.totalAttendance}}</td>
                 <td>{{report.dateMilis | date: "MMMM dd, yyyy"}}</td>
               </tr>
@@ -223,7 +223,7 @@
   </article>
 
   <!-- Money Chart -->
-  <article class="row mb-3" ng-if="config.showMoneyFiled">
+  <article class="row mb-3" ng-if="config.reports.showMoneyField">
     <div class="col">
       <div class="card">
         <div class="card-body">
