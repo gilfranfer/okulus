@@ -105,7 +105,8 @@ const systemMsgs = {
 		searchingReports:"Buscando Reportes",
 		/*Message Center*/
 		postingMessage: "Publicando mensaje ...",
-		deletingMessage: "Eliminando mensaje ..."
+		deletingMessage: "Eliminando mensaje ...",
+		savingConfig:"Guardando Configuraciones ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -159,6 +160,7 @@ const systemMsgs = {
 		/*Message Center*/
 		postingMessageSuccess:"El mensaje ha sido publicado.",
 		deleteMessageSuccess: "El mensaje ha sido eliminado.",
+		configSaved:"Configuraciones Guardadas. Refresca la página."
 	}
 };
 
@@ -568,6 +570,31 @@ okulusApp.run(function($rootScope) {
 				title:"Inicio", welcome:"Hola",
 				basicInfo: "Información Básica",
 				address: "Dirección"
+			},
+			configs:{
+				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes", datesTitle:"Fechas",
+				appnameLbl:"Nombre de la Aplicación", appnameHint:"Okulus App",
+				appNameDesc:"El nombre es usado en la barra de navegación.",
+				maxQueryResultLbl:"Límite de Registros", maxQueryResultHint:"",
+				maxQueryResultDesc:"Número máximo de registros regresados por la base de datos, en la consulta inicial.",
+				showFilterAtLbl:"Mínimo para mostrar Filtro", showFilterAtHint:"",
+				showFilterAtDesc:"Número mínimo de registros que deben existir para poder mostrar el 'Filtro'.",
+				goodAttendanceLbl:"Buena asistencia", goodAttendanceHint:"",
+				goodAttendanceDesc:"Cantidad considerada como buena asistencia.",
+				excelentAttendanceLbl:"Excelente asistencia", excelentAttendanceHint:"",
+				excelentAttendanceDesc:"Cantidad considerada como excelente asistencia.",
+				minDurationLbl:"Duración mínima", minDurationHint:"",
+				minDurationDesc:"Duración minima de una renion, en minutos.",
+				maxDurationLbl:"Duración máxima", maxDurationHint:"",
+				maxDurationDesc:"Duración máxima de una renion, en minutos.",
+				minReportsDateLbl:"Fecha mínima para reportes",
+				minReportsDateDesc:"La fecha mínima que puede tener un reporte, o una semana.",
+				minBdateLbl:"Fecha mínima de nacimiento",
+				minBdateDesc:"La fecha de nacimiento más antigua que puede tener mimebro.",
+				showMoneyLbl:"Ofrenda",
+				showMoneyYesLbl:"Mostrar Ofrenda", showMoneyNoLbl:"No mostrar Ofrenda",
+				showMoneyDesc:"Mostrar campos relacionados a Ofrenda",
+				saveBtn:"Guardar Configuraciones"
 			},
 			success:{
 				deleted:{

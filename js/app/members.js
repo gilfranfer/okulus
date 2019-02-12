@@ -210,6 +210,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		};
 
 		$scope.prepareViewForNew = function () {
+			$scope.objectDetails.basicInfo = {};
 			$scope.memberEditParams = {};
 			$scope.memberEditParams.actionLbl = $rootScope.i18n.members.newLbl;
 			$scope.memberEditParams.isEdit = false;

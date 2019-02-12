@@ -1,0 +1,189 @@
+<!-- Loading Week Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<!-- Following section will be displayed onyl after configs are loaded -->
+<section id="configEdit" ng-show="!response.loading">
+
+  <!-- Title Section -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{i18n.configs.title}}
+      </h4>
+    </div>
+  </article>
+
+  <!-- Configurations Cards -->
+  <form id="configsForm" name="configsForm" novalidate>
+    <!-- General Configs -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.configs.generalTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="appName">
+              {{i18n.configs.appnameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="appName" type="text" class="form-control form-control-lg"
+              placeholder="{{i18n.configs.appnameHint}}" ng-model="configObj.appName" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.appNameDesc}}</small>
+          </div>
+        </div>
+        <div class="form-row">
+          <!-- The Max lenght a firebaseArray should have in the initial request -->
+          <div class="col form-group">
+            <label class="font-weight-bold" for="maxQuery">
+              {{i18n.configs.maxQueryResultLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="maxQuery" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.maxQueryListResults" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.maxQueryResultDesc}}</small>
+          </div>
+          <!-- After this number of records, the Filter box will be visible -->
+          <div class="col form-group">
+            <label class="font-weight-bold" for="minFilter">
+              {{i18n.configs.showFilterAtLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="minFilter" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.minResultsToshowFilter" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.showFilterAtDesc}}</small>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Report Configs -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.configs.reportsTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Values for Good and Excelent Attendance -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="goodAttn">
+              {{i18n.configs.goodAttendanceLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="goodAttn" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.reports.goodAttendanceNumber" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.goodAttendanceDesc}}</small>
+          </div>
+          <!-- After this number of records, the Filter box will be visible -->
+          <div class="col form-group">
+            <label class="font-weight-bold" for="excelentAttn">
+              {{i18n.configs.excelentAttendanceLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="excelentAttn" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.reports.excelentAttendanceNumber" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.excelentAttendanceDesc}}</small>
+          </div>
+        </div>
+        <!-- Min and Max Session Duration -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="minDuration">
+              {{i18n.configs.minDurationLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="minDuration" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.reports.minDuration" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.minDurationDesc}}</small>
+          </div>
+          <!-- After this number of records, the Filter box will be visible -->
+          <div class="col form-group">
+            <label class="font-weight-bold" for="maxDuration">
+              {{i18n.configs.maxDurationLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="maxDuration" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.reports.maxDuration" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.maxDurationDesc}}</small>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="showMoney">
+              {{i18n.configs.showMoneyLbl}}
+              <span class="text-danger">*</span>
+            </label><br>
+            <input id="showMoney-yes" type="radio" name="showMoney" ng-model="configObj.reports.showMoneyField" ng-value="true" />
+            <span>{{i18n.configs.showMoneyYesLbl}}</span>
+            <input id="showMoney-no" type="radio" name="showMoney" ng-model="configObj.reports.showMoneyField" ng-value="false" />
+            <span>{{i18n.configs.showMoneyNoLbl}}</span>
+            <small class="form-text text-muted">{{i18n.configs.showMoneyDesc}}</small>
+          </div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- Dates Configs -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.configs.datesTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Min System Dates -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="reportsDate">
+              {{i18n.configs.minReportsDateLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="date" id="reportsDate" name="reportsDate"
+              class="form-control form-control-lg" placeholder="{{i18n.configs.dateHint}}"
+              ng-model="temporal.minDateTemp" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.minReportsDateDesc}}</small>
+          </div>
+          <div class="col form-group">
+            <label class="font-weight-bold" for="bdayDate">
+              {{i18n.configs.minBdateLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="date" id="bdayDate" name="bdayDate"
+              class="form-control form-control-lg" placeholder="{{i18n.configs.dateHint}}"
+              ng-model="temporal.minBDateTemp" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.minBdateDesc}}</small>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Alerts to inform user on progress or result -->
+    <div ng-include="'views/alerts.html'"></div>
+
+    <!-- Save Button (Only for Admin) -->
+    <div class="row mb-3" ng-if="currentSession.user.type == 'admin'">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-show="!configsForm.$pristine && !configsForm.$invalid"
+          ng-disabled="configsForm.$invalid || configsForm.$pristine"
+          ng-click="saveConfigs()">
+          {{i18n.configs.saveBtn}}
+        </button>
+      </div>
+    </div>
+  </form>
+
+</section>

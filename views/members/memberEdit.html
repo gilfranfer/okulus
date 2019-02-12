@@ -65,7 +65,7 @@
             <label class="font-weight-bold" for="bday">
               {{i18n.members.bdayLbl}}
             </label>
-            <input type="date" id="bday" name="bday" min="{{config.bday.minDate}}" max="{{config.bday.maxDate}}"
+            <input type="date" id="bday" name="bday" min="{{config.members.minBDate}}" max="{{config.todayDate}}"
               class="form-control form-control-lg" placeholder="{{i18n.members.bdayHint}}"
               value="{{objectDetails.basicInfo.bday}}" ng-required="false" onchange="updateBdayValue()">
               <input type="hidden" name="bdayHolder" ng-model="objectDetails.basicInfo.bday" ng-required="false">
