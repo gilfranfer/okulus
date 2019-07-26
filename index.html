@@ -10,19 +10,9 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-	</head>
+  </head>
 	<body ng-controller="AuthenticationCntrl">
     <header ng-include="'views/navigation.html'"></header>
-    <!-- Message when User has not validated his email -->
-    <div class="alert alert-danger" role="alert" ng-show="constants.config.isProdEnv && !currentSession.emailVerified">
-      <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
-      <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
-        {{i18n.emailValidation.verify}}
-      </button>
-      <p ng-if="response.emailSent">
-        {{i18n.emailValidation.reviewEmail}}
-      </p>
-    </div>
     <!-- Main Bootstrap container -->
   	<div class="container mt-4 mb-4">
       <main id="main" ng-view></main>
