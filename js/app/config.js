@@ -432,6 +432,13 @@ okulusApp.controller('ConfigCntrl',
 			$scope.configObj.members.minBirthdate = year + "-" + month + "-" + day;
 
 			$scope.configObj.$save().then(function(){
+				//Reload Configs into rootScope
+				let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
+				confReference.once('value').then( function(snapshot){
+					$rootScope.config = (snapshot.val());
+					//Add todays date that will be used to limit some date selectors
+					$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
+				});
 				$scope.response = {success:true, message:systemMsgs.success.configSaved};
 			});
 		};
