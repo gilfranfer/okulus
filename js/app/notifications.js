@@ -72,9 +72,9 @@ okulusApp.controller('NotificationCenterCntrl',
 okulusApp.factory('NotificationsSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let usersRef = baseRef.child( constants.folders.usersList );
-		let notificationsRef = baseRef.child(constants.folders.notificationsList);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let usersRef = baseRef.child( constants.db.folders.usersList );
+		let notificationsRef = baseRef.child(constants.db.folders.notificationsList);
 		let adminUsersRef = usersRef.orderByChild(constants.roles.type).equalTo(constants.roles.admin);
 
 		/* Prepare the notification description using the Actions and elements maps*/
@@ -83,7 +83,7 @@ okulusApp.factory('NotificationsSvc',
 				let element = notifiableElements.get(onFolder) + " ";;
 
 				//Add the week Id
-				if(elementDesc && onFolder== constants.folders.weeks){
+				if(elementDesc && onFolder== constants.db.folders.weeks){
 					element += elementDesc + " ";
 				}
 
@@ -134,7 +134,7 @@ okulusApp.factory('NotificationsSvc',
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseUnreadNotificationCounter = function(userid){
-			let notifCounterRef = usersRef.child(userid).child(constants.folders.unredNotifCount);
+			let notifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 			notifCounterRef.transaction(function(currentUnread) {
 				if(currentUnread>0)
 					return currentUnread - 1;
@@ -144,7 +144,7 @@ okulusApp.factory('NotificationsSvc',
 
 		/*Using a Transaction with an update function to increase the counter by 1 */
 		let increaseUnreadNotificationCounter = function(userid){
-			let unreadNotifCounterRef = usersRef.child(userid).child(constants.folders.unredNotifCount);
+			let unreadNotifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 			unreadNotifCounterRef.transaction(function(currentUnread) {
 				// If counters/notifications has never been set, currentUnread will be null.
 			  return currentUnread + 1;
@@ -153,7 +153,7 @@ okulusApp.factory('NotificationsSvc',
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseTotalNotificationCounter = function(userid){
-			let totalNotifCounterRef = usersRef.child(userid).child(constants.folders.totalNotifCount);
+			let totalNotifCounterRef = usersRef.child(userid).child(constants.db.folders.totalNotifCount);
 			totalNotifCounterRef.transaction(function(currentTotal) {
 				if(currentTotal>0)
 					return currentTotal - 1;
@@ -162,7 +162,7 @@ okulusApp.factory('NotificationsSvc',
 		};
 
 		let increaseTotalNotificationCounter = function(userid){
-			let totalNotifCounterRef = usersRef.child(userid).child(constants.folders.totalNotifCount);
+			let totalNotifCounterRef = usersRef.child(userid).child(constants.db.folders.totalNotifCount);
 			totalNotifCounterRef.transaction(function(currentTotal) {
 			  return currentTotal + 1;
 			});
@@ -184,7 +184,7 @@ okulusApp.factory('NotificationsSvc',
 					/* Send the notification only after the audit record is created/updated in the elment itself
 						This is because the audit folder will help us to identify the parties we need to notify
 						TODO: add child(onFolder).child("details")*/
-					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.folders.audit)).$loaded().then(function(audit) {
+					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.db.folders.audit)).$loaded().then(function(audit) {
 						/*array to control already notified users*/
 						let notifiedUsers = new Array();
 						/*Notify the User who created the element*/
@@ -272,9 +272,9 @@ okulusApp.factory('NotificationsSvc',
 				notifications counter to 0.*/
 			deleteAllNotifications: function(userid){
 				notificationsRef.child(userid).set({});
-				let notifUnreadRef = usersRef.child(userid).child(constants.folders.unredNotifCount);
+				let notifUnreadRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 				notifUnreadRef.transaction(function(currentUnread){ return 0; });
-				let notifTotalRef = usersRef.child(userid).child(constants.folders.totalNotifCount);
+				let notifTotalRef = usersRef.child(userid).child(constants.db.folders.totalNotifCount);
 				notifTotalRef.transaction(function(currentTotal){ return 0; });
 			},
 			/*Set all notifications' "readed" value as true, and set the User's unreaded
@@ -290,18 +290,18 @@ okulusApp.factory('NotificationsSvc',
 					});
 				});
 
-				let notifCounterRef = usersRef.child(userid).child(constants.folders.unredNotifCount);
+				let notifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 				notifCounterRef.transaction(function(currentUnread){ return 0; });
 			},
 			/*TODO: Remove after migration. Assign specific number to the notification counter and
 			Removing the metadata folder.*/
 			setTotalUnreadNotifications: function(userid, total){
 				//notificationsRef.child("metadata").child(userid).set({});
-				let notifCounterRef = usersRef.child(userid).child(constants.folders.unredNotifCount);
+				let notifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 				notifCounterRef.transaction(function(currentUnread){ return total; });
 			},
 			setTotalNotifications: function(userid, total){
-				let notifTotalRef = usersRef.child(userid).child(constants.folders.totalNotifCount);
+				let notifTotalRef = usersRef.child(userid).child(constants.db.folders.totalNotifCount);
 				notifTotalRef.transaction(function(currentTotal){ return total; });
 			}
 		};

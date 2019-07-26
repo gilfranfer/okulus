@@ -958,7 +958,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
 					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
 
-					AuditSvc.recordAudit(report.$id, constants.actions.update, constants.folders.reports);
+					AuditSvc.recordAudit(report.$id, constants.actions.update, constants.db.folders.reports);
 					$scope.response = { success:true, message: systemMsgs.success.reportUpdated };
 				});
 			}
@@ -986,7 +986,7 @@ okulusApp.controller('ReportDetailsCntrl',
 
 					//Save a reference to this Report in the /group/details/reports folder
 					GroupsSvc.addReportReferenceToGroup(report);
-					AuditSvc.recordAudit(report.$id, constants.actions.create, constants.folders.reports);
+					AuditSvc.recordAudit(report.$id, constants.actions.create, constants.db.folders.reports);
 					$rootScope.reportResponse = { created:true, message: systemMsgs.success.reportCreated };
 					$location.path(constants.pages.reportEdit+report.$id);
 				});
@@ -1019,7 +1019,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				//Remove /report/list
 				$scope.objectDetails.basicInfo.$remove().then(function(ref){
 					//Audit on Report Delete
-					AuditSvc.recordAudit(reportId, constants.actions.delete, constants.folders.reports);
+					AuditSvc.recordAudit(reportId, constants.actions.delete, constants.db.folders.reports);
 					//Decrease total reports count
 					ReportsSvc.decreaseTotalReportsCount();
 					//Decrease pending or rejected count
@@ -1060,7 +1060,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				}else if(originalStatus == constants.status.rejected){
 					ReportsSvc.decreaseRejectedReportsCount();
 				}
-				AuditSvc.recordAudit(ref.key, constants.actions.approve, constants.folders.reports);
+				AuditSvc.recordAudit(ref.key, constants.actions.approve, constants.db.folders.reports);
 				$scope.response = { success:true, message: systemMsgs.success.reportApproved };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});
@@ -1081,7 +1081,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				}else if(originalStatus == constants.status.approved){
 					ReportsSvc.decreaseApprovedReportsCount();
 				}
-				AuditSvc.recordAudit(ref.key, constants.actions.reject, constants.folders.reports);
+				AuditSvc.recordAudit(ref.key, constants.actions.reject, constants.db.folders.reports);
 				$scope.response = { success:true, message: systemMsgs.success.reportRejected };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});
@@ -1098,10 +1098,10 @@ okulusApp.factory('ReportsSvc',
 	['$firebaseArray', '$firebaseObject', 'MembersSvc',
 	function($firebaseArray, $firebaseObject, MembersSvc){
 
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let reportsListRef = baseRef.child(constants.folders.reportsList);
-		let reportsDetailsRef = baseRef.child(constants.folders.reportsDetails);
-		let reportReviewStatus = baseRef.child(constants.folders.reportsList).orderByChild(constants.dbFields.reviewStatus);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let reportsListRef = baseRef.child(constants.db.folders.reportsList);
+		let reportsDetailsRef = baseRef.child(constants.db.folders.reportsDetails);
+		let reportReviewStatus = baseRef.child(constants.db.folders.reportsList).orderByChild(constants.db.fields.reviewStatus);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -1121,7 +1121,7 @@ okulusApp.factory('ReportsSvc',
 
 		return {
 			getGlobalReportsCounter: function(){
-				return $firebaseObject(baseRef.child(constants.folders.reportsCounters));
+				return $firebaseObject(baseRef.child(constants.db.folders.reportsCounters));
 			},
 			/* Return all Reports, using a limit for the query, if specified*/
 			getAllReports: function(limit) {
@@ -1170,64 +1170,64 @@ okulusApp.factory('ReportsSvc',
 			},
 			/* Get report audit from firebase and return as object */
 			getReportAuditObject: function(whichReportId){
-				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.audit));
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.db.folders.audit));
 			},
 			/* Get report attendace list from firebase and return as object */
 			getReportAttendanceObject: function(whichReportId){
-				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.attendance));
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.db.folders.attendance));
 			},
 			/* Get report study from firebase and return as object */
 			getReportStudyObject: function(whichReportId){
-				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.folders.study));
+				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.db.folders.study));
 			},
 			removeReportDetails: function(whichReportId){
 				return reportsDetailsRef.child(whichReportId).set(null);
 			},
 			/* Increment the number of Reports with reviewStatus = "approved"  */
 			increaseApprovedReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.approvedReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.approvedReportsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Reduce the number of Reports with reviewStatus = "approved"  */
 			decreaseApprovedReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.approvedReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.approvedReportsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Increment the number of Reports with reviewStatus = "rejected"  */
 			increaseRejectedReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.rejectedReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.rejectedReportsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Reduce the number of Reports with reviewStatus = "rejected"  */
 			decreaseRejectedReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.rejectedReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.rejectedReportsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Increment the number of Reports with reviewStatus = "pending"  */
 			increasePendingReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.pendingReportsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Reduce the number of Reports with reviewStatus = "pending"  */
 			decreasePendingReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.pendingReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.pendingReportsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Increment the number of total Reports */
 			increaseTotalReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.totalReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalReportsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Reduce the number of total Reports */
 			decreaseTotalReportsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.totalReportsCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalReportsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Set the members attendance list in the /reports/details/:reportId/attendance/members folder */
 			setMembersAttendaceList: function(attendanceList, report) {
 				if(attendanceList){
 					attendanceList.forEach(function(member) {
-						reportsDetailsRef.child(report.$id).child(constants.folders.membersAttendance).child(member.memberId).set(
+						reportsDetailsRef.child(report.$id).child(constants.db.folders.membersAttendance).child(member.memberId).set(
 							{memberId:member.memberId, memberName:member.memberName}
 						);
 						MembersSvc.addReportReferenceToMember(member.memberId, report);
@@ -1238,13 +1238,13 @@ okulusApp.factory('ReportsSvc',
 			setGuestAttendaceList: function(attendanceList, report) {
 				if(attendanceList){
 					attendanceList.forEach(function(guest) {
-						reportsDetailsRef.child(report.$id).child(constants.folders.guestsAttendance).push({guestName:guest.guestName});
+						reportsDetailsRef.child(report.$id).child(constants.db.folders.guestsAttendance).push({guestName:guest.guestName});
 					});
 				}
 			},
 			/* Save the Report Study info in /reports/details/:reportId/study/ */
 			setReportStudyInfo: function(reportStudyInfo, reportId) {
-				reportsDetailsRef.child(reportId).child(constants.folders.study).set(reportStudyInfo);
+				reportsDetailsRef.child(reportId).child(constants.db.folders.study).set(reportStudyInfo);
 			},
 			/* Set the guests attendance list in the /reports/details/:reportId/attendance/guests folder */
 			removeReportRefereceFromMembers: function(membersMap, reportId) {
@@ -1257,7 +1257,7 @@ okulusApp.factory('ReportsSvc',
 			},
 			/* Return all reports with WeedId in the provided period (both sides inclusive)*/
 			getReportsforWeeksPeriod: function(fromWeek, toWeek){
-				let query = reportsListRef.orderByChild(constants.dbFields.weekId).startAt(fromWeek).endAt(toWeek);
+				let query = reportsListRef.orderByChild(constants.db.fields.weekId).startAt(fromWeek).endAt(toWeek);
 				return $firebaseArray(query);
 			},
 			//Deprecated
@@ -1265,12 +1265,12 @@ okulusApp.factory('ReportsSvc',
 				return $firebaseObject(reportsListRef.child(reportId));
 			},
 			getReportsForWeek: function(weekId){
-				let ref = reportsListRef.orderByChild(constants.dbFields.weekId).equalTo(weekId);
+				let ref = reportsListRef.orderByChild(constants.db.fields.weekId).equalTo(weekId);
 				return $firebaseArray(ref);
 			},
 			/*Returns firebaseArray with the Reports for the given week, but limited to a specified amount */
 			getReportsForWeekWithLimit: function(weekId, limit){
-				let ref = reportsListRef.orderByChild(constants.dbFields.weekId).equalTo(weekId).limitToLast(limit);
+				let ref = reportsListRef.orderByChild(constants.db.fields.weekId).equalTo(weekId).limitToLast(limit);
 				return $firebaseArray(ref);
 			}
 		};

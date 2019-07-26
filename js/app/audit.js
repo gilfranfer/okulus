@@ -1,7 +1,7 @@
 okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 	function($rootScope, ErrorsSvc, NotificationsSvc){
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let auditRef = baseRef.child(constants.folders.audit);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let auditRef = baseRef.child(constants.db.folders.audit);
 
 		return {
 			/**
@@ -33,7 +33,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 					{action: action, by: user, byId: userId, referenceId:objectId, date: timestamp}
 				);
 
-				let objectAuditRef = baseRef.child(on).child(constants.folders.details).child(objectId).child(constants.folders.audit);
+				let objectAuditRef = baseRef.child(on).child(constants.db.folders.details).child(objectId).child(constants.db.folders.audit);
 				//update Audit on the object
 				if(action == 'create'){
 					objectAuditRef.update(

@@ -1,6 +1,6 @@
 okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
 	function($rootScope,$firebaseObject){
-		let baseRef = firebase.database().ref().child(rootFolder);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 		let errorsRef = baseRef.child('errors');
 		let counterRef = baseRef.child("counters/errors/systemErrors");
 
@@ -55,7 +55,7 @@ okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
 
 okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject', '$rootScope',
 	function( $firebaseArray, $firebaseObject, $rootScope){
-		let countersRef = firebase.database().ref().child(rootFolder).child(constants.folders.counters);
+		let countersRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.counters);
 
 		return {
 			buildDateJson: function(dateObject){

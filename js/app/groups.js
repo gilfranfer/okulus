@@ -219,7 +219,7 @@ okulusApp.controller('GroupDetailsCntrl',
 				if($scope.objectDetails.basicInfo.$id){
 					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
 					$scope.objectDetails.basicInfo.$save().then(function() {
-						AuditSvc.recordAudit(groupId, constants.actions.update, constants.folders.groups);
+						AuditSvc.recordAudit(groupId, constants.actions.update, constants.db.folders.groups);
 						$scope.response = {success:true, message: systemMsgs.success.groupInfoSaved};
 					});
 				}
@@ -229,7 +229,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
 					let newgroupRef = GroupsSvc.persistGroup($scope.objectDetails.basicInfo);
 					GroupsSvc.getGroupBasicDataObject(newgroupRef.key).$loaded().then(function() {
-						AuditSvc.recordAudit(newgroupRef.key, constants.actions.create, constants.folders.groups);
+						AuditSvc.recordAudit(newgroupRef.key, constants.actions.create, constants.db.folders.groups);
 						GroupsSvc.increaseTotalGroupsCount();
 						GroupsSvc.increaseActiveGroupsCount();
 						$rootScope.groupResponse = {created:true, message:systemMsgs.success.groupCreated };
@@ -270,7 +270,7 @@ okulusApp.controller('GroupDetailsCntrl',
 				//After removing Group Basic Info
 				.then(function(deletedGroupRef){
 					deletedGroupId = deletedGroupRef.key;
-					AuditSvc.recordAudit(deletedGroupId, constants.actions.delete, constants.folders.groups);
+					AuditSvc.recordAudit(deletedGroupId, constants.actions.delete, constants.db.folders.groups);
 					GroupsSvc.decreaseTotalGroupsCount();
 					return GroupsSvc.getAccessRulesList(deletedGroupId).$loaded();
 				})
@@ -296,7 +296,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					GroupsSvc.decreaseActiveGroupsCount();
 				}
 				groupInfo.$save();
-				AuditSvc.recordAudit(groupInfo.$id, constants.actions.update, constants.folders.groups);
+				AuditSvc.recordAudit(groupInfo.$id, constants.actions.update, constants.db.folders.groups);
 				$scope.response = {success:true, message: systemMsgs.success.groupStatusUpdated};
 			}
 		};
@@ -338,7 +338,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					groupRoles.leadName = null;
 				}
 				groupRoles.$save().then(function() {
-					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.folders.groups);
+					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
 					$scope.groupEditParams.updatingGroupLead = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupLeadUpdated};
 				});
@@ -370,7 +370,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					groupRoles.hostName = null;
 				}
 				groupRoles.$save().then(function() {
-					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.folders.groups);
+					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
 					$scope.groupEditParams.updatingGroupHost = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupHostUpdated};
 				});
@@ -384,12 +384,12 @@ okulusApp.factory('GroupsSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let groupListRef = baseRef.child(constants.folders.groupsList);
-		let groupDetailsRef = baseRef.child(constants.folders.groupsDetails);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let groupListRef = baseRef.child(constants.db.folders.groupsList);
+		let groupDetailsRef = baseRef.child(constants.db.folders.groupsDetails);
 		let isActiveGroupRef = groupListRef.orderByChild(constants.status.isActive);
 		//Deprecated
-		let groupsRef = baseRef.child(constants.folders.groups);
+		let groupsRef = baseRef.child(constants.db.folders.groups);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseCounter = function(counterRef){
@@ -409,7 +409,7 @@ okulusApp.factory('GroupsSvc',
 
 		return {
 			getGlobalGroupsCounter: function(){
-				return $firebaseObject(baseRef.child(constants.folders.groupsCounters));
+				return $firebaseObject(baseRef.child(constants.db.folders.groupsCounters));
 			},
 			/* Return all Groups, using a limit for the query, if specified*/
 			getAllGroups: function(limit) {
@@ -441,23 +441,23 @@ okulusApp.factory('GroupsSvc',
 			},
 			/* Get group address from firebase and return as object */
 			getGroupAddressObject: function(whichGroupId){
-				return $firebaseObject(groupListRef.child(whichGroupId).child(constants.folders.address));
+				return $firebaseObject(groupListRef.child(whichGroupId).child(constants.db.folders.address));
 			},
 			/* Get group audit from firebase and return as object */
 			getGroupAuditObject: function(whichGroupId){
-				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.folders.audit));
+				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.db.folders.audit));
 			},
 			/* Get group roles from firebase and return as object */
 			getGroupRolesObject: function(whichGroupId){
-				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.folders.roles));
+				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.db.folders.roles));
 			},
 			/* Get group roles from firebase and return as object */
 			getGroupReportsList: function(whichGroupId){
-				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.folders.reports));
+				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.db.folders.reports));
 			},
 			/* Get the list of Access Rules that indicate the members with access to the group */
 			getAccessRulesList: function(whichGroupId) {
-				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.folders.accessRules));
+				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.db.folders.accessRules));
 			},
 			/* Push Member Basic Details Object to Firebase*/
 			persistGroup: function(groupObj){
@@ -471,28 +471,28 @@ okulusApp.factory('GroupsSvc',
 			},
 			/* Used when creating a Member */
 			increaseTotalGroupsCount: function () {
-				let conunterRef = baseRef.child(constants.folders.totalGroupsCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalGroupsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Used when deleting a Member */
 			decreaseTotalGroupsCount: function () {
-				let conunterRef = baseRef.child(constants.folders.totalGroupsCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalGroupsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to True  */
 			increaseActiveGroupsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
+				let conunterRef = baseRef.child(constants.db.folders.activeGroupsCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to False  */
 			decreaseActiveGroupsCount: function() {
-				let conunterRef = baseRef.child(constants.folders.activeGroupsCount);
+				let conunterRef = baseRef.child(constants.db.folders.activeGroupsCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after Report Creation, to add some Report details in the
 			 Group folder: /groups/details/:groupId/reports */
 			addReportReferenceToGroup: function(report){
-				let groupReportsFolder = groupDetailsRef.child(report.groupId).child(constants.folders.reports);
+				let groupReportsFolder = groupDetailsRef.child(report.groupId).child(constants.db.folders.reports);
 				groupReportsFolder.child(report.$id).set({
 					reportId:report.$id, weekId:report.weekId,date:report.date
 				});
@@ -500,7 +500,7 @@ okulusApp.factory('GroupsSvc',
 			/* Called when deleting Report, to remove the Report details from the
 			 Group folder: /groups/details/:groupId/reports */
 			removeReportReferenceFromGroup: function(groupId,reportId){
-				let groupReportsFolder = groupDetailsRef.child(groupId).child(constants.folders.reports);
+				let groupReportsFolder = groupDetailsRef.child(groupId).child(constants.db.folders.reports);
 				groupReportsFolder.child(reportId).set(null);
 			},
 			//Deprecated
@@ -573,13 +573,13 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			let record = { memberName: memberName, memberId: whichMember, date:creationDate};
 			//Use the Group´s access list to add a new record
 			$scope.acessList.$add(record).then(function(ref) {
-				AuditSvc.recordAudit(whichGroup, constants.actions.grantAccess, constants.folders.groups);
+				AuditSvc.recordAudit(whichGroup, constants.actions.grantAccess, constants.db.folders.groups);
 				//Create cross Reference. The Member must have the same rule in members/details/:memberId/access
 				record = { groupName:groupName, groupId: whichGroup, date:creationDate };
 				MembersSvc.addAccessRuleToMember(whichMember,ref.key,record);
 				//notify the member that got the access
 				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
-					NotificationsSvc.notifySpecificUser(member.userId, constants.actions.grantAccess, constants.folders.groups, whichGroup);
+					NotificationsSvc.notifySpecificUser(member.userId, constants.actions.grantAccess, constants.db.folders.groups, whichGroup);
 				});
 				$scope.response = { success: true, message: systemMsgs.success.ruleCreated};
 			}).catch( function(error){
@@ -595,12 +595,12 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			var ruleRecord = $scope.acessList.$getRecord(ruleId);
 			let whichMember = ruleRecord.memberId;
 			$scope.acessList.$remove(ruleRecord).then(function(ref) {
-				AuditSvc.recordAudit(whichGroup, constants.actions.revokeAccess, constants.folders.groups);
+				AuditSvc.recordAudit(whichGroup, constants.actions.revokeAccess, constants.db.folders.groups);
 				//Remove the same rule from the Member's access folder
 				MembersSvc.addAccessRuleToMember(whichMember,ref.key,null);
 				//notify the member that got the access
 				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
-					NotificationsSvc.notifySpecificUser(member.userId,constants.actions.revokeAccess, constants.folders.groups, whichGroup);
+					NotificationsSvc.notifySpecificUser(member.userId,constants.actions.revokeAccess, constants.db.folders.groups, whichGroup);
 				});
 				$scope.response = { success: true, message: systemMsgs.success.ruleRemoved};
 			}).catch( function(error){

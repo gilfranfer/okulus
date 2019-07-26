@@ -1,8 +1,8 @@
 okulusApp.factory('MessageCenterSvc',
 	['$firebaseArray', '$firebaseObject',
 	function($firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let messagesRef = baseRef.child(constants.folders.messagesList);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let messagesRef = baseRef.child(constants.db.folders.messagesList);
 
 		return{
 			getMessages: function(){

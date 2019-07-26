@@ -233,7 +233,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					let memberId = $scope.memberEditParams.memberId;
 
 					$scope.objectDetails.address.$remove().then(function(ref) {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
 						$scope.response = {success:true, message: systemMsgs.success.memberAddressRemoved};
 					}, function(error) {
 					  console.log("Error:", error);
@@ -259,7 +259,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				//Update using the existing address firebaseObject
 				if($scope.objectDetails.address.$id){
 					$scope.objectDetails.address.$save().then(function(){
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -268,7 +268,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					MembersSvc.persistMemberAddress(memberId,$scope.objectDetails.address);
 					$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
 					$scope.objectDetails.address.$loaded().then(function() {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -284,7 +284,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				/*UPDATE Current Member*/
 				if($scope.objectDetails.basicInfo.$id){
 					$scope.objectDetails.basicInfo.$save().then(function() {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.folders.members);
+						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -293,7 +293,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					$scope.objectDetails.basicInfo.isActive = true;
 					let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
 					MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function() {
-						AuditSvc.recordAudit(newmemberRef.key, constants.actions.create, constants.folders.members);
+						AuditSvc.recordAudit(newmemberRef.key, constants.actions.create, constants.db.folders.members);
 						MembersSvc.increaseTotalMembersCount();
 						MembersSvc.increaseActiveMembersCount();
 						$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreated };
@@ -324,7 +324,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				let deletedMemberId = undefined;
 				memberInfo.$remove().then(function(deletedMemberRef){
 					deletedMemberId = deletedMemberRef.key;
-					AuditSvc.recordAudit(deletedMemberId, constants.actions.delete, constants.folders.members);
+					AuditSvc.recordAudit(deletedMemberId, constants.actions.delete, constants.db.folders.members);
 					MembersSvc.decreaseTotalMembersCount();
 					return MembersSvc.getAccessRulesList(deletedMemberId).$loaded();
 				}).then(function(accessList){
@@ -362,7 +362,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					}
 				}
 				memberInfo.$save();
-				AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+				AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
 				$scope.response = {success:true, message: systemMsgs.success.membershipStatusUpdated};
 			}
 		};
@@ -378,7 +378,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					}else{
 						MembersSvc.decreaseLeadMembersCount();
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -395,7 +395,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					}else{
 						MembersSvc.decreaseTraineeMembersCount();
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -412,7 +412,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					}else{
 						MembersSvc.decreaseHostMembersCount();
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -454,7 +454,7 @@ okulusApp.controller('MemberDetailsCntrl',
 						memberInfo.baseGroupId = null;
 					}
 					memberInfo.$save().then(function() {
-						AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.folders.members);
+						AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
 						$scope.memberEditParams.updatingBaseGroup = false;
 						$scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};
 					});
@@ -468,9 +468,9 @@ okulusApp.factory('MembersSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let memberListRef = baseRef.child(constants.folders.membersList);
-		let memberDetailsRef = baseRef.child(constants.folders.membersDetails);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let memberListRef = baseRef.child(constants.db.folders.membersList);
+		let memberDetailsRef = baseRef.child(constants.db.folders.membersDetails);
 		let isActiveMemberRef = memberListRef.orderByChild(constants.status.isActive);
 		let isLeadMemberRef = memberListRef.orderByChild(constants.roles.isLead);
 		let isTraineeMemberRef = memberListRef.orderByChild(constants.roles.isTrainee);
@@ -494,7 +494,7 @@ okulusApp.factory('MembersSvc',
 
 		return {
 			getGlobalMembersCounter: function(){
-				return $firebaseObject(baseRef.child(constants.folders.membersCounters));
+				return $firebaseObject(baseRef.child(constants.db.folders.membersCounters));
 			},
 			/* Return all Members, using a limit for the query, if specified*/
 			getAllMembers: function(limit) {
@@ -559,19 +559,19 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Get member address from firebase and return as object */
 			getMemberAddressObject: function(whichMemberId){
-				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.folders.address));
+				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.db.folders.address));
 			},
 			/* Get member audit from firebase and return as object */
 			getMemberAuditObject: function(whichMemberId){
-				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.folders.audit));
+				return $firebaseObject(memberDetailsRef.child(whichMemberId).child(constants.db.folders.audit));
 			},
 			/* Get the list of Access Rules that indicate the groups the member has access to */
 			getAccessRulesList: function(whichMemberId) {
-				return $firebaseArray(memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules));
+				return $firebaseArray(memberDetailsRef.child(whichMemberId).child(constants.db.folders.accessRules));
 			},
 			/* Returns the member/list containing members with baseGroupId = gropId */
 			getMembersForBaseGroup: function(gropId){
-				let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(gropId);
+				let ref = memberListRef.orderByChild(constants.db.fields.baseGroup).equalTo(gropId);
 				return $firebaseArray(ref);
 			},
 			/* Push Member Basic Details Object to Firebase*/
@@ -582,7 +582,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Push Address Object to Firebase, in the folder members/details/:memberId */
 			persistMemberAddress: function(memberId, addressObj){
-				let ref = memberDetailsRef.child(memberId).child(constants.folders.address);
+				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.address);
 				ref.set(addressObj);
 				return ref;
 			},
@@ -592,58 +592,58 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Used when creating a Member */
 			increaseTotalMembersCount: function () {
-				let conunterRef = baseRef.child(constants.folders.totalMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Used when deleting a Member */
 			decreaseTotalMembersCount: function () {
-				let conunterRef = baseRef.child(constants.folders.totalMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.totalMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to True  */
 			increaseActiveMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.activeMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.activeMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the membership status "isActive" to False  */
 			decreaseActiveMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.activeMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.activeMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isHost true*/
 			increaseHostMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.hostMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.hostMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isHost false*/
 			decreaseHostMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.hostMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.hostMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isLead true*/
 			increaseLeadMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.leadMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.leadMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isLead false*/
 			decreaseLeadMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.leadMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.leadMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isTrainee true*/
 			increaseTraineeMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.traineeMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.traineeMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Called after setting the member to isTrainee false*/
 			decreaseTraineeMembersCount: function() {
-				let conunterRef = baseRef.child(constants.folders.traineeMembersCount);
+				let conunterRef = baseRef.child(constants.db.folders.traineeMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Called From Authetication Service:
 			Return a list with all members having the email passed */
 			getMembersByEmail: function(email){
-				return $firebaseArray(memberListRef.orderByChild(constants.dbFields.email).equalTo(email));
+				return $firebaseArray(memberListRef.orderByChild(constants.db.fields.email).equalTo(email));
 			},
 			/*  Called From Authetication Service:
 			Update the User reference in the Member Object*/
@@ -666,11 +666,11 @@ okulusApp.factory('MembersSvc',
 			},
 			/* returns $firebaseArray with all access rules in /members/details/:whichMember/access folder*/
 			getMemberAccessRules: function(whichMember) {
-				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.folders.accessRules));
+				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.db.folders.accessRules));
 			},
 			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/
 			addAccessRuleToMember: function(whichMemberId, ruleId, ruleRecord){
-				memberDetailsRef.child(whichMemberId).child(constants.folders.accessRules).child(ruleId).set(ruleRecord);
+				memberDetailsRef.child(whichMemberId).child(constants.db.folders.accessRules).child(ruleId).set(ruleRecord);
 			},
 			/* Receives the access list from a Group = ( { accessRuleId: {groupId,groupName,date} , ...} ),
 			and use them to delete the groups access from each member in the list.
@@ -679,14 +679,14 @@ okulusApp.factory('MembersSvc',
 			removeAccessRules: function(accessList){
 				if(accessList){
 					accessList.forEach(function(accessRule) {
-						memberDetailsRef.child(accessRule.memberId).child(constants.folders.accessRules).child(accessRule.$id).set(null);
+						memberDetailsRef.child(accessRule.memberId).child(constants.db.folders.accessRules).child(accessRule.$id).set(null);
 					});
 				}
 			},
 			/* Called when settign the Report's Members attendance List.
 			 It will set information about a reunion (report) to the Member */
 			addReportReferenceToMember: function(memberId,report){
-				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(report.$id);
+				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(report.$id);
 				ref.set({
 					reportId: report.$id,
 					weekId:report.weekId,
@@ -697,12 +697,12 @@ okulusApp.factory('MembersSvc',
 			},
 			/*  */
 			removeReportReferenceFromMember: function(memberId, reportId){
-				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
+				memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(reportId).set(null);
 			},
 
 			//Deprecated
 			removeMemberReferenceToReport: function(memberId,reportId){
-				memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
+				memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(reportId).set(null);
 			},
 			//Deprecated
 			removeReferenceToReport: function(reportId,membersAttendanceList){
@@ -710,7 +710,7 @@ okulusApp.factory('MembersSvc',
 					for (const attKey in membersAttendanceList) {
 						// console.debug(attKey);
 						let memberId = membersAttendanceList[attKey].memberId;
-						memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId).set(null);
+						memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(reportId).set(null);
 					}
 				}
 			},
@@ -750,7 +750,7 @@ okulusApp.factory('MembersSvc',
 					let contacts = [];
 					groups.forEach(function(group) {
 						//get from members folder order by member.baseGroup equals to group.$id
-						let ref = memberListRef.orderByChild(constants.dbFields.baseGroup).equalTo(group.$id);
+						let ref = memberListRef.orderByChild(constants.db.fields.baseGroup).equalTo(group.$id);
 						$firebaseArray(ref).$loaded().then(function(members){
 							members.forEach(function(member) {
 								contacts.push( member );
@@ -764,7 +764,7 @@ okulusApp.factory('MembersSvc',
 			addReportReference: function(memberId,reportId, report){
 				// console.debug(memberId,reportId, report);
 				//Save the report Id in the Group/reports
-				let ref = memberDetailsRef.child(memberId).child(constants.folders.attendance).child(reportId);
+				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(reportId);
 				ref.set({
 					reportId: reportId,
 					weekId:report.weekId,

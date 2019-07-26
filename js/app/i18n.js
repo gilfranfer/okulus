@@ -160,7 +160,7 @@ const systemMsgs = {
 		/*Message Center*/
 		postingMessageSuccess:"El mensaje ha sido publicado.",
 		deleteMessageSuccess: "El mensaje ha sido eliminado.",
-		configSaved:"Configuraciones Guardadas. Refresca la página."
+		configSaved:"Configuraciones Guardadas."
 	}
 };
 
@@ -180,11 +180,11 @@ const actionsDescMap = new Map([
  Key: is used to validate an element can trigger a notificaciones
  Value: will be used to build the Notification description*/
 const notifiableElements = new Map([
-		[constants.folders.groups,"Grupo"],
-		[constants.folders.members,"Miembro"],
-		[constants.folders.reports,"Reporte"],
-		[constants.folders.weeks,"Semana"],
-		[constants.folders.users,"Usuario"] ]);
+		[constants.db.folders.groups,"Grupo"],
+		[constants.db.folders.members,"Miembro"],
+		[constants.db.folders.reports,"Reporte"],
+		[constants.db.folders.weeks,"Semana"],
+		[constants.db.folders.users,"Usuario"] ]);
 
 /** Using a run function to set the language in the rootScope **/
 okulusApp.run(function($rootScope) {

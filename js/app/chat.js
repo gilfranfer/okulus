@@ -294,23 +294,23 @@ okulusApp.controller('ChatCenterCntrl',
 okulusApp.factory('ChatSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
-		let chatsRef = firebase.database().ref().child(rootFolder).child( constants.folders.chats );
+		let chatsRef = firebase.database().ref().child(constants.db.folders.root).child( constants.db.folders.chats );
 
 		return {
 			/* Returns $firebaseArray with the list of unread ChatRoom Ids for the given user.
 			This is mainly used in AuthenticationSvc for the navigation badge.*/
 			getUnreadChatsForUser: function(userId){
-				let reference = chatsRef.child(userId).child(constants.folders.unreadChats);
+				let reference = chatsRef.child(userId).child(constants.db.folders.unreadChats);
 				return $firebaseArray(reference);
 			},
 			/* Returns $firebaseArray with all the chat rooms for the given user */
 			getChatRoomsForUser: function(userId){
-				let reference = chatsRef.child(userId).child(constants.folders.chatList);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatList);
 				return $firebaseArray(reference);
 			},
 			/* Returns $firebaseObject with the specific chat room*/
 			getChatRoomObject: function(userId,chatWithUserId){
-				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatWithUserId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatList).child(chatWithUserId);
 				return $firebaseObject(reference);
 			},
 			/* Create a new object in the User's ChatRooms
@@ -319,13 +319,13 @@ okulusApp.factory('ChatSvc',
 				let newChat = {
 					chattingWith:chatWithUserObj.shortname, lastMessageOn:firebase.database.ServerValue.TIMESTAMP
 				};
-				let newChatRef = chatsRef.child(userId).child(constants.folders.chatList).child(chatWithUserObj.$id);
+				let newChatRef = chatsRef.child(userId).child(constants.db.folders.chatList).child(chatWithUserObj.$id);
 				newChatRef.update(newChat);
 			},
 			/* Returns $firebaseArray with the chat messages between the loggedUser and
 			the user selected from the chatList. The limit will help to reduce the data downloaded */
 			getChatMessages: function(loggedUser,chatWithUserId,limit){
-				let reference = chatsRef.child(loggedUser).child(constants.folders.chatMessages).child(chatWithUserId).orderByKey().limitToLast(limit);;
+				let reference = chatsRef.child(loggedUser).child(constants.db.folders.chatMessages).child(chatWithUserId).orderByKey().limitToLast(limit);;
 				return $firebaseArray(reference);
 			},
 			/* Persist a Message in the firebase location /chats/{{userId}}/messages/{{chattingWithId}}
@@ -334,7 +334,7 @@ okulusApp.factory('ChatSvc',
 			param messageKey should be null. The second time will be to save the message in the Receiver's Db folder,
 			and the param messageKey should be valid because it will be used as Key for the new message. */
 			persistMessage: function(userId, chattingWithId, messageRecord, messageKey){
-				let newMessageRef = chatsRef.child(userId).child(constants.folders.chatMessages).child(chattingWithId);
+				let newMessageRef = chatsRef.child(userId).child(constants.db.folders.chatMessages).child(chattingWithId);
 				if(!messageKey){
 					//Used when persisting a Message in the Sender's Db folder
 					newMessageRef = newMessageRef.push();
@@ -359,40 +359,40 @@ okulusApp.factory('ChatSvc',
 			},
 			/*Using transaction to Increase the count by 1*/
 			increaseChatRoomUnreadCount: function (userid,chatRoomId){
-				let chatRoomRef = chatsRef.child(userid).child(constants.folders.chatList).child(chatRoomId).child(constants.folders.unreadCount);
+				let chatRoomRef = chatsRef.child(userid).child(constants.db.folders.chatList).child(chatRoomId).child(constants.db.folders.unreadCount);
 				chatRoomRef.transaction(function(currentUnread) {
 					return currentUnread+1;
 				});
 			},
 			/* Remove the Chat Id from the /chats/{{userId}}/unreadChats list*/
 			removeChatFromUnreadList: function (userId, chatRoomId){
-				let reference = chatsRef.child(userId).child(constants.folders.unreadChats).child(chatRoomId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.unreadChats).child(chatRoomId);
 				reference.set({});
 			},
 			/* Add the Chat Id to the /chats/{{userId}}/unreadChats list*/
 			addChatToUnreadList: function (userId, chatRoomId){
-				let reference = chatsRef.child(userId).child(constants.folders.unreadChats).child(chatRoomId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.unreadChats).child(chatRoomId);
 				reference.set(true);
 			},
 			/*Called when sending a Message, to update the ChatRoom Summary*/
 			updateChatRoomSummary: function(userId,chatRoomId,record) {
-				let reference = chatsRef.child(userId).child(constants.folders.chatList).child(chatRoomId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatList).child(chatRoomId);
 				reference.update(record);
 				return reference;
 			},
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
 			softDeleteForUser: function(userId,chatRoomId,messageId){
-				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatMessages).child(chatRoomId).child(messageId);
 				reference.update({deletedForUser:true,deletedForAll:null,wasEdited:null,message:null});
 			},
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
 			softDeleteForAll: function(userId,chatRoomId,messageId){
-				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatMessages).child(chatRoomId).child(messageId);
 				reference.update({deletedForAll:true,deletedForUser:null,wasEdited:null,message:null});
 			},
 			/* Soft Delete a Message. Remove the message text, and set "wasDeleted" value.*/
 			updateMessageText: function(userId,chatRoomId,messageId,editedMessagetTxt){
-				let reference = chatsRef.child(userId).child(constants.folders.chatMessages).child(chatRoomId).child(messageId);
+				let reference = chatsRef.child(userId).child(constants.db.folders.chatMessages).child(chatRoomId).child(messageId);
 				reference.update({message:editedMessagetTxt,wasEdited:true});
 			}
 		};

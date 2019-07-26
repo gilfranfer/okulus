@@ -217,8 +217,8 @@ okulusApp.controller('RegistrationCntrl',
 			AuthenticationSvc.register($scope.newUser).then(function(regUser){
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
-				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.folders.users);
-				$rootScope.redirectFronRegister = true;
+				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.db.folders.users);
+				$rootScope.redirectFromRegister = true;
 				$location.path(constants.pages.home);
 			})
 			.catch( function(error){
@@ -241,7 +241,7 @@ okulusApp.controller('RegistrationCntrl',
 /* Service methods for Authetication related tasks. */
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$firebaseAuth',
 	function($rootScope,$firebaseObject,$firebaseAuth){
-		let usersFolder = firebase.database().ref().child(rootFolder).child( constants.folders.usersList )
+		let usersFolder = firebase.database().ref().child(constants.db.folders.root).child( constants.db.folders.usersList )
 		var auth = $firebaseAuth();
 
 		return{
@@ -286,30 +286,30 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 okulusApp.controller('HomeCntrl',
 	['$scope','$rootScope','$location','$firebaseAuth',
 	'MembersSvc','AuthenticationSvc', 'MessageCenterSvc',
-	function($scope,$rootScope,$location, $firebaseAuth,
+	function($scope, $rootScope, $location, $firebaseAuth,
 		MembersSvc, AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				//Get Member Access Rules
-				if(user.isValid){
-					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
-				}
-
+				console.debug("**HomeCntrl: loadSessionData");
 				if(user.isRoot){
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);
-				}else if($rootScope.redirectFronRegister){
-					$rootScope.redirectFronRegister = undefined;
-				}else if(!user.isValid){
+				} else if($rootScope.redirectFromRegister){
+					//After user Registration only. No need to load Access Rules.
+					$rootScope.redirectFromRegister = undefined;
+				} else if(user.isValid){
+					//Get Access Rules for a valid existing user.
+					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+				}	else if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}
 			});
 		});
 
-		/* Assuming the member has only 1 access rule */
+		/* When the member has only 1 access rule */
 		$scope.quickReportLauncher = function(){
 			let groupId = $rootScope.currentSession.accessRules[0].groupId;
 			$location.path(constants.pages.reportNew + groupId);

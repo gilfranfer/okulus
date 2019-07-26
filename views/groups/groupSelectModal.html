@@ -1,17 +1,20 @@
 <article class="modal fade" id="groupSelectModal" tabindex="-1" role="dialog" aria-labelledby="groupSelectModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+      <!-- Modal Header -->
       <div class="modal-header">
         <h5 class="modal-title" id="groupSelectModalLabel">{{i18n.groupModal.title}}</h5>
         <button type="button" class="close clickable" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
 
+      <div class="modal-body">
+        <!-- FIlter box: filter on the groupName only -->
         <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control"
-          ng-model="searchFilter" ng-show="currentSession.accessRules.length > config.minResultsToshowFilter"/>
-        <div class="list-group-item mt-2 pre-scrollable ">
+          ng-model="searchFilter.groupName" ng-show="currentSession.accessRules.length > config.minResultsToshowFilter"/>
+        <!-- List of Groups the Member has access to -->
+        <div class="list-group mt-2 pre-scrollable">
           <div id="group-{{rule.groupId}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
   						ng-repeat="rule in currentSession.accessRules | filter:searchFilter | orderBy:'groupName'"
               ng-click="closeGroupSelectModal(rule)" data-dismiss="modal">
@@ -22,12 +25,7 @@
   					</div>
   				</div>
 				</div>
-
       </div>
-      <!-- <div class="modal-footer">
-        <button type="button" class="btn clickable btn-secondary" data-dismiss="modal">{{i18n.btns.cancelBtn}}</button>
-        <button type="button" class="btn clickable btn-primary"></button>
-      </div> -->
     </div>
   </div>
 </article>

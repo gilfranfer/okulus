@@ -149,31 +149,31 @@ okulusApp.controller('WeeksCntrl',
 okulusApp.factory('WeeksSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let weeksDetailsRef = baseRef.child(constants.folders.weeksDetails);
-		let weeksListRef = baseRef.child(constants.folders.weeksList);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let weeksDetailsRef = baseRef.child(constants.db.folders.weeksDetails);
+		let weeksListRef = baseRef.child(constants.db.folders.weeksList);
 		let isOpenWeekRef = weeksListRef.orderByChild(constants.status.isOpen);
 		let isVisibleWeekRef = weeksListRef.orderByChild(constants.status.isVisible);
-		let openWeeksCounterRef = baseRef.child(constants.folders.openWeeksCount);
-		let visibleWeeksCounterRef = baseRef.child(constants.folders.visibleWeeksCount);
-		let totalWeeksCounterRef = baseRef.child(constants.folders.totalWeeksCount);
+		let openWeeksCounterRef = baseRef.child(constants.db.folders.openWeeksCount);
+		let visibleWeeksCounterRef = baseRef.child(constants.db.folders.visibleWeeksCount);
+		let totalWeeksCounterRef = baseRef.child(constants.db.folders.totalWeeksCount);
 
 		let updateOpenStatusCounterAndAudit = function (isWeekOpen, weekId) {
 			if(isWeekOpen){
-				AuditSvc.recordAudit(weekId, constants.actions.open, constants.folders.weeks);
+				AuditSvc.recordAudit(weekId, constants.actions.open, constants.db.folders.weeks);
 				increaseCounter(openWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, constants.actions.close, constants.folders.weeks);
+				AuditSvc.recordAudit(weekId, constants.actions.close, constants.db.folders.weeks);
 				decreaseCounter(openWeeksCounterRef);
 			}
 		};
 
 		let updateVisibilityCounterAndAudit = function (isWeekVisible, weekId) {
 			if(isWeekVisible){
-				AuditSvc.recordAudit(weekId, constants.actions.show, constants.folders.weeks);
+				AuditSvc.recordAudit(weekId, constants.actions.show, constants.db.folders.weeks);
 				increaseCounter(visibleWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, constants.actions.hide, constants.folders.weeks);
+				AuditSvc.recordAudit(weekId, constants.actions.hide, constants.db.folders.weeks);
 				decreaseCounter(visibleWeeksCounterRef);
 			}
 		};
@@ -246,7 +246,7 @@ okulusApp.factory('WeeksSvc',
 				return $firebaseObject(weeksListRef.child(weekId));
 			},
 			getWeekAuditObject: function(weekId){
-				return $firebaseObject(weeksDetailsRef.child(weekId).child(constants.folders.audit));
+				return $firebaseObject(weeksDetailsRef.child(weekId).child(constants.db.folders.audit));
 			},
 			/* Get the Week Object from the firebaseArray in the rootScope
 			(when updating status from Weeks List), update the isOpen value (boolean),
@@ -309,7 +309,7 @@ okulusApp.factory('WeeksSvc',
 				decreaseCounter(visibleWeeksCounterRef);
 			},
 			getGlobalWeeksCounter: function(){
-				return $firebaseObject(baseRef.child(constants.folders.weeksCounters));
+				return $firebaseObject(baseRef.child(constants.db.folders.weeksCounters));
 			}
 		};//return end
 	}
@@ -421,7 +421,7 @@ okulusApp.controller('WeekDetailsCntrl',
 			//Update existing Week
 			if($scope.objectDetails.basicInfo.$id){
 				$scope.objectDetails.basicInfo.$save().then(function(ref) {
-					AuditSvc.recordAudit(weekId, constants.actions.update, constants.folders.weeks);
+					AuditSvc.recordAudit(weekId, constants.actions.update, constants.db.folders.weeks);
 					$scope.response = {success:true, message: systemMsgs.success.weekInfoUpdated};
 				},function(error){
 					console.log("Error:", error);
@@ -443,7 +443,7 @@ okulusApp.controller('WeekDetailsCntrl',
 
 						week.$save().then(function(ref) {
 							WeeksSvc.increaseTotalWeeksCounter();
-							AuditSvc.recordAudit(weekId, constants.actions.create, constants.folders.weeks);
+							AuditSvc.recordAudit(weekId, constants.actions.create, constants.db.folders.weeks);
 							$rootScope.weekResponse = { created:true, message: $rootScope.i18n.weeks.weekCreated+" "+weekId };
 							$location.path(constants.pages.weekEdit+weekId);
 						},function(error){
@@ -477,7 +477,7 @@ okulusApp.controller('WeekDetailsCntrl',
 							WeeksSvc.decreaseVisibleWeeksCounter();
 						}
 						WeeksSvc.decreaseTotalWeeksCounter();
-						AuditSvc.recordAudit(weekInfo.$id, constants.actions.delete, constants.folders.weeks);
+						AuditSvc.recordAudit(weekInfo.$id, constants.actions.delete, constants.db.folders.weeks);
 						deletedWeekId = deletedWeekRef.key;
 						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
 						$location.path(constants.pages.adminWeeks);

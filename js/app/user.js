@@ -116,8 +116,8 @@ okulusApp.controller('UserEditCntrl',
 okulusApp.factory('UsersSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let usersRef = firebase.database().ref().child(rootFolder).child(constants.folders.usersList);
-		let usersDetailsRef = firebase.database().ref().child(rootFolder).child(constants.folders.usersDetails);
+		let usersRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.usersList);
+		let usersDetailsRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.usersDetails);
 		let validUsersRef = usersRef.orderByChild("isValid").equalTo(true);
 
 		return {
@@ -134,7 +134,7 @@ okulusApp.factory('UsersSvc',
 			},
 			/* Get audit from firebase and return as object */
 			getUserAuditObject: function(whichUserId){
-				return $firebaseObject(usersDetailsRef.child(whichUserId).child(constants.folders.audit));
+				return $firebaseObject(usersDetailsRef.child(whichUserId).child(constants.db.folders.audit));
 			},
 			/* Set the member Id and Member name in the User, to link them */
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){

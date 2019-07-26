@@ -7,15 +7,14 @@
 //   storageBucket: "dev-sandbox-b557a.appspot.com",
 //   messagingSenderId: "962638064654"
 // };
-// firebase.initializeApp(config);
 
 // OHC Dev
 var config = {
-    apiKey: "AIzaSyCbZUIZjlz87NFJnoyet52egjJU4GnqqfY",
-    authDomain: "okulus-ohc-dev.firebaseapp.com",
-    databaseURL: "https://okulus-ohc-dev.firebaseio.com",
-    projectId: "okulus-ohc-dev",
-    storageBucket: "okulus-ohc-dev.appspot.com",
-    messagingSenderId: "478849109524"
-  };
-  firebase.initializeApp(config);
+  apiKey: "AIzaSyCbZUIZjlz87NFJnoyet52egjJU4GnqqfY",
+  authDomain: "okulus-ohc-dev.firebaseapp.com",
+  databaseURL: "https://okulus-ohc-dev.firebaseio.com",
+  projectId: "okulus-ohc-dev",
+  storageBucket: "okulus-ohc-dev.appspot.com",
+  messagingSenderId: "478849109524"
+};
+firebase.initializeApp(config);

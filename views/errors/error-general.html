@@ -4,13 +4,13 @@
 			{{i18n.error.title}}
 		</h1>
 		<hr class="my-4"/>
-		<p class="lead">
-			{{i18n.error.lead}}
+		<p class="lead" ng-if="">
 		</p>
 
 		<!-- Alert for error message -->
 		<div class="alert alert-danger" role="alert" ng-if="response.error">
-			<p ng-if="currentSession.user">{{currentSession.user.email}}:</p>
+			<!-- <p ng-if="currentSession.user">{{currentSession.user.email}}:</p> -->
+			{{i18n.error.lead}}
 			<p>{{response.message}}</p>
 		</div>
 

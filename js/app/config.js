@@ -1,11 +1,14 @@
 /** Application entry point. In this is the configuration file we:
 1. Create the Angular module
 2. Prepare the URL routing in the config function
-3. Create a constants $firebaseObject
-4. Set the System Editable Configurations
+3. Create constants used in the app
+4. Load App Editable Configurations from firebase
 **/
+
+//1. Angular Moduel
 var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 
+//2. URL Routing
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
@@ -256,14 +259,61 @@ okulusApp.config(['$routeProvider',
 	}
 ]);
 
-//Db Root Folder
-const rootFolder = "okulusTest";
+//3. Constants
 const constants = {
+	db: {
+		folders:{
+			root:"okulusTest",
+			config:"config", counters:"counters", details:"details",
+			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
+			groups:"groups", members:"members", reports:"reports",
+			chats:"chats", chatList:"chatRooms",chatMessages:"messages",
+			metadata:"metadata", address:"address", accessRules:"access",
+			attendance:"attendance", study:"study",
+			unreadChats:"unreadChats",unreadCount:"unreadCount",
+			usersList:"users/list", usersDetails:"users/details",
+			weeksList:"weeks/list", weeksDetails:"weeks/details",
+			groupsList:"groups/list", groupsDetails:"groups/details",
+			membersList:"members/list", membersDetails:"members/details",
+			reportsList:"reports/list", reportsDetails:"reports/details",
+			messagesList:"messages/list",
+			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
+			notificationsList:"notifications/list",
+			/**Counters*/
+			weeksCounters:"counters/weeks",
+			totalWeeksCount:"counters/weeks/total",
+			openWeeksCount:"counters/weeks/open",
+			visibleWeeksCount:"counters/weeks/visible",
+			membersCounters:"counters/members",
+			totalMembersCount:"counters/members/total",
+			activeMembersCount:"counters/members/active",
+			hostMembersCount:"counters/members/hosts",
+			leadMembersCount:"counters/members/leads",
+			traineeMembersCount:"counters/members/trainees",
+			groupsCounters:"counters/groups",
+			totalGroupsCount:"counters/groups/total",
+			activeGroupsCount:"counters/groups/active",
+			unredNotifCount:"counters/notifications/unreaded",
+			totalNotifCount:"counters/notifications/total",
+			reportsCounters:"counters/reports",
+			totalReportsCount:"counters/reports/total",
+			pendingReportsCount:"counters/reports/pending",
+			approvedReportsCount:"counters/reports/approved",
+			rejectedReportsCount:"counters/reports/rejected"
+		},
+		fields:{
+			baseGroup:"baseGroupId",
+			email:"email",
+			reviewStatus:"reviewStatus",
+			weekId:"weekId"
+		}
+	},
 	roles: {
-		user:"user", admin: "admin", type:"type", system: "System",
-		isLead:"isLeader", isTrainee:"isTrainee", isHost: "isHost",
+		user:"user", admin: "admin", type:"type", system:"System",
+		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost",
 		isUser:"isUser",
-		userDefaultName:"Usuario sin miembro asociado", rootName:"Super Administrador"
+		userDefaultName:"Usuario sin miembro asociado",
+		rootName:"Super Administrador"
 	},
 	status: {
 		online:"online", offline:"offline",
@@ -279,7 +329,8 @@ const constants = {
 	pages: {
 		login:"/login", home:"/home",
 		error: "/error",
-		adminWeeks:"/weeks", adminMembers:"/members",
+		adminWeeks:"/weeks",
+		adminMembers:"/members",
 		adminGroups:"/groups",
 		adminMonitor:"/admin/monitor",
 		memberEdit:"/members/edit/",
@@ -287,50 +338,6 @@ const constants = {
 		reportEdit:"/reports/edit/",
 		reportNew:"/reports/new/",
 		weekEdit:"/weeks/edit/"
-	},
-	folders:{
-		root:"okulusTest", config:"config", counters:"counters", details:"details",
-		audit:"audit", users:"users", weeks:"weeks", roles:"roles",
-		groups:"groups", members:"members", reports:"reports",
-		chats:"chats", chatList:"chatRooms",chatMessages:"messages",
-		metadata:"metadata", address:"address", accessRules:"access",
-		attendance:"attendance", study:"study",
-		unreadChats:"unreadChats",unreadCount:"unreadCount",
-		usersList:"users/list", usersDetails:"users/details",
-		weeksList:"weeks/list", weeksDetails:"weeks/details",
-		groupsList:"groups/list", groupsDetails:"groups/details",
-		membersList:"members/list", membersDetails:"members/details",
-		reportsList:"reports/list", reportsDetails:"reports/details",
-		messagesList:"messages/list",
-		membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
-		notificationsList:"notifications/list",
-		/**Counters*/
-		weeksCounters:"counters/weeks",
-		totalWeeksCount:"counters/weeks/total",
-		openWeeksCount:"counters/weeks/open",
-		visibleWeeksCount:"counters/weeks/visible",
-		membersCounters:"counters/members",
-		totalMembersCount:"counters/members/total",
-		activeMembersCount:"counters/members/active",
-		hostMembersCount:"counters/members/hosts",
-		leadMembersCount:"counters/members/leads",
-		traineeMembersCount:"counters/members/trainees",
-		groupsCounters:"counters/groups",
-		totalGroupsCount:"counters/groups/total",
-		activeGroupsCount:"counters/groups/active",
-		unredNotifCount:"counters/notifications/unreaded",
-		totalNotifCount:"counters/notifications/total",
-		reportsCounters:"counters/reports",
-		totalReportsCount:"counters/reports/total",
-		pendingReportsCount:"counters/reports/pending",
-		approvedReportsCount:"counters/reports/approved",
-		rejectedReportsCount:"counters/reports/rejected"
-	},
-	dbFields:{
-		baseGroup:"baseGroupId",
-		email:"email",
-		reviewStatus:"reviewStatus",
-		weekId:"weekId"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
@@ -342,36 +349,40 @@ const constants = {
 	config:{isProdEnv: false}
 };
 
-/* Load Configurations frm DB */
+//4. Editable Configurations
 okulusApp.run(function($rootScope) {
-	console.log("Getting configurations from DB");
-	let confReference = firebase.database().ref().child(rootFolder).child(constants.folders.config);
+	/* Set Default App Editable Configurations*/
+	$rootScope.config ={
+		appName:"Okulus App",
+		/*The Max lenght a firebaseArray should have in the initial request*/
+		maxQueryListResults: 50,
+		/*After this number of records, the Filter box will be visible*/
+		minResultsToshowFilter: 3,
+		/*Date range limits*/
+		members:{ minBDate:"1900-01-01" },
+		reports:{
+			minDate:"2018-01-01",
+			goodAttendanceNumber:5,
+			excelentAttendanceNumber:10,
+			minDuration:"30", //minutes
+			maxDuration:"300",//minutes
+			showMoneyField: true
+		}
+	};
+	/* Load  App Editable Configurations from Firebase */
+	console.debug("Getting configurations from DB");
+	let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
 	confReference.once('value').then( function(snapshot){
 		$rootScope.config = (snapshot.val());
-		$rootScope.config.todayDate = "2020-01-01";
+		//Add todays date that will be used to limit some date selectors
+		$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
 	});
-	// $rootScope.config ={
-	// 	appName:"Grupos de Vecindad",
-	// 	/*The Max lenght a firebaseArray should have in the initial request*/
-	// 	maxQueryListResults: 50,
-	// 	/*After this number of records, the Filter box will be visible*/
-	// 	minResultsToshowFilter: 2,
-	// 	/*Date range limits*/
-	// 	members:{ minBDate:"1900-01-01" },
-	// 	reports:{
-	// 		minDate:"2018-01-01",
-	// 		goodAttendanceNumber:8, excelentAttendanceNumber:14,
-	// 		minDuration:"0", maxDuration:"300",
-	//		showMoneyField: true
-	//	}
-	// };
 });
 
-/* Controller linked to the Admin view of Weeks (/weeks) */
+/* Controller linked to the Editable Configurations View */
 okulusApp.controller('ConfigCntrl',
 	['$rootScope', '$scope', '$firebaseAuth', '$location', 'ConfigSvc','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, ConfigSvc, AuthenticationSvc){
-
 		/* Executed everytime we enter to /config
 		  This function is used to confirm the user is Admin and prepare some initial values */
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
@@ -425,12 +436,14 @@ okulusApp.controller('ConfigCntrl',
 			});
 		};
 
-}]);
+}
+]);
 
+/* Service for the Editable Configurations*/
 okulusApp.factory('ConfigSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let configRef = firebase.database().ref().child(rootFolder).child(constants.folders.config);
+		let configRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
 
 		return {
 			getConfigurationsObj: function(){

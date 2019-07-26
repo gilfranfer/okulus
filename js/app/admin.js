@@ -5,7 +5,7 @@ okulusApp.controller('MonitorCntrl',
 		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MigrationSvc,ReportsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
-		let baseRef = firebase.database().ref().child(rootFolder);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 		let auditRef = baseRef.child('audit');
 		let usersRef = baseRef.child('users');
 		let errorsRef = baseRef.child('errors');
@@ -104,7 +104,7 @@ okulusApp.controller('MonitorCntrl',
 		Is better to remove this folder, and keep only the list folder.
 		The totals will be maintaint in the global counters */
 		$scope.migrateNotifications = function () {
-			let baseRef = firebase.database().ref().child(rootFolder);
+			let baseRef = firebase.database().ref().child(constants.db.folders.root);
 			let metaRef = baseRef.child("notifications/metadata");
 			let listRef = baseRef.child("notifications/list");
 
@@ -127,8 +127,8 @@ okulusApp.controller('MonitorCntrl',
 
 		$scope.migrateWeeks = function () {
 			console.log("Init Weeks Migration");
-			let weeksListRef = baseRef.child(constants.folders.weeksList);
-			let weeksDetailsRef = baseRef.child(constants.folders.weeksDetails);
+			let weeksListRef = baseRef.child(constants.db.folders.weeksList);
+			let weeksDetailsRef = baseRef.child(constants.db.folders.weeksDetails);
 
 			let weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
 			//Updates in Week Object
@@ -243,11 +243,11 @@ okulusApp.controller('AdminDashCntrl',
 okulusApp.factory('AdminDashSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(rootFolder);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 
 		return {
 			getGlobalCounters: function(){
-				return $firebaseObject(baseRef.child(constants.folders.counters));
+				return $firebaseObject(baseRef.child(constants.db.folders.counters));
 			},
 		};
 }]);
@@ -256,10 +256,10 @@ okulusApp.factory('MigrationSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
 
-		let baseRef = firebase.database().ref().child(rootFolder);
-		let memberListRef = baseRef.child(constants.folders.membersList);
-		let membersRef = baseRef.child(constants.folders.members);
-		let groupsRef = baseRef.child(constants.folders.groups);
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let memberListRef = baseRef.child(constants.db.folders.membersList);
+		let membersRef = baseRef.child(constants.db.folders.members);
+		let groupsRef = baseRef.child(constants.db.folders.groups);
 
 		return {
 			migrateMembers: function(groups) {
@@ -269,9 +269,9 @@ okulusApp.factory('MigrationSvc',
 				let totalCount = 0;
 				let memberFolderCount = 0;
 				let activeCount = 0;
-				let memberCountersRef = baseRef.child(constants.folders.membersCounters);
-				let membersListRef = baseRef.child(constants.folders.membersList);
-				let membersDetailsRef = baseRef.child(constants.folders.membersDetails);
+				let memberCountersRef = baseRef.child(constants.db.folders.membersCounters);
+				let membersListRef = baseRef.child(constants.db.folders.membersList);
+				let membersDetailsRef = baseRef.child(constants.db.folders.membersDetails);
 				let membersList = $firebaseArray(membersRef.orderByKey());
 
 				membersList.$loaded().then(function(list){
@@ -354,9 +354,9 @@ okulusApp.factory('MigrationSvc',
 				let activeCount = 0;
 				let groupFolderCount = 0;
 
-				let groupsCountersRef = baseRef.child(constants.folders.groupsCounters);
-				let groupsListRef = baseRef.child(constants.folders.groupsList);
-				let groupsDetailsRef = baseRef.child(constants.folders.groupsDetails);
+				let groupsCountersRef = baseRef.child(constants.db.folders.groupsCounters);
+				let groupsListRef = baseRef.child(constants.db.folders.groupsList);
+				let groupsDetailsRef = baseRef.child(constants.db.folders.groupsDetails);
 				let groupsList = $firebaseArray(groupsRef.orderByKey());
 
 				groupsList.$loaded().then(function(list){
