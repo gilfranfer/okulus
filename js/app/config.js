@@ -1,14 +1,104 @@
 /** Application entry point. In this is the configuration file we:
-1. Create the Angular module
-2. Prepare the URL routing in the config function
-3. Create constants used in the app
+1. Create constants used in the app
+2. Create the Angular module
+3. Prepare the URL routing in the config function
 4. Load App Editable Configurations from firebase
 **/
 
-//1. Angular Moduel
+//1. Constants
+const constants = {
+	db: {
+		folders:{
+			root:"okulusTest",
+			config:"config", counters:"counters", details:"details",
+			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
+			groups:"groups", members:"members", reports:"reports",
+			chats:"chats", chatList:"chatRooms",chatMessages:"messages",
+			metadata:"metadata", address:"address", accessRules:"access",
+			attendance:"attendance", study:"study",
+			unreadChats:"unreadChats",unreadCount:"unreadCount",
+			usersList:"users/list", usersDetails:"users/details",
+			weeksList:"weeks/list", weeksDetails:"weeks/details",
+			groupsList:"groups/list", groupsDetails:"groups/details",
+			membersList:"members/list", membersDetails:"members/details",
+			reportsList:"reports/list", reportsDetails:"reports/details",
+			messagesList:"messages/list",
+			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
+			notificationsList:"notifications/list",
+			/**Counters*/
+			weeksCounters:"counters/weeks",
+			totalWeeksCount:"counters/weeks/total",
+			openWeeksCount:"counters/weeks/open",
+			visibleWeeksCount:"counters/weeks/visible",
+			membersCounters:"counters/members",
+			totalMembersCount:"counters/members/total",
+			activeMembersCount:"counters/members/active",
+			hostMembersCount:"counters/members/hosts",
+			leadMembersCount:"counters/members/leads",
+			traineeMembersCount:"counters/members/trainees",
+			groupsCounters:"counters/groups",
+			totalGroupsCount:"counters/groups/total",
+			activeGroupsCount:"counters/groups/active",
+			unredNotifCount:"counters/notifications/unreaded",
+			totalNotifCount:"counters/notifications/total",
+			reportsCounters:"counters/reports",
+			totalReportsCount:"counters/reports/total",
+			pendingReportsCount:"counters/reports/pending",
+			approvedReportsCount:"counters/reports/approved",
+			rejectedReportsCount:"counters/reports/rejected"
+		},
+		fields:{
+			baseGroup:"baseGroupId",
+			email:"email",
+			reviewStatus:"reviewStatus",
+			weekId:"weekId"
+		}
+	},
+	roles: {
+		user:"user", admin: "admin", type:"type", system:"System",
+		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost",
+		isUser:"isUser",
+		userDefaultName:"Usuario sin miembro asociado",
+		rootName:"Super Administrador"
+	},
+	status: {
+		online:"online", offline:"offline",
+		active:"active", inactive:"inactive",
+		approved:"approved", rejected:"rejected", pendingReview:"pending",
+		open:"open", closed:"closed",
+		completed:"completed", canceled:"canceled",
+		visible:"show", hidden:"hide",
+		readed:"readed",
+		isActive:"isActive",
+		isOpen:"isOpen", isVisible:"isVisible"
+	},
+	pages: {
+		login:"/login", home:"/home",
+		error: "/error",
+		adminWeeks:"/weeks",
+		adminMembers:"/members",
+		adminGroups:"/groups",
+		adminMonitor:"/admin/monitor",
+		memberEdit:"/members/edit/",
+		groupEdit:"/groups/edit/",
+		reportEdit:"/reports/edit/",
+		reportNew:"/reports/new/",
+		weekEdit:"/weeks/edit/"
+	},
+	actions:{
+		create:"create",update:"update",delete:"delete",
+		approve:"approved",reject:"rejected",
+		open:"open",close:"closed",show:"show",hide:"hide",
+		grantAccess:"access-granted", revokeAccess:"access-deleted",
+		updateRole:"type-update"
+	},
+	config:{isProdEnv: false}
+};
+
+//2. Angular Moduel
 var okulusApp = angular.module('okulusApp',['ngRoute','firebase']);
 
-//2. URL Routing
+//3. URL Routing
 okulusApp.config(['$routeProvider',
 	function($routeProvider){
 		$routeProvider
@@ -59,14 +149,14 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myReports.html',
 				controller: 'UserMyReportsCntrl'
 			})
-			.when('/admin/dashboard', {
+			.when('/admin/summary', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
 				controller: 'AdminDashCntrl',
-				templateUrl: 'views/admin/dashboard.html'
+				templateUrl: 'views/admin/summary.html'
 			})
 			.when('/admin/monitor', {
 				resolve: {
@@ -258,96 +348,6 @@ okulusApp.config(['$routeProvider',
 			});
 	}
 ]);
-
-//3. Constants
-const constants = {
-	db: {
-		folders:{
-			root:"okulusTest",
-			config:"config", counters:"counters", details:"details",
-			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
-			groups:"groups", members:"members", reports:"reports",
-			chats:"chats", chatList:"chatRooms",chatMessages:"messages",
-			metadata:"metadata", address:"address", accessRules:"access",
-			attendance:"attendance", study:"study",
-			unreadChats:"unreadChats",unreadCount:"unreadCount",
-			usersList:"users/list", usersDetails:"users/details",
-			weeksList:"weeks/list", weeksDetails:"weeks/details",
-			groupsList:"groups/list", groupsDetails:"groups/details",
-			membersList:"members/list", membersDetails:"members/details",
-			reportsList:"reports/list", reportsDetails:"reports/details",
-			messagesList:"messages/list",
-			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
-			notificationsList:"notifications/list",
-			/**Counters*/
-			weeksCounters:"counters/weeks",
-			totalWeeksCount:"counters/weeks/total",
-			openWeeksCount:"counters/weeks/open",
-			visibleWeeksCount:"counters/weeks/visible",
-			membersCounters:"counters/members",
-			totalMembersCount:"counters/members/total",
-			activeMembersCount:"counters/members/active",
-			hostMembersCount:"counters/members/hosts",
-			leadMembersCount:"counters/members/leads",
-			traineeMembersCount:"counters/members/trainees",
-			groupsCounters:"counters/groups",
-			totalGroupsCount:"counters/groups/total",
-			activeGroupsCount:"counters/groups/active",
-			unredNotifCount:"counters/notifications/unreaded",
-			totalNotifCount:"counters/notifications/total",
-			reportsCounters:"counters/reports",
-			totalReportsCount:"counters/reports/total",
-			pendingReportsCount:"counters/reports/pending",
-			approvedReportsCount:"counters/reports/approved",
-			rejectedReportsCount:"counters/reports/rejected"
-		},
-		fields:{
-			baseGroup:"baseGroupId",
-			email:"email",
-			reviewStatus:"reviewStatus",
-			weekId:"weekId"
-		}
-	},
-	roles: {
-		user:"user", admin: "admin", type:"type", system:"System",
-		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost",
-		isUser:"isUser",
-		userDefaultName:"Usuario sin miembro asociado",
-		rootName:"Super Administrador"
-	},
-	status: {
-		online:"online", offline:"offline",
-		active:"active", inactive:"inactive",
-		approved:"approved", rejected:"rejected", pendingReview:"pending",
-		open:"open", closed:"closed",
-		completed:"completed", canceled:"canceled",
-		visible:"show", hidden:"hide",
-		readed:"readed",
-		isActive:"isActive",
-		isOpen:"isOpen", isVisible:"isVisible"
-	},
-	pages: {
-		login:"/login", home:"/home",
-		error: "/error",
-		adminWeeks:"/weeks",
-		adminMembers:"/members",
-		adminGroups:"/groups",
-		adminMonitor:"/admin/monitor",
-		memberEdit:"/members/edit/",
-		groupEdit:"/groups/edit/",
-		reportEdit:"/reports/edit/",
-		reportNew:"/reports/new/",
-		weekEdit:"/weeks/edit/"
-	},
-	actions:{
-		create:"create",update:"update",delete:"delete",
-		approve:"approved",reject:"rejected",
-		open:"open",close:"closed",show:"show",hide:"hide",
-		grantAccess:"access-granted", revokeAccess:"access-deleted",
-		updateRole:"type-update"
-	},
-	config:{isProdEnv: false}
-};
 
 //4. Editable Configurations
 okulusApp.run(function($rootScope) {
