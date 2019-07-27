@@ -2,7 +2,7 @@
   <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.admin.summaries.title}}</h4>
+      <h4 class="card-title">{{i18n.summary.title}}</h4>
     </div>
   </article>
 
@@ -37,19 +37,19 @@
           <div ng-controller="CreateReportCntrl">
             <button class="btn btn-block btn-primary clickable"
               ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
-              {{i18n.launchpad.createReport}}
+              {{i18n.summary.newReportBtn}}
             </button>
             <div ng-include="'views/groups/groupSelectModal.html'"></div>
             <button class="btn btn-block btn-primary clickable"
               ng-show="currentSession.accessGroups.length > 1"
               data-toggle="modal" data-target="#groupSelectModal">
-              {{i18n.launchpad.createReport}}
+              {{i18n.summary.newReportBtn}}
             </button>
           </div>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/reports" class="btn btn-primary btn-block">
-            {{i18n.reports.loadBtn}}
+            {{i18n.summary.gotoReportsBtn}}
           </a>
         </div>
       </div>
@@ -79,12 +79,12 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/weeks/new" class="btn btn-primary btn-block">
-            {{i18n.weeks.newBtn}}
+            {{i18n.summary.newWeekBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/weeks" class="btn btn-primary btn-block">
-            {{i18n.weeks.loadBtn}}
+            {{i18n.summary.gotoWeeksBtn}}
           </a>
         </div>
       </div>
@@ -116,12 +116,12 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/groups/new" class="btn btn-primary btn-block">
-            {{i18n.groups.newBtn}}
+            {{i18n.summary.newGroupBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/groups" class="btn btn-primary btn-block">
-            {{i18n.groups.loadBtn}}
+            {{i18n.summary.gotoGroupsBtn}}
           </a>
         </div>
       </div>
@@ -151,12 +151,12 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/members/new" class="btn btn-primary btn-block">
-            {{i18n.members.newBtn}}
+            {{i18n.summary.newMemberBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/members" class="btn btn-primary btn-block">
-            {{i18n.members.loadBtn}}
+            {{i18n.summary.gotoMembersBtn}}
           </a>
         </div>
       </div>

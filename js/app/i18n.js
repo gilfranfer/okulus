@@ -510,10 +510,14 @@ okulusApp.run(function($rootScope) {
 				durationLbl:"Duración",
 				moneyTitle:"Ofrenda"
 			},
+			summary:{
+				title:"Resumen del Sistema",
+				newReportBtn: "Nuevo Reporte", gotoReportsBtn: "Ir a Reportes",
+				newWeekBtn: "Nueva Semana", gotoWeeksBtn: "Ir a Semanas",
+				newGroupBtn: "Nuevo Grupo", gotoGroupsBtn: "Ir a Grupos",
+				newMemberBtn: "Nuevo Miembro", gotoMembersBtn: "Ir a Miembros"
+			},
 			admin:{
-				summaries:{
-					title:"Resumen del Sistema"
-				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				dashboard:{
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
