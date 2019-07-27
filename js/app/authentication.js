@@ -285,9 +285,9 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
 	['$scope','$rootScope','$location','$firebaseAuth',
-	'MembersSvc','AuthenticationSvc', 'MessageCenterSvc',
+	'MembersSvc','GroupsSvc','AuthenticationSvc', 'MessageCenterSvc',
 	function($scope, $rootScope, $location, $firebaseAuth,
-		MembersSvc, AuthenticationSvc, MessageCenterSvc){
+		MembersSvc, GroupsSvc,AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
@@ -300,25 +300,21 @@ okulusApp.controller('HomeCntrl',
 					//After user Registration only. No need to load Access Rules.
 					$rootScope.redirectFromRegister = undefined;
 				} else if(user.isValid){
-					//Get Access Rules for a valid existing user.
+					/* Get Access Rules for a valid existing user, and use them to load the groups
+					it has access to. This is useful for the groupSelectModal triggered from Quick Actions*/
+					$rootScope.currentSession.accessGroups = [];
 					$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
+					$rootScope.currentSession.accessRules.$loaded().then(function(rules){
+						rules.forEach(function(rule){
+							$rootScope.currentSession.accessGroups.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
+						});
+					});
 				}	else if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}
 			});
 		});
-
-		/* When the member has only 1 access rule */
-		$scope.quickReportLauncher = function(){
-			let groupId = $rootScope.currentSession.accessRules[0].groupId;
-			$location.path(constants.pages.reportNew + groupId);
-		};
-
-		$scope.closeGroupSelectModal = function(rule){
-			let groupId = rule.groupId;
-			$location.path(constants.pages.reportNew + groupId);
-		};
 
 	}]
 );

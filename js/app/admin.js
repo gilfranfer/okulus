@@ -195,7 +195,7 @@ okulusApp.controller('MonitorCntrl',
 
 }]);
 
-//Mapping: /admin/dashboard
+//Mapping: /admin/summary
 //Load all the elements for the Admin Dashboard and Admin Report Finder
 okulusApp.controller('AdminDashCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth','$firebaseObject',
@@ -212,7 +212,12 @@ okulusApp.controller('AdminDashCntrl',
 					$scope.globalCount.$loaded().then(function(counter){
 						$scope.response = null;
 					});
+					/* Get All Groups List, because Admin has access to all of them.
+					This is useful for the groupSelectModal triggered from Create Report Button*/
+					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
 
+
+					//Admin Report Finder stuff
 					//This param will help in the Reports Search process
 					$scope.adminViewActive = true;
 					//Load Weeks that will be visilbe to the Admin in the Report Finder

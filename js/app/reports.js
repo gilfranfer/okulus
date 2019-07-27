@@ -1276,3 +1276,23 @@ okulusApp.factory('ReportsSvc',
 		};
 	}
 ]);
+
+
+/*Controls the Quick "Create Report Button". */
+okulusApp.controller('CreateReportCntrl',
+	['$scope','$rootScope','$location','$firebaseAuth',
+	function($scope, $rootScope, $location, $firebaseAuth){
+
+		/* When the member has only 1 access rule */
+		$scope.quickReportLauncher = function(){
+			let groupId = $rootScope.currentSession.accessRules[0].groupId;
+			$location.path(constants.pages.reportNew + groupId);
+		};
+
+		$scope.closeGroupSelectModal = function(group){
+			let groupId = group.$id;
+			$location.path(constants.pages.reportNew + groupId);
+		};
+
+	}]
+);

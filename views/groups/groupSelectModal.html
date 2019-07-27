@@ -12,16 +12,20 @@
       <div class="modal-body">
         <!-- FIlter box: filter on the groupName only -->
         <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control"
-          ng-model="searchFilter.groupName" ng-show="currentSession.accessRules.length > config.minResultsToshowFilter"/>
+          ng-model="searchFilter.name" ng-show="currentSession.accessGroups.length > config.minResultsToshowFilter"/>
         <!-- List of Groups the Member has access to -->
         <div class="list-group mt-2 pre-scrollable">
           <div id="group-{{rule.groupId}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
-  						ng-repeat="rule in currentSession.accessRules | filter:searchFilter | orderBy:'groupName'"
-              ng-click="closeGroupSelectModal(rule)" data-dismiss="modal">
+  						ng-repeat="group in currentSession.accessGroups | filter:searchFilter | orderBy:'name'"
+              ng-click="closeGroupSelectModal(group)" data-dismiss="modal">
   					<div class="w-100">
   					  <span class="mb-1 font-weight-bold">
-  							{{rule.groupName}}
+  							{{group.name}}
   						</span>
+              <span class="badge badge-success" ng-show="group.isActive">
+                {{i18n.groups.activeStatusLbl}}</span>
+              <span class="badge badge-danger" ng-show="!group.isActive">
+                {{i18n.groups.inactiveStatusLbl}}</span>
   					</div>
   				</div>
 				</div>

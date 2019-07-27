@@ -196,7 +196,7 @@ okulusApp.run(function($rootScope) {
 				groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos",
 				backToHome: "Regresar a la Página de Inicio",
 				admin:{
-					menu: "Administrador", dashboard:"Escritorio",
+					menu: "Administrador", summary:"Resumen",
 					groups: "Grupos", members: "Miembros",
 					weeks: "Semanas", reports: "Reportes",
 					monitor:"Monitor", config:"Configuración",
@@ -478,9 +478,6 @@ okulusApp.run(function($rootScope) {
 				searchHint:"Buscar ...",
 				filterHint:"Filtrar resultados..."
 			},
-			adminDash:{
-				title:"Escritorio del Administrador"
-			},
 			reportFinder:{
 				title: "Buscador de Reportes",
 				selectGroupLbl:"Seleccione los grupos", selectWeekLbl:"Seleccione las semanas",
@@ -514,6 +511,9 @@ okulusApp.run(function($rootScope) {
 				moneyTitle:"Ofrenda"
 			},
 			admin:{
+				summaries:{
+					title:"Resumen del Sistema"
+				},
 				weeksList:{noWeeksError: "No se han creado Semanas"},
 				dashboard:{
 					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
