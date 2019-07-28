@@ -1,0 +1,19 @@
+<section id="adminDashboard" ng-show="currentSession.user.type == 'admin'">
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.statistics.title}}</h4>
+    </div>
+  </article>
+
+  <div ng-include="'views/alerts.html'"></div>
+
+  <section ng-controller="ReportsDashCntrl">
+    <div class="alert alert-success" role="alert" ng-show="response.reportMsgOk">
+      {{response.reportMsgOk}}
+    </div>
+    <!-- Reports Finder -->
+    <div ng-include="'views/reports/reportsFinder.html'"></div>
+    <div ng-include="'views/reports/reportsDashboard.html'"></div>
+  </section>
+</section>

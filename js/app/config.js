@@ -155,8 +155,17 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				controller: 'AdminDashCntrl',
+				controller: 'AdminSummaryCntrl',
 				templateUrl: 'views/admin/summary.html'
+			})
+			.when('/admin/statistics', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				controller: 'AdminStatisticsCntrl',
+				templateUrl: 'views/admin/statistics.html'
 			})
 			.when('/admin/monitor', {
 				resolve: {

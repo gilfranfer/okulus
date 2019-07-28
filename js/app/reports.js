@@ -459,6 +459,66 @@ okulusApp.controller('ReportsDashCntrl',
 			});
 		};
 
+		$scope.selectAllGroups = function (){
+			console.log($scope.groupStatusOpt);
+			$scope.selectedGroups = [];
+			$scope.groupsList.$loaded().then(function(groups){
+				//To preselect all the groups in the view
+				groups.forEach(function(group){
+					$scope.selectedGroups.push(group.$id);
+				});
+			});
+		};
+
+		$scope.selectAllWeeks = function (){
+			$scope.selectedWeeks = [];
+			$scope.weeksList.$loaded().then(function(weeks){
+				//To preselect all the weeks in the view
+				weeks.forEach(function(week){
+					$scope.selectedWeeks.push(week.$id);
+				});
+			});
+		};
+
+		$scope.updateWeekList = function (){
+			console.debug("Update WEEK List",$scope.weekStatusOpt);
+			$scope.selectedWeeks = [];
+			switch($scope.weekStatusOpt){
+				case "all":
+					$scope.weeksList = WeeksSvc.getAllWeeks();
+					break;
+				case "open":
+					$scope.weeksList = WeeksSvc.getOpenWeeks();
+					break;
+				case "closed":
+					$scope.weeksList = WeeksSvc.getClosedWeeks();
+					break;
+				case "visible":
+					$scope.weeksList = WeeksSvc.getVisibleWeeks();
+					break;
+				case "hidden":
+					$scope.weeksList = WeeksSvc.getHiddenWeeks();
+					break;
+			}
+		};
+
+		$scope.updateGroupList = function (){
+			console.debug("Update GROUP List",$scope.groupStatusOpt);
+			$scope.selectedGroups = [];
+			switch($scope.groupStatusOpt){
+				case "all":
+					$scope.groupsList = GroupsSvc.getAllGroups();
+					break;
+				case "active":
+					$scope.groupsList = GroupsSvc.getActiveGroups();
+					break;
+				case "inactive":
+					$scope.groupsList = GroupsSvc.getInactiveGroups();
+					break;
+			}
+		};
+
+
 }]);
 
 /* Controller linked to '/reports/new/:groupId' /reports/view/:reportId and /reports/edit/:reportId

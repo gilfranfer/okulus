@@ -100,8 +100,9 @@ const systemMsgs = {
 		approvingReport:"Aprobando Reporte ...",
 		rejectingReport:"Rechazando Reporte ...",
 		removingReport:"Eliminando Reporte ...",
-		/* Admin Dash */
-		loadingAdminDash:"Cargando Escritorio",
+		/* Admin Summary and statistics */
+		loadingSummary:"Cargando Resumen",
+		loadingReportFinder:"Cargando Buscador de Reportes",
 		searchingReports:"Buscando Reportes",
 		/*Message Center*/
 		postingMessage: "Publicando mensaje ...",
@@ -196,10 +197,9 @@ okulusApp.run(function($rootScope) {
 				groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos",
 				backToHome: "Regresar a la Página de Inicio",
 				admin:{
-					menu: "Administrador", summary:"Resumen",
-					groups: "Grupos", members: "Miembros",
-					weeks: "Semanas", reports: "Reportes",
-					monitor:"Monitor", config:"Configuración",
+					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
+					groups: "Grupos", members: "Miembros", weeks: "Semanas",
+					reports: "Reportes", monitor:"Monitor", config:"Configuración",
 					reunions:"Reuniones"
 				}
 			},
@@ -453,7 +453,7 @@ okulusApp.run(function($rootScope) {
 				phoneLbl:"Teléfono", phoneHint:""
 			},
 			audit:{
-				title:"Auditoria", creation:"Creación", update:"Última Actualización",
+				title:"Detalles del Registro", creation:"Creación", update:"Última Actualización",
 				approval:"Aprobación", rejection: "Rechazo"
 			},
 			btns:{
@@ -480,9 +480,14 @@ okulusApp.run(function($rootScope) {
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
-				selectGroupLbl:"Seleccione los grupos", selectWeekLbl:"Seleccione las semanas",
-				weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
-				description:"Puedes seleccionar una o mas semanas, así como uno o más grupos, para ver los Reportes y los gráficos de análisis.",
+				weekTypeLbl:"Tipo de Semanas", groupTypeLbl:"Tipo de Grupos",
+				selectGroupLbl:"Seleccione los Grupos", selectWeekLbl:"Seleccione las Semanas",
+				allGroups:"Todos los Grupos", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
+				allWeeks:"Todas los Semanas", openWeeks:"Semanas Abiertas", closedWeeks:"Semanas Cerradas",
+				visibleWeeks:"Semanas Visibles", hiddenWeeks:"Semanas Ocultas",
+				selectAllLbl:"Seleccionar todo",
+				// weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
+				// description:"Puedes seleccionar una o mas semanas, así como uno o más grupos, para ver los Reportes y los gráficos de análisis.",
 				chartOrientation:"Orientación de las Gráficas", chartLandscape:"Horizontal", chartPortrait: "Vertical",
 				selectAllGroups:"Seleccionar todos los grupos", findReportsBtn:"Buscar Reportes",
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
@@ -516,6 +521,9 @@ okulusApp.run(function($rootScope) {
 				newWeekBtn: "Nueva Semana", gotoWeeksBtn: "Ir a Semanas",
 				newGroupBtn: "Nuevo Grupo", gotoGroupsBtn: "Ir a Grupos",
 				newMemberBtn: "Nuevo Miembro", gotoMembersBtn: "Ir a Miembros"
+			},
+			statistics:{
+				title:"Estadísticas de los Grupos"
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},

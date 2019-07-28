@@ -196,45 +196,24 @@ okulusApp.controller('MonitorCntrl',
 }]);
 
 //Mapping: /admin/summary
-//Load all the elements for the Admin Dashboard and Admin Report Finder
-okulusApp.controller('AdminDashCntrl',
-	['$rootScope','$scope','$location','$firebaseAuth','$firebaseObject',
-		'WeeksSvc','GroupsSvc','AdminDashSvc','AuthenticationSvc',
-	function($rootScope, $scope,$location, $firebaseAuth, $firebaseObject,
-		WeeksSvc, GroupsSvc, AdminDashSvc, AuthenticationSvc){
+//Load all the elements for the Admin Summary
+okulusApp.controller('AdminSummaryCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth',
+		'GroupsSvc','AdminSvc','AuthenticationSvc',
+	function($rootScope, $scope, $location, $firebaseAuth,
+		GroupsSvc, AdminSvc, AuthenticationSvc){
 
-		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAdminDash};
+		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingSummary};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
 				if(user.type == constants.roles.admin){
-					//Counter to build the Summary cards
-					$scope.globalCount = AdminDashSvc.getGlobalCounters();
-					$scope.globalCount.$loaded().then(function(counter){
-						$scope.response = null;
-					});
 					/* Get All Groups List, because Admin has access to all of them.
 					This is useful for the groupSelectModal triggered from Create Report Button*/
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
-
-
-					//Admin Report Finder stuff
-					//This param will help in the Reports Search process
-					$scope.adminViewActive = true;
-					//Load Weeks that will be visilbe to the Admin in the Report Finder
-					$scope.weeksList = WeeksSvc.getAllWeeks();
-					$scope.selectedWeeks = [];
-					//To preselect the latest week in the view
-					$scope.weeksList.$loaded().then(function(weeks){
-						$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
-					});
-					//Load Groups that will be visilbe to the Admin in the Report Finder
-					$scope.groupsList = GroupsSvc.getAllGroups();
-					$scope.selectedGroups = [];
-					//To preselect all the groups in the view
-					$scope.groupsList.$loaded().then(function(groups){
-						groups.forEach(function(group){
-							$scope.selectedGroups.push(group.$id);
-						});
+					//Counters to build the Summary cards
+					$scope.globalCount = AdminSvc.getGlobalCounters();
+					$scope.globalCount.$loaded().then(function(counter){
+						$scope.response = null;
 					});
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
@@ -245,7 +224,51 @@ okulusApp.controller('AdminDashCntrl',
 		}});
 }]);
 
-okulusApp.factory('AdminDashSvc',
+//Mapping: /admin/statistics
+//Load all the elements for the Admin statistics and Admin Report Finder
+okulusApp.controller('AdminStatisticsCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth',
+		'WeeksSvc','GroupsSvc','AdminSvc','AuthenticationSvc',
+	function($rootScope, $scope, $location, $firebaseAuth,
+		WeeksSvc, GroupsSvc, AdminSvc, AuthenticationSvc){
+
+		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingReportFinder};
+		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
+				if(user.type == constants.roles.admin){
+					//Pre-defined values for the view
+					$scope.adminViewActive = true;
+					$scope.weekStatusOpt = 'all';
+					$scope.groupStatusOpt = 'all';
+					$scope.selectedWeeks = [];
+					$scope.selectedGroups = [];
+
+					//Initially, All Weeks are visilbe to the Admin
+					$scope.weeksList = WeeksSvc.getAllWeeks();
+					$scope.weeksList.$loaded().then(function(weeks){
+						//Preselect the latest week in the view
+						$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
+					});
+					//Initially, All Groups are visilbe to the Admin
+					$scope.groupsList = GroupsSvc.getAllGroups();
+					$scope.groupsList.$loaded().then(function(groups){
+						//To preselect all the groups in the view
+						groups.forEach(function(group){
+							$scope.selectedGroups.push(group.$id);
+						});
+						$scope.response = null;
+					});
+				}else{
+					$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}
+			});
+		}});
+
+}]);
+
+okulusApp.factory('AdminSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
