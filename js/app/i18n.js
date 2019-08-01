@@ -138,6 +138,7 @@ const systemMsgs = {
 		groupStatusUpdated:"Estado del grupo actualizado",
 		groupHostUpdated:"Anfitrión Actualizado",
 		groupLeadUpdated:"Lider Actualizado",
+		groupTraineeUpdated:"Aprendíz Actualizado",
 		ruleCreated:"Regla Creada",
 		ruleRemoved:"Regla Eliminada",
 		/* Weeks JS */
@@ -277,7 +278,7 @@ okulusApp.run(function($rootScope) {
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
 				/*Form Labels*/
-				groupLbl:"Grupo", leadLbl: "Siervo",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
+				groupLbl:"Grupo", leadLbl: "Líder",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
 				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
 				durationLbl: "Duración (min)", weekLbl:"Semana", moneyLbl: "Ofrenda",
 				statusLbl:"Estado de la Reunión",
@@ -384,8 +385,8 @@ okulusApp.run(function($rootScope) {
 				aliasLbl:"Alias", aliasHint:"Franfer Gil",
 				bdayLbl:"Fecha de nacimiento", bdayHint:"aaaa-mm-dd",
 				statusLbl:"Estado de la membresía",
-				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Siervo Líder?",
-				isTraineeLbl:"Es Siervo Aprendíz?",
+				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Líder?",
+				isTraineeLbl:"Es Aprendíz?",
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
 				/*TODO: Used?*/
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
@@ -411,7 +412,7 @@ okulusApp.run(function($rootScope) {
 				/*Labels*/
 				groupLbl:"Grupo",
 				basicInfoTitle:"Información Básica",
-				additionalInfoTitle:"Más Detalles",
+				additionalInfoTitle:"Roles",
 				modifyLbl:"Modificar Información del", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
 				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",
@@ -419,7 +420,7 @@ okulusApp.run(function($rootScope) {
 				numberLbl:"Número", numberHint:"0", typeLbl:"Tipo",
 				nameLbl:"Nombre", nameHint:"Semillas de Esperanza",
 				mandatoryFields: "Campos Obligatorios",
-				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión",
+				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión", noTraineeLbl:"Sin Aprendíz",
 				/*Access Rules*/
 				accessTitle:"Control de acccesos al Grupo",
 				newAccessTitle:"Porporcionar Acceso",

@@ -159,32 +159,12 @@
           </div>
         </div>
         <hr>
-        <!-- Group Status -->
+        <!-- Host and Lead -->
         <div class="form-row">
-          <div class="col-md-6 form-group">
-            <label class="font-weight-bold" for="status">
-              {{i18n.groups.statusLbl}}
-            </label>
-            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
-              ng-show="objectDetails.basicInfo.isActive" ng-click="setGroupStatus(false)">
-              {{i18n.groups.activeStatusLbl}}
-            </button>
-            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
-              ng-show="!objectDetails.basicInfo.isActive" ng-click="setGroupStatus(true)">
-              {{i18n.groups.inactiveStatusLbl}}
-            </button>
-          </div>
-        </div>
-        <!-- Lead -->
-        <div class="form-row">
-          <div class="col form-group">
+          <div class="col-11 col-md-5 form-group">
             <label class="font-weight-bold" for="groupLead">
               {{i18n.members.leadLbl}}
             </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col-11 form-group">
             <input type="text" disabled class="form-control form-control-lg"
               ng-if="!groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadName">
             <select id="groupLead" class="form-control form-control-lg" ng-required="false"
@@ -196,22 +176,16 @@
             </select>
           </div>
           <div class="col-1 form-group">
+            <label></label><br>
             <i class="clickable pr-2 fas fa-2x fa-save" title=""
                 ng-if="groupEditParams.updatingGroupLead" ng-click="updateGroupLead()" ></i>
             <i class="clickable pr-2 fas fa-2x fa-edit" title=""
                 ng-if="!groupEditParams.updatingGroupLead" ng-click="prepareForGroupLeadUpdate()" ></i>
           </div>
-        </div>
-        <!-- Host -->
-        <div class="form-row">
-          <div class="col form-group">
+          <div class="col-11 col-md-5 form-group">
             <label class="font-weight-bold" for="groupHost">
               {{i18n.members.hostLbl}}
             </label>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="col-11 form-group">
             <input type="text" disabled class="form-control form-control-lg"
               ng-if="!groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostName">
             <select id="groupHost" class="form-control form-control-lg" ng-required="false"
@@ -223,10 +197,48 @@
             </select>
           </div>
           <div class="col-1 form-group">
+            <label></label><br>
             <i class="clickable pr-2 fas fa-2x fa-save" title=""
                 ng-if="groupEditParams.updatingGroupHost" ng-click="updateGroupHost()" ></i>
             <i class="clickable pr-2 fas fa-2x fa-edit" title=""
                 ng-if="!groupEditParams.updatingGroupHost" ng-click="prepareForGroupHostUpdate()" ></i>
+          </div>
+        </div>
+        <!-- Trainee and Group Status -->
+        <div class="form-row">
+          <div class="col-11 col-md-5 form-group">
+            <label class="font-weight-bold" for="groupTrainee">
+              {{i18n.members.traineeLbl}}
+            </label>
+            <input type="text" disabled class="form-control form-control-lg"
+              ng-if="!groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeName">
+            <select id="groupTrainee" class="form-control form-control-lg" ng-required="false"
+              ng-if="groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeId">
+              <option value="">{{i18n.groups.noTraineeLbl}}</option>
+              <option ng-repeat="trainee in groupEditParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
+                {{trainee.shortname}}
+              </option>
+            </select>
+          </div>
+          <div class="col-1 form-group">
+            <label></label><br>
+            <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                ng-if="groupEditParams.updatingGroupTrainee" ng-click="updateGroupTrainee()" ></i>
+            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                ng-if="!groupEditParams.updatingGroupTrainee" ng-click="prepareForGroupTraineeUpdate()" ></i>
+          </div>
+          <div class="col-12 col-md-6 form-group">
+            <label class="font-weight-bold" for="status">
+              {{i18n.groups.statusLbl}}
+            </label>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
+              ng-show="objectDetails.basicInfo.isActive" ng-click="setGroupStatus(false)">
+              {{i18n.groups.activeStatusLbl}}
+            </button>
+            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-show="!objectDetails.basicInfo.isActive" ng-click="setGroupStatus(true)">
+              {{i18n.groups.inactiveStatusLbl}}
+            </button>
           </div>
         </div>
       </div>

@@ -377,6 +377,38 @@ okulusApp.controller('GroupDetailsCntrl',
 			}
 		};
 
+		$scope.prepareForGroupTraineeUpdate = function(){
+			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+
+			if(!$scope.groupEditParams.traineesList){
+				$scope.groupEditParams.traineesList = MembersSvc.getTraineeMembers();
+			}
+			$scope.groupEditParams.traineesList.$loaded().then(function(){
+				clearResponse();
+				$scope.groupEditParams.updatingGroupTrainee = true;
+			});
+		};
+
+		/*Persist the Groups's Trainee Selection */
+		$scope.updateGroupTrainee = function(){
+			clearResponse();
+			if($rootScope.currentSession.user.type == constants.roles.admin){
+				let groupRoles = $scope.objectDetails.roles;
+				if(groupRoles.traineeId){
+					let member = $scope.groupEditParams.traineesList.$getRecord(groupRoles.traineeId);
+					groupRoles.traineeName = member.shortname;
+				}else{
+					groupRoles.traineeId = null;
+					groupRoles.traineeName = null;
+				}
+				groupRoles.$save().then(function() {
+					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
+					$scope.groupEditParams.updatingGroupTrainee = false;
+					$scope.response = {success:true, message: systemMsgs.success.groupTraineeUpdated};
+				});
+			}
+		};
+
 	}
 ]);
 
