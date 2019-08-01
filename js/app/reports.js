@@ -1,7 +1,7 @@
-//Mapping: /groups
+//Mapping: /reports
 okulusApp.controller('ReportsListCntrl',
-	['$rootScope','$scope','$firebaseAuth','$location','ReportsSvc', 'AuthenticationSvc',
-	function($rootScope,$scope,$firebaseAuth,$location,ReportsSvc,AuthenticationSvc){
+	['$rootScope','$scope','$firebaseAuth','$location','ReportsSvc','GroupsSvc','AuthenticationSvc',
+	function($rootScope,$scope,$firebaseAuth,$location,ReportsSvc,GroupsSvc,AuthenticationSvc){
 
 		let unwatch = undefined;
 		/* Executed everytime we enter to /groups
@@ -10,6 +10,9 @@ okulusApp.controller('ReportsListCntrl',
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
 				if(user.type == constants.roles.admin){
+					/* Get All Groups List, because Admin has access to all of them.
+					This is useful for the groupSelectModal triggered from Create Report Button*/
+					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
 					/*Load Report Counters and Set Watch*/
 					$rootScope.reportsGlobalCount = ReportsSvc.getGlobalReportsCounter();
 					$rootScope.reportsGlobalCount.$loaded().then(

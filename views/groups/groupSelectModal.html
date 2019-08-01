@@ -19,17 +19,22 @@
   						ng-repeat="group in currentSession.accessGroups | filter:searchFilter | orderBy:'name'"
               ng-click="closeGroupSelectModal(group)" data-dismiss="modal">
   					<div class="w-100">
-  					  <span class="mb-1 font-weight-bold">
-  							{{group.name}}
-  						</span>
-              <span class="badge badge-success" ng-show="group.isActive">
-                {{i18n.groups.activeStatusLbl}}</span>
-              <span class="badge badge-danger" ng-show="!group.isActive">
-                {{i18n.groups.inactiveStatusLbl}}</span>
+              <div class="row">
+                <div class="col">
+                  <span class="mb-1 font-weight-bold">{{group.name}}</span>
+                </div>
+                <div class="col">
+                  <span class="float-right badge badge-success" ng-if="group.isActive">
+                    {{i18n.groups.activeLbl}}</span>
+                    <span class="float-right badge badge-danger" ng-if="!group.isActive">
+                      {{i18n.groups.inactiveLbl}}</span>
+                </div>
+              </div>
   					</div>
   				</div>
 				</div>
-      </div>
+
+      </div> <!-- Modal body -->
     </div>
   </div>
 </article>

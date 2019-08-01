@@ -399,8 +399,8 @@ okulusApp.run(function($rootScope) {
 				/* Admin Groups */
 				adminTitle:"Administrador de Grupos Familiares",
 				/*Badges*/
-				activeGroups:"Grupos Activos",
-				inactiveGroups:"Grupos Inactivos",
+				activeGroups:"Grupos Activos", activeLbl:"Activo",
+				inactiveGroups:"Grupos Inactivos", inactiveLbl:"Inactivo",
 				totalGroups:"Grupos Existentes",
 				/*Buttons*/
 				loadBtn:"Mostrar Grupos", newBtn:"Crear Grupo", editBtn:"Editar Grupo",

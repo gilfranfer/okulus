@@ -39,14 +39,18 @@
   <!-- Buttons -->
   <div class="row">
     <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllReportsList()">
-        {{i18n.reports.loadBtn}}
-      </a>
-    </div>
-    <div class="col mb-3">
-      <a href="#!/reports/new" class="btn btn-lg btn-block btn-primary">
-        {{i18n.reports.newBtn}}
-      </a>
+      <div ng-controller="CreateReportCntrl">
+        <button class="btn btn-block btn-primary clickable"
+          ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
+          {{i18n.summary.newReportBtn}}
+        </button>
+        <div ng-include="'views/groups/groupSelectModal.html'"></div>
+        <button class="btn btn-lg btn-block btn-primary clickable"
+          ng-show="currentSession.accessGroups.length > 1"
+          data-toggle="modal" data-target="#groupSelectModal">
+          {{i18n.summary.newReportBtn}}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -86,7 +90,7 @@
   <!-- Reports Cards -->
   <article id="reportsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':true track by report.$id">
+      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':false track by report.$id">
       <!-- Report card -->
       <div class="card h-100">
         <div class="card-body">
