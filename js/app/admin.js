@@ -276,7 +276,7 @@ okulusApp.factory('AdminSvc',
 		return {
 			getGlobalCounters: function(){
 				return $firebaseObject(baseRef.child(constants.db.folders.counters));
-			},
+			}
 		};
 }]);
 

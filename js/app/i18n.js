@@ -498,11 +498,11 @@ okulusApp.run(function($rootScope) {
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
 				table:{
-					group:"Grupo", report:"", week:"Semana",
-					date:"Fecha de Creación",
 					reunionStatus:"Reunión", reportStatus:"Reporte",
+					group:"Grupo", week:"Semana",	date:"Fecha",
 					duration: "Duración", money: "Ofrenda",
-					attendance: "Asistencia", view: "Ver"
+					attendance: "Asistencia",
+					canceledLbl:"Cancelada", completedLbl:"Completada"
 				}
 			},
 			charts:{
@@ -513,7 +513,7 @@ okulusApp.run(function($rootScope) {
 				attendanceMemberstSerie:"Miembros",
 				durationTitle:"Minutos Ministrados",
 				durationLbl:"Duración",
-				moneyTitle:"Ofrenda"
+				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
 			},
 			summary:{
 				title:"Resumen del Sistema",
