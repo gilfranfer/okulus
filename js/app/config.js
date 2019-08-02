@@ -375,7 +375,8 @@ okulusApp.run(function($rootScope) {
 			excelentAttendanceNumber:10,
 			minDuration:"30", //minutes
 			maxDuration:"300",//minutes
-			showMoneyField: true
+			showMoneyField: true,
+			maxMultipleGuests: 10
 		}
 	};
 	/* Load  App Editable Configurations from Firebase */

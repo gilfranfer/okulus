@@ -368,19 +368,17 @@
             <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
           </div>
           <div class="col-2" ng-show="multipleGuestActive" >
-            <input type="number" min="1" max="100" class="form-control form-control-lg"
+            <input type="number" min="1" max="{{config.reports.maxMultipleGuests}}" class="form-control form-control-lg"
               ng-model="reportParams.addGuestNameQty" ng-required="false"/>
             <small id="" class="form-text text-muted" ng-show="multipleGuestActive">
-              {{i18n.reports.multipleGuestsQty}}
+              {{i18n.reports.multipleGuestsQty}} {{config.reports.maxMultipleGuests}}
             </small>
           </div>
           <div class="col-4">
-            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary clickable" ng-disabled="!reportParams.addGuestName">
+            <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary clickable"
+              ng-disabled="!reportParams.addGuestName || (multipleGuestActive && !reportParams.addGuestNameQty)">
               {{i18n.btns.addBtn}}
             </button>
-            <!-- <button type="button" ng-click="addGuests()" class="btn btn-lg btn-block btn-dark" >
-              {{i18n.btns.addBtn}}
-            </button> -->
           </div>
         </div>
         <!-- Guests Table -->

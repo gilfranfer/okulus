@@ -84,7 +84,6 @@
                min="0" ng-model="configObj.reports.goodAttendanceNumber" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.goodAttendanceDesc}}</small>
           </div>
-          <!-- After this number of records, the Filter box will be visible -->
           <div class="col form-group">
             <label class="font-weight-bold" for="excelentAttn">
               {{i18n.configs.excelentAttendanceLbl}}
@@ -106,7 +105,6 @@
                min="0" ng-model="configObj.reports.minDuration" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.minDurationDesc}}</small>
           </div>
-          <!-- After this number of records, the Filter box will be visible -->
           <div class="col form-group">
             <label class="font-weight-bold" for="maxDuration">
               {{i18n.configs.maxDurationLbl}}
@@ -118,6 +116,15 @@
           </div>
         </div>
         <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="maxDuration">
+              {{i18n.configs.maxMultipleGuestsLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="maxMultipleGuests" type="number" class="form-control form-control-lg"
+               min="0" ng-model="configObj.reports.maxMultipleGuests" ng-required="true">
+            <small class="form-text text-muted">{{i18n.configs.maxMultipleGuestsDesc}}</small>
+          </div>
           <div class="col form-group">
             <label class="font-weight-bold" for="showMoney">
               {{i18n.configs.showMoneyLbl}}
