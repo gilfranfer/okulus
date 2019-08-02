@@ -176,9 +176,12 @@ okulusApp.controller('GroupDetailsCntrl',
 							$location.path(constants.pages.error);
 							return;
 						}
-						$scope.objectDetails.address = GroupsSvc.getGroupAddressObject(groupId);
+
 						$scope.objectDetails.audit = GroupsSvc.getGroupAuditObject(groupId);
 						$scope.objectDetails.roles = GroupsSvc.getGroupRolesObject(groupId);
+						/*Address is already part of objectDetails.basicInfo.address (same date)
+						But it is needed in this other object for the reusable address html fragments */
+						$scope.objectDetails.address = GroupsSvc.getGroupAddressObject(groupId);
 						$scope.prepareViewForEdit(group);
 					}).catch( function(error){
 						$rootScope.response = { error: true, message: error };

@@ -412,7 +412,7 @@ okulusApp.run(function($rootScope) {
 				/*Labels*/
 				groupLbl:"Grupo",
 				basicInfoTitle:"Información Básica",
-				additionalInfoTitle:"Roles",
+				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
 				modifyLbl:"Modificar Información del", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
 				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",

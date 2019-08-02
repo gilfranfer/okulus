@@ -10,21 +10,64 @@
   <article class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">
-        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.number}} - {{objectDetails.basicInfo.name}}</span>
+        <div class="row">
+          <div class="col">
+            <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.number}} - {{objectDetails.basicInfo.name}}</span>
+          </div>
+          <div class="col float-rigth">
+            <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
+              {{i18n.groups.activeStatusLbl}}</span>
+              <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
+                {{i18n.groups.inactiveStatusLbl}}</span>
+          </div>
+        </div>
       </h4>
+      <!-- Type, Satus and Schedule -->
+      <!-- <div class="form-row"> -->
+        <!-- <div class="col-md form-group" ng-if="objectDetails.basicInfo.type"> -->
+          <label class="font-weight-bold">
+            {{i18n.groups.typeLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.type}}</span>
+          <br>
+        <!-- </div> -->
+        <!-- <div class="col-md form-group" ng-if="objectDetails.basicInfo.weekday"> -->
+          <label class="font-weight-bold">
+            {{i18n.groups.scheduleLbl}}:
+          </label>
+          <span>{{objectDetails.basicInfo.weekday}}, {{objectDetails.basicInfo.time}}</span>
+        <!-- </div> -->
+      <!-- </div> -->
     </div>
   </article>
 
-  <!-- Basic Details Card -->
+  <!-- Contact and Address Card -->
   <article class="card mb-3">
     <div class="card-body">
-      <!-- Header -->
+      <!-- Header and Add Button (Admin)-->
       <div class="row">
         <div class="col">
-          <legend>{{i18n.groups.basicInfoTitle}}</legend>
+          <legend>{{i18n.groups.contactTitle}}</legend>
         </div>
       </div>
       <hr>
+      <!-- Roles -->
+      <div class="form-row">
+        <div class="col-md form-group" ng-if="objectDetails.roles.leadName">
+          <label class="font-weight-bold">
+            {{i18n.members.leadLbl}}:
+          </label>
+          <span>{{objectDetails.roles.leadName}}</span>
+        </div>
+        <div class="col-md form-group" ng-if="objectDetails.roles.hostName">
+          <label class="font-weight-bold">
+            {{i18n.members.hostLbl}}:
+          </label>
+          <span>{{objectDetails.roles.hostName}}</span>
+        </div>
+      </div>
+      <!-- Address -->
+      <div ng-include="'views/fragments/addressView.html'"></div>
       <!-- Email and Phone -->
       <div class="form-row">
         <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
@@ -40,46 +83,6 @@
           <span>{{objectDetails.basicInfo.phone}}</span>
         </div>
       </div>
-      <!-- Type, Satus and Schedule -->
-      <div class="form-row">
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
-          <label class="font-weight-bold">
-            {{i18n.groups.typeLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.type}}</span>
-        </div>
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
-          <label class="font-weight-bold">
-            {{i18n.groups.scheduleLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.weekday}}, {{objectDetails.basicInfo.time}}</span>
-        </div>
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
-          <label class="font-weight-bold">
-            {{i18n.groups.statusLbl}}:
-          </label>
-          <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
-            {{i18n.groups.activeStatusLbl}}</span>
-          <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
-            {{i18n.groups.inactiveStatusLbl}}</span>
-        </div>
-      </div>
-
-    </div>
-  </article>
-
-  <!-- Address Card -->
-  <article class="card mb-3">
-    <div class="card-body">
-      <!-- Header and Add Button (Admin)-->
-      <div class="row">
-        <div class="col">
-          <legend>{{i18n.address.legend}}</legend>
-        </div>
-      </div>
-      <hr>
-      <!-- Address -->
-      <div ng-include="'views/fragments/addressView.html'"></div>
     </div>
   </article>
 
