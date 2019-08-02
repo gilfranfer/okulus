@@ -819,8 +819,18 @@ okulusApp.controller('ReportDetailsCntrl',
 		/* Called from view */
 		$scope.addGuestToAttendanceList = function () {
 			let guestName = $scope.reportParams.addGuestName;
-			addGuestAttendance(guestName);
+			let addGuestNameQty = $scope.reportParams.addGuestNameQty;
+			if($scope.multipleGuestActive && addGuestNameQty > 1){
+				//Adding more than 1 guest will create: <Guest name> - <#>
+				while(addGuestNameQty>0){
+					addGuestAttendance(guestName + " "+addGuestNameQty);
+					addGuestNameQty--;
+				}
+			}else{
+				addGuestAttendance(guestName);
+			}
 			$scope.reportParams.addGuestName = "";
+			$scope.reportParams.addGuestNameQty = 1;
 		};
 
 		addGuestAttendance = function(guestName){

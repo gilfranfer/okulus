@@ -297,8 +297,10 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
 				totalAttendanceLbl:"Asistencia  Total",
-				membersAttendanceDirections:"Selecciona el miembro de la lista, o agrega todos dando",
-				guestsAttendanceDirections:"Escribe el nombre del invitado",
+				membersAttendanceDirections:"Selecciona un miembro de la lista, o agrega a todos",
+				guestsAttendanceDirections:"Escribe el nombre del invitado, o agrega multiples",
+				multipleGuestsDirections:"Multiples invitados? Escribe un nombre genérico.",
+				multipleGuestsQty:"Cantidad",
 				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
 				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
@@ -466,7 +468,7 @@ okulusApp.run(function($rootScope) {
 				returnBtn:"Regresar",
 				addReport: "Crear Reporte", accessRules:"Reglas de Accesos",
 				/*Reports*/
-				addBtn: "+",
+				addBtn: "+",here:"aquí",
 				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
 			},
 			alerts:{
