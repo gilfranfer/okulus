@@ -46,7 +46,7 @@
           <label class="font-weight-bold">
             {{i18n.members.bdayLbl}}:
           </label>
-          <span>{{objectDetails.basicInfo.bday |  date: "MMM dd yyyy"}}</span>
+          <span>{{objectDetails.basicInfo.bday |  date: config.formats.date}}</span>
         </div>
         <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
           <label class="font-weight-bold">

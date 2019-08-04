@@ -105,7 +105,7 @@
           <span class="badge badge-danger" ng-if="!report.reviewStatus=='rejected'">{{i18n.reports.reportLbl}} {{i18n.reports.rejectedStatusLbl}}</span>
           <br><br>
           <span class="font-weight-bold">{{i18n.reports.weekLbl}}:</span> {{report.weekName}} <br>
-          <span class="font-weight-bold">{{i18n.reports.dateLbl}}:</span> {{report.dateMilis | date: "MMMM dd, yyyy"}} <br>
+          <span class="font-weight-bold">{{i18n.reports.dateLbl}}:</span> {{report.dateMilis | date: config.formats.date}} <br>
           <span class="font-weight-bold text-danger" ng-if="report.status == 'canceled'">
             {{i18n.reports.cancelStatusLbl}}
           </span>

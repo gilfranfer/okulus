@@ -17,8 +17,8 @@
   <div class="card h-100 mb-3">
     <div class="card-body">
       <p><span class="font-weight-bold">{{i18n.admin.users.table.user}}: </span>{{objectDetails.basicInfo.email}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{objectDetails.basicInfo.lastLoginOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{objectDetails.basicInfo.lastActivityOn | date: "MMM dd yyyy HH:mm:ss"}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{objectDetails.basicInfo.lastLoginOn | date: config.formats.datetime}}</p>
+      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{objectDetails.basicInfo.lastActivityOn | date: config.formats.datetime}}</p>
     </div>
   </div>
 

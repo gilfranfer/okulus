@@ -57,14 +57,12 @@
             <label class="font-weight-bold" for="gtype">
               {{i18n.groups.typeLbl}}
               <span class="text-danger">*</span>
-            </label>
-            <select id="gtype" class="form-control form-control-lg" ng-model="objectDetails.basicInfo.type" ng-required="true">
-              <option value="{{i18n.dropdowns.gtype.mix}}">{{i18n.dropdowns.gtype.mix}}</option>
-              <option value="{{i18n.dropdowns.gtype.men}}">{{i18n.dropdowns.gtype.men}}</option>
-              <option value="{{i18n.dropdowns.gtype.women}}">{{i18n.dropdowns.gtype.women}}</option>
-              <option value="{{i18n.dropdowns.gtype.young}}">{{i18n.dropdowns.gtype.young}}</option>
-              <option value="{{i18n.dropdowns.gtype.floating}}">{{i18n.dropdowns.gtype.floating}}</option>
-              <option value="{{i18n.dropdowns.gtype.reorg}}">{{i18n.dropdowns.gtype.reorg}}</option>
+            </label>{{objectDetails.basicInfo.type}}
+            <select id="gtype" class="form-control form-control-lg"
+              ng-model="objectDetails.basicInfo.type" ng-required="true">
+              <option ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id" value="{{type.name}}" >
+                {{type.name}}
+              </option>
             </select>
           </div>
           <div class="col-6 col-md-4 form-group">

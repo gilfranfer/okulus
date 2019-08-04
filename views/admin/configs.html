@@ -4,7 +4,7 @@
 </div>
 
 <!-- Following section will be displayed onyl after configs are loaded -->
-<section id="configEdit" ng-show="!response.loading">
+<section id="configEdit" name="configEdit" ng-show="!response.loading">
 
   <!-- Title Section -->
   <article class="card mb-3">
@@ -34,7 +34,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="appName" type="text" class="form-control form-control-lg"
-              placeholder="{{i18n.configs.appnameHint}}" ng-model="configObj.appName" ng-required="true">
+              placeholder="{{i18n.configs.appnameHint}}" ng-model="currentAppConfigs.appName" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.appNameDesc}}</small>
           </div>
         </div>
@@ -46,7 +46,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="maxQuery" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.maxQueryListResults" ng-required="true">
+               min="0" ng-model="currentAppConfigs.maxQueryListResults" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.maxQueryResultDesc}}</small>
           </div>
           <!-- After this number of records, the Filter box will be visible -->
@@ -56,7 +56,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="minFilter" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.minResultsToshowFilter" ng-required="true">
+               min="0" ng-model="currentAppConfigs.minResultsToshowFilter" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.showFilterAtDesc}}</small>
           </div>
         </div>
@@ -81,7 +81,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="goodAttn" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.reports.goodAttendanceNumber" ng-required="true">
+               min="0" ng-model="currentAppConfigs.reports.goodAttendanceNumber" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.goodAttendanceDesc}}</small>
           </div>
           <div class="col form-group">
@@ -90,7 +90,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="excelentAttn" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.reports.excelentAttendanceNumber" ng-required="true">
+               min="0" ng-model="currentAppConfigs.reports.excelentAttendanceNumber" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.excelentAttendanceDesc}}</small>
           </div>
         </div>
@@ -102,7 +102,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="minDuration" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.reports.minDuration" ng-required="true">
+               min="0" ng-model="currentAppConfigs.reports.minDuration" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.minDurationDesc}}</small>
           </div>
           <div class="col form-group">
@@ -111,7 +111,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="maxDuration" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.reports.maxDuration" ng-required="true">
+               min="0" ng-model="currentAppConfigs.reports.maxDuration" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.maxDurationDesc}}</small>
           </div>
         </div>
@@ -122,7 +122,7 @@
               <span class="text-danger">*</span>
             </label>
             <input id="maxMultipleGuests" type="number" class="form-control form-control-lg"
-               min="0" ng-model="configObj.reports.maxMultipleGuests" ng-required="true">
+               min="0" ng-model="currentAppConfigs.reports.maxMultipleGuests" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.maxMultipleGuestsDesc}}</small>
           </div>
           <div class="col form-group">
@@ -130,9 +130,9 @@
               {{i18n.configs.showMoneyLbl}}
               <span class="text-danger">*</span>
             </label><br>
-            <input id="showMoney-yes" type="radio" name="showMoney" ng-model="configObj.reports.showMoneyField" ng-value="true" />
+            <input id="showMoney-yes" type="radio" name="showMoney" ng-model="currentAppConfigs.reports.showMoneyField" ng-value="true" />
             <span>{{i18n.configs.showMoneyYesLbl}}</span>
-            <input id="showMoney-no" type="radio" name="showMoney" ng-model="configObj.reports.showMoneyField" ng-value="false" />
+            <input id="showMoney-no" type="radio" name="showMoney" ng-model="currentAppConfigs.reports.showMoneyField" ng-value="false" />
             <span>{{i18n.configs.showMoneyNoLbl}}</span>
             <small class="form-text text-muted">{{i18n.configs.showMoneyDesc}}</small>
           </div>
@@ -159,7 +159,7 @@
               <span class="text-danger">*</span>
             </label>
             <input type="date" id="reportsDate" name="reportsDate"
-              class="form-control form-control-lg" placeholder="{{i18n.configs.dateHint}}"
+              class="form-control form-control-lg"
               ng-model="temporal.minDateTemp" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.minReportsDateDesc}}</small>
           </div>
@@ -169,9 +169,54 @@
               <span class="text-danger">*</span>
             </label>
             <input type="date" id="bdayDate" name="bdayDate"
-              class="form-control form-control-lg" placeholder="{{i18n.configs.dateHint}}"
+              class="form-control form-control-lg"
               ng-model="temporal.minBDateTemp" ng-required="true">
             <small class="form-text text-muted">{{i18n.configs.minBdateDesc}}</small>
+          </div>
+        </div>
+        <!-- Date formats -->
+        <div class="form-row">
+          <!-- Date time format -->
+          <div class="col-12 col-md-4 form-group">
+            <label class="font-weight-bold" for="dateTimeFormat">
+              {{i18n.configs.dateTimeFormatLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="dateTimeFormat" class="form-control form-control-lg"
+              ng-model="currentAppConfigs.formats.datetime" ng-required="true">
+              <option ng-repeat="format in datetimeFormatList" value="{{format}}" >
+                {{config.todayDate | date: format}}
+              </option>
+            </select>
+            <small class="form-text text-muted">{{i18n.configs.dateTimeFormatDesc}}</small>
+          </div>
+          <!-- Date format -->
+          <div class="col-12 col-md-4 form-group">
+            <label class="font-weight-bold" for="dateFormat">
+              {{i18n.configs.dateFormatLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="dateFormat" class="form-control form-control-lg"
+              ng-model="currentAppConfigs.formats.date" ng-required="true">
+              <option ng-repeat="format in dateFormatList" value="{{format}}" >
+                {{config.todayDate | date: format}}
+              </option>
+            </select>
+            <small class="form-text text-muted">{{i18n.configs.dateFormatDesc}}</small>
+          </div>
+          <!-- time format -->
+          <div class="col-12 col-md-4 form-group">
+            <label class="font-weight-bold" for="timeFormat">
+              {{i18n.configs.timeFormatLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="timeFormat" class="form-control form-control-lg"
+              ng-model="currentAppConfigs.formats.time" ng-required="true">
+              <option ng-repeat="format in timeFormatList" value="{{format}}" >
+                {{config.todayDate | date: format}}
+              </option>
+            </select>
+            <small class="form-text text-muted">{{i18n.configs.timeFormatDesc}}</small>
           </div>
         </div>
       </div>
@@ -193,4 +238,79 @@
     </div>
   </form>
 
+  <form id="groupTypeForm" name="groupTypeForm" novalidate>
+    <!-- Group Configs -->
+    <article class="card mb-3">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <!-- <legend>{{i18n.configs.groupsTitle}}</legend> -->
+            <legend>{{i18n.configs.groupTypesLbl}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Group types title -->
+        <div class="row mt-4">
+          <div class="col-8">
+            <h5>
+              <!-- <span class="badge badge-primary">{{objectDetails.attendance.guests.length}}</span> -->
+              <!-- <label class="font-weight-bold" for="memberSelect">{{i18n.configs.groupTypesLbl}}</label> -->
+            </h5>
+          </div>
+        </div>
+        <!-- Group type Input -->
+        <div class="row mb-4">
+          <div class="col">
+            <input name="groupTypeInput" type="text" class="form-control form-control-lg"
+              ng-model="configParams.newGroupTypeName"
+              ng-required="false" ng-pattern="groupTypeRegex" />
+            <small id="" class="form-text text-muted">
+              {{i18n.configs.groupTypeDec}}
+            </small>
+          </div>
+          <div class="col-4">
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-disabled="!configParams.newGroupTypeName || !groupTypeForm.groupTypeInput.$valid"
+              ng-click="addGrouptype()">
+              {{i18n.btns.addBtn}}
+            </button>
+          </div>
+        </div>
+        <!-- Alerts -->
+        <div class="row">
+          <div class="col">
+            <!-- Alerts -->
+            <div class="alert alert-danger" role="alert" ng-show="!grouptypesList || (grouptypesList && grouptypesList.length == 0)">
+              {{i18n.configs.noGroupTypesList}}
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="response.grouptypesListError">
+              {{response.grouptypesListError}}
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="response.grouptypesListOk">
+              {{response.grouptypesListOk}}
+            </div>
+          </div>
+        </div>
+        <!-- Guests Table -->
+        <div class="pre-scrollable" ng-show="grouptypesList">
+          <table class="table table-md table-striped">
+            <thead></thead>
+            <tbody>
+              <tr class="row ml-1" ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id">
+                <td class="col-6" scope="row">
+                  {{type.name}}
+                </td>
+                <td class="col-6" scope="row">
+                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeGrouptype(type)">
+                    {{i18n.btns.deleteBtn}}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+  </form>
 </section>

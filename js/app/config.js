@@ -9,7 +9,8 @@
 const constants = {
 	db: {
 		folders:{
-			root:"okulusTest",
+			root:"okulusTest",currentConfig:"config/current", systemConfigs:"config/okulus",
+			grouptypes:"grouptypes",
 			config:"config", counters:"counters", details:"details",
 			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
 			groups:"groups", members:"members", reports:"reports",
@@ -368,22 +369,34 @@ okulusApp.run(function($rootScope) {
 		/*After this number of records, the Filter box will be visible*/
 		minResultsToshowFilter: 3,
 		/*Date range limits*/
-		members:{ minBDate:"1900-01-01" },
+		members:{ minBirthdate:"1900-01-01" },
 		reports:{
 			minDate:"2018-01-01",
 			goodAttendanceNumber:5,
 			excelentAttendanceNumber:10,
-			minDuration:"30", //minutes
-			maxDuration:"300",//minutes
+			minDuration:30, //minutes
+			maxDuration:300,//minutes
 			showMoneyField: true,
 			maxMultipleGuests: 10
+		},
+		formats: {
+			date:"MMM dd yyyy",
+			datetime:"MMM dd yyyy hh:mm a",
+			time:"H:mm"},
+		grouptypes:{
+			default:{name:"Default"}
 		}
 	};
 	/* Load  App Editable Configurations from Firebase */
 	console.debug("Getting configurations from DB");
-	let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
+	let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
 	confReference.once('value').then( function(snapshot){
-		$rootScope.config = (snapshot.val());
+		if(snapshot.val()){
+			$rootScope.config = (snapshot.val());
+		}else{
+			//push initial configs to DB
+			confReference.set($rootScope.config);
+		}
 		//Add todays date that will be used to limit some date selectors
 		$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
 	});
@@ -396,26 +409,62 @@ okulusApp.controller('ConfigCntrl',
 		/* Executed everytime we enter to /config
 		  This function is used to confirm the user is Admin and prepare some initial values */
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+		$scope.groupTypeRegex = "[a-zA-Z0-9\\s]+";
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 					if(user.type == constants.roles.admin){
-						$scope.configObj = ConfigSvc.getConfigurationsObj();
-						$scope.configObj.$loaded().then(function(configDb){
+						//Get the editable configurations (current app configs)
+						$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
+						$scope.currentAppConfigs.$loaded().then(function(configDb){
 							/* This is the format of the date in the DB: YYYY-MM-DD
 							JS Date works with months starting from 0 (0-11), so we need to
 							decrease the month from DB by one, to display it properly */
-							$scope.temporal = [];
+							$scope.temporal = {};
 							//Report's Min Date
 							let dateSplit = configDb.reports.minDate.split("-");
 							let month = (Number(dateSplit[1])-1);
 							$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-
 							//Member's Min Birthdate
 							dateSplit = configDb.members.minBirthdate.split("-");
 							month = (Number(dateSplit[1])-1);
 							$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-
+							//Get Existing Group Types
+							// $scope.grouptypesList = new Array();
+							// if(configDb.grouptypes){
+							// 	for( let type in configDb.grouptypes ){
+							// 		console.log(type,configDb.grouptypes[type]);
+							// 		$scope.grouptypesList.push( configDb.grouptypes[type] );
+							// 	}
+							// }
 							$scope.response = null;
+						});
+						//Load the Group types as firebaseArray for an easy manipulation
+						$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
+
+						//System Configurations are values set by the Okules and cannot be modified by the user
+						$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
+						$scope.systemConfigs.$loaded().then(function(options){
+							//When no system options available, might be the first time for the system,
+							//so let´s set the default ones in the DB
+							if(!options.dateTimeFormats){
+								$scope.systemConfigs.dateFormats = {op1:"MMM d, y", op2:"dd/MM/y",op3:"MM/dd/y" };
+								$scope.systemConfigs.timeFormats = {op1:"h:mm a", op2:"h:mm:ss a",op3:"H:mm", op4: "H:mm:ss" };
+								$scope.systemConfigs.dateTimeFormats = {
+							    op1:"MMM d, y h:mm a",
+							    op2:"MMM d, y H:mm",
+							    op3:"dd/MM/y h:mm a",
+							    op4:"dd/MM/y H:mm",
+							    op5:"MM/dd/y h:mm a",
+							    op6:"MM/dd/y H:mm"
+							  };
+								$scope.systemConfigs.$save().then(function(options) {
+									// console.log("loading new", options);
+									loadOptionsToArrays($scope.systemConfigs);
+								});
+							}else{
+								// console.log("loading existing", options);
+								loadOptionsToArrays(options);
+							}
 						});
 					}else{
 						$rootScope.response = {error:true, showHomeButton: true,
@@ -425,6 +474,54 @@ okulusApp.controller('ConfigCntrl',
 				});
 		}});
 
+		loadOptionsToArrays = function(options){
+			$scope.datetimeFormatList = new Array();
+			$scope.dateFormatList = new Array();
+			$scope.timeFormatList = new Array();
+			for( let prop in options.dateTimeFormats ){
+				$scope.datetimeFormatList.push( options.dateTimeFormats[prop] );
+			}
+			for( let prop in options.dateFormats ){
+				$scope.dateFormatList.push( options.dateFormats[prop] );
+			}
+			for( let prop in options.timeFormats ){
+				$scope.timeFormatList.push( options.timeFormats[prop] );
+			}
+		};
+
+		$scope.addGrouptype = function() {
+				let newType = $scope.configParams.newGroupTypeName;
+				let typeExists = false;
+				$scope.grouptypesList.forEach(function(group){
+					if(group.name == newType){
+						typeExists = true;
+						return;
+					}
+				});
+
+				if(typeExists){
+					$scope.response = {grouptypesListError: systemMsgs.error.groupTypeExist };
+				}else{
+					$scope.grouptypesList.$add({name:newType}).then(function(ref) {
+						$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeAdded };
+					}).catch(function(error) {
+						console.error(error);
+						$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotAdded };
+					});
+				}
+				$scope.configParams.newGroupTypeName = "";
+		};
+
+		$scope.removeGrouptype = function(type) {
+			console.log(type);
+			$scope.grouptypesList.$remove(type).then(function(ref) {
+				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeRemoved };
+			}).catch(function(error) {
+				console.error(error);
+				$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotRemoved };
+			});
+		};
+
 		$scope.saveConfigs = function(){
 			$scope.response = {working: true, message: systemMsgs.inProgress.savingConfig };
 
@@ -433,17 +530,17 @@ okulusApp.controller('ConfigCntrl',
 			let year = minDate.getFullYear();
 			let month = (minDate.getMonth()<9)?"0"+(minDate.getMonth()+1):minDate.getMonth()+1;
 			let day = (minDate.getDate()<10)?"0"+(minDate.getDate()):minDate.getDate();
-			$scope.configObj.reports.minDate = year + "-" + month + "-" + day;
+			$scope.currentAppConfigs.reports.minDate = year + "-" + month + "-" + day;
 
 			minDate = $scope.temporal.minBDateTemp;
 			year = minDate.getFullYear();
 			month = (minDate.getMonth()<9)?"0"+(minDate.getMonth()+1):minDate.getMonth()+1;
 			day = (minDate.getDate()<10)?"0"+(minDate.getDate()):minDate.getDate();
-			$scope.configObj.members.minBirthdate = year + "-" + month + "-" + day;
+			$scope.currentAppConfigs.members.minBirthdate = year + "-" + month + "-" + day;
 
-			$scope.configObj.$save().then(function(){
+			$scope.currentAppConfigs.$save().then(function(){
 				//Reload Configs into rootScope
-				let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
+				let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
 				confReference.once('value').then( function(snapshot){
 					$rootScope.config = (snapshot.val());
 					//Add todays date that will be used to limit some date selectors
@@ -460,13 +557,20 @@ okulusApp.controller('ConfigCntrl',
 okulusApp.factory('ConfigSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let configRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.config);
+		let userConfigRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
+		let systemConfigRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.systemConfigs);
 
 		return {
-			getConfigurationsObj: function(){
-				return $firebaseObject(configRef);
+			getCurrentConfigurationsObj: function(){
+				return $firebaseObject(userConfigRef);
+			},
+			getSystemConfigurations: function(){
+				return $firebaseObject(systemConfigRef);
+			},
+			getGroupTypesArray: function(){
+				return $firebaseArray(userConfigRef.child(constants.db.folders.grouptypes));
 			}
-		};//return end
+		};
 
 	}
 ]);

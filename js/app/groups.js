@@ -149,9 +149,9 @@ okulusApp.controller('GroupsUserCntrl',
  * It will load the Group for the id passed */
 okulusApp.controller('GroupDetailsCntrl',
 ['$rootScope','$scope','$routeParams','$location','$firebaseAuth',
- 'GroupsSvc','MembersSvc','AuditSvc','AuthenticationSvc',
+ 'GroupsSvc','MembersSvc','ConfigSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
-		GroupsSvc, MembersSvc, AuditSvc, AuthenticationSvc){
+		GroupsSvc, MembersSvc,ConfigSvc,AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /gorups/new, /groups/view/:groupId or /groups/edit/:groupId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
@@ -165,6 +165,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					return;
 				}
 
+				$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
 				let groupId = $routeParams.groupId;
 				/* Prepare for Edit or View Details of Existing Group */
 				if(groupId){

@@ -47,7 +47,10 @@ const systemMsgs = {
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
 		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
 		deleteMessageSuccess: "Error al eliminar el mensaje. Intentelo nuevamente.",
-		reportsWatch:"Uno o mas reportes, relacionados con su búsqueda, han sido modificados."
+		reportsWatch:"Uno o mas reportes, relacionados con su búsqueda, han sido modificados.",
+		groupTypeNotAdded:"Error al agregar el Tipo de Grupo",
+		groupTypeNotRemoved:"Error al eliminar el Tipo de Grupo",
+		groupTypeExist:"El tipo de Grupo ya existe."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -162,7 +165,9 @@ const systemMsgs = {
 		/*Message Center*/
 		postingMessageSuccess:"El mensaje ha sido publicado.",
 		deleteMessageSuccess: "El mensaje ha sido eliminado.",
-		configSaved:"Configuraciones Guardadas."
+		configSaved:"Configuraciones Guardadas.",
+		groupTypeAdded:"Nuevo Tipo de Grupo agregado",
+		groupTypeRemoved:"Se ha eliminado el Tipo de Grupo"
 	}
 };
 
@@ -587,7 +592,11 @@ okulusApp.run(function($rootScope) {
 				address: "Dirección"
 			},
 			configs:{
-				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes", datesTitle:"Fechas",
+				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes",
+				datesTitle:"Fechas",
+				/*Group Confgs*/
+				groupsTitle:"Grupos",	groupTypesLbl:"TIpos de Grupos",
+				groupTypeDec:"Utiliza solo letras y números",
 				appnameLbl:"Nombre de la Aplicación", appnameHint:"Okulus App",
 				appNameDesc:"El nombre es usado en la barra de navegación.",
 				maxQueryResultLbl:"Límite de Registros", maxQueryResultHint:"",
@@ -611,7 +620,11 @@ okulusApp.run(function($rootScope) {
 				showMoneyLbl:"Ofrenda",
 				showMoneyYesLbl:"Mostrar Ofrenda", showMoneyNoLbl:"No mostrar Ofrenda",
 				showMoneyDesc:"Mostrar campos relacionados a Ofrenda",
-				saveBtn:"Guardar Configuraciones"
+				dateTimeFormatLbl:"Formato de Fecha y Hora", dateTimeFormatDesc:"",
+				dateFormatLbl:"Formato de Fecha", dateFormatDesc:"",
+				timeFormatLbl:"Formato de Hora", timeFormatDesc:"",
+				saveBtn:"Guardar Configuraciones",
+				noGroupTypesList:"No se ha registrado Tipos de Grupos"
 			},
 			success:{
 				deleted:{
@@ -633,9 +646,6 @@ okulusApp.run(function($rootScope) {
 				weekdays:{
 					mon:"Lunes", tue:"Martes", wed:"Miercoles", thu:"Jueves",
 					fri:"Viernes", sat:"Sabado", sun:"Domingo"
-				},
-				gtype:{
-					mix:"Mixto", men:"Hombres",women:"Mujeres",young:"Jovenes",floating:"Flotante", reorg:"En Reestructura"
 				}
 			}
 		};

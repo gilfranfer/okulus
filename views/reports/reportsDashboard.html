@@ -193,7 +193,7 @@
                     {{i18n.reports.pendingStatusLbl}}
                   </td>
                   <td scope="row">{{report.groupname}}</td>
-                  <td scope="row">{{report.dateMilis | date: "MMMM dd, yyyy"}}</td>
+                  <td scope="row">{{report.dateMilis | date: config.formats.date}}</td>
                   <td scope="row">{{report.weekId}}</td>
                   <!-- Reunion Status -->
                   <td scope="row" class="text-danger" ng-if="report.status == 'canceled'">

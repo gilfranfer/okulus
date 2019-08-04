@@ -10,9 +10,9 @@
           <p class="card-text">
             <span class="font-weight-bold">{{currentSession.user.email}}</span><br>
             <span class="font-weight-bold">{{i18n.profile.lastLogin}}</span>
-            <span>{{currentSession.user.lastLoginOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
+            <span>{{currentSession.user.lastLoginOn | date: config.formats.datetime }}</span><br>
             <span class="font-weight-bold">{{i18n.profile.lastActivity}}</span>
-            <span>{{currentSession.user.lastActivityOn | date: "MMM dd yyyy hh:mm a" }}</span><br>
+            <span>{{currentSession.user.lastActivityOn | date: config.formats.datetime }}</span><br>
             <!-- <a ng-href="#!/profile" class="btn btn-warning float-right">{{i18n.profile.viewProfileBtn}}</a> -->
           </p>
         </div>
@@ -57,7 +57,7 @@
                   <hr style="margin-bottom: 0;">
                   <span class="small font-weight-light">
                     {{message.createdBy}} -
-                    {{message.createdOn | date: "HH:mm dd/MM/yy"}}
+                    {{message.createdOn | date: config.formats.datetime}}
                   </span>
                   <br>
                   <!-- Show Delete option when message was created by current User -->
