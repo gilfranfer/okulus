@@ -228,9 +228,9 @@ okulusApp.controller('AdminSummaryCntrl',
 //Load all the elements for the Admin statistics and Admin Report Finder
 okulusApp.controller('AdminStatisticsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',
-		'WeeksSvc','GroupsSvc','AdminSvc','AuthenticationSvc',
+		'WeeksSvc','GroupsSvc','AdminSvc','AuthenticationSvc','ConfigSvc',
 	function($rootScope, $scope, $location, $firebaseAuth,
-		WeeksSvc, GroupsSvc, AdminSvc, AuthenticationSvc){
+		WeeksSvc, GroupsSvc, AdminSvc, AuthenticationSvc,ConfigSvc){
 
 		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingReportFinder};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
@@ -238,8 +238,6 @@ okulusApp.controller('AdminStatisticsCntrl',
 				if(user.type == constants.roles.admin){
 					//Pre-defined values for the view
 					$scope.adminViewActive = true;
-					$scope.weekStatusOpt = 'all';
-					$scope.groupStatusOpt = 'all';
 					$scope.selectedWeeks = [];
 					$scope.selectedGroups = [];
 
@@ -258,6 +256,8 @@ okulusApp.controller('AdminStatisticsCntrl',
 						});
 						$scope.response = null;
 					});
+
+					$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
 																	message:systemMsgs.error.noPrivileges};

@@ -141,14 +141,14 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myContacts.html',
 				controller: 'UserMyContactsCntrl'
 			})
-			.when('/myreports', {
+			.when('/statistics', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/user/myReports.html',
-				controller: 'UserMyReportsCntrl'
+				templateUrl: 'views/user/statistics.html',
+				controller: 'UserStatisticsCntrl'
 			})
 			.when('/admin/summary', {
 				resolve: {
@@ -428,14 +428,6 @@ okulusApp.controller('ConfigCntrl',
 							dateSplit = configDb.members.minBirthdate.split("-");
 							month = (Number(dateSplit[1])-1);
 							$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-							//Get Existing Group Types
-							// $scope.grouptypesList = new Array();
-							// if(configDb.grouptypes){
-							// 	for( let type in configDb.grouptypes ){
-							// 		console.log(type,configDb.grouptypes[type]);
-							// 		$scope.grouptypesList.push( configDb.grouptypes[type] );
-							// 	}
-							// }
 							$scope.response = null;
 						});
 						//Load the Group types as firebaseArray for an easy manipulation

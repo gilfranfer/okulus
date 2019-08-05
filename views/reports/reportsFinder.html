@@ -3,29 +3,6 @@
   <!-- Report Finder -->
   <div class="card mb-3">
     <div class="card-body">
-      <!-- Week and Group status select boxes (admin)  ng-if="currentSession.user.type == 'admin'"-->
-      <div class="row mb-3">
-        <div class="col">
-          <label class="font-weight-bold" for="weekTypeSelect">{{i18n.reportFinder.weekTypeLbl}}:</label>
-          <select id="weekTypeSelect" class="form-control form-control"
-            ng-model="$parent.weekStatusOpt"  ng-change="updateWeekList()">
-            <option value="all">{{i18n.reportFinder.allWeeks}}</option>
-            <option value="open">{{i18n.reportFinder.openWeeks}}</option>
-            <option value="closed">{{i18n.reportFinder.closedWeeks}}</option>
-            <option value="visible">{{i18n.reportFinder.visibleWeeks}}</option>
-            <option value="hidden">{{i18n.reportFinder.hiddenWeeks}}</option>
-          </select>
-        </div>
-        <div class="col">
-          <label class="font-weight-bold" for="updateGroupList">{{i18n.reportFinder.groupTypeLbl}}:</label>
-          <select id="groupTypeSelect" class="form-control form-control"
-            ng-model="$parent.groupStatusOpt" ng-change="updateGroupList()">
-            <option value="all">{{i18n.reportFinder.allGroups}}</option>
-            <option value="active">{{i18n.reportFinder.activeGroups}}</option>
-            <option value="inactive">{{i18n.reportFinder.inactiveGroups}}</option>
-          </select>
-        </div>
-      </div>
       <!-- Titles -->
       <div class="row mb-0">
         <div class="col">
@@ -36,8 +13,17 @@
       <!-- Week and Group List -->
       <div class="row mb-1">
         <!-- Weeks Select -->
-        <div class="col">
+        <div class="col-md-6">
           <label class="font-weight-bold" for="weeksSelect">{{i18n.reportFinder.selectWeekLbl}}:</label>
+          <!-- Admin Week Status select -->
+          <select id="weekTypeSelect" class="form-control form-control  mb-1"
+            ng-if="adminViewActive" ng-model="reportFinder.weekStatusOpt"  ng-change="updateWeekSelectList()">
+            <option value="all">{{i18n.reportFinder.allWeeks}}</option>
+            <option value="open">{{i18n.reportFinder.openWeeks}}</option>
+            <option value="closed">{{i18n.reportFinder.closedWeeks}}</option>
+            <option value="visible">{{i18n.reportFinder.visibleWeeks}}</option>
+            <option value="hidden">{{i18n.reportFinder.hiddenWeeks}}</option>
+          </select>
           <select multiple id="weeksSelect" class="form-control form-control-lg" ng-model="$parent.selectedWeeks" ng-required="true">
             <option ng-repeat="week in weeksList | orderBy:'$id':true track by week.$id" value="{{week.$id}}" >
               {{week.name}}, ({{week.$id}})
@@ -46,8 +32,30 @@
           <button class="btn btn-sm btn-link clickable" ng-click="selectAllWeeks()">{{i18n.reportFinder.selectAllLbl}}</button>
         </div>
         <!-- Groups Select -->
-        <div class="col">
+        <div class="col-md-6">
           <label class="font-weight-bold" for="groupsSelect">{{i18n.reportFinder.selectGroupLbl}}:</label>
+          <!-- Admin Group Status select -->
+          <div class="row">
+            <div class="col pr-1">
+              <select id="groupTypeSelect" class="form-control mb-1"
+              ng-if="adminViewActive" ng-model="reportFinder.groupStatusOpt" ng-change="updateGroupSelectList()">
+                <option value="all">{{i18n.reportFinder.allGroups}}</option>
+                <option value="active">{{i18n.reportFinder.activeGroups}}</option>
+                <option value="inactive">{{i18n.reportFinder.inactiveGroups}}</option>
+              </select>
+            </div>
+            <div class="col pl-1">
+              <select id="groupTypeSelect" class="form-control mb-1"
+                ng-if="adminViewActive" ng-model="reportFinder.groupTypeOpt" ng-change="updateGroupTypeSelect()">
+                <option value="">{{i18n.reportFinder.allGroupTypes}}</option>
+                <option ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id" value="{{type.name}}" >
+                  {{type.name}}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Groups List -->
           <select multiple id="groupsSelect" class="form-control form-control-lg" ng-model="$parent.selectedGroups" ng-required="true">
             <option ng-repeat="group in groupsList | orderBy:'number' track by group.$id" value="{{group.$id}}" >
               {{group.number}}. {{group.name}}

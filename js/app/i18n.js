@@ -200,7 +200,7 @@ okulusApp.run(function($rootScope) {
 				brand:"Grupos PIB Xalapa", home:"Inicio",
 				register:"Registrarse", login:"Iniciar Sesión", logout:"Cerrar Sesión",
 				chat:"Conversaciones", notifications:"Notificaciones",
-				groups:"Mis Grupos", reports:"Ver Reportes", contacts:"Mis Contactos",
+				groups:"Mis Grupos", contacts:"Mis Contactos", statistics:"Estadísticas",
 				backToHome: "Regresar a la Página de Inicio",
 				admin:{
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
@@ -488,10 +488,10 @@ okulusApp.run(function($rootScope) {
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
-				weekTypeLbl:"Tipo de Semanas", groupTypeLbl:"Tipo de Grupos",
 				selectGroupLbl:"Seleccione los Grupos", selectWeekLbl:"Seleccione las Semanas",
-				allGroups:"Todos los Grupos", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
-				allWeeks:"Todas los Semanas", openWeeks:"Semanas Abiertas", closedWeeks:"Semanas Cerradas",
+				allGroupTypes:"Cualquier tipo",
+				allGroups:"Cualquier estado", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
+				allWeeks:"Cualquier estado", openWeeks:"Semanas Abiertas", closedWeeks:"Semanas Cerradas",
 				visibleWeeks:"Semanas Visibles", hiddenWeeks:"Semanas Ocultas",
 				selectAllLbl:"Seleccionar todo",
 				// weekFrom: "De la Semana", weekTo:"a la Semana", groupsList:"Grupo",
@@ -531,7 +531,8 @@ okulusApp.run(function($rootScope) {
 				newMemberBtn: "Nuevo Miembro", gotoMembersBtn: "Ir a Miembros"
 			},
 			statistics:{
-				title:"Estadísticas de los Grupos"
+				adminTitle:"Estadísticas de los Grupos",
+				userTitle:"Estadísticas de mis Grupos"
 			},
 			admin:{
 				weeksList:{noWeeksError: "No se han creado Semanas"},

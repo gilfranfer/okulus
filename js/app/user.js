@@ -1,6 +1,6 @@
-/* Controller linked to /myreports
+/* Controller linked to /statistics
  * It will load the lists (weeks, groups, member rules) required for the view to work */
-okulusApp.controller('UserMyReportsCntrl',
+okulusApp.controller('UserStatisticsCntrl',
 	['$location', '$rootScope','$scope','$firebaseAuth', 'MembersSvc', 'GroupsSvc', 'WeeksSvc', 'AuthenticationSvc',
 	function($location, $rootScope,$scope,$firebaseAuth, MembersSvc, GroupsSvc, WeeksSvc, AuthenticationSvc){
 
@@ -13,26 +13,25 @@ okulusApp.controller('UserMyReportsCntrl',
 					return;
 				}
 
-				$scope.weeksList = WeeksSvc.getVisibleWeeks();
 				$scope.selectedWeeks = [];
-				//To preselect the latest week in the view
+				$scope.selectedGroups = [];
+
+				//Show only weeks allowed for report finder (Visible Weeks)
+				$scope.weeksList = WeeksSvc.getVisibleWeeks();
 				$scope.weeksList.$loaded().then(function(weeks){
+					//To preselect the latest week in the view
 					$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
 				});
-
+				//Show only groups the user have access to
 				$scope.groupsList = [];
-				$scope.selectedGroups = [];
 				$rootScope.currentSession.accessRules = MembersSvc.getMemberAccessRules(user.memberId);
 				$rootScope.currentSession.accessRules.$loaded().then(function(rules){
-					//Get members from each group
 					rules.forEach(function(rule){
 						$scope.groupsList.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
 						$scope.selectedGroups.push(rule.groupId);
 					});
 					$scope.response = null;
 				});
-
-
 			});
 		}});
 	}

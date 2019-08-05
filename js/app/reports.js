@@ -137,7 +137,7 @@ okulusApp.controller('ReportsDashCntrl',
 		$scope.chartOrientation = 'landscape';
 		//This will save the unflitered result from the report Finder
 		$scope.rawReportsFound = undefined;
-
+		$rootScope.reportFinder = {weekStatusOpt:'all', groupStatusOpt: 'all'};
 		/* Method to retrieve reports form database and build the detailed Dashboard.
 		We create separate DB calls (one per selected week) to fetch the reports. This
 		is because the selected weeks might not be in sequence. Later, a Map with the
@@ -229,7 +229,7 @@ okulusApp.controller('ReportsDashCntrl',
 			let detailsMap = new Map();
 			let reunionParams = {
 				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
-				completedReunions: 0, canceledReunions: 0,
+				completedReunions: 0, canceledReunions: 0, totalReunions: 0,
 				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
 				totalMoney: 0.00, totalDuration:0
 			};
@@ -264,6 +264,7 @@ okulusApp.controller('ReportsDashCntrl',
 					}else if(report.status == constants.status.canceled){
 						reunionParams.canceledReunions++;
 					}
+					reunionParams.totalReunions++;
 					//Update total attendance (summary), duration and money
 					reunionParams.totalAttendance += report.totalAttendance;
 					reunionParams.membersAttendance += report.membersAttendance;
@@ -440,8 +441,8 @@ okulusApp.controller('ReportsDashCntrl',
 									}
 								},
 					legend: { reversed: true },
-					series: [ { type:'column', name: $rootScope.i18n.charts.moneyTitle , data: moneySeries },
-										{ type:'line', name: $rootScope.i18n.charts.moneyAvgTitle , data: moneyAvgSeries } ]
+					series: [ { type:'column', name: $rootScope.i18n.charts.moneyTitle , data: moneySeries},
+										{ type:'line', name: $rootScope.i18n.charts.moneyAvgTitle , data: moneyAvgSeries, label:{enabled:false} } ]
 			};
 
 			//adjust some char config according to the Chart Orientation
@@ -539,9 +540,10 @@ okulusApp.controller('ReportsDashCntrl',
 			});
 		};
 
-		$scope.updateWeekList = function (){
+		$scope.updateWeekSelectList = function (){
 			$scope.selectedWeeks = [];
-			switch($scope.weekStatusOpt){
+			console.debug($rootScope.reportFinder.weekStatusOpt);
+			switch($rootScope.reportFinder.weekStatusOpt){
 				case "all":
 					$scope.weeksList = WeeksSvc.getAllWeeks();
 					break;
@@ -560,19 +562,55 @@ okulusApp.controller('ReportsDashCntrl',
 			}
 		};
 
-		$scope.updateGroupList = function (){
+		$scope.updateGroupSelectList = function (){
+			console.debug($rootScope.reportFinder.groupStatusOpt);
+			$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
 			$scope.selectedGroups = [];
-			switch($scope.groupStatusOpt){
+			//Reset the Group type
+			$rootScope.reportFinder.groupTypeOpt="";
+			$rootScope.reportFinder.currentGroupListFiltered = false;
+		};
+
+		function getGroupsFromDatabase(groupStatus){
+			console.log("Gettint groups from DB:",groupStatus);
+			let groupsList;
+			switch(groupStatus){
 				case "all":
-					$scope.groupsList = GroupsSvc.getAllGroups();
+					groupsList = GroupsSvc.getAllGroups();
 					break;
 				case "active":
-					$scope.groupsList = GroupsSvc.getActiveGroups();
+					groupsList = GroupsSvc.getActiveGroups();
 					break;
 				case "inactive":
-					$scope.groupsList = GroupsSvc.getInactiveGroups();
+					groupsList = GroupsSvc.getInactiveGroups();
 					break;
 			}
+			return groupsList;
+		};
+
+		/* The Group type select depends on the Group status select.
+		This method makes sure the $scope.groupsList has data from db for active,
+		inactive or both statuse, and then proceeds to filter groups from that list
+		based on the "type" value.*/
+		$scope.updateGroupTypeSelect = function (){
+			let tempGroupList = new Array();
+			if($rootScope.reportFinder.currentGroupListFiltered){
+				//This menas an original list from DB was filtered by this same method before,
+				//so we need to get a fresh list from DB to avoid missing groups
+				$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
+			}
+			//Use the Current $scope.groupsList with DB data to filter results by the selected group type
+			$scope.groupsList.$loaded().then(function(list) {
+				if($rootScope.reportFinder.groupTypeOpt){
+					list.forEach(function(group) {
+						if(group.type == $rootScope.reportFinder.groupTypeOpt){
+							tempGroupList.push(group);
+						}
+					});
+					$scope.groupsList = tempGroupList;
+					$rootScope.reportFinder.currentGroupListFiltered = true;
+				}
+			});
 		};
 
 }]);
