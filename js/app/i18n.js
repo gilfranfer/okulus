@@ -278,7 +278,7 @@ okulusApp.run(function($rootScope) {
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
 				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
-				newBtn:"Crear Reporte", loadBtn:"Mostrar Reportes",
+				newBtn:"Crear Reporte", loadBtn:"Todos los Reportes",
 				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
@@ -331,7 +331,7 @@ okulusApp.run(function($rootScope) {
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",
         /*Buttons*/
-        loadBtn:"Mostrar Semanas", newBtn:"Crear Semana",
+        loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
         openBtn:"Abrir", closeBtn:"Cerrar",
         openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
@@ -368,7 +368,7 @@ okulusApp.run(function($rootScope) {
 				leadLbl:"Líder", hostLbl:"Anfitrión", traineeLbl:"Aprendíz",
 				leadsLbl:"Líderes", hostsLbl:"Anfitriones", traineesLbl:"Aprendices",
 				/*Buttons*/
-				loadBtn:"Mostrar Miembros", newBtn:"Crear Miembro",
+				loadBtn:"Todos los Miembros", newBtn:"Crear Miembro",
 				saveBasicInfoBtn:"Guardar información básica",
 				saveAddressBtn:"Guardar dirección",
 				saveAllBtn:"Guardar cambios",
@@ -411,7 +411,7 @@ okulusApp.run(function($rootScope) {
 				inactiveGroups:"Grupos Inactivos", inactiveLbl:"Inactivo",
 				totalGroups:"Grupos Existentes",
 				/*Buttons*/
-				loadBtn:"Mostrar Grupos", newBtn:"Crear Grupo", editBtn:"Editar Grupo",
+				loadBtn:"Todos los Grupos", newBtn:"Crear Grupo", editBtn:"Editar Grupo",
 				deleteBtn:"Eliminar Grupo", saveBtn:"Guardar",
 				/*Alert Messages*/
         loadingSuccess: "Grupos Cargados.",
