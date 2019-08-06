@@ -750,7 +750,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.modifyLbl,
 															isEdit: true, reportId: whichReport };
 			//To Control list of available members for attendance
-			$scope.reportParams.groupMembersList = new Array()
+			$scope.reportParams.groupMembersList = new Array();
 
 			$scope.objectDetails.basicInfo = ReportsSvc.getReportBasicObj(whichReport);
 			$scope.objectDetails.basicInfo.$loaded().then(function(report){
@@ -760,6 +760,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					return;
 				}
 
+				$scope.objectDetails.feedback = ReportsSvc.getReportFeedback(report.$id);
 				$scope.objectDetails.study = ReportsSvc.getReportStudyObject(report.$id);
 				$scope.objectDetails.audit = ReportsSvc.getReportAuditObject(report.$id);
 				$scope.objectDetails.atten = ReportsSvc.getReportAttendanceObject(report.$id);
@@ -1210,8 +1211,9 @@ okulusApp.controller('ReportDetailsCntrl',
 		};
 
 		$scope.approveReport = function(){
+			$scope.addCommentToFeedback()
 			clearResponse();
-			$scope.response = { working:true, message: systemMsgs.inProgress.approvingReport };
+			$scope.response = { approving:true, message: systemMsgs.inProgress.approvingReport };
 
 			let originalStatus = $scope.objectDetails.basicInfo.reviewStatus;
 			$scope.objectDetails.basicInfo.reviewStatus = constants.status.approved;
@@ -1225,14 +1227,15 @@ okulusApp.controller('ReportDetailsCntrl',
 					ReportsSvc.decreaseRejectedReportsCount();
 				}
 				AuditSvc.recordAudit(ref.key, constants.actions.approve, constants.db.folders.reports);
-				$scope.response = { success:true, message: systemMsgs.success.reportApproved };
+				$scope.response = { approved:true, message: systemMsgs.success.reportApproved };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});
 		};
 
 		$scope.rejectReport = function(){
+			$scope.addCommentToFeedback()
 			clearResponse();
-			$scope.response = { working:true, message: systemMsgs.inProgress.rejectingReport };
+			$scope.response = { rejecting:true, message: systemMsgs.inProgress.rejectingReport };
 
 			let originalStatus = $scope.objectDetails.basicInfo.reviewStatus;
 			$scope.objectDetails.basicInfo.reviewStatus = constants.status.rejected;
@@ -1246,7 +1249,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					ReportsSvc.decreaseApprovedReportsCount();
 				}
 				AuditSvc.recordAudit(ref.key, constants.actions.reject, constants.db.folders.reports);
-				$scope.response = { success:true, message: systemMsgs.success.reportRejected };
+				$scope.response = { rejected:true, message: systemMsgs.success.reportRejected };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});
 		};
@@ -1254,6 +1257,20 @@ okulusApp.controller('ReportDetailsCntrl',
 		clearResponse = function() {
 			$rootScope.reportResponse = null;
 			$scope.response = null;
+		};
+
+		$scope.addCommentToFeedback = function() {
+			if($scope.reportParams.feedbackComment){
+				let post = {
+					time:firebase.database.ServerValue.TIMESTAMP,
+					fromId:$rootScope.currentSession.user.$id,
+					from:$rootScope.currentSession.user.email,
+					message:$scope.reportParams.feedbackComment
+				}
+				$scope.objectDetails.feedback.$add(post).then(function(record){
+					$scope.reportParams.feedbackComment="";
+				});
+			}
 		};
 
 }]);
@@ -1343,6 +1360,10 @@ okulusApp.factory('ReportsSvc',
 			/* Get report study from firebase and return as object */
 			getReportStudyObject: function(whichReportId){
 				return $firebaseObject(reportsDetailsRef.child(whichReportId).child(constants.db.folders.study));
+			},
+			/* Get report feedback from firebase and return as object */
+			getReportFeedback: function(whichReportId){
+				return $firebaseArray(reportsDetailsRef.child(whichReportId).child(constants.db.folders.feedback));
 			},
 			removeReportDetails: function(whichReportId){
 				return reportsDetailsRef.child(whichReportId).set(null);

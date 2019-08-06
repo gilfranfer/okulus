@@ -16,7 +16,7 @@ const constants = {
 			groups:"groups", members:"members", reports:"reports",
 			chats:"chats", chatList:"chatRooms",chatMessages:"messages",
 			metadata:"metadata", address:"address", accessRules:"access",
-			attendance:"attendance", study:"study",
+			attendance:"attendance", study:"study",feedback:"feedback",
 			unreadChats:"unreadChats",unreadCount:"unreadCount",
 			usersList:"users/list", usersDetails:"users/details",
 			weeksList:"weeks/list", weeksDetails:"weeks/details",

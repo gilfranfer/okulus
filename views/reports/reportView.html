@@ -222,29 +222,91 @@
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
 
-  <!-- Admin Buttons -->
-  <div class="row mb-3" ng-if="currentSession.user.type =='admin'">
-    <!-- Show Approve button if reviewStatus is Pending or Rejected -->
-    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
-      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport()">
-        {{i18n.btns.approveBtn}}
-      </button>
-    </div>
-    <!-- Show Reject button if reviewStatus is Pending or Approved -->
-    <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'rejected'">
-      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectReport()">
-        {{i18n.btns.rejectBtn}}
-      </button>
-    </div>
-    <!-- Edit -->
-    <div class="col">
-      <a href="#!/reports/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
-        {{i18n.reports.editBtn}}
-      </a>
-    </div>
-  </div>
+  <!-- Report Approval/Rejection -->
+  <article class="card mb-3" ng-if="reportParams.isEdit">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>{{i18n.reports.reportEvalLegend}}</legend>
+        </div>
+      </div>
+      <hr>
+      <label class="font-weight-bold" ng-show="objectDetails.feedback >0">{{i18n.reports.feedbackLbl}}</label>
+      <!-- Report Feedback history -->
+      <div class="pre-scrollable mb-2" ng-show="objectDetails.feedback">
+        <div class="row m-0" ng-repeat="message in objectDetails.feedback | orderBy:'time':true track by message.$id" >
+          <!-- Message Sent -->
+          <div class="mr-2 ml-auto" ng-if="message.fromId == currentSession.user.$id">
+            <div class="alert alert-secondary mb-0 mt-2" data-toggle="tooltip"
+                title="{{message.time| date: config.formats.datetime}}">
+              <div>
+                <span ng-show="message.message">{{message.message}}</span>
+              </div>
+              <div class="text-right">
+                <small class="font-weight-light">{{message.from}}</small><br>
+                <small class="font-weight-light">{{message.time | date: config.formats.datetime}}</small>
+              </div>
+            </div>
+          </div>
+          <!-- Message received -->
+          <div class="ml-2 mr-auto" ng-if="message.fromId != currentSession.user.$id">
+            <div class="alert alert-primary mb-0 mt-2" data-toggle="tooltip"
+                title="{{message.time | date: config.formats.datetime}}">
+              <div>
+                <span ng-show="message.message">{{message.message}}</span>
+              </div>
+              <div class="text-right">
+                <small class="font-weight-light">{{message.time | date: config.formats.datetime}}</small>
+              </div>
+            </div>
+          </div>
 
-  <!-- Alerts to inform user on progress or result -->
-  <div ng-include="'views/alerts.html'"></div>
+        </div>
+      </div>
+      <!-- Comments in feedback only when report is not approved -->
+      <div class="row mb-2" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+        <div class="col-9">
+          <textarea class="form-control" ng-required="false" ng-model="reportParams.feedbackComment"></textarea>
+        </div>
+        <div class="col-3">
+          <button class="btn btn-block btn-primary h-100 clickable"
+              ng-disabled="!reportParams.feedbackComment" ng-click="addCommentToFeedback()">
+            {{i18n.btns.commentBtn}}
+          </button>
+        </div>
+      </div>
+      <!-- Alerts -->
+      <div class="alert alert-warning" role="alert" ng-show="response.approving || response.rejecting" >
+        {{response.message}}
+      </div>
+      <div class="alert alert-success" role="alert" ng-show="response.approved" >
+        {{response.message}}
+      </div>
+      <div class="alert alert-danger" role="alert" ng-show="response.rejected" >
+        {{response.message}}
+      </div>
+      <!-- Admin buttons: Approve/Reject Buttons -->
+      <div class="row mb-0" ng-if="currentSession.user.type =='admin'">
+        <!-- Show Approve button if reviewStatus is Pending or Rejected -->
+        <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
+          <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveReport()">
+            {{i18n.btns.approveBtn}}
+          </button>
+        </div>
+        <!-- Show Reject button if reviewStatus is Pending or Approved -->
+        <div class="col-sm form-group" ng-if="objectDetails.basicInfo.reviewStatus != 'rejected'">
+          <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectReport()">
+            {{i18n.btns.rejectBtn}}
+          </button>
+        </div>
+        <div class="col-sm form-group">
+          <a href="#!/reports/edit/{{objectDetails.basicInfo.$id}}" class="btn btn-lg btn-block btn-warning clickable">
+            {{i18n.reports.editBtn}}
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
 
 </section>

@@ -288,7 +288,7 @@ okulusApp.run(function($rootScope) {
 				durationLbl: "Duración (min)", weekLbl:"Semana", moneyLbl: "Ofrenda",
 				statusLbl:"Estado de la Reunión",
 				studyNotesLbl:"Notas del estudio", studyNotesHint:"Agregar notas sobre el estudio",
-				commentsLbl:"Comentarios",
+				commentsLbl:"Notas",
 				deleteBtn:"Eliminar Reporte",
 				newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
 				basicDataLegend: "Detalles de la Reunión",
@@ -297,7 +297,7 @@ okulusApp.run(function($rootScope) {
 				canceledLbl: "Canceladas", completedLbl:"Completadas",
 				pendingLbl: "Pendientes", approvedLbl:"Aprobados", rejectedLbl:"Rechazados",
 				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
-				notesLegend: "Comentarios sobre la Reunión", notesHint: "Agregar notas y comentarios de la reunión",
+				notesLegend: "Notas de la Reunión", notesHint: "Agregar notas y comentarios sobre la reunión",
 				attendanceLegend: "Asistencia",
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
@@ -315,7 +315,8 @@ okulusApp.run(function($rootScope) {
 				studyLbl: "Titulo", seriesLbl: "Serie",
 				noMembersList:"No se ha registrado la asistencia de Miembros",
 				noGuestsList:"No se ha registrado la asistencia de Invitados",
-				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión"
+				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión",
+				reportEvalLegend:"Evaluación del Reporte",feedbackLbl:"Discusión"
 			},
 			weeks:{
 				title: "Administrador de Semanas",
@@ -473,8 +474,8 @@ okulusApp.run(function($rootScope) {
 				returnBtn:"Regresar",
 				addReport: "Crear Reporte", accessRules:"Reglas de Accesos",
 				/*Reports*/
-				addBtn: "+",here:"aquí",
-				approveBtn:"Aprobar" , rejectBtn:"Rechazar"
+				addBtn: "+",here:"aquí", commentBtn:"Comentar",
+				approveBtn:"Aprobar Reporte" , rejectBtn:"Rechazar Reporte"
 			},
 			alerts:{
 				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ...",
