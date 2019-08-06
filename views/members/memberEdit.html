@@ -32,7 +32,7 @@
           </div>
         </div>
         <hr>
-        <!-- Firstname and Lastname-->
+        <!-- Firstname, Lastname and Alias -->
         <div class="form-row">
           <div class="col-md form-group">
             <label class="font-weight-bold" for="firstname">
@@ -50,9 +50,6 @@
             <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
                 ng-model="objectDetails.basicInfo.lastname" ng-required="true">
           </div>
-        </div>
-        <!-- Shortname (Alias), and Birthdate -->
-        <div class="form-row">
           <div class="col-md form-group">
             <label class="font-weight-bold" for="shortname">
               {{i18n.members.aliasLbl}}
@@ -61,14 +58,27 @@
             <input id="shortname" name="shortname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.aliasHint}}"
               ng-model="objectDetails.basicInfo.shortname" ng-required="true">
           </div>
+        </div>
+        <!-- Sex and Birthdate -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="shortname">
+              {{i18n.members.sexLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="sexSelect" class="form-control form-control-lg"
+              ng-model="objectDetails.basicInfo.sex" ng-required="true">
+              <option value="M" >{{i18n.members.maleLbl}}</option>
+              <option value="F" >{{i18n.members.femaleLbl}}</option>
+            </select>
+          </div>
           <div class="col-md form-group">
             <label class="font-weight-bold" for="bday">
               {{i18n.members.bdayLbl}}
             </label>
-            <input type="date" id="bday" name="bday" min="{{config.members.minBDate}}" max="{{config.todayDate}}"
-              class="form-control form-control-lg" placeholder="{{i18n.members.bdayHint}}"
-              value="{{objectDetails.basicInfo.bday}}" ng-required="false" onchange="updateBdayValue()">
-              <input type="hidden" name="bdayHolder" ng-model="objectDetails.basicInfo.bday" ng-required="false">
+            <input type="date" id="bday" name="bday" class="form-control form-control-lg"
+              min="{{config.members.minBDate}}" max="{{config.todayDate}}" value="{{objectDetails.basicInfo.bday}}"
+              ng-required="false" onchange="updateBdayValue()">
           </div>
         </div>
         <!-- Email and Phone -->
