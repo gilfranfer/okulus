@@ -180,6 +180,7 @@ okulusApp.controller('GroupDetailsCntrl',
 
 						$scope.objectDetails.audit = GroupsSvc.getGroupAuditObject(groupId);
 						$scope.objectDetails.roles = GroupsSvc.getGroupRolesObject(groupId);
+						// $scope.objectDetails.access = GroupsSvc.getAccessRulesList(groupId);
 						/*Address is already part of objectDetails.basicInfo.address (same date)
 						But it is needed in this other object for the reusable address html fragments */
 						$scope.objectDetails.address = GroupsSvc.getGroupAddressObject(groupId);
@@ -326,22 +327,28 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.groupEditParams.leadsList.$loaded().then(function(){
 				clearResponse();
 				$scope.groupEditParams.updatingGroupLead = true;
+				$scope.groupEditParams.currentLeadId= $scope.objectDetails.roles.leadId;
 			});
 		};
 
-		/*Persist the Groups's Host Selection */
+		/* Persist the Groups's Host Selection */
 		$scope.updateGroupLead = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
-				let groupRoles = $scope.objectDetails.roles;
-				if(groupRoles.leadId){
-					let member = $scope.groupEditParams.leadsList.$getRecord(groupRoles.leadId);
-					groupRoles.leadName = member.shortname;
-				}else{
-					groupRoles.leadId = null;
-					groupRoles.leadName = null;
+				let newLeadRole = $scope.objectDetails.roles;
+				if($scope.groupEditParams.currentLeadId == newLeadRole.leadId){
+					$scope.groupEditParams.updatingGroupLead = false;
+					return;
 				}
-				groupRoles.$save().then(function() {
+
+				if(newLeadRole.leadId){
+					let member = $scope.groupEditParams.leadsList.$getRecord(newLeadRole.leadId);
+					newLeadRole.leadName = member.shortname;
+				}else{
+					newLeadRole.leadId = null;
+					newLeadRole.leadName = null;
+				}
+				newLeadRole.$save().then(function() {
 					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
 					$scope.groupEditParams.updatingGroupLead = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupLeadUpdated};
@@ -358,6 +365,7 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.groupEditParams.hostsList.$loaded().then(function(){
 				clearResponse();
 				$scope.groupEditParams.updatingGroupHost = true;
+				$scope.groupEditParams.currentHostId= $scope.objectDetails.roles.hostId;
 			});
 		};
 
@@ -366,6 +374,11 @@ okulusApp.controller('GroupDetailsCntrl',
 			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 				let groupRoles = $scope.objectDetails.roles;
+				if($scope.groupEditParams.currentHostId == groupRoles.hostId){
+					$scope.groupEditParams.updatingGroupHost = false;
+					return;
+				}
+
 				if(groupRoles.hostId){
 					let member = $scope.groupEditParams.hostsList.$getRecord(groupRoles.hostId);
 					groupRoles.hostName = member.shortname;
@@ -390,6 +403,7 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.groupEditParams.traineesList.$loaded().then(function(){
 				clearResponse();
 				$scope.groupEditParams.updatingGroupTrainee = true;
+				$scope.groupEditParams.currentTraineeId= $scope.objectDetails.roles.traineeId;
 			});
 		};
 
@@ -398,6 +412,10 @@ okulusApp.controller('GroupDetailsCntrl',
 			clearResponse();
 			if($rootScope.currentSession.user.type == constants.roles.admin){
 				let groupRoles = $scope.objectDetails.roles;
+				if($scope.groupEditParams.currentTraineeId == groupRoles.traineeId){
+					$scope.groupEditParams.updatingGroupTrainee = false;
+					return;
+				}
 				if(groupRoles.traineeId){
 					let member = $scope.groupEditParams.traineesList.$getRecord(groupRoles.traineeId);
 					groupRoles.traineeName = member.shortname;
