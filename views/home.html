@@ -25,17 +25,31 @@
         <div class="card-body">
           <h4 class="card-title">{{i18n.launchpad.title}}</h4>
           <hr>
-          <div ng-controller="CreateReportCntrl">
-            <button class="btn btn-lg btn-block btn-warning clickable"
+          <div class="row">
+            <div class="col" ng-controller="CreateReportCntrl">
+              <button class="btn btn-block btn-warning clickable"
               ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
               {{i18n.launchpad.createReport}}
-            </button>
-            <div ng-include="'views/groups/groupSelectModal.html'"></div>
-            <button class="btn btn-lg btn-block btn-warning clickable"
+              </button>
+              <div ng-include="'views/groups/groupSelectModal.html'"></div>
+              <button class="btn btn-block btn-warning clickable"
               ng-show="currentSession.accessGroups.length > 1"
               data-toggle="modal" data-target="#groupSelectModal">
               {{i18n.launchpad.createReport}}
-            </button>
+              </button>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <div class="col" ng-if="currentSession.user.type == 'admin'">
+              <a href="#!/members/new" class="btn btn-block btn-warning clickable">
+                {{i18n.launchpad.createMember}}
+              </a>
+            </div>
+            <div class="col" ng-if="currentSession.user.type != 'admin'">
+              <a href="#!/requests/newmember" class="btn btn-block btn-warning clickable">
+                {{i18n.launchpad.requestMember}}
+              </a>
+            </div>
           </div>
         </div>
       </div>

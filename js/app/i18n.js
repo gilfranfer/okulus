@@ -50,7 +50,9 @@ const systemMsgs = {
 		reportsWatch:"Uno o mas reportes, relacionados con su búsqueda, han sido modificados.",
 		groupTypeNotAdded:"Error al agregar el Tipo de Grupo",
 		groupTypeNotRemoved:"Error al eliminar el Tipo de Grupo",
-		groupTypeExist:"El tipo de Grupo ya existe."
+		groupTypeExist:"El tipo de Grupo ya existe.",
+		/* Member Requests */
+		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -110,7 +112,10 @@ const systemMsgs = {
 		/*Message Center*/
 		postingMessage: "Publicando mensaje ...",
 		deletingMessage: "Eliminando mensaje ...",
-		savingConfig:"Guardando Configuraciones ..."
+		savingConfig:"Guardando Configuraciones ...",
+		/*Member Request*/
+		creatingRequest:"Creando Solicitud ...",
+		updatingRequest:"Actualizando Solicitud ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -167,7 +172,15 @@ const systemMsgs = {
 		deleteMessageSuccess: "El mensaje ha sido eliminado.",
 		configSaved:"Configuraciones Guardadas.",
 		groupTypeAdded:"Nuevo Tipo de Grupo agregado",
-		groupTypeRemoved:"Se ha eliminado el Tipo de Grupo"
+		groupTypeRemoved:"Se ha eliminado el Tipo de Grupo",
+		/*Member Request*/
+		requestCreated:"La solicitud ha sido creada",
+		requestUpdated:"La solicitud ha sido actualizada"
+	},
+	/* Notification Descriptions */
+	notificaions:{
+		memberRequested:"Se ha solicitado la creación de un Miembro",
+		memberRequestedUpdated:" Solicitud de Miembro modificada"
 	}
 };
 
@@ -191,7 +204,9 @@ const notifiableElements = new Map([
 		[constants.db.folders.members,"Miembro"],
 		[constants.db.folders.reports,"Reporte"],
 		[constants.db.folders.weeks,"Semana"],
-		[constants.db.folders.users,"Usuario"] ]);
+		[constants.db.folders.users,"Usuario"],
+		[constants.db.folders.memberRequest,"solicitud"]
+	 ]);
 
 /** Using a run function to set the language in the rootScope **/
 okulusApp.run(function($rootScope) {
@@ -215,7 +230,8 @@ okulusApp.run(function($rootScope) {
 				viewProfileBtn: "Ver Perfil"
 			},
 			launchpad:{
-				title:"Acciones rápidas", createReport:"Crear Reporte"
+				title:"Acciones rápidas", createReport:"Crear Reporte",
+				createMember:"Crear Miembro", requestMember:"Solicitar Miembro"
 			},
 			msgCenter:{
 				title: "Mensajes del Administrador",
@@ -397,6 +413,12 @@ okulusApp.run(function($rootScope) {
 				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Líder?",
 				isTraineeLbl:"Es Aprendíz?",
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
+				notesLbl: "Notas o comentarios",
+				/*Member Request*/
+				memberRequestLbl:"Solicitud de Creación de Miembro",
+				rejectedRequest:"Solicitud Rechazada",
+				approvedRequest:"Solicitud Aprobada",
+				pendingRequest:"Solicitud Pendiente",
 				/*TODO: Used?*/
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
 				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
@@ -467,10 +489,10 @@ okulusApp.run(function($rootScope) {
 				approval:"Aprobación", rejection: "Rechazo"
 			},
 			btns:{
-				saveBtn: "Guardar", newBtn: "Nuevo",
-				deleteBtn: "Eliminar",
+				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				requestBtn:"Iniciar Solicitud", approveRequestBtn:"Aprobar Solicitud",
+				rejectRequestBtn:"Rechazar Solicitud", deleteRequestBtn:"Cancelar Solicitud",
 				yesBtn: "Si!", noBtn: "No!",
-				viewBtn: "Ver",
 				/** Access Rules **/
 				returnBtn:"Regresar",
 				addReport: "Crear Reporte", accessRules:"Reglas de Accesos",

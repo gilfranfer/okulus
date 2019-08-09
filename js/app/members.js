@@ -148,16 +148,15 @@ okulusApp.controller('MembersListCntrl',
 			});
 		};
 
-	}
-]);
+}]);
 
 /* Controller linked to /members/view/:memberId and /members/edit/:memberId
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-		'MembersSvc','GroupsSvc','AuditSvc','AuthenticationSvc',
+		'MembersSvc','GroupsSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, GroupsSvc, AuditSvc, AuthenticationSvc){
+		MembersSvc, GroupsSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -173,8 +172,10 @@ okulusApp.controller('MemberDetailsCntrl',
 				}
 
 				let memberId = $routeParams.memberId;
+				let requestId = $routeParams.requestId;
 				/* Prepare for Edit or View Details of Existing Member */
 				if(memberId){
+					console.debug("Existing Member");
 					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
 					$scope.objectDetails.basicInfo.$loaded().then(function(member){
 						//If member from DB hasn't shortname, is because no member was found
@@ -194,12 +195,28 @@ okulusApp.controller('MemberDetailsCntrl',
 						$location.path(constants.pages.error);
 					});
 				}
-				/* Prepare for New Member Creation */
-				else{
+				/* Prepare for New Member Request Creation */
+				else if(requestId){
+					console.debug("Existing Member Request");
+					$scope.objectDetails = MembersSvc.getMemberRequest(requestId);
+					$scope.objectDetails.$loaded().then(function(data) {
+						// console.log(data);
+					});
+					$scope.prepareRequestEditView(requestId);
+				}else{
+					console.debug("New Member or New Request");
 					$scope.prepareViewForNew();
 				}
 			});
 		}});
+
+		$scope.prepareRequestEditView = function (requestId) {
+			$scope.requestParams = {};
+			// $scope.memberEditParams.actionLbl = $rootScope.i18n.members.modifyLbl;
+			$scope.requestParams.isEdit = true;
+			$scope.requestParams.requestId = requestId;
+			$scope.response = undefined;
+		};
 
 		$scope.prepareViewForEdit = function (memberObject) {
 			$scope.memberEditParams = {};
@@ -461,14 +478,75 @@ okulusApp.controller('MemberDetailsCntrl',
 			}
 		};
 
-	}
-]);
+		$scope.updateRequest = function(){
+			$scope.response = { working:true, message: systemMsgs.inProgress.updatingRequest };
+
+			let isApproved = ($scope.objectDetails.status == constants.status.approved);
+			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
+			let isRequested = ($scope.objectDetails.status == constants.status.requested);
+			if(isApproved){
+				$scope.response = { error:true, message: systemMsgs.error.approvedRequestUpdate };
+				return;
+			}
+
+			$scope.objectDetails.status = constants.status.requested;
+			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
+			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
+			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
+
+			$scope.objectDetails.$save().then(function(data) {
+				let notification = { description: systemMsgs.notificaions.memberRequestedUpdated,
+														action: constants.actions.update,
+														onFolder: constants.db.folders.memberRequest,
+														onObject: data.key,	url:null };
+				//NotificationsSvc.notifyAdmins(notification);
+				if(isRejected){
+					//Decrease Rejected Counter
+					//Increase requested Counter
+				}
+				// else if(isRequested){
+				//
+				// }
+				$scope.response = { success:true, message: systemMsgs.success.requestUpdated };
+			});
+
+		};
+
+		$scope.requestMember = function(){
+			$scope.response = { working:true, message: systemMsgs.inProgress.creatingRequest };
+			let request = {
+				status: constants.status.requested,
+				notes: $scope.objectDetails.notes,
+				basicInfo: $scope.objectDetails.basicInfo,
+				audit: {createdBy:$rootScope.currentSession.user.email,
+								createdById:$rootScope.currentSession.user.$id,
+								createdOn: firebase.database.ServerValue.TIMESTAMP}
+			};
+			if($scope.objectDetails.address){
+					request.address = $scope.objectDetails.address;
+			}
+			console.debug("Member Requested:", request);
+			let requestRef = MembersSvc.persistMemberRequest(request);
+			MembersSvc.getMemberRequest(requestRef.key).$loaded().then(function() {
+				let notification = { description: systemMsgs.notificaions.memberRequested,
+														action: constants.actions.create,
+														onFolder: constants.db.folders.memberRequest,
+														onObject: requestRef.key,	url:null };
+				NotificationsSvc.notifyAdmins(notification);
+				MembersSvc.increaseRequestedMembersCount($rootScope.currentSession.user.$id);
+				$scope.response = { success:true, message: systemMsgs.success.requestCreated };
+			});
+		}
+
+}]);
 
 okulusApp.factory('MembersSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
 	function($rootScope, $firebaseArray, $firebaseObject){
 
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let memberRequestListRef = baseRef.child(constants.db.folders.memberRequestList);
+		let usersListRef = baseRef.child(constants.db.folders.usersList);
 		let memberListRef = baseRef.child(constants.db.folders.membersList);
 		let memberDetailsRef = baseRef.child(constants.db.folders.membersDetails);
 		let isActiveMemberRef = memberListRef.orderByChild(constants.status.isActive);
@@ -714,64 +792,34 @@ okulusApp.factory('MembersSvc',
 					}
 				}
 			},
-			/* Returns a list of Group records (from $firebaseArray) that are
-			 * present in the Member's acess rules folder.
-			getMemberGroups: function(whichMember) {
-				return new Promise((resolve, reject) => {
-					GroupsSvc.getAllGroups().$loaded().then( function(allGroups){
-						return $firebaseArray(membersRef.child(whichMember).child("access")).$loaded();
-					}).then( function(memberRules) {
-						let myGroups = [];
-						memberRules.forEach(function(rule) {
-							let group = $rootScope.allGroups.$getRecord(rule.groupId);
-							if( group != null){
-								myGroups.push( group );
-							}
-						});
-						//$rootScope.groupsList = myGroups;
-						resolve(myGroups);
-					});
-
-				});
-			},*/
-			filterMemberGroupsFromRules: function(memberRules, allGroups) {
-				let myGroups = [];
-				memberRules.forEach(function(rule) {
-					let group = allGroups.$getRecord(rule.groupId);
-					if( group != null){
-						myGroups.push( group );
-					}
-				});
-				return myGroups;
+			/** Methods for Member Request **/
+			persistMemberRequest: function(request){
+				let ref = memberRequestListRef.push(request);
+				return ref;
 			},
-			/*Use the passed Groups List to get all members with those groups as BaseGroup*/
-			getMembersInGroups: function(groups) {
-				return new Promise((resolve, reject) => {
-					let contacts = [];
-					groups.forEach(function(group) {
-						//get from members folder order by member.baseGroup equals to group.$id
-						let ref = memberListRef.orderByChild(constants.db.fields.baseGroup).equalTo(group.$id);
-						$firebaseArray(ref).$loaded().then(function(members){
-							members.forEach(function(member) {
-								contacts.push( member );
-							});
-						});
-					});
-					resolve(contacts);
-				});
+			/* Get member basic info from firebase and return as object */
+			getMemberRequest: function(whichRequest){
+				return $firebaseObject(memberRequestListRef.child(whichRequest));
 			},
-			//Deprecated
-			addReportReference: function(memberId,reportId, report){
-				// console.debug(memberId,reportId, report);
-				//Save the report Id in the Group/reports
-				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(reportId);
-				ref.set({
-					reportId: reportId,
-					weekId:report.weekId,
-					date:report.dateObj,
-					groupId:report.groupId,
-					groupName:report.groupname
-				});
+			/* Used when creating a Member Request */
+			decreaseRequestedMembersCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
+				decreaseCounter(conunterRef);
+			},
+			/* Used when creating a Member Request */
+			increaseRequestedMembersCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
+				increaseCounter(conunterRef);
+			},
+			/* Used when a Member Request is approved */
+			increaseApprovedMembersCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
+				increaseCounter(conunterRef);
+			},
+			/* Used when a Member Request is rejected */
+			increaseRejectedMembersCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				increaseCounter(conunterRef);
 			}
 		};
 	}

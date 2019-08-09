@@ -124,11 +124,13 @@ okulusApp.factory('NotificationsSvc',
 		};
 
 		/*returns the notification object to be persisted in DB*/
-		let buildNotificationRecord = function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId) {
-			let desc = getNotificationDescription(actionPerformed, onFolder, objectId);
+		let buildNotificationRecord = function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId, description) {
+			if(!description){
+				description = getNotificationDescription(actionPerformed, onFolder, objectId);
+			}
 			let notification = { action: actionPerformed, onFolder: onFolder, onObject: objectId,
 												from: actionByUser, fromId: actionByUserId, readed: false,
-												description: desc, time: firebase.database.ServerValue.TIMESTAMP }
+												description: description, time: firebase.database.ServerValue.TIMESTAMP }
 			return notification;
 		};
 
@@ -168,6 +170,23 @@ okulusApp.factory('NotificationsSvc',
 			});
 		};
 
+		/* Get's the sender details (id and email) from the current session */
+		let getNotificationSender = function() {
+			let sender = {};
+			let session = $rootScope.currentSession;
+			if(!session || !session.user){
+				sender.from = "System";
+				sender.id=null;
+			} else if (session && session.user.isRoot){
+				sender.from = "Root";
+				sender.id = session.user.$id;
+			} else {
+				sender.from = session.user.email;
+				sender.id = session.user.$id;
+			}
+			return sender;
+		};
+
 		return {
 			/* Main method used to send notifications. Currently is called only from Audit Service.
 			This notification is sent to all admins and to all parties with some interest
@@ -176,10 +195,10 @@ okulusApp.factory('NotificationsSvc',
 			actionPerformed: create, update, delete, approved, rejected
 			onFolder: groups, members, reports, weeks, users, etc.
 			objectId: DB Refernce Id */
-			notifyInterestedUsers: function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId){
-				var notifiableElement = notifiableElements.has(onFolder);
+			notifyInterestedUsers: function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId, description){
+				let notifiableElement = notifiableElements.has(onFolder);
 				if( notifiableElement ){
-					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId);
+					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId,description);
 
 					/* Send the notification only after the audit record is created/updated in the elment itself
 						This is because the audit folder will help us to identify the parties we need to notify
@@ -240,6 +259,22 @@ okulusApp.factory('NotificationsSvc',
 				}
 				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, user, userId);
 				pushNotification(receiver, notification);
+			},
+			/* Send notification to all valid system adminis
+			 notification = { description: description, action: actionPerformed, onFolder: onFolder, onObject: objectId } */
+			notifyAdmins: function( notification ){
+			  let sender = getNotificationSender();
+				notification.readed = false;
+				notification.time = firebase.database.ServerValue.TIMESTAMP;
+				notification.from = sender.from;
+				notification.fromId = sender.id;
+				getAdminUsers().$loaded().then(function(admins){
+					admins.forEach(function(adminUser){
+						if(adminUser.isValid){
+							pushNotification(adminUser.$id, notification);
+						}
+					});
+				});
 			},
 			/*Return the list of notifications for specific user*/
 			getAllNotificationsForUser: function(userid) {

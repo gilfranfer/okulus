@@ -11,7 +11,8 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 			 * 2. Record in the App Global Audit Folder. (actions: creation,update, delete)
 			 * Returns a reference to the audit folder created in the object
 			 */
-			recordAudit: function( objectId, action, on){
+			recordAudit: function( objectId, action, on, description){
+				console.log(description);
 				//Determine who is doing the action
 				let user = undefined;
 				let userId = null;
@@ -64,7 +65,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Notifications get Triggered from same places as audit
-        NotificationsSvc.notifyInterestedUsers(action, on, objectId, user, userId);
+        NotificationsSvc.notifyInterestedUsers(action, on, objectId, user, userId, description);
 				return objectAuditRef;
 			}
 		};

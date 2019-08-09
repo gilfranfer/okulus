@@ -24,6 +24,8 @@ const constants = {
 			membersList:"members/list", membersDetails:"members/details",
 			reportsList:"reports/list", reportsDetails:"reports/details",
 			messagesList:"messages/list",
+			memberRequest:"requests/members",
+			memberRequestList:"requests/members/list",
 			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 			notificationsList:"notifications/list",
 			/**Counters*/
@@ -46,7 +48,10 @@ const constants = {
 			totalReportsCount:"counters/reports/total",
 			pendingReportsCount:"counters/reports/pending",
 			approvedReportsCount:"counters/reports/approved",
-			rejectedReportsCount:"counters/reports/rejected"
+			rejectedReportsCount:"counters/reports/rejected",
+			requestedMembersCount:"counters/requests/requestedMembers",
+			approvedMembersCount:"counters/requests/approvedMembers",
+			rejectedMembersCount:"counters/requests/rejectedMembers"
 		},
 		fields:{
 			baseGroup:"baseGroupId",
@@ -66,7 +71,7 @@ const constants = {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
 		approved:"approved", rejected:"rejected", pendingReview:"pending",
-		open:"open", closed:"closed",
+		open:"open", closed:"closed", requested: "requested",
 		completed:"completed", canceled:"canceled",
 		visible:"show", hidden:"hide",
 		readed:"readed",
@@ -349,6 +354,24 @@ okulusApp.config(['$routeProvider',
 				},
 				templateUrl: 'views/notifications/notificationCenter.html',
 				controller: "NotificationCenterCntrl"
+			})
+			.when('/requests/newmember', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/members/memberRequest.html',
+				controller: 'MemberDetailsCntrl'
+			})
+			.when('/requests/members/view/:requestId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/members/memberRequest.html',
+				controller: 'MemberDetailsCntrl'
 			})
 			.when('/error', {
 				templateUrl: 'views/errors/error-general.html'

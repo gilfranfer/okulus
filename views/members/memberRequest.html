@@ -1,0 +1,219 @@
+<!-- Following section will be displayed onyl after Member is loaded -->
+<section id="memberRequest">
+  <!-- Title -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">
+        {{i18n.members.memberRequestLbl}}
+      </h4>
+    </div>
+  </article>
+
+  <!-- Alerts to inform the Status of Existing Request -->
+  <div class="alert alert-danger" role="alert" ng-show="objectDetails.status == 'rejected'">
+    {{i18n.members.rejectedRequest}}
+  </div>
+  <div class="alert alert-success" role="alert" ng-show="objectDetails.status == 'approved'">
+    {{i18n.members.approvedRequest}}
+  </div>
+  <div class="alert alert-primary" role="alert" ng-show="objectDetails.status == 'requested'">
+    {{i18n.members.pendingRequest}}
+  </div>
+
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <form id="memberRequestForm" name="memberRequestForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.basicInfoTitle}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- Firstname, Lastname and Alias -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="firstname">
+              {{i18n.members.fnameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="firstname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameHint}}"
+              ng-model="objectDetails.basicInfo.firstname" ng-required="true">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="lastname">
+              {{i18n.members.lnameLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
+                ng-model="objectDetails.basicInfo.lastname" ng-required="true">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="shortname">
+              {{i18n.members.aliasLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input id="shortname" name="shortname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.aliasHint}}"
+              ng-model="objectDetails.basicInfo.shortname" ng-required="true">
+          </div>
+        </div>
+        <!-- Sex and Birthdate -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="shortname">
+              {{i18n.members.sexLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="sexSelect" class="form-control form-control-lg"
+              ng-model="objectDetails.basicInfo.sex" ng-required="true">
+              <option value="M" >{{i18n.members.maleLbl}}</option>
+              <option value="F" >{{i18n.members.femaleLbl}}</option>
+            </select>
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="bday">
+              {{i18n.members.bdayLbl}}
+            </label>
+            <input type="date" id="bday" name="bday" class="form-control form-control-lg"
+              min="{{config.members.minBDate}}" max="{{config.todayDate}}" value="{{objectDetails.basicInfo.bday}}"
+              ng-required="false" onchange="updateBdayValue()">
+          </div>
+        </div>
+        <!-- Email and Phone -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="email">
+              {{i18n.contact.emailLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
+            </label>
+            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
+              ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="phone">
+              {{i18n.contact.phoneLbl}}
+              <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
+            </label>
+            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
+                ng-model="objectDetails.basicInfo.phone"
+                ng-required="!(objectDetails.basicInfo.email)">
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Address Card -->
+  <article class="card mb-3">
+    <form name="memberAddressForm" novalidate ng-submit="">
+      <div class="card-body">
+        <!-- Header and Add Button (Admin)-->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.address.legend}}</legend>
+          </div>
+          <!-- Button to Add/Remove address -->
+          <div class="col" ng-if="currentSession.user.type == 'admin'">
+            <button type="button" class="btn btn-block btn-warning clickable"
+              ng-show="!objectDetails.address" ng-click="addAdress()">
+              {{i18n.members.addAddressBtn}}
+            </button>
+            <!-- Delete Address button -->
+            <button type="button" class="btn btn-block btn-danger clickable"
+              data-toggle="collapse" data-target="#collapseDeleteAddress"
+              aria-expanded="false" aria-controls="collapseDeleteAddress"
+              ng-show="objectDetails.address">
+              {{i18n.members.deleteAddressBtn}}
+            </button>
+            <div  class="collapse" id="collapseDeleteAddress">
+              <div class="alert alert-danger" role="alert">
+                {{i18n.alerts.confirmQuestion}}
+                <button type="button" class="btn btn-danger" ng-click="removeAdress()"
+                 data-toggle="collapse" data-target="#collapseDeleteAddress"
+                 aria-expanded="false" aria-controls="collapseDeleteAddress">
+                  {{i18n.btns.yesBtn}}
+                </button>
+                <button type="button" class="btn btn-success"
+                 data-toggle="collapse" data-target="#collapseDeleteAddress"
+                 aria-expanded="false" aria-controls="collapseDeleteAddress">
+                  {{i18n.btns.noBtn}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr ng-show="objectDetails.address">
+        <!-- Address -->
+        <div ng-show="objectDetails.address" ng-include="'views/fragments/addressFormFields.html'"></div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Notes -->
+  <article class="card mb-3">
+    <form id="requestNotesForm" name="requestNotesForm" novalidate ng-submit="">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.notesLbl}}</legend>
+          </div>
+        </div>
+        <hr>
+        <div class="form-row">
+          <div class="col-md form-group">
+            <textarea id="notes" name="notes" class="form-control form-control-lg"
+            placeholder="" ng-model="objectDetails.notes" ng-required="false">
+            </textarea>
+          </div>
+        </div>
+      </div>
+    </form>
+  </article>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- User Buttons -->
+  <div class="row">
+    <!-- Request can be placed, while not on edit view -->
+    <div class="col mb-2" ng-if="!requestParams.isEdit && (!memberRequestForm.$pristine || !requestNotesForm.$pristine || !memberAddressForm.$pristine)">
+      <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+        ng-disabled="requestNotesForm.$invalid || memberRequestForm.$invalid || (objectDetails.address && memberAddressForm.$invalid)"
+        ng-click="requestMember()">
+        {{i18n.btns.requestBtn}}
+      </button>
+    </div>
+    <!-- Request can be updated, while not approved -->
+    <div class="col mb-2" ng-if="requestParams.isEdit && objectDetails.status != 'approved' && (!memberRequestForm.$pristine || !requestNotesForm.$pristine || !memberAddressForm.$pristine)">
+      <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+        ng-disabled="requestNotesForm.$invalid || memberRequestForm.$invalid || (objectDetails.address && memberAddressForm.$invalid)"
+        ng-click="updateRequest()">
+        {{i18n.btns.saveBtn}}
+      </button>
+    </div>
+    <!-- Request can be cancelled by the requestor only, and when it is not approved yet -->
+    <div class="col mb-2" ng-if="objectDetails.status != 'approved' && currentSession.user.$id == objectDetails.audit.createdById">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="deleteRequest()">
+        {{i18n.btns.deleteRequestBtn}}
+      </button>
+    </div>
+  </div>
+  <!-- Admin Buttons -->
+  <div class="row" ng-if="objectDetails.status == 'requested' && currentSession.user.type == 'admin'">
+    <!-- Request can be approved by admin, when it is on requested status -->
+    <div class="col mb-2">
+      <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveRequest()">
+        {{i18n.btns.approveRequestBtn}}
+      </button>
+    </div>
+    <!-- Request can be rejected by admin, when it is on requested status -->
+    <div class="col mb-2">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectRequest()">
+        {{i18n.btns.rejectRequestBtn}}
+      </button>
+    </div>
+  </div>
+
+
+</section>
