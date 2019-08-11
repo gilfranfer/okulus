@@ -478,12 +478,11 @@ okulusApp.controller('MemberDetailsCntrl',
 			}
 		};
 
+		/* A request can be updated by the creator, if not approved. After an update,
+		the request status always goes to "Requested", even if it was "Rejected". */
 		$scope.updateRequest = function(){
 			$scope.response = { working:true, message: systemMsgs.inProgress.updatingRequest };
-
 			let isApproved = ($scope.objectDetails.status == constants.status.approved);
-			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
-			let isRequested = ($scope.objectDetails.status == constants.status.requested);
 			if(isApproved){
 				$scope.response = { error:true, message: systemMsgs.error.approvedRequestUpdate };
 				return;
@@ -493,27 +492,28 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
 			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
 			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
-
 			$scope.objectDetails.$save().then(function(data) {
+				let isRejected = ($scope.objectDetails.status == constants.status.rejected);
+				if(isRejected){
+					MembersSvc.decreaseRejectedMemberRequestsCount($scope.objectDetails.audit.createdById);
+				}
 				let notification = { description: systemMsgs.notificaions.memberRequestedUpdated,
 														action: constants.actions.update,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: data.key,	url:null };
-				//NotificationsSvc.notifyAdmins(notification);
-				if(isRejected){
-					//Decrease Rejected Counter
-					//Increase requested Counter
-				}
-				// else if(isRequested){
-				//
-				// }
+				NotificationsSvc.notifyAdmins(notification);
 				$scope.response = { success:true, message: systemMsgs.success.requestUpdated };
 			});
 
 		};
 
+		/* When requesting a member, increase the number of total requests placed by the
+		user, and notify admins about the reuqest.*/
 		$scope.requestMember = function(){
 			$scope.response = { working:true, message: systemMsgs.inProgress.creatingRequest };
+
+			//All Members are created with initial status isActive = true
+			$scope.objectDetails.basicInfo.isActive = true;
 			let request = {
 				status: constants.status.requested,
 				notes: $scope.objectDetails.notes,
@@ -525,18 +525,56 @@ okulusApp.controller('MemberDetailsCntrl',
 			if($scope.objectDetails.address){
 					request.address = $scope.objectDetails.address;
 			}
-			console.debug("Member Requested:", request);
+
 			let requestRef = MembersSvc.persistMemberRequest(request);
-			MembersSvc.getMemberRequest(requestRef.key).$loaded().then(function() {
+			MembersSvc.getMemberRequest(requestRef.key).$loaded().then(function(){
+				MembersSvc.increaseMemberRequestsCount(request.createdById);
 				let notification = { description: systemMsgs.notificaions.memberRequested,
 														action: constants.actions.create,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: requestRef.key,	url:null };
 				NotificationsSvc.notifyAdmins(notification);
-				MembersSvc.increaseRequestedMembersCount($rootScope.currentSession.user.$id);
 				$scope.response = { success:true, message: systemMsgs.success.requestCreated };
 			});
-		}
+		};
+
+		/* When approving the request, change the status to "approved", set the Approver's
+		data as the last one updating the request, Create a copy of the request data into
+		the members/list folder and members/details/address. Additionally some counters must
+		be updated: increase the number of approved requests for the Creator, Increase the
+		number of existing and active members*/
+		$scope.approveRequest = function(){
+			$scope.response = { working:true, message: systemMsgs.inProgress.approvingRequest };
+
+			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
+			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
+			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
+			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
+
+			let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
+			MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function(memberData) {
+				MembersSvc.persistMemberAddress(memberData.$id,$scope.objectDetails.address);
+				MembersSvc.persistMemberAudit(memberData.$id,$scope.objectDetails.audit);
+				//Update request status
+				$scope.objectDetails.status = constants.status.approved;
+				$scope.objectDetails.$save();
+				MembersSvc.increaseApprovedMemberRequestsCount($scope.objectDetails.audit.createdById);
+				MembersSvc.increaseTotalMembersCount();
+				MembersSvc.increaseActiveMembersCount();
+				if(isRejected){
+					MembersSvc.decreaseRejectedMemberRequestsCount($scope.objectDetails.audit.createdById);
+				}
+				let notification = { description: systemMsgs.notificaions.memberRequestApproved,
+														action: constants.actions.approve,
+														onFolder: constants.db.folders.memberRequest,
+														onObject: memberData.$id,	url:null };
+				//Notify the request's creator about the approval
+				NotificationsSvc.notifyUser($scope.objectDetails.audit.createdById,notification);
+				$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreatedFromRequest };
+				//Redirect to the created member
+				$location.path(constants.pages.memberEdit+newmemberRef.key);
+			});
+		};
 
 }]);
 
@@ -660,8 +698,15 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Push Address Object to Firebase, in the folder members/details/:memberId */
 			persistMemberAddress: function(memberId, addressObj){
+				if(!addressObj) return null;
 				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.address);
 				ref.set(addressObj);
+				return ref;
+			},
+			/* Push Audit Object to Firebase, in the folder members/details/:memberId */
+			persistMemberAudit: function(memberId, auditObj){
+				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.audit);
+				ref.set(auditObj);
 				return ref;
 			},
 			/* Remove all Member details (Address, Audit, Access Rules, attendance, etc.)*/
@@ -801,22 +846,33 @@ okulusApp.factory('MembersSvc',
 			getMemberRequest: function(whichRequest){
 				return $firebaseObject(memberRequestListRef.child(whichRequest));
 			},
-			/* Used when creating a Member Request */
+			/* Used when deleting or cancelling a Member Request */
 			decreaseRequestedMembersCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
 				decreaseCounter(conunterRef);
 			},
 			/* Used when creating a Member Request */
-			increaseRequestedMembersCount: function (userId) {
+			increaseMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Used when a Member Request is approved */
-			increaseApprovedMembersCount: function (userId) {
+			/* Used when rejecting a Member Request */
+			decreaseApprovedMembersCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
+				decreaseCounter(conunterRef);
+			},
+			/* Used when approving a Member Request */
+			increaseApprovedMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Used when a Member Request is rejected */
+			/* Used when approving or updating a Member Request that was in rejected status.
+			Decrease the number of Rejected Member Request in the Requestor's (User) counters */
+			decreaseRejectedMemberRequestsCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				decreaseCounter(conunterRef);
+			},
+			/* Used when rejecting a Member Request */
 			increaseRejectedMembersCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
 				increaseCounter(conunterRef);

@@ -115,6 +115,8 @@ const systemMsgs = {
 		savingConfig:"Guardando Configuraciones ...",
 		/*Member Request*/
 		creatingRequest:"Creando Solicitud ...",
+		approvingRequest:"Aprobando Solicitud ...",
+		rejectingRequest:"Rechazando Solicitud ...",
 		updatingRequest:"Actualizando Solicitud ..."
 	},
 	success:{
@@ -175,12 +177,15 @@ const systemMsgs = {
 		groupTypeRemoved:"Se ha eliminado el Tipo de Grupo",
 		/*Member Request*/
 		requestCreated:"La solicitud ha sido creada",
+		memberCreatedFromRequest:"La solicitud ha sido Aprobada. Nuevo Miembro creado.",
+		requestRejected:"La solicitud ha sido Rechazada",
 		requestUpdated:"La solicitud ha sido actualizada"
 	},
 	/* Notification Descriptions */
 	notificaions:{
 		memberRequested:"Se ha solicitado la creación de un Miembro",
-		memberRequestedUpdated:" Solicitud de Miembro modificada"
+		memberRequestedUpdated:"Solicitud de Miembro modificada",
+		memberRequestApproved:"Su solicitud de Miembro ha sido a probada"
 	}
 };
 

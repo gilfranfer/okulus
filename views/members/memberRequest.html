@@ -184,8 +184,9 @@
         {{i18n.btns.requestBtn}}
       </button>
     </div>
-    <!-- Request can be updated, while not approved -->
-    <div class="col mb-2" ng-if="requestParams.isEdit && objectDetails.status != 'approved' && (!memberRequestForm.$pristine || !requestNotesForm.$pristine || !memberAddressForm.$pristine)">
+    <!-- Request can be updated by the requestor, while not approved -->
+    <div class="col mb-2" ng-if="requestParams.isEdit && objectDetails.status != 'approved' && currentSession.user.$id == objectDetails.audit.createdById
+      && (!memberRequestForm.$pristine || !requestNotesForm.$pristine || !memberAddressForm.$pristine)">
       <button type="button" class="btn btn-lg btn-block btn-primary clickable"
         ng-disabled="requestNotesForm.$invalid || memberRequestForm.$invalid || (objectDetails.address && memberAddressForm.$invalid)"
         ng-click="updateRequest()">

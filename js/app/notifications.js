@@ -276,6 +276,16 @@ okulusApp.factory('NotificationsSvc',
 					});
 				});
 			},
+			/*Used when we want to notify someone that is not part of the audit folder of an element
+			For Example, when granting a user access to a gorup, we want to notify the user.*/
+			notifyUser: function(userId,notification){
+				let sender = getNotificationSender();
+				notification.readed = false;
+				notification.time = firebase.database.ServerValue.TIMESTAMP;
+				notification.from = sender.from;
+				notification.fromId = sender.id;
+				pushNotification(userId, notification);
+			},
 			/*Return the list of notifications for specific user*/
 			getAllNotificationsForUser: function(userid) {
 				return $firebaseArray(notificationsRef.child(userid));
