@@ -52,7 +52,8 @@ const systemMsgs = {
 		groupTypeNotRemoved:"Error al eliminar el Tipo de Grupo",
 		groupTypeExist:"El tipo de Grupo ya existe.",
 		/* Member Requests */
-		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada."
+		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada.",
+		approvedRequestReject: "No se puede rechazar una Solicitud aprobada."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -185,7 +186,8 @@ const systemMsgs = {
 	notificaions:{
 		memberRequested:"Se ha solicitado la creación de un Miembro",
 		memberRequestedUpdated:"Solicitud de Miembro modificada",
-		memberRequestApproved:"Su solicitud de Miembro ha sido a probada"
+		memberRequestApproved:"Su solicitud de Miembro ha sido aprobada",
+		memberRequestRejected:"Su solicitud de Miembro ha sido rechazada"
 	}
 };
 
@@ -494,7 +496,7 @@ okulusApp.run(function($rootScope) {
 				approval:"Aprobación", rejection: "Rechazo"
 			},
 			btns:{
-				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar",
+				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
 				requestBtn:"Iniciar Solicitud", approveRequestBtn:"Aprobar Solicitud",
 				rejectRequestBtn:"Rechazar Solicitud", deleteRequestBtn:"Cancelar Solicitud",
 				yesBtn: "Si!", noBtn: "No!",
