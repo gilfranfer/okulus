@@ -49,9 +49,11 @@ const constants = {
 			pendingReportsCount:"counters/reports/pending",
 			approvedReportsCount:"counters/reports/approved",
 			rejectedReportsCount:"counters/reports/rejected",
+			/* Member Requests */
 			requestedMembersCount:"counters/requests/requestedMembers",
 			approvedMembersCount:"counters/requests/approvedMembers",
-			rejectedMembersCount:"counters/requests/rejectedMembers"
+			rejectedMembersCount:"counters/requests/rejectedMembers",
+			canceledMembersCount:"counters/requests/canceledMembers"
 		},
 		fields:{
 			baseGroup:"baseGroupId",
@@ -93,7 +95,7 @@ const constants = {
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
-		approve:"approved",reject:"rejected",
+		approve:"approved",reject:"rejected",cancel:"canceled",
 		open:"open",close:"closed",show:"show",hide:"hide",
 		grantAccess:"access-granted", revokeAccess:"access-deleted",
 		updateRole:"type-update"

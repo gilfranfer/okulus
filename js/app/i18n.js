@@ -53,7 +53,8 @@ const systemMsgs = {
 		groupTypeExist:"El tipo de Grupo ya existe.",
 		/* Member Requests */
 		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada.",
-		approvedRequestReject: "No se puede rechazar una Solicitud aprobada."
+		approvedRequestReject: "No se puede rechazar una Solicitud aprobada.",
+		approvedRequestCancel: "No se puede cancelar una Solicitud aprobada."
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -118,7 +119,8 @@ const systemMsgs = {
 		creatingRequest:"Creando Solicitud ...",
 		approvingRequest:"Aprobando Solicitud ...",
 		rejectingRequest:"Rechazando Solicitud ...",
-		updatingRequest:"Actualizando Solicitud ..."
+		updatingRequest:"Actualizando Solicitud ...",
+		cancellingRequest:"Cancelando Solicitud ..."
 	},
 	success:{
 		pwdResetEmailSent: "Hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada.!",
@@ -180,14 +182,16 @@ const systemMsgs = {
 		requestCreated:"La solicitud ha sido creada",
 		memberCreatedFromRequest:"La solicitud ha sido Aprobada. Nuevo Miembro creado.",
 		requestRejected:"La solicitud ha sido Rechazada",
-		requestUpdated:"La solicitud ha sido actualizada"
+		requestUpdated:"La solicitud ha sido actualizada",
+		requestCanceled:"La solicitud ha sido cancelada"
 	},
 	/* Notification Descriptions */
 	notificaions:{
 		memberRequested:"Se ha solicitado la creación de un Miembro",
 		memberRequestedUpdated:"Solicitud de Miembro modificada",
 		memberRequestApproved:"Su solicitud de Miembro ha sido aprobada",
-		memberRequestRejected:"Su solicitud de Miembro ha sido rechazada"
+		memberRequestRejected:"Su solicitud de Miembro ha sido rechazada",
+		memberRequestCanceled:"Se ha cancelado una solicitud de Miembro"
 	}
 };
 
@@ -422,10 +426,11 @@ okulusApp.run(function($rootScope) {
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
 				notesLbl: "Notas o comentarios",
 				/*Member Request*/
-				memberRequestLbl:"Solicitud de Creación de Miembro",
-				rejectedRequest:"Solicitud Rechazada",
-				approvedRequest:"Solicitud Aprobada",
-				pendingRequest:"Solicitud Pendiente",
+				memberRequestLbl:"Solicitud de Creación de Miembro.",
+				rejectedRequest:"Esta solicitud ha sido Rechazada.",
+				approvedRequest:"Esta solicitud ha sido Aprobada.",
+				pendingRequest:"Esta solicitud ha sido Realizada. Actualmente en revisión.",
+				canceledRequest:"Esta solicitud ha sido Cancelada.",
 				/*TODO: Used?*/
 				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
 				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",

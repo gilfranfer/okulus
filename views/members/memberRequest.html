@@ -10,6 +10,9 @@
   </article>
 
   <!-- Alerts to inform the Status of Existing Request -->
+  <div class="alert alert-danger" role="alert" ng-show="objectDetails.status == 'canceled'">
+    {{i18n.members.canceledRequest}}
+  </div>
   <div class="alert alert-danger" role="alert" ng-show="objectDetails.status == 'rejected'">
     {{i18n.members.rejectedRequest}}
   </div>
@@ -175,7 +178,7 @@
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- User Buttons -->
-  <div class="row">
+  <div class="row" ng-if="objectDetails.status != 'canceled'">
     <!-- Request can be placed, while not on edit view -->
     <div class="col mb-2" ng-if="!requestParams.isEdit">
       <button type="button" class="btn btn-lg btn-block btn-primary clickable"
@@ -195,7 +198,7 @@
     </div>
     <!-- Request can be cancelled by the requestor only, and when it is not approved yet -->
     <div class="col mb-2" ng-if="objectDetails.status != 'approved' && currentSession.user.$id == objectDetails.audit.createdById">
-      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="deleteRequest()">
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="cancelRequest()">
         {{i18n.btns.deleteRequestBtn}}
       </button>
     </div>

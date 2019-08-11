@@ -604,6 +604,37 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
+		/* Request with status different that Approved, can be cancelled by the the requestor.
+		Update the status to "canceled", set the Requestor's data as the last one updating the request.
+		Additionally increase the number of canceled requests, and reduce rejected (if applicable). */
+		$scope.cancelRequest = function(){
+			$scope.response = { working:true, message: systemMsgs.inProgress.cancellingRequest };
+			let isApproved = ($scope.objectDetails.status == constants.status.approved);
+			if(isApproved){
+				$scope.response = { error:true, message: systemMsgs.error.approvedRequestCancel };
+				return;
+			}
+
+			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
+			$scope.objectDetails.status = constants.status.canceled;
+			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
+			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
+			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
+
+			$scope.objectDetails.$save().then(function(){
+				MembersSvc.increaseCanceledMemberRequestsCount($scope.objectDetails.audit.createdById);
+				if(isRejected){
+					MembersSvc.decreaseRejectedMemberRequestsCount($scope.objectDetails.audit.createdById);
+				}
+				let notification = { description: systemMsgs.notificaions.memberRequestCanceled,
+														action: constants.actions.cancel,
+														onFolder: constants.db.folders.memberRequest,
+														onObject: $scope.objectDetails.$id,	url:null };
+				NotificationsSvc.notifyAdmins(notification);
+				$scope.response = { error:true, message: systemMsgs.success.requestCanceled };
+			});
+		};
+
 }]);
 
 okulusApp.factory('MembersSvc',
@@ -874,27 +905,27 @@ okulusApp.factory('MembersSvc',
 			getMemberRequest: function(whichRequest){
 				return $firebaseObject(memberRequestListRef.child(whichRequest));
 			},
-			/* Used when deleting or cancelling a Member Request */
+			/* Used when deleting or cancelling a Member Request
 			decreaseRequestedMembersCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
 				decreaseCounter(conunterRef);
-			},
+			},*/
 			/* Used when creating a Member Request */
 			increaseMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Used when rejecting a Member Request */
+			/* Used when rejecting a Member Request
 			decreaseApprovedMembersCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
 				decreaseCounter(conunterRef);
-			},
+			},*/
 			/* Used when approving a Member Request */
 			increaseApprovedMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
 				increaseCounter(conunterRef);
 			},
-			/* Used when approving or updating a Member Request that was in rejected status.
+			/* Used when approving, updating or canceling a Member Request that was in rejected status.
 			Decrease the number of Rejected Member Request in the Requestor's (User) counters */
 			decreaseRejectedMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
@@ -903,6 +934,11 @@ okulusApp.factory('MembersSvc',
 			/* Used when rejecting a Member Request */
 			increaseRejectedMemberRequestsCount: function (userId) {
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				increaseCounter(conunterRef);
+			},
+			/* Used when canceling a Member Request */
+			increaseCanceledMemberRequestsCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.canceledMembersCount);
 				increaseCounter(conunterRef);
 			}
 		};
