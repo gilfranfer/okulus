@@ -116,6 +116,7 @@ const systemMsgs = {
 		deletingMessage: "Eliminando mensaje ...",
 		savingConfig:"Guardando Configuraciones ...",
 		/*Member Request*/
+		loadingRequests:"Cargando Solicitudes ...",
 		creatingRequest:"Creando Solicitud ...",
 		approvingRequest:"Aprobando Solicitud ...",
 		rejectingRequest:"Rechazando Solicitud ...",
@@ -223,16 +224,15 @@ const notifiableElements = new Map([
 okulusApp.run(function($rootScope) {
 		$rootScope.i18n = {
 			navigation:{
-				brand:"Grupos PIB Xalapa", home:"Inicio",
 				register:"Registrarse", login:"Iniciar Sesión", logout:"Cerrar Sesión",
-				chat:"Conversaciones", notifications:"Notificaciones",
+				home:"Inicio", chat:"Conversaciones", notifications:"Notificaciones",
 				groups:"Mis Grupos", contacts:"Mis Contactos", statistics:"Estadísticas",
-				backToHome: "Regresar a la Página de Inicio",
+				requests:"Mis Solicitudes",backToHome: "Regresar a la Página de Inicio",
 				admin:{
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
 					groups: "Grupos", members: "Miembros", weeks: "Semanas",
 					reports: "Reportes", monitor:"Monitor", config:"Configuración",
-					reunions:"Reuniones"
+					reunions:"Reuniones", requests:"Solicitudes"
 				}
 			},
 			profile:{
@@ -439,6 +439,14 @@ okulusApp.run(function($rootScope) {
 				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
+			requests:{
+				memberRequestTitle:"Mis solicitudes de Creación de Miembros",
+				pendingRequestsLbl:"Solicitudes en Revisión",	pendingRequestLbl:"Solicitud en Revisión", pendingShortLbl:"En Revisión",
+				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
+				rejectedRequestsLbl:"Solicitudes Rechazadas",	rejectedRequestLbl:"Solicitud Rechazada", rejectedShortLbl:"Rechazadas",
+				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
+				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis solicitudes"
+			},
 			groups:{
 				/* Admin Groups */
 				adminTitle:"Administrador de Grupos Familiares",
@@ -503,7 +511,7 @@ okulusApp.run(function($rootScope) {
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
 				requestBtn:"Iniciar Solicitud", approveRequestBtn:"Aprobar Solicitud",
-				rejectRequestBtn:"Rechazar Solicitud", deleteRequestBtn:"Cancelar Solicitud",
+				rejectRequestBtn:"Rechazar Solicitud", cancelRequestBtn:"Cancelar Solicitud",
 				yesBtn: "Si!", noBtn: "No!",
 				/** Access Rules **/
 				returnBtn:"Regresar",

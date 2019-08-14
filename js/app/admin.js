@@ -210,8 +210,8 @@ okulusApp.controller('AdminSummaryCntrl',
 					/* Get All Groups List, because Admin has access to all of them.
 					This is useful for the groupSelectModal triggered from Create Report Button*/
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
-					//Counters to build the Summary cards
-					$scope.globalCount = AdminSvc.getGlobalCounters();
+					//Counters to build the Summary cards.
+					//$scope.globalCount = AdminSvc.getGlobalCounters(); - loaded on AuthenticationCntrl
 					$scope.globalCount.$loaded().then(function(counter){
 						$scope.response = null;
 					});

@@ -10,7 +10,7 @@ const constants = {
 	db: {
 		folders:{
 			root:"okulusTest",currentConfig:"config/current", systemConfigs:"config/okulus",
-			grouptypes:"grouptypes",
+			grouptypes:"grouptypes", errors:"errors",
 			config:"config", counters:"counters", details:"details",
 			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
 			groups:"groups", members:"members", reports:"reports",
@@ -29,6 +29,7 @@ const constants = {
 			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 			notificationsList:"notifications/list",
 			/**Counters*/
+			errorsCount:"counters/errors",
 			weeksCounters:"counters/weeks",
 			totalWeeksCount:"counters/weeks/total",
 			openWeeksCount:"counters/weeks/open",
@@ -50,6 +51,7 @@ const constants = {
 			approvedReportsCount:"counters/reports/approved",
 			rejectedReportsCount:"counters/reports/rejected",
 			/* Member Requests */
+			requestsCount:"counters/requests",
 			requestedMembersCount:"counters/requests/requestedMembers",
 			approvedMembersCount:"counters/requests/approvedMembers",
 			rejectedMembersCount:"counters/requests/rejectedMembers",
@@ -59,7 +61,9 @@ const constants = {
 			baseGroup:"baseGroupId",
 			email:"email",
 			reviewStatus:"reviewStatus",
-			weekId:"weekId"
+			weekId:"weekId",
+			auditCreatedById:"audit/createdById",
+			systemErrors:"systemErrors"
 		}
 	},
 	roles: {
@@ -356,6 +360,15 @@ okulusApp.config(['$routeProvider',
 				},
 				templateUrl: 'views/notifications/notificationCenter.html',
 				controller: "NotificationCenterCntrl"
+			})
+			.when('/myrequests', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/myRequests.html',
+				controller: "UserRequestsCntrl"
 			})
 			.when('/requests/newmember', {
 				resolve: {

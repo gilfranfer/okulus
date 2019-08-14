@@ -13,8 +13,10 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 
 /* Controller linked to page body, to control the whole app */
 okulusApp.controller('AuthenticationCntrl',
-	['$scope','$rootScope','$firebaseAuth','$location','AuthenticationSvc','ChatSvc','MembersSvc','UsersSvc', 'ErrorsSvc',
-	function($scope,$rootScope,$firebaseAuth,$location,AuthenticationSvc,ChatSvc,MembersSvc,UsersSvc,ErrorsSvc){
+	['$scope','$rootScope','$firebaseAuth','$location',
+	'AuthenticationSvc','AdminSvc','ChatSvc','MembersSvc','UsersSvc', 'ErrorsSvc',
+	function($scope,$rootScope,$firebaseAuth,$location,
+		AuthenticationSvc,AdminSvc, ChatSvc,MembersSvc,UsersSvc,ErrorsSvc){
 
 		/* Function executed anytime an Authetication state changes in the app.
 		Like after login, or when refreshing page. */
@@ -38,7 +40,8 @@ okulusApp.controller('AuthenticationCntrl',
 							/* Load Unread Chats Count */
 							$rootScope.currentSession.unreadChats = ChatSvc.getUnreadChatsForUser(authUser.uid);
 							if(loggedUser.type == "admin"){
-								$rootScope.errorsGlobalCount = ErrorsSvc.getGlobalErrorCounter();
+								$rootScope.globalCount = AdminSvc.getGlobalCounters();
+								//$rootScope.globalCount.errors = ErrorsSvc.getGlobalErrorCounter();
 							}
 					});
 				}else{
@@ -285,14 +288,19 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
 	['$scope','$rootScope','$location','$firebaseAuth',
-	'MembersSvc','GroupsSvc','AuthenticationSvc', 'MessageCenterSvc',
+	'MembersSvc','GroupsSvc','AdminSvc','AuthenticationSvc', 'MessageCenterSvc',
 	function($scope, $rootScope, $location, $firebaseAuth,
-		MembersSvc, GroupsSvc,AuthenticationSvc, MessageCenterSvc){
+		MembersSvc, GroupsSvc, AdminSvc, AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
 			if(!authUser) return;
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				console.debug("**HomeCntrl: loadSessionData");
+				$scope.globalCount = AdminSvc.getGlobalCounters();
+				$scope.globalCount.$loaded().then(function(counter){
+					//console.log(counter);
+				});
+
 				if(user.isRoot){
 					//Root User needs to be redirected to /admin/monitor
 					$location.path(constants.pages.adminMonitor);

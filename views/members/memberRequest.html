@@ -166,7 +166,7 @@
         <div class="form-row">
           <div class="col-md form-group">
             <textarea id="notes" name="notes" class="form-control form-control-lg"
-            placeholder="" ng-model="objectDetails.notes" ng-required="false">
+            placeholder="" ng-model="objectDetails.notes" ng-required="true">
             </textarea>
           </div>
         </div>
@@ -199,7 +199,7 @@
     <!-- Request can be cancelled by the requestor only, and when it is not approved yet -->
     <div class="col mb-2" ng-if="objectDetails.status != 'approved' && currentSession.user.$id == objectDetails.audit.createdById">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="cancelRequest()">
-        {{i18n.btns.deleteRequestBtn}}
+        {{i18n.btns.cancelRequestBtn}}
       </button>
     </div>
   </div>

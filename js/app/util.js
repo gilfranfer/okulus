@@ -1,8 +1,8 @@
 okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
 	function($rootScope,$firebaseObject){
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let errorsRef = baseRef.child('errors');
-		let counterRef = baseRef.child("counters/errors/systemErrors");
+		let errorsRef = baseRef.child(constants.db.folders.errors);
+		let counterRef = baseRef.child(constants.db.folders.errorsCount).child(constants.db.fields.systemErrors);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
 		let decreaseUnreadErrorsCounter = function(){
@@ -47,7 +47,7 @@ okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
 				errorsRef.child(error.$id).set({});
 			},
 			getGlobalErrorCounter: function(){
-				return $firebaseObject(baseRef.child("counters/errors"));
+				return $firebaseObject(baseRef.child(constants.db.folders.errorsCount));
 			},
 		};
 	}

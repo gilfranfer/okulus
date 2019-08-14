@@ -56,6 +56,35 @@
     </div>
 
   </article>
+
+  <article class="row">
+    <!-- Member Requests Summary $rootScope.currentSession -->
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.requests.myRequests}}</h4>
+          <hr>
+          <h5>
+            <span class="badge badge-primary">{{currentSession.user.counters.requests.requestedMembers}}</span>
+            <span class="">{{i18n.requests.pendingShortLbl}}</span>
+          </h5>
+          <h5>
+            <span class="badge badge-success">{{currentSession.user.counters.requests.approvedMembers}}</span>
+            <span class="">{{i18n.requests.approvedShortLbl}}</span>
+          </h5>
+          <h5>
+            <span class="badge badge-danger">{{currentSession.user.counters.requests.rejectedMembers}}</span>
+            <span class="">{{i18n.requests.rejectedShortLbl}}</span>
+          </h5>
+          <h5>
+            <span class="badge badge-danger">{{currentSession.user.counters.requests.canceledMembers}}</span>
+            <span class="">{{i18n.requests.canceledShortLbl}}</span>
+          </h5>
+        </div>
+      </div>
+    </div>
+  </article>
+
   <!-- Message Center -->
   <article class="row" ng-controller="MessageCenterCntrl">
     <div class="col">

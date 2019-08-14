@@ -8,26 +8,27 @@
     <span class="navbar-toggler-icon">
     </span>
     <span class="badge badge-danger badge-text"
-    ng-show="currentSession.user.counters.notifications.unreaded
-          || errorsGlobalCount.systemErrors
+    ng-show="
+          currentSession.user.counters.notifications.unreaded
+          || globalCount.errors.systemErrors
+          || globalCount.requests.requestedMembers
           || unreadChats.length">
       {{currentSession.user.counters.notifications.unreaded +
-        errorsGlobalCount.systemErrors + unreadChats.length}}
+        globalCount.errors.systemErrors + globalCount.requests.requestedMembers + unreadChats.length}}
     </span>
   </button>
 
-  <!--  Collapsable Menu -->
+  <!-- Menu when no User logged in -->
+  <ul class="navbar-nav ml-auto" ng-if="!currentSession.user">
+    <li class="nav-item">
+      <a class="nav-link" href="#!/register">{{i18n.navigation.register}}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
+    </li>
+  </ul>
+  <!-- Collapsable Menu for Logged users -->
   <div id="appMenu" class="collapse navbar-collapse">
-    <!--  Menu when no User logged in -->
-    <ul class="navbar-nav ml-auto" ng-if="!currentSession.user">
-      <li class="nav-item">
-        <a class="nav-link" href="#!/register">{{i18n.navigation.register}}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
-      </li>
-    </ul>
-
     <!--  Menu when User is logged in -->
     <ul class="navbar-nav ml-auto" ng-if="currentSession.user">
       <!-- Home -->
@@ -40,15 +41,15 @@
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span ng-show="errorsGlobalCount.systemErrors" class="badge badge-danger badge-text">
-            {{errorsGlobalCount.systemErrors}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers}}
           </span>
         </a>
         <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
-          <span ng-show="errorsGlobalCount.systemErrors" class="badge badge-danger badge-text">
-            {{errorsGlobalCount.systemErrors}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers}}
           </span>
         </a>
 
@@ -60,28 +61,42 @@
           <a class="dropdown-item" href="#!/groups">{{i18n.navigation.admin.groups}}</a>
           <a class="dropdown-item" href="#!/members">{{i18n.navigation.admin.members}}</a>
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
+          <a class="dropdown-item" href="#!/requests">
+            {{i18n.navigation.admin.requests}}
+            <span ng-show="globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
+              {{globalCount.requests.requestedMembers}}
+            </span>
+          </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#!/admin/monitor">
             {{i18n.navigation.admin.monitor}}
-            <span ng-show="errorsGlobalCount.systemErrors" class="badge badge-danger badge-text">
-              {{errorsGlobalCount.systemErrors}}
+            <span ng-show="globalCount.errors.systemErrors" class="badge badge-danger badge-text">
+              {{globalCount.errors.systemErrors}}
             </span>
           </a>
           <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>
         </div>
       </li>
       <!-- User Menu: if user has an associated Member -->
-      <li class="nav-item" ng-if="currentSession.memberData" >
+      <!-- Groups -->
+      <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.groups}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.groups}}"></a>
       </li>
-      <li class="nav-item" ng-if="currentSession.memberData" >
+      <!-- Contacts -->
+      <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.contacts}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
       </li>
-      <li class="nav-item" ng-if="currentSession.memberData" >
+      <!-- Statistics -->
+      <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/statistics">{{i18n.navigation.statistics}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
+      </li>
+      <!-- Requests -->
+      <li class="nav-item" ng-if="currentSession.memberData">
+        <a class="d-md-none nav-link" href="#!/myrequests">{{i18n.navigation.requests}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-receipt" href="#!/myrequests" data-toggle="tooltip" title="{{i18n.navigation.requests}}"></a>
       </li>
       <!-- Chats -->
       <li class="nav-item" ng-if="currentSession.memberData">
@@ -109,6 +124,7 @@
           </span>
         </a>
       </li>
+      <!-- Logout -->
       <li class="nav-item" ng-if="currentSession.user">
         <a class="d-md-none nav-link" ng-click="logout()">{{i18n.navigation.logout}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
