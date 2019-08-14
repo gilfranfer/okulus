@@ -440,12 +440,16 @@ okulusApp.run(function($rootScope) {
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
 			requests:{
-				memberRequestTitle:"Mis solicitudes de Creación de Miembros",
+				memberRequestTitle:"Mis solicitudes de Creación de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
 				pendingRequestsLbl:"Solicitudes en Revisión",	pendingRequestLbl:"Solicitud en Revisión", pendingShortLbl:"En Revisión",
 				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
 				rejectedRequestsLbl:"Solicitudes Rechazadas",	rejectedRequestLbl:"Solicitud Rechazada", rejectedShortLbl:"Rechazadas",
 				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
-				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis solicitudes"
+				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis solicitudes",
+				admin:{
+					pendingToApproveLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
+					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas"
+				}
 			},
 			groups:{
 				/* Admin Groups */

@@ -3,7 +3,7 @@
   <article class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">
-        {{i18n.requests.memberRequestTitle}}
+        {{i18n.requests.adminTitle}}
       </h4>
     </div>
   </article>
@@ -14,12 +14,12 @@
       <div id="badgesCard" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-primary">{{requestsCounter.requestedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('requested')">{{i18n.requests.pendingRequestsLbl}}</span>
+            <span class="badge badge-primary">{{globalCount.requests.requestedMembers}}</span>
+            <span class="btn-link clickable" ng-click="getRequests('requested')">{{i18n.requests.admin.pendingToApproveLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-success">{{requestsCounter.approvedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('approved')">{{i18n.requests.approvedRequestsLbl}}</span>
+            <span class="badge badge-success">{{globalCount.requests.approvedMembers}}</span>
+            <span class="btn-link clickable" ng-click="getRequests('approved')">{{i18n.requests.admin.approvedLbl}}</span>
           </h4>
         </div>
       </div>
@@ -28,24 +28,15 @@
       <div id="" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-danger">{{requestsCounter.rejectedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('rejected')">{{i18n.requests.rejectedRequestsLbl}}</span>
+            <span class="badge badge-danger">{{globalCount.requests.rejectedMembers}}</span>
+            <span class="btn-link clickable" ng-click="getRequests('rejected')">{{i18n.requests.admin.rejectedLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-danger">{{requestsCounter.canceledMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('canceled')">{{i18n.requests.canceledRequestsLbl}}</span>
+            <span class="badge badge-danger">{{globalCount.requests.canceledMembers}}</span>
+            <span class="btn-link clickable" ng-click="getRequests('canceled')">{{i18n.requests.admin.canceledLbl}}</span>
           </h4>
         </div>
       </div>
-    </div>
-  </article>
-
-  <!-- Buttons -->
-  <article class="row">
-    <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" href="#!/requests/newmember" >
-        {{i18n.requests.newMemberRequest}}
-      </a>
     </div>
   </article>
 

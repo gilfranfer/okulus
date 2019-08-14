@@ -61,7 +61,7 @@ const constants = {
 			baseGroup:"baseGroupId",
 			email:"email",
 			reviewStatus:"reviewStatus",
-			weekId:"weekId",
+			weekId:"weekId", status:"status",
 			auditCreatedById:"audit/createdById",
 			systemErrors:"systemErrors"
 		}
@@ -369,6 +369,15 @@ okulusApp.config(['$routeProvider',
 				},
 				templateUrl: 'views/user/myRequests.html',
 				controller: "UserRequestsCntrl"
+			})
+			.when('/requests', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/admin/requests.html',
+				controller: "AdminRequestsCntrl"
 			})
 			.when('/requests/newmember', {
 				resolve: {
