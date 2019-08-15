@@ -243,7 +243,8 @@ okulusApp.run(function($rootScope) {
 			},
 			launchpad:{
 				title:"Acciones rápidas", createReport:"Crear Reporte",
-				createMember:"Crear Miembro", requestMember:"Solicitar Miembro"
+				createMember:"Crear Miembro", requestMember:"Solicitar Miembro",
+				viewMyReports:"Ver Mis Reports", viewMyRequests:"Ver Mis Solicitudes"
 			},
 			msgCenter:{
 				title: "Mensajes del Administrador",
