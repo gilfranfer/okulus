@@ -443,7 +443,7 @@ okulusApp.run(function($rootScope) {
 			},
 			requests:{
 				myRequestsTitle:"Mis Solicitudes de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
-				pendingLbl:"Pendintes", approvedLbl:"Aprobadas", rejectedLbl:"Rechazadas",
+				pendingLbl:"Pendientes", approvedLbl:"Aprobadas", rejectedLbl:"Rechazadas",
 				allRequestsLbl:"Todas las Solicitudes", loadedLbl:"Solicitudes Cargadas",
 				pendingRequestsLbl:"Solicitudes en Revisión",	pendingRequestLbl:"Solicitud en Revisión", pendingShortLbl:"En Revisión",
 				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
