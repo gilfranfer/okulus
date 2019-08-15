@@ -130,16 +130,16 @@ okulusApp.controller('ReportsListCntrl',
 ]);
 
 okulusApp.controller('MyReportsCntrl',
-	['$rootScope','$scope','$firebaseAuth','$location',
-	'MembersSvc','ReportsSvc','GroupsSvc','AuthenticationSvc',
-	function($rootScope,$scope,$firebaseAuth,$location,
-		MembersSvc,ReportsSvc,GroupsSvc,AuthenticationSvc){
+	['$rootScope','$scope','$location','$firebaseAuth',
+	'AuthenticationSvc','MembersSvc','ReportsSvc','GroupsSvc',
+	function($rootScope,$scope,$location,$firebaseAuth,
+	AuthenticationSvc,MembersSvc,ReportsSvc,GroupsSvc){
 
 		/* Executed everytime we enter to /groups
 		  This function is used to confirm the user is Admin */
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
-			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(!user.isValid){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
@@ -155,12 +155,15 @@ okulusApp.controller('MyReportsCntrl',
 						$rootScope.currentSession.accessGroups.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
 					});
 				});
-				$scope.myReportsList = ReportsSvc.getReportsCreatedByUser($rootScope.currentSession.user.$id);
+
+				/*Pre-load all the User's Reports*/
+				$scope.myReportsList = ReportsSvc.getReportsCreatedByUser(user.$id);
 				$scope.myReportsList.$loaded().then(function(reports){
 					$scope.filteredReportsList = reports;
 					$scope.response = undefined;
 				});
 			});
+
 		}});
 
 		$scope.filterReportsByStatus = function(status){
@@ -301,7 +304,7 @@ okulusApp.controller('ReportsDashCntrl',
 					/* Update counters */
 					if(report.reviewStatus == constants.status.approved){
 						reunionParams.approvedReports++;
-					} else if(report.reviewStatus == constants.status.pendingReview){
+					} else if(report.reviewStatus == constants.status.pending){
 						reunionParams.pendingReports++;
 					} else if(report.reviewStatus == constants.status.rejected){
 						reunionParams.rejectedReports++;
@@ -1134,7 +1137,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					//decrease Rejected Reports Count
 					ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
 					//Change this report to Pendind status
-					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pendingReview;
+					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pending;
 					//Increase Pending Reports Count
 					ReportsSvc.increasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
 				}
@@ -1184,7 +1187,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				let reportBasicInfo = $scope.objectDetails.basicInfo;
 				let reportStudyInfo = $scope.objectDetails.study;
 				//New Reports get created with reviewStatus = pending
-				reportBasicInfo.reviewStatus = constants.status.pendingReview;
+				reportBasicInfo.reviewStatus = constants.status.pending;
 				//Used for an easy way to get all the reports created by one user
 				reportBasicInfo.createdById = $rootScope.currentSession.user.$id;
 				//Persist object to DB
@@ -1241,7 +1244,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					//Decrease total reports count
 					ReportsSvc.decreaseTotalReportsCount($scope.objectDetails.basicInfo.createdById);
 					//Decrease pending or rejected count
-					if(reviewStatus == constants.status.pendingReview){
+					if(reviewStatus == constants.status.pending){
 						ReportsSvc.decreasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
 					}else if(reviewStatus == constants.status.rejected){
 						ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
@@ -1274,7 +1277,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				//increase approved count
 				ReportsSvc.increaseApprovedReportsCount($scope.objectDetails.basicInfo.createdById);
 				//decrease pending or rejected count
-				if(originalStatus == constants.status.pendingReview){
+				if(originalStatus == constants.status.pending){
 					ReportsSvc.decreasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
 				}else if(originalStatus == constants.status.rejected){
 					ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
@@ -1294,7 +1297,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.objectDetails.basicInfo.reviewStatus = constants.status.rejected;
 			$scope.objectDetails.basicInfo.$save().then(function(ref){
 				ReportsSvc.increaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
-				if(originalStatus == constants.status.pendingReview){
+				if(originalStatus == constants.status.pending){
 					ReportsSvc.decreasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
 				}else if(originalStatus == constants.status.approved){
 					ReportsSvc.decreaseApprovedReportsCount($scope.objectDetails.basicInfo.createdById);
@@ -1375,9 +1378,9 @@ okulusApp.factory('ReportsSvc',
 			/* Return all Reports with reviewStatus:'pending', using a limit for the query, if specified*/
 			getPendingReports: function(limit) {
 				if(limit){
-					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pendingReview).limitToLast(limit));
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pending).limitToLast(limit));
 				}else{
-					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pendingReview));
+					return $firebaseArray(reportReviewStatus.equalTo(constants.status.pending));
 				}
 			},
 			/* Return all Reports with reviewStatus:'rejected', using a limit for the query, if specified*/

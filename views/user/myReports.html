@@ -1,8 +1,6 @@
-<!-- Admin Reports List View -->
-<section id="filteredReportsList" ng-show="currentSession.user.type == 'admin'">
-
+<section id="myReports">
   <!-- Title -->
-  <article id="titleCard" class="card h-100 mb-3">
+  <article class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">{{i18n.reports.myReportsLbl}}</h4>
     </div>
@@ -36,7 +34,7 @@
   <div class="row">
     <div class="col mb-3">
       <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="filterReportsByStatus()">
-        {{i18n.reports.loadBtn}}
+        {{i18n.reports.allReportsLbl}}
       </a>
     </div>
     <div class="col mb-3">
@@ -55,15 +53,16 @@
     </div>
   </div>
 
+  <!-- Alerts -->
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Title and Filter -->
   <article class="card mb-3" ng-show="filteredReportsList.length">
     <div class="card-body">
-      <div class="row" ng-show="filteredReportsList.length > config.minResultsToshowFilter">
+      <div class="row">
         <div class="col">
           <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
-            ng-model="adminReportsParams.searchFilter">
+            ng-model="searchFilter">
         </div>
       </div>
     </div>
@@ -72,19 +71,12 @@
   <!-- Show number of loaded Reports -->
   <div class="alert alert-info" role="alert" ng-show="filteredReportsList.length" >
     {{filteredReportsList.length}} {{i18n.reports.loadingSuccess}}
-    <!-- User's reports are loaded all at once. No need for this
-    <span class="btn-link clickable" ng-click="loadPendingReports()"
-      ng-if="(filteredReportsList.length < adminReportsParams.maxPossible)" >
-      {{i18n.reports.loadPending1}}
-      {{adminReportsParams.maxPossible - filteredReportsList.length}}
-      {{i18n.reports.loadPending2}}
-    </span> -->
   </div>
 
   <!-- Reports Cards -->
   <article id="reportsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="report in filteredReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':false track by report.$id">
+      ng-repeat="report in filteredReportsList | filter:searchFilter | orderBy:'$id':false track by report.$id">
       <!-- Report card -->
       <div class="card h-100">
         <div class="card-body">
@@ -113,8 +105,6 @@
           <br>
           <span class="font-weight-bold">{{i18n.reports.durationLbl}}:</span> {{report.duration}}<br>
           <span ng-show="config.reports.showMoneyField" class="font-weight-bold">{{i18n.reports.moneyLbl}}:</span> {{report.money}}<br>
-          <!-- <hr> -->
-          <!-- Buttons -->
         </div>
       </div>
     </div>
@@ -126,14 +116,6 @@
       <span class="text-primary">
         {{filteredReportsList.length}} {{i18n.reports.loadingSuccess}}
       </span>
-      <!-- User's reports are loaded all at once. No need for this
-      <br>
-      <span class="btn-link clickable" ng-click="loadPendingReports()"
-        ng-if="(filteredReportsList.length < adminReportsParams.maxPossible)" >
-        {{i18n.reports.loadPending1}}
-        {{adminReportsParams.maxPossible - filteredReportsList.length}}
-        {{i18n.reports.loadPending2}}
-      </span> -->
     </div>
   </div>
 </section>

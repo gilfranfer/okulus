@@ -1,32 +1,33 @@
-okulusApp.controller('UserRequestsCntrl',
-	['$rootScope','$scope','$location','$firebaseObject','$firebaseAuth',
-		'AuthenticationSvc','MemberRequestsSvc', 'UsersSvc',
-	function($rootScope,$scope,$location,$firebaseObject,$firebaseAuth,
-					AuthenticationSvc,MemberRequestsSvc,UsersSvc){
+okulusApp.controller('MyRequestsCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth',
+		'AuthenticationSvc','MemberRequestsSvc',
+	function($rootScope,$scope,$location,$firebaseAuth,
+					AuthenticationSvc, MemberRequestsSvc){
 
-		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
-			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingRequests };
-
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+		$firebaseAuth().$onAuthStateChanged(function(authUser){if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(!user.isValid){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
-
-				let userid = $rootScope.currentSession.user.$id;
-				$scope.requestsList = MemberRequestsSvc.getRequestsForUser(userid);
-				$scope.requestsList.$loaded().then(function(list) {
-					$scope.filteredRequestsList = list;
-					$scope.response = null;
+				/*Pre-load all the User's Requests*/
+				$scope.myRequestsList = MemberRequestsSvc.getRequestsForUser(user.$id);
+				$scope.myRequestsList.$loaded().then(function(requests) {
+					$scope.filteredRequestsList = requests;
+					$scope.response = undefined;
 				});
 			});
 
 		}});
 
 		$scope.filterRequestsByStatus = function(status){
-			$scope.requestsList.$loaded().then(function(requestList){
+			$scope.myRequestsList.$loaded().then(function(requestList){
 				$scope.filteredRequestsList = new Array();
+				if(!status){
+					$scope.filteredRequestsList = $scope.myRequestsList;
+				}
 				requestList.forEach(function(request){
 					if(request.status == status){
 						$scope.filteredRequestsList.push(request);
@@ -45,7 +46,7 @@ okulusApp.controller('AdminRequestsCntrl',
 					AuthenticationSvc,MemberRequestsSvc,UsersSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
-			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingRequests };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				if(!user.isValid){
@@ -55,7 +56,7 @@ okulusApp.controller('AdminRequestsCntrl',
 				}
         if(user.type == constants.roles.admin){
 					/* Get All Pending Requests */
-          $scope.getRequests(constants.status.requested);
+          $scope.getRequests(constants.status.pending);
 				}else{
 					$rootScope.response = {error:true, showHomeButton: true,
 																	message:systemMsgs.error.noPrivileges};
@@ -110,17 +111,17 @@ okulusApp.factory('MemberRequestsSvc',
 				return $firebaseObject(memberRequestListRef.child(whichRequest));
 			},
 			/* Used when creating or updating a Member Request */
-			increaseRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
+			increasePendingRequestsCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
 				increaseCounter(conunterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.requestedMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
 				increaseCounter(globalCountRef);
 			},
 			/* used after approving, rejecting, or canceling a request */
-			decreaseRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.requestedMembersCount);
+			decreasePendingRequestsCount: function (userId) {
+				let conunterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
 				decreaseCounter(conunterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.requestedMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
 				decreaseCounter(globalCountRef);
 			},
 			/* Used when approving a Member Request */
@@ -143,13 +144,6 @@ okulusApp.factory('MemberRequestsSvc',
 				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
 				increaseCounter(conunterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.rejectedMembersCount);
-				increaseCounter(globalCountRef);
-			},
-			/* Used when canceling a Member Request */
-			increaseCanceledRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.canceledMembersCount);
-				increaseCounter(conunterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.canceledMembersCount);
 				increaseCounter(globalCountRef);
 			},
 			getRequestCountsForUser: function (userId) {

@@ -52,10 +52,9 @@ const constants = {
 			rejectedReportsCount:"counters/reports/rejected",
 			/* Member Requests */
 			requestsCount:"counters/requests",
-			requestedMembersCount:"counters/requests/requestedMembers",
-			approvedMembersCount:"counters/requests/approvedMembers",
-			rejectedMembersCount:"counters/requests/rejectedMembers",
-			canceledMembersCount:"counters/requests/canceledMembers",
+			pendingMembersCount:"counters/requests/members/pending",
+			approvedMembersCount:"counters/requests/members/approved",
+			rejectedMembersCount:"counters/requests/members/rejected",
 			/* User Counter for Reports */
 			totalReportsCount:"counters/reports/total",
 			approvedReportsCount:"counters/reports/approved",
@@ -82,8 +81,8 @@ const constants = {
 	status: {
 		online:"online", offline:"offline",
 		active:"active", inactive:"inactive",
-		approved:"approved", rejected:"rejected", pendingReview:"pending",
-		open:"open", closed:"closed", requested: "requested",
+		approved:"approved", rejected:"rejected",
+		open:"open", closed:"closed", pending: "pending",
 		completed:"completed", canceled:"canceled",
 		visible:"show", hidden:"hide",
 		readed:"readed",
@@ -383,7 +382,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/user/myRequests.html',
-				controller: "UserRequestsCntrl"
+				controller: "MyRequestsCntrl"
 			})
 			.when('/requests', {
 				resolve: {

@@ -116,7 +116,6 @@ const systemMsgs = {
 		deletingMessage: "Eliminando mensaje ...",
 		savingConfig:"Guardando Configuraciones ...",
 		/*Member Request*/
-		loadingRequests:"Cargando Solicitudes ...",
 		creatingRequest:"Creando Solicitud ...",
 		approvingRequest:"Aprobando Solicitud ...",
 		rejectingRequest:"Rechazando Solicitud ...",
@@ -308,7 +307,7 @@ okulusApp.run(function($rootScope) {
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
 				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
-				newBtn:"Crear Reporte", loadBtn:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
+				newBtn:"Crear Reporte", allReportsLbl:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
 				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
@@ -443,7 +442,9 @@ okulusApp.run(function($rootScope) {
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
 			requests:{
-				memberRequestTitle:"Mis solicitudes de Creación de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
+				myRequestsTitle:"Mis Solicitudes de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
+				pendingLbl:"Pendintes", approvedLbl:"Aprobadas", rejectedLbl:"Rechazadas",
+				allRequestsLbl:"Todas las Solicitudes", loadedLbl:"Solicitudes Cargadas",
 				pendingRequestsLbl:"Solicitudes en Revisión",	pendingRequestLbl:"Solicitud en Revisión", pendingShortLbl:"En Revisión",
 				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
 				rejectedRequestsLbl:"Solicitudes Rechazadas",	rejectedRequestLbl:"Solicitud Rechazada", rejectedShortLbl:"Rechazadas",
@@ -519,7 +520,7 @@ okulusApp.run(function($rootScope) {
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
 				requestBtn:"Iniciar Solicitud", approveRequestBtn:"Aprobar Solicitud",
-				rejectRequestBtn:"Rechazar Solicitud", cancelRequestBtn:"Cancelar Solicitud",
+				rejectRequestBtn:"Rechazar Solicitud", deleteRequestBtn:"Eliminar Solicitud",
 				yesBtn: "Si!", noBtn: "No!",
 				/** Access Rules **/
 				returnBtn:"Regresar",

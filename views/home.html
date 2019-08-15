@@ -32,7 +32,7 @@
             <div class="col">
               <h5>
                 <span class="badge badge-primary">{{currentSession.user.counters.reports.pending}}</span>
-                <span>{{i18n.reports.pendingLbl}}</span>
+                <span>{{i18n.reports.pendingReviewLbl}}</span>
               </h5>
               <h5>
                 <span class="badge badge-success">{{currentSession.user.counters.reports.approved}}</span>
@@ -70,7 +70,7 @@
               <h5 class="card-title">{{i18n.summary.adminLbl}}</h5><hr>
               <h5>
                 <span class="badge badge-primary">{{globalCount.reports.pending}}</span>
-                <a ng-href="#!/reports" class="">{{i18n.reports.pendingReviewLbl}}</a>
+                <a ng-href="#!/reports" class="">{{i18n.reports.pendingLbl}}</a>
               </h5>
             </div>
           </div>
@@ -86,15 +86,15 @@
           <div class="row mb-2">
             <div class="col">
               <h5>
-                <span class="badge badge-primary">{{currentSession.user.counters.requests.requestedMembers}}</span>
+                <span class="badge badge-primary">{{currentSession.user.counters.requests.members.pending}}</span>
                 <span class="">{{i18n.requests.pendingShortLbl}}</span>
               </h5>
               <h5>
-                <span class="badge badge-success">{{currentSession.user.counters.requests.approvedMembers}}</span>
+                <span class="badge badge-success">{{currentSession.user.counters.requests.members.approved}}</span>
                 <span class="">{{i18n.requests.approvedShortLbl}}</span>
               </h5>
               <h5>
-                <span class="badge badge-danger">{{currentSession.user.counters.requests.rejectedMembers}}</span>
+                <span class="badge badge-danger">{{currentSession.user.counters.requests.members.rejected}}</span>
                 <span class="">{{i18n.requests.rejectedShortLbl}}</span>
               </h5>
             </div>
@@ -122,7 +122,7 @@
             <div class="col">
               <h5 class="card-title">{{i18n.summary.adminLbl}}</h5><hr>
               <h5>
-                <span class="badge badge-primary">{{globalCount.requests.requestedMembers}}</span>
+                <span class="badge badge-primary">{{globalCount.requests.members.pending}}</span>
                 <a ng-href="#!/requests" class="">{{i18n.requests.admin.pendingShortLbl}}</a>
               </h5>
             </div>

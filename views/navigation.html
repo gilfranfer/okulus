@@ -11,12 +11,13 @@
     ng-show="
           currentSession.user.counters.notifications.unreaded
           || globalCount.errors.systemErrors
-          || globalCount.requests.requestedMembers
+          || globalCount.requests.members.pending
           || globalCount.reports.pending
+          || currentSession.user.counters.requests.members.pending
           || unreadChats.length">
       {{currentSession.user.counters.notifications.unreaded +
-        globalCount.errors.systemErrors + globalCount.requests.requestedMembers +
-        globalCount.reports.pending + unreadChats.length}}
+        globalCount.errors.systemErrors + globalCount.requests.members.pending +
+        globalCount.reports.pending + currentSession.user.counters.requests.members.pending + unreadChats.length}}
     </span>
   </button>
 
@@ -43,15 +44,15 @@
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers ||  globalCount.reports.pending" class="badge badge-danger badge-text">
-            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers +  globalCount.reports.pending}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.members.pending ||  globalCount.reports.pending" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.members.pending +  globalCount.reports.pending}}
           </span>
         </a>
         <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
-          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers ||  globalCount.reports.pending" class="badge badge-danger badge-text">
-            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers +  globalCount.reports.pending}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.members.pending ||  globalCount.reports.pending" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.members.pending +  globalCount.reports.pending}}
           </span>
         </a>
 
@@ -70,8 +71,8 @@
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
           <a class="dropdown-item" href="#!/requests">
             {{i18n.navigation.admin.requests}}
-            <span ng-show="globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
-              {{globalCount.requests.requestedMembers}}
+            <span ng-show="globalCount.requests.members.pending" class="badge badge-danger badge-text">
+              {{globalCount.requests.members.pending}}
             </span>
           </a>
           <div class="dropdown-divider"></div>
@@ -107,8 +108,16 @@
       </li>
       <!-- Requests -->
       <li class="nav-item" ng-if="currentSession.memberData">
-        <a class="d-md-none nav-link" href="#!/myrequests">{{i18n.navigation.requests}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-receipt" href="#!/myrequests" data-toggle="tooltip" title="{{i18n.navigation.requests}}"></a>
+        <a class="d-md-none nav-link" href="#!/myrequests">{{i18n.navigation.requests}}
+          <span ng-show="currentSession.user.counters.requests.members.pending" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.requests.members.pending}}
+          </span>
+        </a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-receipt" href="#!/myrequests" data-toggle="tooltip" title="{{i18n.navigation.requests}}">
+          <span ng-show="currentSession.user.counters.requests.members.pending" class="badge badge-danger badge-text">
+            {{currentSession.user.counters.requests.members.pending}}
+          </span>
+        </a>
       </li>
       <!-- Chats -->
       <li class="nav-item" ng-if="currentSession.memberData">

@@ -19,7 +19,7 @@
   <div class="alert alert-success" role="alert" ng-show="objectDetails.status == 'approved'">
     {{i18n.members.approvedRequest}}
   </div>
-  <div class="alert alert-primary" role="alert" ng-show="objectDetails.status == 'requested'">
+  <div class="alert alert-primary" role="alert" ng-show="objectDetails.status == 'pending'">
     {{i18n.members.pendingRequest}}
   </div>
 
@@ -196,22 +196,22 @@
         {{i18n.btns.updateBtn}}
       </button>
     </div>
-    <!-- Request can be cancelled by the requestor only, and when it is not approved yet -->
+    <!-- Request can be deleted by the requestor only, and when it is not approved yet -->
     <div class="col mb-2" ng-if="objectDetails.status != 'approved' && currentSession.user.$id == objectDetails.audit.createdById">
-      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="cancelRequest()">
-        {{i18n.btns.cancelRequestBtn}}
+      <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="deleteRequest()">
+        {{i18n.btns.deleteRequestBtn}}
       </button>
     </div>
   </div>
   <!-- Admin Buttons -->
-  <div class="row" ng-if="objectDetails.status == 'requested' && currentSession.user.type == 'admin'">
-    <!-- Request can be approved by admin, when it is on requested status -->
+  <div class="row" ng-if="objectDetails.status == 'pending' && currentSession.user.type == 'admin'">
+    <!-- Request can be approved by admin, when it is on pending status -->
     <div class="col mb-2">
       <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveRequest()">
         {{i18n.btns.approveRequestBtn}}
       </button>
     </div>
-    <!-- Request can be rejected by admin, when it is on requested status -->
+    <!-- Request can be rejected by admin, when it is on pending status -->
     <div class="col mb-2">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable" ng-click="rejectRequest()">
         {{i18n.btns.rejectRequestBtn}}

@@ -475,22 +475,22 @@ okulusApp.controller('MemberDetailsCntrl',
 		};
 
 		/* A request can be updated by the creator, if not approved. After an update,
-		the request status always goes to "Requested", even if it was "Rejected". */
+		the request status always goes to "Pending", even if it was "Rejected". */
 		$scope.updateRequest = function(){
 			$scope.response = { working:true, message: systemMsgs.inProgress.updatingRequest };
-			let isRequested = ($scope.objectDetails.status == constants.status.requested);
+			let isPending = ($scope.objectDetails.status == constants.status.pending);
 			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
-			if(!isRequested && !isRejected){return;}
+			if(!isPending && !isRejected){return;}
 
 
-			$scope.objectDetails.status = constants.status.requested;
+			$scope.objectDetails.status = constants.status.pending;
 			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
 			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
 			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
 			$scope.objectDetails.$save().then(function(data) {
 				if(isRejected){
 					MemberRequestsSvc.decreaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
-					MemberRequestsSvc.increaseRequestsCount($scope.objectDetails.audit.createdById);
+					MemberRequestsSvc.increasePendingRequestsCount($scope.objectDetails.audit.createdById);
 				}
 				let notification = { description: systemMsgs.notificaions.memberRequestedUpdated,
 														action: constants.actions.update,
@@ -510,7 +510,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			//All Members are created with initial status isActive = true
 			$scope.objectDetails.basicInfo.isActive = true;
 			let request = {
-				status: constants.status.requested,
+				status: constants.status.pending,
 				notes: $scope.objectDetails.notes,
 				basicInfo: $scope.objectDetails.basicInfo,
 				audit: {createdBy:$rootScope.currentSession.user.email,
@@ -523,7 +523,7 @@ okulusApp.controller('MemberDetailsCntrl',
 
 			let requestRef = MemberRequestsSvc.persistRequest(request);
 			MemberRequestsSvc.getRequest(requestRef.key).$loaded().then(function(){
-				MemberRequestsSvc.increaseRequestsCount(request.audit.createdById);
+				MemberRequestsSvc.increasePendingRequestsCount(request.audit.createdById);
 				let notification = { description: systemMsgs.notificaions.memberRequested,
 														action: constants.actions.create,
 														onFolder: constants.db.folders.memberRequest,
@@ -533,7 +533,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
-		/* Approval can be given only to requests on 'requested' status.
+		/* Approval can be given only to requests on 'pending' status.
 		When approving the request, change the status to "approved", set the Approver's
 		data as the last one updating the request, Create a copy of the request data into
 		the members/list folder and members/details/address. Additionally some counters must
@@ -541,8 +541,8 @@ okulusApp.controller('MemberDetailsCntrl',
 		number of existing and active members*/
 		$scope.approveRequest = function(){
 			$scope.response = { working:true, message: systemMsgs.inProgress.approvingRequest };
-			let isRequested = ($scope.objectDetails.status == constants.status.requested);
-			if(!isRequested){return;}
+			let isPending = ($scope.objectDetails.status == constants.status.pending);
+			if(!isPending){return;}
 
 			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
 			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
@@ -556,7 +556,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				$scope.objectDetails.status = constants.status.approved;
 				$scope.objectDetails.$save();
 				MemberRequestsSvc.increaseApprovedRequestsCount($scope.objectDetails.audit.createdById);
-				MemberRequestsSvc.decreaseRequestsCount($scope.objectDetails.audit.createdById);
+				MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
 				MembersSvc.increaseTotalMembersCount();
 				MembersSvc.increaseActiveMembersCount();
 
@@ -572,14 +572,14 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
-		/* Rejection can be given only to requests on 'requested' status.
+		/* Rejection can be given only to requests on 'pending' status.
 		When rejecting the request, change the status to "rejected", set the Approver's
 		data as the last one updating the request. Additionally increase the number of rejected
 		requests for the Creator. */
 		$scope.rejectRequest = function(){
 			$scope.response = { working:true, message: systemMsgs.inProgress.rejectingRequest };
-			let isRequested = ($scope.objectDetails.status == constants.status.requested);
-			if(!isRequested){return;}
+			let isPending = ($scope.objectDetails.status == constants.status.pending);
+			if(!isPending){return;}
 
 			$scope.objectDetails.status = constants.status.rejected;
 			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
@@ -587,7 +587,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
 
 			$scope.objectDetails.$save().then(function(){
-				MemberRequestsSvc.decreaseRequestsCount($scope.objectDetails.audit.createdById);
+				MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
 				MemberRequestsSvc.increaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
 				let notification = { description: systemMsgs.notificaions.memberRequestRejected,
 														action: constants.actions.reject,
@@ -599,35 +599,35 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
-		/* Cancelation can happen only when request is on 'requested' or 'rejected' status.
+		/* Cancelation can happen only when request is on 'pending' or 'rejected' status.
 		Request with status different that Approved, can be cancelled by the the requestor.
 		Update the status to "canceled", set the Requestor's data as the last one updating the request.
 		Additionally increase the number of canceled requests, and reduce rejected (if applicable). */
-		$scope.cancelRequest = function(){
-			$scope.response = { working:true, message: systemMsgs.inProgress.cancellingRequest };
-			let isRejected = ($scope.objectDetails.status == constants.status.rejected);
-			let isRequested = ($scope.objectDetails.status == constants.status.requested);
-			if(!isRequested && !isRejected){return;}
-
-			$scope.objectDetails.status = constants.status.canceled;
-			$scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
-			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
-			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
-
-			$scope.objectDetails.$save().then(function(){
-				MemberRequestsSvc.increaseCanceledRequestsCount($scope.objectDetails.audit.createdById);
-				if(isRejected){
-					MemberRequestsSvc.decreaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
-				}else if(isRequested){
-					MemberRequestsSvc.decreaseRequestsCount($scope.objectDetails.audit.createdById);
-				}
-				let notification = { description: systemMsgs.notificaions.memberRequestCanceled,
-														action: constants.actions.cancel,
-														onFolder: constants.db.folders.memberRequest,
-														onObject: $scope.objectDetails.$id,	url:null };
-				NotificationsSvc.notifyAdmins(notification);
-				$scope.response = { error:true, message: systemMsgs.success.requestCanceled };
-			});
+		$scope.deleteRequest = function(){
+			// $scope.response = { working:true, message: systemMsgs.inProgress.cancellingRequest };
+			// let isRejected = ($scope.objectDetails.status == constants.status.rejected);
+			// let isPending = ($scope.objectDetails.status == constants.status.pending);
+			// if(!isPending && !isRejected){return;}
+			//
+			// $scope.objectDetails.status = constants.status.canceled;
+			// $scope.objectDetails.audit.lastUpdateBy = $rootScope.currentSession.user.email;
+			// $scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
+			// $scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
+			//
+			// $scope.objectDetails.$save().then(function(){
+			// 	MemberRequestsSvc.increaseCanceledRequestsCount($scope.objectDetails.audit.createdById);
+			// 	if(isRejected){
+			// 		MemberRequestsSvc.decreaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
+			// 	}else if(isPending){
+			// 		MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
+			// 	}
+			// 	let notification = { description: systemMsgs.notificaions.memberRequestCanceled,
+			// 											action: constants.actions.cancel,
+			// 											onFolder: constants.db.folders.memberRequest,
+			// 											onObject: $scope.objectDetails.$id,	url:null };
+			// 	NotificationsSvc.notifyAdmins(notification);
+			// 	$scope.response = { error:true, message: systemMsgs.success.requestCanceled };
+			// });
 		};
 
 }]);

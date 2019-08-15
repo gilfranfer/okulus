@@ -1,40 +1,30 @@
-<section id="requestSection">
+<section id="myRequests">
   <!-- Title -->
   <article class="card mb-3">
     <div class="card-body">
-      <h4 class="card-title">
-        {{i18n.requests.memberRequestTitle}}
-      </h4>
+      <h4 class="card-title">{{i18n.requests.myRequestsTitle}}</h4>
     </div>
   </article>
 
   <!-- Badges -->
   <article class="row">
     <div class="col mb-3">
-      <div id="badgesCard" class="card h-100">
+      <div class="card h-100">
         <div class="card-body">
-          <h4>
-            <span class="badge badge-primary">{{currentSession.user.counters.requests.requestedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStatus('requested')">{{i18n.requests.pendingRequestsLbl}}</span>
-          </h4>
-          <h4>
-            <span class="badge badge-success">{{currentSession.user.counters.requests.approvedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStatus('approved')">{{i18n.requests.approvedRequestsLbl}}</span>
-          </h4>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-3">
-      <div id="" class="card h-100">
-        <div class="card-body">
-          <h4>
-            <span class="badge badge-danger">{{currentSession.user.counters.requests.rejectedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStatus('rejected')">{{i18n.requests.rejectedRequestsLbl}}</span>
-          </h4>
-          <h4>
-            <span class="badge badge-danger">{{currentSession.user.counters.requests.canceledMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStatus('canceled')">{{i18n.requests.canceledRequestsLbl}}</span>
-          </h4>
+          <div class="row">
+            <h4 class="col">
+              <span class="badge badge-primary">{{currentSession.user.counters.requests.members.pending}}</span>
+              <span class="btn-link clickable" ng-click="filterRequestsByStatus('pending')">{{i18n.requests.pendingLbl}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-success">{{currentSession.user.counters.requests.members.approved}}</span>
+              <span class="btn-link clickable" ng-click="filterRequestsByStatus('approved')">{{i18n.requests.approvedLbl}}</span>
+            </h4>
+            <h4 class="col">
+              <span class="badge badge-danger">{{currentSession.user.counters.requests.members.rejected}}</span>
+              <span class="btn-link clickable" ng-click="filterRequestsByStatus('rejected')">{{i18n.requests.rejectedLbl}}</span>
+            </h4>
+          </div>
         </div>
       </div>
     </div>
@@ -42,6 +32,11 @@
 
   <!-- Buttons -->
   <article class="row">
+    <div class="col mb-3">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="filterRequestsByStatus()">
+        {{i18n.requests.allRequestsLbl}}
+      </a>
+    </div>
     <div class="col mb-3">
       <a class="btn btn-lg btn-block btn-primary clickable text-light" href="#!/requests/newmember" >
         {{i18n.requests.newMemberRequest}}
@@ -57,42 +52,53 @@
     <div class="card-body">
       <div class="row">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="weekListParams.searchFilter">
+          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
+            ng-model="searchFilter">
         </div>
       </div>
     </div>
   </article>
 
-  <article>
-    <div class="row">
-      <div class="col-md-6 col-lg-4 mb-3"
-        ng-repeat="request in filteredRequestsList | filter:searchText | orderBy:'request.audit.lastUpdateOn' track by request.$id">
-        <!-- Member card -->
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">
-              <a ng-href="#!/requests/members/view/{{request.$id}}">
-                {{request.basicInfo.shortname}}
-              </a>
-            </h4>
-            <span class="badge badge-primary" ng-if="request.status == 'requested'">{{i18n.requests.pendingRequestLbl}}</span>
-            <span class="badge badge-success" ng-if="request.status  == 'approved'">{{i18n.requests.approvedRequestLbl}}</span>
-            <span class="badge badge-danger" ng-if="request.status == 'rejected'">{{i18n.requests.rejectedRequestLbl}}</span>
-            <span class="badge badge-danger" ng-if="request.status == 'canceled'">{{i18n.requests.canceledRequestLbl}}</span>
-            <!-- full name -->
-            <p class="card-text mt-2" ng-if="request.notes">
-              <span class="font-weight-bold">{{i18n.members.notesLbl}}:</span><br>
-              {{request.notes}}
-            </p>
-            <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/view/{{request.$id}}">
-              {{i18n.requests.openRequestBnt}}
+  <!-- Show number of loaded Requests -->
+  <div class="alert alert-info" role="alert" ng-show="filteredRequestsList.length" >
+    {{filteredRequestsList.length}} {{i18n.requests.loadedLbl}}
+  </div>
+
+  <!-- Requests Cards -->
+  <article id="requestsList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="request in filteredRequestsList | filter:searchText | orderBy:'request.audit.lastUpdateOn' track by request.$id">
+      <!-- Member card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/requests/members/view/{{request.$id}}">
+              {{request.basicInfo.shortname}}
             </a>
-          </div>
+          </h4>
+          <span class="badge badge-primary" ng-if="request.status == 'pending'">{{i18n.requests.pendingRequestLbl}}</span>
+          <span class="badge badge-success" ng-if="request.status  == 'approved'">{{i18n.requests.approvedRequestLbl}}</span>
+          <span class="badge badge-danger" ng-if="request.status == 'rejected'">{{i18n.requests.rejectedRequestLbl}}</span>
+          <!-- full name -->
+          <p class="card-text mt-2" ng-if="request.notes">
+            <span class="font-weight-bold">{{i18n.members.notesLbl}}:</span><br>
+            {{request.notes}}
+          </p>
+          <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/view/{{request.$id}}">
+            {{i18n.requests.openRequestBnt}}
+          </a>
         </div>
-
       </div>
     </div>
   </article>
 
+  <!-- Load all pending Reports  -->
+  <div class="row mb-3" ng-show="filteredRequestsList.length">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{filteredRequestsList.length}} {{i18n.requests.loadedLbl}}
+      </span>
+    </div>
+  </div>
 
 </section>
