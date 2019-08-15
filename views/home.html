@@ -57,8 +57,38 @@
 
   </article>
 
+  <!-- Member Requests Summary -->
   <article class="row">
-    <!-- Member Requests Summary $rootScope.currentSession -->
+    <!-- My Reports Summary -->
+    <div class="col-md-6 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{i18n.reports.myReportsLbl}}</h4>
+          <hr>
+          <h5>
+            <span class="badge badge-primary">{{currentSession.user.counters.reports.pending}}</span>
+            <span>{{i18n.reports.pendingLbl}}</span>
+          </h5>
+          <h5>
+            <span class="badge badge-success">{{currentSession.user.counters.reports.approved}}</span>
+            <span>{{i18n.reports.approvedLbl}}</span>
+          </h5>
+          <h5>
+            <span class="badge badge-danger">{{currentSession.user.counters.reports.rejected}}</span>
+            <span>{{i18n.reports.rejectedLbl}}</span>
+          </h5>
+          <div class="mt-4" ng-if="currentSession.user.type == 'admin'">
+            <h5 class="card-title">{{i18n.summary.adminLbl}}</h5>
+            <hr>
+            <h5>
+              <span class="badge badge-primary">{{globalCount.reports.pending}}</span>
+              <a ng-href="#!/reports" class="">{{i18n.reports.pendingReviewLbl}}</a>
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- My Request Summary -->
     <div class="col-md-6 mb-3">
       <div class="card h-100">
         <div class="card-body">
@@ -80,6 +110,14 @@
             <span class="badge badge-danger">{{currentSession.user.counters.requests.canceledMembers}}</span>
             <span class="">{{i18n.requests.canceledShortLbl}}</span>
           </h5>
+          <div class="mt-4" ng-if="currentSession.user.type == 'admin'">
+            <h5 class="card-title">{{i18n.summary.adminLbl}}</h5>
+            <hr>
+            <h5>
+              <span class="badge badge-primary">{{globalCount.requests.requestedMembers}}</span>
+              <a ng-href="#!/requests" class="">{{i18n.requests.admin.pendingShortLbl}}</a>
+            </h5>
+          </div>
         </div>
       </div>
     </div>

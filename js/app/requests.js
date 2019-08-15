@@ -13,20 +13,18 @@ okulusApp.controller('UserRequestsCntrl',
 					$location.path(constants.pages.error);
 					return;
 				}
-				$scope.requestsCounter = MemberRequestsSvc.getRequestCountsForUser(user.$id);
-				$scope.requestsCounter.$loaded().then(function(){
-					$scope.response = null;
-				});
+
 				let userid = $rootScope.currentSession.user.$id;
 				$scope.requestsList = MemberRequestsSvc.getRequestsForUser(userid);
 				$scope.requestsList.$loaded().then(function(list) {
 					$scope.filteredRequestsList = list;
+					$scope.response = null;
 				});
 			});
 
 		}});
 
-		$scope.filterRequestsByStauts = function(status){
+		$scope.filterRequestsByStatus = function(status){
 			$scope.requestsList.$loaded().then(function(requestList){
 				$scope.filteredRequestsList = new Array();
 				requestList.forEach(function(request){

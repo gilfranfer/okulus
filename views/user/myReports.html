@@ -1,10 +1,10 @@
 <!-- Admin Reports List View -->
-<section id="adminReportsList" ng-show="currentSession.user.type == 'admin'">
+<section id="filteredReportsList" ng-show="currentSession.user.type == 'admin'">
 
   <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
-      <h4 class="card-title">{{i18n.reports.adminTitle}}</h4>
+      <h4 class="card-title">{{i18n.reports.myReportsLbl}}</h4>
     </div>
   </article>
 
@@ -14,21 +14,17 @@
       <div class="card h-100">
         <div class="card-body">
           <div class="row">
-            <!-- <h4 class="col">
-              <span class="badge badge-primary">{{reportsGlobalCount.total}}</span>
-              <span class="btn-link clickable" ng-click="loadAllReportsList()">{{i18n.reports.totalReports}}</span>
-            </h4> -->
             <h4 class="col">
-              <span class="badge badge-primary">{{reportsGlobalCount.pending}}</span>
-              <span class="btn-link clickable" ng-click="loadPendingReportsList()">{{i18n.reports.pendingReports}}</span>
+              <span class="badge badge-primary">{{currentSession.user.counters.reports.pending}}</span>
+              <span class="btn-link clickable" ng-click="filterReportsByStatus('pending')">{{i18n.reports.pendingLbl}}</span>
             </h4>
             <h4 class="col">
-              <span class="badge badge-success">{{reportsGlobalCount.approved}}</span>
-              <span class="btn-link clickable" ng-click="loadApprovedReportsList()">{{i18n.reports.approvedReports}}</span>
+              <span class="badge badge-success">{{currentSession.user.counters.reports.approved}}</span>
+              <span class="btn-link clickable" ng-click="filterReportsByStatus('approved')">{{i18n.reports.approvedLbl}}</span>
             </h4>
             <h4 class="col">
-              <span class="badge badge-danger">{{reportsGlobalCount.rejected}}</span>
-              <span class="btn-link clickable" ng-click="loadRejectedReportsList()">{{i18n.reports.rejectedReports}}</span>
+              <span class="badge badge-danger">{{currentSession.user.counters.reports.rejected}}</span>
+              <span class="btn-link clickable" ng-click="filterReportsByStatus('rejected')">{{i18n.reports.rejectedLbl}}</span>
             </h4>
           </div>
         </div>
@@ -39,7 +35,7 @@
   <!-- Buttons -->
   <div class="row">
     <div class="col mb-3">
-      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllReportsList()">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="filterReportsByStatus()">
         {{i18n.reports.loadBtn}}
       </a>
     </div>
@@ -59,19 +55,12 @@
     </div>
   </div>
 
-  <!-- Alerts to show Response Message (Used after redirect from Report Delete) -->
-  <div class="alert alert-success" role="alert" ng-show="reportResponse.deleted">
-    {{reportResponse.message}}
-  </div>
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Title and Filter -->
-  <article class="card mb-3" ng-show="adminReportsList.length">
+  <article class="card mb-3" ng-show="filteredReportsList.length">
     <div class="card-body">
-      <p class="lead">
-  			{{adminReportsParams.title}}
-  		</p>
-      <div class="row" ng-show="adminReportsList.length > config.minResultsToshowFilter">
+      <div class="row" ng-show="filteredReportsList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
             ng-model="adminReportsParams.searchFilter">
@@ -81,21 +70,21 @@
   </article>
 
   <!-- Show number of loaded Reports -->
-  <div class="alert alert-info" role="alert" ng-show="adminReportsList.length" >
-    {{adminReportsList.length}} {{i18n.reports.loadingSuccess}}
-    <!-- Load all pending Reports  -->
+  <div class="alert alert-info" role="alert" ng-show="filteredReportsList.length" >
+    {{filteredReportsList.length}} {{i18n.reports.loadingSuccess}}
+    <!-- User's reports are loaded all at once. No need for this
     <span class="btn-link clickable" ng-click="loadPendingReports()"
-      ng-if="(adminReportsList.length < adminReportsParams.maxPossible)" >
+      ng-if="(filteredReportsList.length < adminReportsParams.maxPossible)" >
       {{i18n.reports.loadPending1}}
-      {{adminReportsParams.maxPossible - adminReportsList.length}}
+      {{adminReportsParams.maxPossible - filteredReportsList.length}}
       {{i18n.reports.loadPending2}}
-    </span>
+    </span> -->
   </div>
 
   <!-- Reports Cards -->
   <article id="reportsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':false track by report.$id">
+      ng-repeat="report in filteredReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':false track by report.$id">
       <!-- Report card -->
       <div class="card h-100">
         <div class="card-body">
@@ -132,17 +121,19 @@
   </article>
 
   <!-- Load all pending Reports  -->
-  <div class="row mb-3" ng-show="adminReportsList.length">
+  <div class="row mb-3" ng-show="filteredReportsList.length">
     <div class="col text-center">
       <span class="text-primary">
-        {{adminReportsList.length}} {{i18n.reports.loadingSuccess}}
-      </span><br>
-      <span class="btn-link clickable" ng-click="loadPendingReports()"
-        ng-if="(adminReportsList.length < adminReportsParams.maxPossible)" >
-        {{i18n.reports.loadPending1}}
-        {{adminReportsParams.maxPossible - adminReportsList.length}}
-        {{i18n.reports.loadPending2}}
+        {{filteredReportsList.length}} {{i18n.reports.loadingSuccess}}
       </span>
+      <!-- User's reports are loaded all at once. No need for this
+      <br>
+      <span class="btn-link clickable" ng-click="loadPendingReports()"
+        ng-if="(filteredReportsList.length < adminReportsParams.maxPossible)" >
+        {{i18n.reports.loadPending1}}
+        {{adminReportsParams.maxPossible - filteredReportsList.length}}
+        {{i18n.reports.loadPending2}}
+      </span> -->
     </div>
   </div>
 </section>

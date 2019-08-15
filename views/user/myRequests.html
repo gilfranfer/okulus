@@ -14,12 +14,12 @@
       <div id="badgesCard" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-primary">{{requestsCounter.requestedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('requested')">{{i18n.requests.pendingRequestsLbl}}</span>
+            <span class="badge badge-primary">{{currentSession.user.counters.requests.requestedMembers}}</span>
+            <span class="btn-link clickable" ng-click="filterRequestsByStatus('requested')">{{i18n.requests.pendingRequestsLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-success">{{requestsCounter.approvedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('approved')">{{i18n.requests.approvedRequestsLbl}}</span>
+            <span class="badge badge-success">{{currentSession.user.counters.requests.approvedMembers}}</span>
+            <span class="btn-link clickable" ng-click="filterRequestsByStatus('approved')">{{i18n.requests.approvedRequestsLbl}}</span>
           </h4>
         </div>
       </div>
@@ -28,12 +28,12 @@
       <div id="" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-danger">{{requestsCounter.rejectedMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('rejected')">{{i18n.requests.rejectedRequestsLbl}}</span>
+            <span class="badge badge-danger">{{currentSession.user.counters.requests.rejectedMembers}}</span>
+            <span class="btn-link clickable" ng-click="filterRequestsByStatus('rejected')">{{i18n.requests.rejectedRequestsLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-danger">{{requestsCounter.canceledMembers}}</span>
-            <span class="btn-link clickable" ng-click="filterRequestsByStauts('canceled')">{{i18n.requests.canceledRequestsLbl}}</span>
+            <span class="badge badge-danger">{{currentSession.user.counters.requests.canceledMembers}}</span>
+            <span class="btn-link clickable" ng-click="filterRequestsByStatus('canceled')">{{i18n.requests.canceledRequestsLbl}}</span>
           </h4>
         </div>
       </div>

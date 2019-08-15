@@ -12,9 +12,11 @@
           currentSession.user.counters.notifications.unreaded
           || globalCount.errors.systemErrors
           || globalCount.requests.requestedMembers
+          || globalCount.reports.pending
           || unreadChats.length">
       {{currentSession.user.counters.notifications.unreaded +
-        globalCount.errors.systemErrors + globalCount.requests.requestedMembers + unreadChats.length}}
+        globalCount.errors.systemErrors + globalCount.requests.requestedMembers +
+        globalCount.reports.pending + unreadChats.length}}
     </span>
   </button>
 
@@ -41,15 +43,15 @@
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
-            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers ||  globalCount.reports.pending" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers +  globalCount.reports.pending}}
           </span>
         </a>
         <a id="navbarDropdown" class="d-md-none nav-link dropdown-toggle"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {{i18n.navigation.admin.menu}}
-          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers" class="badge badge-danger badge-text">
-            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers}}
+          <span ng-show="globalCount.errors.systemErrors || globalCount.requests.requestedMembers ||  globalCount.reports.pending" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors + globalCount.requests.requestedMembers +  globalCount.reports.pending}}
           </span>
         </a>
 
@@ -57,7 +59,12 @@
           <a class="dropdown-item" href="#!/admin/summary">{{i18n.navigation.admin.summary}}</a>
           <a class="dropdown-item" href="#!/admin/statistics">{{i18n.navigation.admin.statistics}}</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#!/reports">{{i18n.navigation.admin.reports}}</a>
+          <a class="dropdown-item" href="#!/reports">
+            {{i18n.navigation.admin.reports}}
+            <span ng-show="globalCount.reports.pending" class="badge badge-danger badge-text">
+              {{globalCount.reports.pending}}
+            </span>
+          </a>
           <a class="dropdown-item" href="#!/groups">{{i18n.navigation.admin.groups}}</a>
           <a class="dropdown-item" href="#!/members">{{i18n.navigation.admin.members}}</a>
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
@@ -78,6 +85,16 @@
         </div>
       </li>
       <!-- User Menu: if user has an associated Member -->
+      <!-- Statistics -->
+      <li class="nav-item" ng-if="currentSession.memberData">
+        <a class="d-md-none nav-link" href="#!/statistics">{{i18n.navigation.statistics}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
+      </li>
+      <!-- Reports -->
+      <li class="nav-item" ng-if="currentSession.memberData">
+        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.reports}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-clipboard-list" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
+      </li>
       <!-- Groups -->
       <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.groups}}</a>
@@ -87,11 +104,6 @@
       <li class="nav-item" ng-if="currentSession.memberData">
         <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.contacts}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
-      </li>
-      <!-- Statistics -->
-      <li class="nav-item" ng-if="currentSession.memberData">
-        <a class="d-md-none nav-link" href="#!/statistics">{{i18n.navigation.statistics}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
       </li>
       <!-- Requests -->
       <li class="nav-item" ng-if="currentSession.memberData">

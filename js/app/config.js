@@ -55,7 +55,12 @@ const constants = {
 			requestedMembersCount:"counters/requests/requestedMembers",
 			approvedMembersCount:"counters/requests/approvedMembers",
 			rejectedMembersCount:"counters/requests/rejectedMembers",
-			canceledMembersCount:"counters/requests/canceledMembers"
+			canceledMembersCount:"counters/requests/canceledMembers",
+			/* User Counter for Reports */
+			totalReportsCount:"counters/reports/total",
+			approvedReportsCount:"counters/reports/approved",
+			rejectedReportsCount:"counters/reports/rejected",
+			pendingReportsCount:"counters/reports/pending"
 		},
 		fields:{
 			baseGroup:"baseGroupId",
@@ -63,6 +68,7 @@ const constants = {
 			reviewStatus:"reviewStatus",
 			weekId:"weekId", status:"status",
 			auditCreatedById:"audit/createdById",
+			createdById:"createdById",
 			systemErrors:"systemErrors"
 		}
 	},
@@ -285,6 +291,15 @@ okulusApp.config(['$routeProvider',
 			.when('/users/view/:userId', {
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
+			})
+			.when('/myreports', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/myReports.html',
+				controller: 'MyReportsCntrl'
 			})
 			.when('/reports', {
 				resolve: {

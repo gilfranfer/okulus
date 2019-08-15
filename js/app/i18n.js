@@ -227,6 +227,7 @@ okulusApp.run(function($rootScope) {
 				register:"Registrarse", login:"Iniciar Sesión", logout:"Cerrar Sesión",
 				home:"Inicio", chat:"Conversaciones", notifications:"Notificaciones",
 				groups:"Mis Grupos", contacts:"Mis Contactos", statistics:"Estadísticas",
+				reports:"Mis Reportes",
 				requests:"Mis Solicitudes",backToHome: "Regresar a la Página de Inicio",
 				admin:{
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
@@ -299,13 +300,14 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			reports:{
+				myReportsLbl:"Mis Reportes",
 				/* Admin Reports */
 				adminTitle:"Administrador de Reportes",
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
 				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
-				newBtn:"Crear Reporte", loadBtn:"Todos los Reportes",
+				newBtn:"Crear Reporte", loadBtn:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
 				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
@@ -447,8 +449,9 @@ okulusApp.run(function($rootScope) {
 				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
 				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis solicitudes",
 				admin:{
-					pendingToApproveLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
-					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas"
+					pendingLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
+					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas",
+					pendingShortLbl:"Por Revisar"
 				}
 			},
 			groups:{
@@ -572,7 +575,7 @@ okulusApp.run(function($rootScope) {
 				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
 			},
 			summary:{
-				title:"Resumen del Sistema",
+				title:"Resumen del Sistema", adminLbl:"Administrador",
 				newReportBtn: "Nuevo Reporte", gotoReportsBtn: "Ir a Reportes",
 				newWeekBtn: "Nueva Semana", gotoWeeksBtn: "Ir a Semanas",
 				newGroupBtn: "Nuevo Grupo", gotoGroupsBtn: "Ir a Grupos",
