@@ -117,7 +117,7 @@
             <legend>{{i18n.address.legend}}</legend>
           </div>
           <!-- Button to Add/Remove address -->
-          <div class="col" ng-if="currentSession.user.type == 'admin'">
+          <div class="col" ng-if="currentSession.user.type != 'user'">
             <button type="button" class="btn btn-block btn-warning clickable"
               ng-show="!objectDetails.address" ng-click="addAdress()">
               {{i18n.members.addAddressBtn}}
@@ -204,7 +204,7 @@
     </div>
   </div>
   <!-- Admin Buttons -->
-  <div class="row" ng-if="objectDetails.status == 'pending' && currentSession.user.type == 'admin'">
+  <div class="row" ng-if="objectDetails.status == 'pending' && currentSession.user.type != 'user'">
     <!-- Request can be approved by admin, when it is on pending status -->
     <div class="col mb-2">
       <button type="button" class="btn btn-lg btn-block btn-success clickable" ng-click="approveRequest()">

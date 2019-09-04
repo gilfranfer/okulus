@@ -65,7 +65,7 @@
               </a>
             </div>
           </div>
-          <div class="row mb-1" ng-if="currentSession.user.type == 'admin'">
+          <div class="row mb-1" ng-if="currentSession.user.type != 'user'">
             <div class="col">
               <h5 class="card-title">{{i18n.summary.adminLbl}}</h5><hr>
               <h5>
@@ -100,12 +100,12 @@
             </div>
           </div>
           <div class="row mb-1">
-            <div class="col" ng-if="currentSession.user.type == 'admin'">
+            <div class="col" ng-if="currentSession.user.type != 'user'">
               <a href="#!/members/new" class="btn btn-block btn-warning clickable">
                 {{i18n.launchpad.createMember}}
               </a>
             </div>
-            <div class="col" ng-if="currentSession.user.type != 'admin'">
+            <div class="col" ng-if="currentSession.user.type == 'user'">
               <a href="#!/requests/members/new" class="btn btn-block btn-warning clickable">
                 {{i18n.launchpad.requestMember}}
               </a>
@@ -118,7 +118,7 @@
               </a>
             </div>
           </div>
-          <div class="row mb-1" ng-if="currentSession.user.type == 'admin'">
+          <div class="row mb-1" ng-if="currentSession.user.type != 'user'">
             <div class="col">
               <h5 class="card-title">{{i18n.summary.adminLbl}}</h5><hr>
               <h5>
@@ -150,11 +150,11 @@
                     {{message.createdOn | date: config.formats.datetime}}
                   </span>
                   <br>
-                  <!-- Show Delete option when message was created by current User -->
+                  <!-- Show Delete option when message was created by current User. Admin can remove any message -->
                   <span class="small font-weight-light clickable"
                       ng-click="removeMessage(message.$id)"
                       ng-if="(message.createdBy == currentSession.user.email) || (
-                              currentSession.user.type == 'admin')">
+                              currentSession.user.type != 'user')">
                     {{i18n.msgCenter.deleteMsg}}
                   </span>
                 </div>

@@ -9,12 +9,12 @@
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Summaries -->
-  <section id="summaries" class="row" ng-show="!response.loading">
-    <article id="reportSummary" class="col-sm-6 mb-3">
+  <section class="row" ng-show="!response.loading">
+    <article id="reportSummary" class="col-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">
-            {{i18n.navigation.admin.reports}}
+            {{i18n.reports.reportsLbl}}
           </h4>
           <hr>
           <div class="row">
@@ -37,28 +37,28 @@
           <div ng-controller="CreateReportCntrl">
             <button class="btn btn-block btn-primary clickable"
               ng-click="quickReportLauncher()"  ng-disabled="currentSession.accessGroups.length <= 0">
-              {{i18n.summary.newReportBtn}}
+              {{i18n.reports.newBtn}}
             </button>
             <div ng-include="'views/groups/groupSelectModal.html'"></div>
             <button class="btn btn-block btn-primary clickable"
               ng-show="currentSession.accessGroups.length > 1"
               data-toggle="modal" data-target="#groupSelectModal">
-              {{i18n.summary.newReportBtn}}
+              {{i18n.reports.newBtn}}
             </button>
           </div>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/reports" class="btn btn-primary btn-block">
-            {{i18n.summary.gotoReportsBtn}}
+            {{i18n.reports.goToBtn}}
           </a>
         </div>
       </div>
     </article>
-    <article id="weekSummary" class="col-sm-6 mb-3">
+    <article id="weekSummary" class="col-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">
-            {{i18n.navigation.admin.weeks}}
+            {{i18n.weeks.weeksLbl}}
           </h4>
           <hr>
           <div class="row">
@@ -79,23 +79,21 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/weeks/new" class="btn btn-primary btn-block">
-            {{i18n.summary.newWeekBtn}}
+            {{i18n.weeks.newBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/weeks" class="btn btn-primary btn-block">
-            {{i18n.summary.gotoWeeksBtn}}
+            {{i18n.weeks.goToBtn}}
           </a>
         </div>
       </div>
     </article>
-  </section>
-  <section id="summaries" class="row" ng-show="!response.loading">
-    <article id="groupSummary" class="col-sm-6 mb-3">
+    <article id="groupSummary" class="col-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">
-            {{i18n.navigation.admin.groups}}
+            {{i18n.groups.groupsLbl}}
           </h4>
           <hr>
           <div class="row">
@@ -116,21 +114,21 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/groups/new" class="btn btn-primary btn-block">
-            {{i18n.summary.newGroupBtn}}
+            {{i18n.groups.newBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/groups" class="btn btn-primary btn-block">
-            {{i18n.summary.gotoGroupsBtn}}
+            {{i18n.groups.goToBtn}}
           </a>
         </div>
       </div>
     </article>
-    <article id="memberSummary" class="col-sm-6 mb-3">
+    <article id="memberSummary" class="col-6 mb-3">
       <div class="card">
         <div class="card-body">
           <h4 class="card-title">
-            {{i18n.navigation.admin.members}}
+            {{i18n.members.membersLbl}}
           </h4>
           <hr>
           <div class="row">
@@ -151,12 +149,12 @@
       <div class="row mt-1">
         <div class="col-md-6 mb-1">
           <a href="#!/members/new" class="btn btn-primary btn-block">
-            {{i18n.summary.newMemberBtn}}
+            {{i18n.members.newBtn}}
           </a>
         </div>
         <div class="col-md-6 mb-1">
           <a href="#!/members" class="btn btn-primary btn-block">
-            {{i18n.summary.gotoMembersBtn}}
+            {{i18n.members.goToBtn}}
           </a>
         </div>
       </div>

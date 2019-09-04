@@ -83,7 +83,7 @@
   </article>
 
   <!-- Save Button (Only for Admin) -->
-  <div class="row mb-3" ng-if="currentSession.user.type == 'admin'">
+  <div class="row mb-3" ng-if="currentSession.user.type != 'user'">
     <div class="col">
       <button type="button" class="btn btn-lg btn-block btn-warning clickable"
         ng-disabled="weekForm.$invalid || weekForm.$pristine"
@@ -97,7 +97,7 @@
   <div ng-include="'views/alerts.html'"></div>
 
   <!--  (Opne & Show) Actions available for Admin, only after Week creation -->
-  <article class="mb-3" ng-if="weekEditParams.isEdit && currentSession.user.type == 'admin'">
+  <article class="mb-3" ng-if="weekEditParams.isEdit && currentSession.user.type != 'user'">
     <div class="card mb-2">
       <div class="card-body">
         <!-- Header -->
@@ -164,7 +164,7 @@
   <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
     {{response.message}}
   </div>
-  <div class="row mb-3" ng-if="currentSession.user.type == 'admin'">
+  <div class="row mb-3" ng-if="currentSession.user.type != 'user'">
     <div class="col" ng-if="weekEditParams.isEdit">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable"
           data-toggle="collapse" data-target="#collapseDelete"

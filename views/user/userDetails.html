@@ -5,7 +5,7 @@
       <h4 class="card-title">
         {{objectDetails.member.shortname}}
       </h4>
-      <h4 class="badge badge-success" ng-if="objectDetails.basicInfo.type == 'admin'">
+      <h4 class="badge badge-success" ng-if="objectDetails.basicInfo.type != 'user'">
         {{i18n.admin.users.adminLbl}}
       </h4>
       <h4 class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">

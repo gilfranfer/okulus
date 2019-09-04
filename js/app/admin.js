@@ -14,7 +14,7 @@ okulusApp.controller('MonitorCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type != 'admin'){
+					if(user.type == 'user'){
 						$rootScope.response = {errorMsg: noAdminErrorMsg};
 						$location.path("/error");
 					}

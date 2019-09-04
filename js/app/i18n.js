@@ -41,7 +41,6 @@ const systemMsgs = {
 		loadingReportsError:"Error al cargar la lista de Reportes",
 		duplicatedAttendance:"ya está en la lista de asistencia.",
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
-		userRemovingReport:"Para eliminar este reporte, contacta al administrador",
 		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
 		inactiveGroup:"No se pueden crear Reportes en Grupos Inactivos",
 		/*Message Center*/
@@ -304,14 +303,21 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			reports:{
+				reportLbl:"Reporte", reportsLbl:"Reportes",
 				myReportsLbl:"Mis Reportes",
 				/* Admin Reports */
 				adminTitle:"Administrador de Reportes",
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
 				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
 				detailsInfoTitle:"Detalles de la Reunión",
-				studyTitle:"Información del estudio", editBtn:"Editar Reporte",
-				newBtn:"Crear Reporte", allReportsLbl:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
+				/* Buttons */
+				editBtn:"Editar Reporte",
+				newBtn:"Nuevo Reporte",
+				goToBtn:"Ver Reportes",
+				deleteBtn:"Eliminar Reporte",
+				/**/
+				studyTitle:"Información del estudio",
+				allReportsLbl:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
 				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
 				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
@@ -322,7 +328,6 @@ okulusApp.run(function($rootScope) {
 				statusLbl:"Estado de la Reunión",
 				studyNotesLbl:"Notas del estudio", studyNotesHint:"Agregar notas sobre el estudio",
 				commentsLbl:"Notas",
-				deleteBtn:"Eliminar Reporte",
 				newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
 				basicDataLegend: "Detalles de la Reunión",
 				title:"Datos generales de la Reunión",
@@ -352,6 +357,7 @@ okulusApp.run(function($rootScope) {
 				reportEvalLegend:"Evaluación del Reporte",feedbackLbl:"Discusión"
 			},
 			weeks:{
+				weekLbl:"Semana", weeksLbl:"Semanas",
 				title: "Administrador de Semanas",
 				basicInfoTitle:"Información Básica",
 				description: "Las Semanas son los contenedores de los Reportes.",
@@ -365,7 +371,9 @@ okulusApp.run(function($rootScope) {
         openLbl:"Abierta", closedLbl:"Cerrada",
         showLbl:"Visible", hideLbl:"Oculta",
         /*Buttons*/
-        loadBtn:"Todas las Semanas", newBtn:"Crear Semana",
+        loadBtn:"Todas las Semanas",
+				newBtn:"Nueva Semana",
+				goToBtn:"Ver Semanas",
         openBtn:"Abrir", closeBtn:"Cerrar",
         openWeekBtn:"Abrir Semana", closeWeekBtn:"Cerrar Semana",
         showBtn:"Mostrar", hideBtn:"Ocultar",
@@ -394,6 +402,7 @@ okulusApp.run(function($rootScope) {
 				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado"
 			},
 			members:{
+				memberLbl:"Miembro", membersLbl:"Miembros",
 				/* Admin Members */
 				adminTitle:"Administrador de  Miembros",
 				/* Global Badges */
@@ -402,7 +411,9 @@ okulusApp.run(function($rootScope) {
 				leadLbl:"Líder", hostLbl:"Anfitrión", traineeLbl:"Aprendíz",
 				leadsLbl:"Líderes", hostsLbl:"Anfitriones", traineesLbl:"Aprendices",
 				/*Buttons*/
-				loadBtn:"Todos los Miembros", newBtn:"Crear Miembro",
+				loadBtn:"Todos los Miembros",
+				newBtn:"Nuevo Miembro",
+				goToBtn:"Ver Miembros",
 				saveBasicInfoBtn:"Guardar información básica",
 				saveAddressBtn:"Guardar dirección",
 				saveAllBtn:"Guardar cambios",
@@ -446,6 +457,7 @@ okulusApp.run(function($rootScope) {
 				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
 			requests:{
+				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
 				myRequestsTitle:"Mis Solicitudes de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
 				pendingLbl:"Pendientes", approvedLbl:"Aprobadas", rejectedLbl:"Rechazadas",
 				allRequestsLbl:"Todas las Solicitudes", loadedLbl:"Solicitudes Cargadas",
@@ -461,6 +473,7 @@ okulusApp.run(function($rootScope) {
 				}
 			},
 			groups:{
+				groupLbl:"Grupo", groupsLbl:"Grupos",
 				/* Admin Groups */
 				adminTitle:"Administrador de Grupos Familiares",
 				/*Badges*/
@@ -468,7 +481,9 @@ okulusApp.run(function($rootScope) {
 				inactiveGroups:"Grupos Inactivos", inactiveLbl:"Inactivo",
 				totalGroups:"Grupos Existentes",
 				/*Buttons*/
-				loadBtn:"Todos los Grupos", newBtn:"Crear Grupo", editBtn:"Editar Grupo",
+				loadBtn:"Todos los Grupos",
+				newBtn:"Nuevo Grupo", goToBtn:"Ver Grupos",
+				editBtn:"Editar Grupo",
 				deleteBtn:"Eliminar Grupo", saveBtn:"Guardar",
 				/*Alert Messages*/
         loadingSuccess: "Grupos Cargados.",
@@ -581,11 +596,7 @@ okulusApp.run(function($rootScope) {
 				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
 			},
 			summary:{
-				title:"Resumen del Sistema", adminLbl:"Administrador",
-				newReportBtn: "Nuevo Reporte", gotoReportsBtn: "Ir a Reportes",
-				newWeekBtn: "Nueva Semana", gotoWeeksBtn: "Ir a Semanas",
-				newGroupBtn: "Nuevo Grupo", gotoGroupsBtn: "Ir a Grupos",
-				newMemberBtn: "Nuevo Miembro", gotoMembersBtn: "Ir a Miembros"
+				title:"Resumen del Sistema", adminLbl:"Administrador"
 			},
 			statistics:{
 				adminTitle:"Estadísticas de los Grupos",

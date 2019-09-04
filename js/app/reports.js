@@ -1225,43 +1225,39 @@ okulusApp.controller('ReportDetailsCntrl',
 			clearResponse();
 			$scope.response = { working:true, message: systemMsgs.inProgress.removingReport };
 			//Normal Users only can remove reports pending to approve
-			if($rootScope.currentSession.user.type != 'admin' && $scope.objectDetails.basicInfo.reviewStatus != 'pending' ){
-				$scope.response = { error:true, message: systemMsgs.error.userRemovingReport };
-			}
+			let currentStatus = $scope.objectDetails.basicInfo.reviewStatus;
+
 			//Even admins cannot remove a report if it is already approved
-			else if( $scope.objectDetails.basicInfo.reviewStatus == constants.status.approved){
+			if( currentStatus == constants.status.approved){
 				$scope.response = { error:true, message: systemMsgs.error.cantRemoveApprovedReport };
-			}else{
+			}else if( currentStatus == constants.status.pending || currentStatus == constants.status.rejected ){
 				//Admin removing a Pending or Rejected report or User removing a Pending Report
 				let reportId = $scope.objectDetails.basicInfo.$id;
 				let groupId = $scope.objectDetails.basicInfo.groupId;
-				let reviewStatus = $scope.objectDetails.basicInfo.reviewStatus;
 				//Remove /report/list
 				$scope.objectDetails.basicInfo.$remove().then(function(ref){
+					//Remove /report/details
+					ReportsSvc.removeReportDetails(reportId);
 					//Audit on Report Delete
 					AuditSvc.recordAudit(reportId, constants.actions.delete, constants.db.folders.reports);
 					//Decrease total reports count
 					ReportsSvc.decreaseTotalReportsCount($scope.objectDetails.basicInfo.createdById);
 					//Decrease pending or rejected count
-					if(reviewStatus == constants.status.pending){
+					if(currentStatus == constants.status.pending){
 						ReportsSvc.decreasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
-					}else if(reviewStatus == constants.status.rejected){
+					}else if(currentStatus == constants.status.rejected){
 						ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
 					}
-					//Remove the Report reference from the Group
+					//Remove the reference to this Report from the Group folder
 					GroupsSvc.removeReportReferenceFromGroup(groupId,reportId);
-					//Remove the Report reference from all Members in Attendance List
+					//Remove the reference to this Report from all Members in Attendance List
 					let membersList = Object.values($scope.objectDetails.atten.members);
 					membersList.forEach(function(record){
 							MembersSvc.removeReportReferenceFromMember(record.memberId, reportId);
 					});
-					//Remove /report/list and /report/details
-					ReportsSvc.removeReportDetails(reportId);
-					//Redirect
 					$rootScope.reportResponse = { deleted:true, message: systemMsgs.success.reportDeleted };
 					$location.path( constants.pages.reportNew + groupId );
 				});
-
 			}
 		};
 
