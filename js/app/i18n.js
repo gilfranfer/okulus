@@ -246,7 +246,7 @@ okulusApp.run(function($rootScope) {
 			launchpad:{
 				title:"Acciones rápidas", createReport:"Crear Reporte",
 				createMember:"Crear Miembro", requestMember:"Solicitar Miembro",
-				viewMyReports:"Ver Mis Reports", viewMyRequests:"Ver Mis Solicitudes"
+				viewMyReports:"Ver Mis Reportes", viewMyRequests:"Ver Mis Solicitudes"
 			},
 			msgCenter:{
 				title: "Mensajes del Administrador",
@@ -453,7 +453,7 @@ okulusApp.run(function($rootScope) {
 				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
 				rejectedRequestsLbl:"Solicitudes Rechazadas",	rejectedRequestLbl:"Solicitud Rechazada", rejectedShortLbl:"Rechazadas",
 				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
-				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis solicitudes",
+				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis Solicitudes",
 				admin:{
 					pendingLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
 					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas",
