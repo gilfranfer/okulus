@@ -587,24 +587,33 @@ okulusApp.controller('GroupAccessRulesCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
 				if(user.type == constants.roles.user){
-					$rootScope.response = { error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$rootScope.response = { error:true, message:systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
 					return;
 				}
 
-				// if(user.memberId){
-					let whichGroup = $routeParams.groupId;
-					$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
+				let whichGroup = $routeParams.groupId;
+				$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
+
+				$scope.group.$loaded().then(function(group){
+					if(!group.$value){
+						$rootScope.response = { error:true, message:systemMsgs.error.inexistingGroup};
+						$location.path(constants.pages.error);
+						return;
+					}
+					/* else(!group.isActive){
+						$rootScope.response = { error:true, message:systemMsgs.error.inactiveGroup};
+						$location.path(constants.pages.error);
+						return;
+					}*/
+
 					//Retrieve List of Members that have a User associated
 					$scope.membersList = MembersSvc.getMembersWithUser();
 					//Retrieve List of Users already having access (Some could be invalid Users)
 					$scope.acessList = GroupsSvc.getAccessRulesList(whichGroup);
 					$scope.response = null;
-				// }else{
-				// 	$rootScope.response = { error:true, showHomeButton: true,
-				// 													message:systemMsgs.error.noPrivileges};
-				// 	$location.path(constants.pages.error);
-				// }
+				});
+
 			});
 		}});
 

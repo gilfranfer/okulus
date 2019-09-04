@@ -681,7 +681,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				/* Only Valid Users (with an associated MemberId) can see the content */
-				if(!user.memberId){
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -723,15 +723,21 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 			//Get Group Basic Object to Pre-populate some report fields
 			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
-				if(!groupObj.isActive){
-					$rootScope.response = { error: true, message: systemMsgs.error.inactiveGroup, showHomeButton: true };
+				if(!groupObj.$value){
+					$rootScope.response = { error: true, message: systemMsgs.error.inexistingGroup };
 					$location.path(constants.pages.error);
-					$location.path();
 					return;
 				}
+				else if(!groupObj.isActive){
+					$rootScope.response = { error: true, message: systemMsgs.error.inactiveGroup };
+					$location.path(constants.pages.error);
+					return;
+				}
+
 				$scope.objectDetails.basicInfo.groupId = groupObj.$id;
 				$scope.objectDetails.basicInfo.groupname = groupObj.name;
 				$scope.objectDetails.basicInfo.status = constants.status.completed;
+
 				return GroupsSvc.getGroupRolesObject(whichGroup).$loaded();
 			}).then(function(groupRoles) {
 				//Pre-populate roles

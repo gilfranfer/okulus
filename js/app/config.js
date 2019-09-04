@@ -123,11 +123,42 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/auth/login.html'
 			})
 			.when('/pwdreset',{
+				controller: 'PwdResetCntrl',
 				templateUrl: 'views/auth/pwdReset.html'
 			})
 			.when('/home', {
 				controller: 'HomeCntrl',
 				templateUrl: 'views/home.html'
+			})
+			.when('/chats', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/chat/chatCenter.html',
+				controller: "ChatCenterCntrl"
+			})
+			.when('/notifications', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/notifications/notificationCenter.html',
+				controller: "NotificationCenterCntrl"
+			})
+			.when('/statistics', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/statistics.html',
+				controller: 'UserStatisticsCntrl'
+			})
+			.when('/error', {
+				templateUrl: 'views/errors/error-general.html'
 			})
 			.when('/mygroups', {
 				resolve: {
@@ -147,16 +178,25 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myContacts.html',
 				controller: 'UserMyContactsCntrl'
 			})
-			.when('/statistics', {
+			.when('/myreports', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/user/statistics.html',
-				controller: 'UserStatisticsCntrl'
+				templateUrl: 'views/user/myReports.html',
+				controller: 'MyReportsCntrl'
 			})
-			.when('/app/setRoot',{
+			.when('/myrequests', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/myRequests.html',
+				controller: "MyRequestsCntrl"
+			})
+			.when('/admin/setRoot',{
 				controller: 'RegisterRootCntrl',
 				templateUrl: 'views/auth/registerRoot.html'
 			})
@@ -178,15 +218,6 @@ okulusApp.config(['$routeProvider',
 				controller: 'AdminStatisticsCntrl',
 				templateUrl: 'views/admin/statistics.html'
 			})
-			.when('/admin/monitor', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/admin/monitor.html',
-				controller: 'MonitorCntrl'
-			})
 			.when('/admin/config', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -195,6 +226,23 @@ okulusApp.config(['$routeProvider',
 				},
 				controller: 'AppConfigsCntrl',
 				templateUrl: 'views/admin/configs.html'
+			})
+			// .when('/admin/monitor', {
+			// 	resolve: {
+			// 		currentAuth: function(AuthenticationSvc){
+			// 			return AuthenticationSvc.isUserLoggedIn();
+			// 		}
+			// 	},
+			// 	templateUrl: 'views/admin/monitor.html',
+			// 	controller: 'MonitorCntrl'
+			// })
+			.when('/users/edit/:userId', {
+				templateUrl: 'views/user/userDetails.html',
+				controller: 'UserEditCntrl'
+			})
+			.when('/users/view/:userId', {
+				templateUrl: 'views/user/userDetails.html',
+				controller: 'UserEditCntrl'
 			})
 			.when('/groups', {
 				resolve: {
@@ -277,23 +325,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/memberView.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/users/edit/:userId', {
-				templateUrl: 'views/user/userDetails.html',
-				controller: 'UserEditCntrl'
-			})
-			.when('/users/view/:userId', {
-				templateUrl: 'views/user/userDetails.html',
-				controller: 'UserEditCntrl'
-			})
-			.when('/myreports', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/user/myReports.html',
-				controller: 'MyReportsCntrl'
-			})
 			.when('/reports', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -351,33 +382,6 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/weeks/weekView.html',
 				controller: 'WeekDetailsCntrl'
 			})
-			.when('/chats', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/chat/chatCenter.html',
-				controller: "ChatCenterCntrl"
-			})
-			.when('/notifications', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/notifications/notificationCenter.html',
-				controller: "NotificationCenterCntrl"
-			})
-			.when('/myrequests', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/user/myRequests.html',
-				controller: "MyRequestsCntrl"
-			})
 			.when('/requests/members', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -396,7 +400,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/memberRequest.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/requests/members/view/:requestId', {
+			.when('/requests/members/edit/:requestId', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -405,8 +409,14 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/members/memberRequest.html',
 				controller: 'MemberDetailsCntrl'
 			})
-			.when('/error', {
-				templateUrl: 'views/errors/error-general.html'
+			.when('/requests/members/view/:requestId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/members/memberRequest.html',
+				controller: 'MemberDetailsCntrl'
 			})
 			.otherwise({
 				redirectTo: '/home'
@@ -560,7 +570,7 @@ okulusApp.controller('AppConfigsCntrl',
 		};
 
 		$scope.removeGrouptype = function(type) {
-			console.log(type);
+			// console.log(type);
 			$scope.grouptypesList.$remove(type).then(function(ref) {
 				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeRemoved };
 			}).catch(function(error) {

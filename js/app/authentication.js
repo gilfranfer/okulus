@@ -203,6 +203,18 @@ okulusApp.controller('LoginCntrl',
 	}]
 );
 
+/* Controller linked to  /login */
+okulusApp.controller('PwdResetCntrl',
+	['$scope', '$rootScope', '$location', 'AuthenticationSvc',
+	function($scope, $rootScope, $location, AuthenticationSvc){
+		/* When navigating to "#!/pwdreset", but the user is already logged-in
+		 we better redirect him to Home Page, instead of showing the login page */
+		if($rootScope.currentSession && $rootScope.currentSession.user ){
+			$location.path(constants.pages.home); return;
+		}
+	}]
+);
+
 /* Controller linked to  /register */
 okulusApp.controller('RegistrationCntrl',
 	['$scope', '$rootScope', '$location', 'AuthenticationSvc','AuditSvc', 'UsersSvc',
@@ -289,7 +301,7 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 	}
 ]);
 
-//Mapping: /app/setRoot
+//Mapping: /admin/setRoot
 //Create a new root user, if it doesnt exists, and set initial System configs in DB
 okulusApp.controller('RegisterRootCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',

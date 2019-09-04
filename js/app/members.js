@@ -196,8 +196,14 @@ okulusApp.controller('MemberDetailsCntrl',
 				/* Prepare for New Member Request Creation */
 				else if(requestId){
 					$scope.objectDetails = MemberRequestsSvc.getRequest(requestId);
-					$scope.objectDetails.$loaded().then(function(data){});
-					$scope.prepareRequestEditView(requestId);
+					$scope.objectDetails.$loaded().then(function(request){
+						if(!request.$value){
+							$rootScope.response = { error:true, message:systemMsgs.error.inexistingRequest};
+							$location.path(constants.pages.error);
+							return;
+						}
+						$scope.prepareRequestEditView(requestId);
+					});
 				}else{
 					$scope.prepareViewForNew();
 				}

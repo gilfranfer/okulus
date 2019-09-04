@@ -56,7 +56,7 @@
       <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">
-            <a ng-href="#!/requests/members/view/{{request.$id}}">
+            <a ng-href="#!/requests/members/edit/{{request.$id}}">
               {{request.basicInfo.shortname}}
             </a>
           </h4>
@@ -68,7 +68,7 @@
             <span class="font-weight-bold">{{i18n.members.notesLbl}}:</span><br>
             {{request.notes}}
           </p>
-          <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/view/{{request.$id}}">
+          <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/edit/{{request.$id}}">
             {{i18n.requests.openRequestBnt}}
           </a>
         </div>

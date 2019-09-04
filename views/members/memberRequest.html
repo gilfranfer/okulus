@@ -1,5 +1,5 @@
 <!-- Following section will be displayed onyl after Member is loaded -->
-<section id="memberRequest">
+<section id="memberRequest" ng-show="requestParams.isEdit || currentSession.user.type == 'user'">
   <!-- Title -->
   <article class="card mb-3">
     <div class="card-body">
@@ -220,4 +220,13 @@
   </div>
 
 
+</section>
+
+<section ng-show="(response && !response.loading) && !requestParams.isEdit && currentSession.user.type != 'user'">
+  <div class="alert alert-danger" role="alert">
+    {{i18n.requests.admin.donotCreateRequests}}
+  </div>
+  <a href="#!/members/new" class="btn btn-lg btn-primary">
+    {{i18n.members.newBtn}}
+  </a>
 </section>

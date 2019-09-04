@@ -84,22 +84,22 @@ okulusApp.controller('UserEditCntrl',
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.memberId){
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
 
 				$scope.objectDetails.basicInfo = UsersSvc.getUserBasicDataObject($routeParams.userId);
-				$scope.objectDetails.basicInfo.$loaded().then(function (user){
-					if(!user || !user.email){
-						$rootScope.response = {error: true, message: systemMsgs.error.recordDoesntExist };
+				$scope.objectDetails.basicInfo.$loaded().then(function(user){
+					if(!user.$value){
+						$rootScope.response = { error:true, message:systemMsgs.error.inexistingUser};
+						$location.path(constants.pages.error);
 						return;
 					}
 
 					$scope.objectDetails.audit = UsersSvc.getUserAuditObject(user.$id);
 					if(user.memberId){
-						console.log(user.memberId);
 						$scope.objectDetails.member = MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
 						//it might be root, or a brand new user that didnt find a member

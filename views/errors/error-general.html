@@ -10,7 +10,7 @@
 		<!-- Alert for error message -->
 		<div class="alert alert-danger" role="alert" ng-if="response.error">
 			<!-- <p ng-if="currentSession.user">{{currentSession.user.email}}:</p> -->
-			{{i18n.error.lead}}
+			<p ng-if="!response.message">{{i18n.error.lead}}</p>
 			<p>{{response.message}}</p>
 		</div>
 

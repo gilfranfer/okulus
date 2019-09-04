@@ -20,7 +20,7 @@ const systemMsgs = {
 		emailExist: "El correo electrónico ya está en uso.",
 		tryAgainLater: "Hubo un error. Intente más tarde.",
 		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
-		recordDoesntExist: "La información solicitada no está disponible, o puede que haya sido borrada.",
+		recordDoesntExist: "La información solicitada no está disponible. Puede que haya sido borrada.",
 		/*Members*/
 		noMembersError:"No se encontraron Miembros",
 		loadingMembersError:"Error al cargar la lista de Miembros",
@@ -33,6 +33,12 @@ const systemMsgs = {
 		duplicatedRule:"La regla ya existe.",
 		creatingRuleError:"Error al crear la regla de acceso",
 		deletingRuleError:"Error al eliminar la regla de acceso",
+		inactiveGroup:"El Grupo especificado está Inactivo",
+		inexistingGroup:"El Grupo especificado no Existe",
+		/* Users */
+		inexistingUser:"El Usuario especificado no Existe",
+		/* Requests */
+		inexistingRequest:"La Solicitud especificada no Existe",
 		/*Weeks*/
 		weekExists:"Ya existe la Semana",
 		deleteWeekError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
@@ -42,7 +48,6 @@ const systemMsgs = {
 		duplicatedAttendance:"ya está en la lista de asistencia.",
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
-		inactiveGroup:"No se pueden crear Reportes en Grupos Inactivos",
 		/*Message Center*/
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",
 		loadingMessagesError: "Error al cargar los mensajes. Intentelo nuevamente.",
@@ -468,6 +473,7 @@ okulusApp.run(function($rootScope) {
 				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
 				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis Solicitudes",
 				admin:{
+					donotCreateRequests:"Como Aministrador, puedes crear miembros sin necesidad de una Solicitud",
 					pendingLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
 					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas",
 					pendingShortLbl:"Por Revisar"
