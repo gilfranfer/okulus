@@ -265,7 +265,7 @@ okulusApp.factory('WeeksSvc',
 				weekObject.$save().then(function(ref) {
 					updateOpenStatusCounterAndAudit(isOpen, weekObject.$id);
 				}, function(error) {
-					console.log("Error:", error);
+					console.debug("Error:", error);
 				});
 			},
 			/* Get the Week Object from the firebaseArray in the rootScope
@@ -287,7 +287,7 @@ okulusApp.factory('WeeksSvc',
 				weekObject.$save().then(function(ref) {
 					updateVisibilityCounterAndAudit(isVisible, weekObject.$id);
 				}, function(error) {
-					console.log("Error:", error);
+					console.debug("Error:", error);
 				});
 			},
 			/*Used when creating a Week*/
@@ -422,7 +422,7 @@ okulusApp.controller('WeekDetailsCntrl',
 					AuditSvc.recordAudit(weekId, constants.actions.update, constants.db.folders.weeks);
 					$scope.response = {success:true, message: systemMsgs.success.weekInfoUpdated};
 				},function(error){
-					console.log("Error:", error);
+					console.debug("Error:", error);
 					$scope.response = { error:true, message: error };
 				});
 			}
@@ -445,7 +445,7 @@ okulusApp.controller('WeekDetailsCntrl',
 							$rootScope.weekResponse = { created:true, message: $rootScope.i18n.weeks.weekCreated+" "+weekId };
 							$location.path(constants.pages.weekEdit+weekId);
 						},function(error){
-						  console.log("Error:", error);
+						  console.debug("Error:", error);
 							$scope.response = { error:true, message: error };
 						});
 					}
@@ -480,7 +480,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
 						$location.path(constants.pages.adminWeeks);
 					}, function(error) {
-						console.log("Error:", error);
+						console.debug("Error:", error);
 					});
 				}
 			}

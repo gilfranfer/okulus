@@ -279,7 +279,7 @@ okulusApp.factory('NotificationsSvc',
 			},
 			/*Return only the first notifications for specific user. The number is determined by count param*/
 			getFirstNotificationsForUser: function(userid,count) {
-				//console.log(userid);
+				//console.debug(userid);
 				let reference = notificationsRef.child(userid).orderByKey().limitToLast(count);
 				return $firebaseArray(reference);
 			},

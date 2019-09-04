@@ -625,7 +625,7 @@ okulusApp.controller('ReportsDashCntrl',
 		};
 
 		function getGroupsFromDatabase(groupStatus){
-			//console.log("Gettint groups from DB:",groupStatus);
+			//console.debug("Gettint groups from DB:",groupStatus);
 			let groupsList;
 			switch(groupStatus){
 				case "all":

@@ -519,11 +519,11 @@ okulusApp.controller('AppConfigsCntrl',
 							    op6:"MM/dd/y H:mm"
 							  };
 								$scope.systemConfigs.$save().then(function(options) {
-									// console.log("loading new", options);
+									// console.debug("loading new", options);
 									loadOptionsToArrays($scope.systemConfigs);
 								});
 							}else{
-								// console.log("loading existing", options);
+								// console.debug("loading existing", options);
 								loadOptionsToArrays(options);
 							}
 						});
@@ -570,7 +570,7 @@ okulusApp.controller('AppConfigsCntrl',
 		};
 
 		$scope.removeGrouptype = function(type) {
-			// console.log(type);
+			// console.debug(type);
 			$scope.grouptypesList.$remove(type).then(function(ref) {
 				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeRemoved };
 			}).catch(function(error) {

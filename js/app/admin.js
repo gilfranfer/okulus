@@ -113,12 +113,12 @@ okulusApp.controller('MonitorCntrl',
 				usersList.forEach(function(user){
 					//Use the notifications/metadata length to set the User's unread Count
 					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
-						console.log("User: "+user.$id+" Unread Notifications: "+list.length);
+						console.debug("User: "+user.$id+" Unread Notifications: "+list.length);
 						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
 					});
 					//Use the notifications/list length to set the User's total Count
 					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
-						console.log("User: "+user.$id+" Total Notifications: "+list.length);
+						console.debug("User: "+user.$id+" Total Notifications: "+list.length);
 						NotificationsSvc.setTotalNotifications(user.$id,list.length);
 					});
 				});
@@ -126,7 +126,7 @@ okulusApp.controller('MonitorCntrl',
 		};
 
 		$scope.migrateWeeks = function () {
-			console.log("Init Weeks Migration");
+			console.debug("Init Weeks Migration");
 			let weeksListRef = baseRef.child(constants.db.folders.weeksList);
 			let weeksDetailsRef = baseRef.child(constants.db.folders.weeksDetails);
 
@@ -163,7 +163,7 @@ okulusApp.controller('MonitorCntrl',
 						//Get Reports for the week to update week's reportsCount
 						ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
 							weekObj.reportsCount = reports.length;
-							console.log(week.$id+" has "+reports.length+" reports");
+							console.debug(week.$id+" has "+reports.length+" reports");
 							weeksDetailsRef.child(week.$id).child("audit").set(week.audit);
 							weeksListRef.child(week.$id).set(weekObj);
 						});
@@ -174,12 +174,12 @@ okulusApp.controller('MonitorCntrl',
 				weeksGlobalCount.open = openWeeks;
 				weeksGlobalCount.visible = openWeeks;
 				weeksGlobalCount.$save();
-				console.log("End Weeks Migration", "Total Weeks:"+totalWeeks);
+				console.debug("End Weeks Migration", "Total Weeks:"+totalWeeks);
 			});
 		};
 
 		$scope.migrateMembers = function() {
-			console.log("Initiating Members Migration!!!");
+			console.debug("Initiating Members Migration!!!");
 			//Get Groups from Original Strcuture
 			MigrationSvc.getAllGroups().$loaded().then(function(groups){
 				MigrationSvc.migrateMembers(groups);
@@ -187,7 +187,7 @@ okulusApp.controller('MonitorCntrl',
 		};
 
 		$scope.migrateGroups = function() {
-			console.log("Initiating Groups Migration!!!");
+			console.debug("Initiating Groups Migration!!!");
 			MigrationSvc.getMembersList().$loaded().then(function(members){
 				MigrationSvc.migrateGroups(members);
 			});
@@ -351,13 +351,13 @@ okulusApp.factory('MigrationSvc',
 							totalCount++;
 						}
 					});
-					console.log("List Size:",list.length);
-					console.log("Total Members:",totalCount);
-					console.log("With member folder",memberFolderCount);
-					console.log("Active:",activeCount);
-					console.log("Hosts:",hostCount);
-					console.log("Leads:",leadCount);
-					console.log("Trainees:",traineeCount);
+					console.debug("List Size:",list.length);
+					console.debug("Total Members:",totalCount);
+					console.debug("With member folder",memberFolderCount);
+					console.debug("Active:",activeCount);
+					console.debug("Hosts:",hostCount);
+					console.debug("Leads:",leadCount);
+					console.debug("Trainees:",traineeCount);
 					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
 				});
 			},
@@ -425,9 +425,9 @@ okulusApp.factory('MigrationSvc',
 							totalCount++;
 						}
 					});
-					console.log("List Size:",list.length);
-					console.log("Total Groups:",totalCount);
-					console.log("Active:",activeCount);
+					console.debug("List Size:",list.length);
+					console.debug("Total Groups:",totalCount);
+					console.debug("Active:",activeCount);
 					groupsCountersRef.set({active:activeCount,total:totalCount});
 				});
 			},

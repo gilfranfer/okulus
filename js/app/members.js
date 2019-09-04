@@ -253,7 +253,7 @@ okulusApp.controller('MemberDetailsCntrl',
 						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
 						$scope.response = {success:true, message: systemMsgs.success.memberAddressRemoved};
 					}, function(error) {
-					  console.log("Error:", error);
+					  console.debug("Error:", error);
 					});
 				}
 				$scope.objectDetails.address = null;

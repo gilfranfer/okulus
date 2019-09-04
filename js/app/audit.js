@@ -12,7 +12,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 			 * Returns a reference to the audit folder created in the object
 			 */
 			recordAudit: function( objectId, action, on, description){
-				console.log(description);
+				console.debug(description);
 				//Determine who is doing the action
 				let user = null;
 				let userId = null;
