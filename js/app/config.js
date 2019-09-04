@@ -9,7 +9,7 @@
 const constants = {
 	db: {
 		folders:{
-			root:"okulusTest",currentConfig:"config/current", systemConfigs:"config/okulus",
+			root:"data", currentConfig:"config/app", systemConfigs:"config/fixed",
 			grouptypes:"grouptypes", errors:"errors",
 			config:"config", counters:"counters", details:"details",
 			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
@@ -34,17 +34,21 @@ const constants = {
 			totalWeeksCount:"counters/weeks/total",
 			openWeeksCount:"counters/weeks/open",
 			visibleWeeksCount:"counters/weeks/visible",
+			/* Members Counters */
 			membersCounters:"counters/members",
 			totalMembersCount:"counters/members/total",
 			activeMembersCount:"counters/members/active",
 			hostMembersCount:"counters/members/hosts",
 			leadMembersCount:"counters/members/leads",
 			traineeMembersCount:"counters/members/trainees",
+			/* Groups Counters */
 			groupsCounters:"counters/groups",
 			totalGroupsCount:"counters/groups/total",
 			activeGroupsCount:"counters/groups/active",
+			/* Notifications Counters*/
 			unredNotifCount:"counters/notifications/unreaded",
 			totalNotifCount:"counters/notifications/total",
+			/* Reports Counters */
 			reportsCounters:"counters/reports",
 			totalReportsCount:"counters/reports/total",
 			pendingReportsCount:"counters/reports/pending",
@@ -55,11 +59,7 @@ const constants = {
 			pendingMembersCount:"counters/requests/members/pending",
 			approvedMembersCount:"counters/requests/members/approved",
 			rejectedMembersCount:"counters/requests/members/rejected",
-			/* User Counter for Reports */
-			totalReportsCount:"counters/reports/total",
-			approvedReportsCount:"counters/reports/approved",
-			rejectedReportsCount:"counters/reports/rejected",
-			pendingReportsCount:"counters/reports/pending"
+			totalMembersCount:"counters/requests/members/total",
 		},
 		fields:{
 			baseGroup:"baseGroupId",
@@ -72,11 +72,10 @@ const constants = {
 		}
 	},
 	roles: {
-		user:"user", admin: "admin", type:"type", system:"System",
-		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost",
-		isUser:"isUser",
+		user:"user", admin: "admin", system:"system", root:"root", type:"type",
+		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost", isUser:"isUser",
 		userDefaultName:"Usuario sin miembro asociado",
-		rootName:"Super Administrador"
+		rootName:"Super Administrador", systemName:"Okulus System"
 	},
 	status: {
 		online:"online", offline:"offline",
@@ -123,19 +122,10 @@ okulusApp.config(['$routeProvider',
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
 			})
-			.when('/register',{
-				controller: 'RegistrationCntrl',
-				templateUrl: 'views/auth/register.html'
-			})
 			.when('/pwdreset',{
 				templateUrl: 'views/auth/pwdReset.html'
 			})
 			.when('/home', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
 				controller: 'HomeCntrl',
 				templateUrl: 'views/home.html'
 			})
@@ -165,6 +155,10 @@ okulusApp.config(['$routeProvider',
 				},
 				templateUrl: 'views/user/statistics.html',
 				controller: 'UserStatisticsCntrl'
+			})
+			.when('/app/setRoot',{
+				controller: 'RegisterRootCntrl',
+				templateUrl: 'views/auth/registerRoot.html'
 			})
 			.when('/admin/summary', {
 				resolve: {
@@ -199,7 +193,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				controller: 'ConfigCntrl',
+				controller: 'AppConfigsCntrl',
 				templateUrl: 'views/admin/configs.html'
 			})
 			.when('/groups', {
@@ -384,7 +378,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/user/myRequests.html',
 				controller: "MyRequestsCntrl"
 			})
-			.when('/requests', {
+			.when('/requests/members', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -393,7 +387,7 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/admin/requests.html',
 				controller: "AdminRequestsCntrl"
 			})
-			.when('/requests/newmember', {
+			.when('/requests/members/new', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -421,50 +415,50 @@ okulusApp.config(['$routeProvider',
 ]);
 
 //4. Editable Configurations
+const defaultConfigs = {
+	appName:"Okulus App",
+	/*The Max lenght a firebaseArray should have in the initial request*/
+	maxQueryListResults: 50,
+	/*After this number of records, the Filter box will be visible*/
+	minResultsToshowFilter: 3,
+	/*Date range limits*/
+	members:{ minBirthdate:"1900-01-01" },
+	reports:{
+		minDate:"2018-01-01",
+		goodAttendanceNumber:5,
+		excelentAttendanceNumber:10,
+		minDuration:30, //minutes
+		maxDuration:300,//minutes
+		showMoneyField: true,
+		maxMultipleGuests: 10
+	},
+	formats: {
+		date:"MMM dd yyyy",
+		datetime:"MMM dd yyyy hh:mm a",
+		time:"H:mm"},
+	grouptypes:{
+		default:{name:"Default"}
+	}
+};
+
 okulusApp.run(function($rootScope) {
-	/* Set Default App Editable Configurations*/
-	$rootScope.config ={
-		appName:"Okulus App",
-		/*The Max lenght a firebaseArray should have in the initial request*/
-		maxQueryListResults: 50,
-		/*After this number of records, the Filter box will be visible*/
-		minResultsToshowFilter: 3,
-		/*Date range limits*/
-		members:{ minBirthdate:"1900-01-01" },
-		reports:{
-			minDate:"2018-01-01",
-			goodAttendanceNumber:5,
-			excelentAttendanceNumber:10,
-			minDuration:30, //minutes
-			maxDuration:300,//minutes
-			showMoneyField: true,
-			maxMultipleGuests: 10
-		},
-		formats: {
-			date:"MMM dd yyyy",
-			datetime:"MMM dd yyyy hh:mm a",
-			time:"H:mm"},
-		grouptypes:{
-			default:{name:"Default"}
-		}
-	};
-	/* Load  App Editable Configurations from Firebase */
+	$rootScope.config = defaultConfigs;
 	console.debug("Getting configurations from DB");
-	let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
-	confReference.once('value').then( function(snapshot){
-		if(snapshot.val()){
-			$rootScope.config = (snapshot.val());
-		}else{
-			//push initial configs to DB
-			confReference.set($rootScope.config);
-		}
-		//Add todays date that will be used to limit some date selectors
-		$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
+	/* Load  App Editable Configurations from Firebase */
+	firebase.database().ref().child(constants.db.folders.currentConfig).once('value').then(
+		function(snapshot){
+			if(snapshot.val()){
+				$rootScope.$apply(function(){
+					$rootScope.config = snapshot.val();
+				});
+			}
+			//Add todays date that will be used to limit some date selectors
+			$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
 	});
 });
 
 /* Controller linked to the Editable Configurations View */
-okulusApp.controller('ConfigCntrl',
+okulusApp.controller('AppConfigsCntrl',
 	['$rootScope', '$scope', '$firebaseAuth', '$location', 'ConfigSvc','AuthenticationSvc',
 	function($rootScope, $scope, $firebaseAuth, $location, ConfigSvc, AuthenticationSvc){
 		/* Executed everytime we enter to /config
@@ -473,7 +467,11 @@ okulusApp.controller('ConfigCntrl',
 		$scope.groupTypeRegex = "[a-zA-Z0-9\\s]+";
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-					if(user.type == constants.roles.admin){
+					if(user.type == constants.roles.user){
+						$rootScope.response = {error:true, showHomeButton: true,
+																	message:systemMsgs.error.noPrivileges};
+						$location.path(constants.pages.error);
+					}else{
 						//Get the editable configurations (current app configs)
 						$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
 						$scope.currentAppConfigs.$loaded().then(function(configDb){
@@ -519,10 +517,6 @@ okulusApp.controller('ConfigCntrl',
 								loadOptionsToArrays(options);
 							}
 						});
-					}else{
-						$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-						$location.path(constants.pages.error);
 					}
 				});
 		}});
@@ -593,7 +587,7 @@ okulusApp.controller('ConfigCntrl',
 
 			$scope.currentAppConfigs.$save().then(function(){
 				//Reload Configs into rootScope
-				let confReference = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
+				let confReference = firebase.database().ref().child(constants.db.folders.currentConfig);
 				confReference.once('value').then( function(snapshot){
 					$rootScope.config = (snapshot.val());
 					//Add todays date that will be used to limit some date selectors
@@ -610,20 +604,73 @@ okulusApp.controller('ConfigCntrl',
 okulusApp.factory('ConfigSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
 	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
-		let userConfigRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.currentConfig);
-		let systemConfigRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.systemConfigs);
+		let appConfigRef = firebase.database().ref().child(constants.db.folders.currentConfig);
+		let systemConfigRef = firebase.database().ref().child(constants.db.folders.systemConfigs);
+
+		let appEditableConfigs = $rootScope.config;
+		let systemFixedConfigs = {
+			dateFormats: {
+		    op1: "MMM d, y",
+		    op2: "dd/MM/y",
+		    op3: "MM/dd/y"
+		  },
+		  dateTimeFormats : {
+		    op1: "MMM d, y h:mm a",
+		    op2: "MMM d, y H:mm",
+		    op3: "dd/MM/y h:mm a",
+		    op4: "dd/MM/y H:mm",
+		    op5: "MM/dd/y h:mm a",
+		    op6: "MM/dd/y H:mm"
+		  },
+		  timeFormats : {
+		  	op1: "h:mm a",
+		  	op2: "h:mm:ss a",
+		  	op3: "H:mm",
+		  	op4: "H:mm:ss"
+		  }
+		};
 
 		return {
+			setInitialConfigs: function(rootId){
+				appEditableConfigs.rootId = rootId;
+				appEditableConfigs.todayDate = null;
+				appConfigRef.set(appEditableConfigs);
+				systemConfigRef.set(systemFixedConfigs);
+			},
 			getCurrentConfigurationsObj: function(){
-				return $firebaseObject(userConfigRef);
+				return $firebaseObject(appConfigRef);
 			},
 			getSystemConfigurations: function(){
 				return $firebaseObject(systemConfigRef);
 			},
 			getGroupTypesArray: function(){
-				return $firebaseArray(userConfigRef.child(constants.db.folders.grouptypes));
+				return $firebaseArray(appConfigRef.child(constants.db.folders.grouptypes));
+			}
+		};
+	}
+]);
+
+okulusApp.factory('CountersSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let globalCounters = baseRef.child(constants.db.folders.counters);
+
+		return {
+			setInitialCounters: function(){
+				let counters = {
+					errors:{systemErrors:0},
+					groups:{active:0, total:0},
+					members:{active:0, total:0, hosts:0, leads:0, trainees:0},
+					reports:{approved:0, pending:0, rejected:0, total:0},
+					requests:{members:{approved:0, pending:0, rejected:0, total:0}},
+					weeks:{open:0, visible:0, total:0}
+				};
+				globalCounters.set(counters);
+			},
+			getGlobalCounters: function(){
+				return $firebaseObject(globalCounters);
 			}
 		};
 
-	}
-]);
+}]);

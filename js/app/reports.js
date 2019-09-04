@@ -9,7 +9,10 @@ okulusApp.controller('ReportsListCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
-				if(user.type == constants.roles.admin){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}else{
 					/* Get All Groups List, because Admin has access to all of them.
 					This is useful for the groupSelectModal triggered from Create Report Button*/
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
@@ -29,10 +32,6 @@ okulusApp.controller('ReportsListCntrl',
 								}
 							});
 					});
-				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
 				}
 			});
 		}});
@@ -140,7 +139,7 @@ okulusApp.controller('MyReportsCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(!user.isValid){
+				if(!user.memberId){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -617,7 +616,7 @@ okulusApp.controller('ReportsDashCntrl',
 		};
 
 		$scope.updateGroupSelectList = function (){
-			console.debug($rootScope.reportFinder.groupStatusOpt);
+			//console.debug($rootScope.reportFinder.groupStatusOpt);
 			$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
 			$scope.selectedGroups = [];
 			//Reset the Group type
@@ -626,7 +625,7 @@ okulusApp.controller('ReportsDashCntrl',
 		};
 
 		function getGroupsFromDatabase(groupStatus){
-			console.log("Gettint groups from DB:",groupStatus);
+			//console.log("Gettint groups from DB:",groupStatus);
 			let groupsList;
 			switch(groupStatus){
 				case "all":
@@ -644,7 +643,7 @@ okulusApp.controller('ReportsDashCntrl',
 
 		/* The Group type select depends on the Group status select.
 		This method makes sure the $scope.groupsList has data from db for active,
-		inactive or both statuse, and then proceeds to filter groups from that list
+		inactive or both statuses, and then proceeds to filter groups from that list
 		based on the "type" value.*/
 		$scope.updateGroupTypeSelect = function (){
 			let tempGroupList = new Array();
@@ -682,7 +681,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				/* Only Valid Users (with an associated MemberId) can see the content */
-				if(!user.isValid){
+				if(!user.memberId){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;

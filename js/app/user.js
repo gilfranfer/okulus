@@ -7,7 +7,7 @@ okulusApp.controller('UserStatisticsCntrl',
 		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAdminDash};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.isValid){
+				if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -48,7 +48,7 @@ okulusApp.controller('UserMyContactsCntrl',
 		$firebaseAuth().$onAuthStateChanged( function(authUser){if(authUser){
 				$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user){
-					if(!user.isValid){
+					if(!user.memberId){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
@@ -84,7 +84,7 @@ okulusApp.controller('UserEditCntrl',
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.isValid){
+				if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -103,7 +103,7 @@ okulusApp.controller('UserEditCntrl',
 						$scope.objectDetails.member = MembersSvc.getMemberBasicDataObject(user.memberId);
 					}else{
 						//it might be root, or a brand new user that didnt find a member
-						$scope.objectDetails.member = (user.isRoot)?{shortname: constants.roles.rootName }:{shortname: constants.roles.userDefaultName};
+						$scope.objectDetails.member = (user.type == constants.roles.root)?{shortname: constants.roles.rootName }:{shortname: constants.roles.userDefaultName};
 					}
 				});
 
@@ -139,9 +139,7 @@ okulusApp.factory('UsersSvc',
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
 				userObj.shortname = memberShortname;
-				userObj.isValid = true; //A valid User is the one with a MemberId
 				if(!memberId){
-					userObj.isValid = false;
 					//Force User role, in case it was admin
 					userObj.type = constants.roles.user;
 				}

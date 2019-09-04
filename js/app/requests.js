@@ -7,7 +7,7 @@ okulusApp.controller('MyRequestsCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(!user.isValid){
+				if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -49,28 +49,25 @@ okulusApp.controller('AdminRequestsCntrl',
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(!user.isValid){
-					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+				if(user.type == constants.roles.user){
+					$rootScope.response = { error:true, message: systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
 					return;
-				}
-        if(user.type == constants.roles.admin){
-					/* Get All Pending Requests */
-          $scope.getRequests(constants.status.pending);
 				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
+					$scope.getRequests(constants.status.pending);
 				}
 			});
 
 		}});
 
     $scope.getRequests = function(status){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
       $scope.filteredRequestsList = undefined;
       $scope.filteredRequestsList = MemberRequestsSvc.getRequestsInSatus(status);
-      $scope.filteredRequestsList.$loaded().then(function(){
-        $scope.response = null;
+      $scope.filteredRequestsList.$loaded().then(function(list){
+        if(!list.length){
+					$scope.response = { error: true, message: systemMsgs.error.noMemberRequestsFound };
+				}
       });
 		};
 
@@ -81,7 +78,6 @@ okulusApp.factory('MemberRequestsSvc',
 	function($rootScope, $firebaseArray, $firebaseObject){
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 		let memberRequestListRef = baseRef.child(constants.db.folders.memberRequestList);
-		let globalRequestsCountsRef = baseRef.child(constants.db.folders.requestsCount);
 		let usersListRef = baseRef.child(constants.db.folders.usersList);
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
@@ -110,39 +106,46 @@ okulusApp.factory('MemberRequestsSvc',
 			getRequest: function(whichRequest){
 				return $firebaseObject(memberRequestListRef.child(whichRequest));
 			},
+			/* Used when creating a Member Request */
+			increaseTotalRequestsCount: function (userId) {
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.totalMembersCount);
+				increaseCounter(counterRef);
+				let globalCountRef = baseRef.child(constants.db.folders.totalMembersCount);
+				increaseCounter(globalCountRef);
+			},
 			/* Used when creating or updating a Member Request */
 			increasePendingRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
-				increaseCounter(conunterRef);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
+				increaseCounter(counterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
 				increaseCounter(globalCountRef);
 			},
 			/* used after approving, rejecting, or canceling a request */
 			decreasePendingRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
-				decreaseCounter(conunterRef);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
+				decreaseCounter(counterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
 				decreaseCounter(globalCountRef);
 			},
 			/* Used when approving a Member Request */
 			increaseApprovedRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
-				increaseCounter(conunterRef);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
+				increaseCounter(counterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.approvedMembersCount);
 				increaseCounter(globalCountRef);
 			},
 			/* Used when approving, updating or canceling a Member Request that was in rejected status.
 			Decrease the number of Rejected Member Request in the Requestor's (User) counters */
 			decreaseRejectedRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
-				decreaseCounter(conunterRef);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				decreaseCounter(counterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.rejectedMembersCount);
 				decreaseCounter(globalCountRef);
 			},
 			/* Used when rejecting a Member Request */
 			increaseRejectedRequestsCount: function (userId) {
-				let conunterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
-				increaseCounter(conunterRef);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				increaseCounter(counterRef);
 				let globalCountRef = baseRef.child(constants.db.folders.rejectedMembersCount);
 				increaseCounter(globalCountRef);
 			},

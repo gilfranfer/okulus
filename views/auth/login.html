@@ -6,7 +6,7 @@
 				<hr>
 				<div class="form-group">
 			    <label for="loginemail">{{i18n.contact.emailLbl}}</label>
-			    <input id="loginemail" type="email" name="email"
+			    <input id="loginemail" type="email" name="email" autocomplete="username"
 			    	class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
 			    	ng-model="user.email" ng-required="true">
 					<div class="alert alert-danger" role="alert" ng-show="loginForm.email.$invalid && loginForm.email.$dirty">
@@ -16,7 +16,7 @@
 		  	<div class="form-group">
 		    	<label for="loginpwd">{{i18n.login.password}}</label>
 		    	<input type="password" name="password" id="loginpwd" placeholder="{{i18n.login.passwordHint}}"
-		    		class="form-control form-control-lg" ng-model="user.pwd" ng-required="true">
+		    		class="form-control form-control-lg" ng-model="user.pwd" ng-required="true" autocomplete="current-password">
 		    	<div class="alert alert-danger" role="alert" ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
 						{{i18n.login.alert.pwdRequired}}
 					</div>

@@ -1,4 +1,4 @@
-<section ng-show="currentSession.memberData">
+<section>
   <article class="row">
 
     <!-- Profile Summary -->
@@ -106,7 +106,7 @@
               </a>
             </div>
             <div class="col" ng-if="currentSession.user.type != 'admin'">
-              <a href="#!/requests/newmember" class="btn btn-block btn-warning clickable">
+              <a href="#!/requests/members/new" class="btn btn-block btn-warning clickable">
                 {{i18n.launchpad.requestMember}}
               </a>
             </div>
@@ -123,7 +123,7 @@
               <h5 class="card-title">{{i18n.summary.adminLbl}}</h5><hr>
               <h5>
                 <span class="badge badge-primary">{{globalCount.requests.members.pending}}</span>
-                <a ng-href="#!/requests" class="">{{i18n.requests.admin.pendingShortLbl}}</a>
+                <a ng-href="#!/requests/members" class="">{{i18n.requests.admin.pendingShortLbl}}</a>
               </h5>
             </div>
           </div>
@@ -166,7 +166,7 @@
           </div>
           <div ng-include="'views/alerts.html'"></div>
           <!-- Create Messages -->
-          <div class="mt-4" ng-show="currentSession.user.type == 'admin'">
+          <div class="mt-4" ng-show="currentSession.user.type != 'user'">
             <p class="card-text">
               {{i18n.msgCenter.instruction}}
             </p>

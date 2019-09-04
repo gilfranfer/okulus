@@ -9,7 +9,10 @@ okulusApp.controller('GroupsListCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
-				if(user.type == constants.roles.admin){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}else{
 					/*Load Group Counters and Set Watch*/
 					$rootScope.groupsGlobalCount = GroupsSvc.getGlobalGroupsCounter();
 					$rootScope.groupsGlobalCount.$loaded().then(
@@ -26,10 +29,6 @@ okulusApp.controller('GroupsListCntrl',
 								}
 							});
 					});
-				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
 				}
 			});
 		}});
@@ -125,7 +124,7 @@ okulusApp.controller('GroupsUserCntrl',
 		$firebaseAuth().$onAuthStateChanged(function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(!user.isValid){
+					if(!user.memberId){
 						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
@@ -158,9 +157,9 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				/* Only Valid Users (with an associated MemberId) can see the content */
-				if(!user.isValid){
-					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+				/* Only Root and Valid Users (with an associated MemberId) can see the content */
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
+					$rootScope.response = {error: true, showHomeButton:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
@@ -216,7 +215,7 @@ okulusApp.controller('GroupDetailsCntrl',
 
 		$scope.saveGroup = function() {
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingGroupInfo};
 				let groupId = $scope.groupEditParams.groupId;
 
@@ -261,7 +260,7 @@ okulusApp.controller('GroupDetailsCntrl',
 				return;
 			}
 
-			if(groupInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(groupInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingGroup};
 				//Remove Group from groups/list
 				let deletedGroupId = undefined;
@@ -292,7 +291,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		/* Toogle the Group status.*/
 		$scope.setGroupStatus = function(setGroupActive){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let groupInfo = $scope.objectDetails.basicInfo;
 				groupInfo.isActive = setGroupActive;
 				if(setGroupActive){
@@ -334,7 +333,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		/* Persist the Groups's Host Selection */
 		$scope.updateGroupLead = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let newLeadRole = $scope.objectDetails.roles;
 				if($scope.groupEditParams.currentLeadId == newLeadRole.leadId){
 					$scope.groupEditParams.updatingGroupLead = false;
@@ -372,7 +371,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		/*Persist the Groups's Host Selection */
 		$scope.updateGroupHost = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let groupRoles = $scope.objectDetails.roles;
 				if($scope.groupEditParams.currentHostId == groupRoles.hostId){
 					$scope.groupEditParams.updatingGroupHost = false;
@@ -410,7 +409,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		/*Persist the Groups's Trainee Selection */
 		$scope.updateGroupTrainee = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let groupRoles = $scope.objectDetails.roles;
 				if($scope.groupEditParams.currentTraineeId == groupRoles.traineeId){
 					$scope.groupEditParams.updatingGroupTrainee = false;
@@ -587,7 +586,13 @@ okulusApp.controller('GroupAccessRulesCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAccessRules};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
-				if(user.type == constants.roles.admin && user.memberId){
+				if(user.type == constants.roles.user){
+					$rootScope.response = { error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+					return;
+				}
+
+				// if(user.memberId){
 					let whichGroup = $routeParams.groupId;
 					$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
 					//Retrieve List of Members that have a User associated
@@ -595,11 +600,11 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					//Retrieve List of Users already having access (Some could be invalid Users)
 					$scope.acessList = GroupsSvc.getAccessRulesList(whichGroup);
 					$scope.response = null;
-				}else{
-					$rootScope.response = { error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
-				}
+				// }else{
+				// 	$rootScope.response = { error:true, showHomeButton: true,
+				// 													message:systemMsgs.error.noPrivileges};
+				// 	$location.path(constants.pages.error);
+				// }
 			});
 		}});
 

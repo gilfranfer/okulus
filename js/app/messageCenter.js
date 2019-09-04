@@ -39,7 +39,7 @@ okulusApp.controller('MessageCenterCntrl',
 		$scope.postMessage = function(){
 			$scope.response = {working: true, message: systemMsgs.inProgress.postingMessage };
 			//Double check user is Admin before posting
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let type = ($scope.message.isImportant)?"danger":"primary";
 				let record = { message: $scope.message.content, type: type,
 							createdBy: $rootScope.currentSession.user.email, createdOn:firebase.database.ServerValue.TIMESTAMP};
@@ -59,7 +59,7 @@ okulusApp.controller('MessageCenterCntrl',
 		$scope.removeMessage = function(messageId){
 			$scope.response = {working: true, message: systemMsgs.inProgress.deletingMessage };
 			//Only admin can remove Messages
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				var record = $scope.msgCenterMessages.$getRecord(messageId);
 				$scope.msgCenterMessages.$remove(record).then(function(ref) {
 					$scope.response = { success:true, message: systemMsgs.success.deleteMessageSuccess };

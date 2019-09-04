@@ -14,14 +14,14 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 			recordAudit: function( objectId, action, on, description){
 				console.log(description);
 				//Determine who is doing the action
-				let user = undefined;
+				let user = null;
 				let userId = null;
 
 				let session = $rootScope.currentSession;
 				if(!session || !session.user){
-					user = "System";
-				} else if (session.user.isRoot){
-					user = "Root";
+					user = constants.roles.systemName;
+				} else if (session.user.type == constants.roles.root){
+					user = constants.roles.rootName;
 					userId = session.user.$id;
 				} else {
 					user = session.user.email;

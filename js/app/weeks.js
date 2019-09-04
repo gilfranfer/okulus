@@ -9,26 +9,24 @@ okulusApp.controller('WeeksCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type == constants.roles.admin){
-						$rootScope.weeksGlobalCounter = WeeksSvc.getGlobalWeeksCounter();
-						$rootScope.weeksGlobalCounter.$loaded().then(
-							function(weekCounters) {
-								$scope.response = undefined;
-								/* Adding a Watch to the weeksGlobalCounter to detect changes.
-								The idea is to update the maxPossible value from weekListParams.*/
-								if(unwatch){ unwatch(); }
-								unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
-									if($rootScope.weekListParams){
-										let loader = $rootScope.weekListParams.activeWeekLoader;
-										$rootScope.weekListParams = getweekListParams(loader);
-										$scope.response = undefined;
-									}
-								} );
-						});
-					}else{
-						$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
+					if(user.type == constants.roles.user){
+						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
+					}else{
+						$rootScope.weeksGlobalCounter = WeeksSvc.getGlobalWeeksCounter();
+						$rootScope.weeksGlobalCounter.$loaded().then(function(weekCounters){
+							$scope.response = undefined;
+							/* Adding a Watch to the weeksGlobalCounter to detect changes.
+							The idea is to update the maxPossible value from weekListParams.*/
+							if(unwatch){ unwatch(); }
+							unwatch = $rootScope.weeksGlobalCounter.$watch( function(data){
+								if($rootScope.weekListParams){
+									let loader = $rootScope.weekListParams.activeWeekLoader;
+									$rootScope.weekListParams = getweekListParams(loader);
+									$scope.response = undefined;
+								}
+							} );
+						});
 					}
 				});
 		}});
@@ -328,9 +326,9 @@ okulusApp.controller('WeekDetailsCntrl',
 				$scope.response = {loading: true, message: systemMsgs.inProgress.loadingWeek };
 				$scope.objectDetails = {};
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					/* Only Valid Users (with an associated MemberId) can see the content */
-					if(!user.isValid){
-						$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+					/* Only Root and Valid Users (with an associated MemberId) can see the content */
+					if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
+						$rootScope.response = {error: true, showHomeButton:true, message: systemMsgs.error.noMemberAssociated};
 						$location.path(constants.pages.error);
 						return;
 					}
@@ -391,7 +389,7 @@ okulusApp.controller('WeekDetailsCntrl',
 		/* Toogle the Week Status (isOpen=true/false) */
 		$scope.setWeekOpenStatus = function (setOpen) {
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				WeeksSvc.updateWeekStatusInObject($scope.objectDetails.basicInfo, setOpen);
 				$scope.response = {success:true, message: systemMsgs.success.statusUpdated };
 			}
@@ -400,7 +398,7 @@ okulusApp.controller('WeekDetailsCntrl',
 		/* Toogle the Week visibility (isVisible=true/false) */
 		$scope.setWeekVisibility = function (setVisible) {
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				WeeksSvc.updateWeekVisibilityInObject($scope.objectDetails.basicInfo, setVisible);
 				$scope.response = {success:true, message: systemMsgs.success.visibilityUpdated };
 			}
@@ -461,7 +459,7 @@ okulusApp.controller('WeekDetailsCntrl',
 			clearResponse();
 			let weekInfo = $scope.objectDetails.basicInfo;
 
-			if(weekInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(weekInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingWeek};
 				if($scope.objectDetails.basicInfo.reportsCount > 0){
 					$scope.response = {deleteError:true, message: systemMsgs.error.deleteWeekError};

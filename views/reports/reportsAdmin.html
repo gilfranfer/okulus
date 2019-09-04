@@ -1,5 +1,5 @@
 <!-- Admin Reports List View -->
-<section id="adminReportsList" ng-show="currentSession.user.type == 'admin'">
+<section id="adminReportsList" ng-show="currentSession.user.type != 'user'">
 
   <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
@@ -45,8 +45,8 @@
     </div>
     <div class="col mb-3">
       <div ng-controller="CreateReportCntrl">
-        <button class="btn btn-block btn-primary clickable"
-          ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
+        <button class="btn btn-lg btn-block btn-primary clickable" ng-click="quickReportLauncher()"
+          ng-show="currentSession.accessGroups.length <= 1" ng-disabled="currentSession.accessGroups.length < 1">
           {{i18n.summary.newReportBtn}}
         </button>
         <div ng-include="'views/groups/groupSelectModal.html'"></div>

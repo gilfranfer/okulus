@@ -1,4 +1,4 @@
-<section id="adminDashboard" ng-show="currentSession.user.type == 'admin'">
+<section id="adminDashboard" ng-show="currentSession.user.type != 'user'">
   <!-- Title -->
   <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
@@ -36,7 +36,7 @@
         <div class="col-md-6 mb-1">
           <div ng-controller="CreateReportCntrl">
             <button class="btn btn-block btn-primary clickable"
-              ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
+              ng-click="quickReportLauncher()"  ng-disabled="currentSession.accessGroups.length <= 0">
               {{i18n.summary.newReportBtn}}
             </button>
             <div ng-include="'views/groups/groupSelectModal.html'"></div>

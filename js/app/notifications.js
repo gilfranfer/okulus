@@ -8,7 +8,7 @@ okulusApp.controller('NotificationCenterCntrl',
 			if(!authUser) return;
 			$scope.response = { loading:true, message: $rootScope.i18n.notifications.loading};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-				if(!user.isValid){
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
@@ -175,10 +175,10 @@ okulusApp.factory('NotificationsSvc',
 			let sender = {};
 			let session = $rootScope.currentSession;
 			if(!session || !session.user){
-				sender.from = "System";
-				sender.id=null;
-			} else if (session && session.user.isRoot){
-				sender.from = "Root";
+				sender.from = constants.roles.systemName;
+				sender.id = null;
+			} else if (session && session.user.type == constants.roles.root){
+				sender.from = constants.roles.rootName;
 				sender.id = session.user.$id;
 			} else {
 				sender.from = session.user.email;
@@ -243,21 +243,8 @@ okulusApp.factory('NotificationsSvc',
 			/*Used when we want to notify someone that is not part of the audit folder of an element
 			For Example, when granting a user access to a gorup, we want to notify the user.*/
 			notifySpecificUser: function(receiver, actionPerformed, onFolder, objectId){
-				//Determine who is doing the action
-				let user = undefined;
-				let userId = null;
-
-				let session = $rootScope.currentSession;
-				if(!session || !session.user){
-					user = "System";
-				} else if (session.user.isRoot){
-					user = "Root";
-					userId = session.user.$id;
-				} else {
-					user = session.user.email;
-					userId = session.user.$id;
-				}
-				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, user, userId);
+				let sender = getNotificationSender();
+				let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, sender.from, sender.id);
 				pushNotification(receiver, notification);
 			},
 			/* Send notification to all valid system adminis
@@ -270,7 +257,7 @@ okulusApp.factory('NotificationsSvc',
 				notification.fromId = sender.id;
 				getAdminUsers().$loaded().then(function(admins){
 					admins.forEach(function(adminUser){
-						if(adminUser.isValid){
+						if(adminUser.memberId){
 							pushNotification(adminUser.$id, notification);
 						}
 					});

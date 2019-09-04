@@ -1,4 +1,4 @@
-<section id="adminMonitor" ng-show="currentSession.user.type == 'admin'">
+<section id="adminMonitor" ng-show="currentSession.user.type != 'user'">
 
   <article id="users">
     <div class="card mb-3">
@@ -49,8 +49,7 @@
                 <!-- <td>{{user.audit.createdOn | date: config.formats.date}}</td> -->
                 <!-- type -->
                 <td ng-if="!user.memberId">
-                  <span ng-if="user.isRoot">Root</span>
-                  <span ng-if="!user.isRoot">{{user.type}}</span>
+                  <span>{{user.type}}</span>
                 </td>
                 <td ng-if="user.memberId">
                   <button type="button" ng-if="user.type == 'admin'" ng-click="updateUserType(user.$id,'user')" class="btn btn-block btn-warning">

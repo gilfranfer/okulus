@@ -4,6 +4,7 @@ const systemMsgs = {
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
 		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
 		noPrivilegesShort: "No cuentas con los permisos necesarios.",
+		rootAlreadySet:"El Super Usuario ya existe.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
@@ -54,7 +55,8 @@ const systemMsgs = {
 		/* Member Requests */
 		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada.",
 		approvedRequestReject: "No se puede rechazar una Solicitud aprobada.",
-		approvedRequestCancel: "No se puede cancelar una Solicitud aprobada."
+		approvedRequestCancel: "No se puede cancelar una Solicitud aprobada.",
+		noMemberRequestsFound: "No se encontraron solicitudes de miembros"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
@@ -179,11 +181,12 @@ const systemMsgs = {
 		groupTypeAdded:"Nuevo Tipo de Grupo agregado",
 		groupTypeRemoved:"Se ha eliminado el Tipo de Grupo",
 		/*Member Request*/
-		requestCreated:"La solicitud ha sido creada",
+		requestsLoaded:"Solictudes Cargadas",
+		requestCreated:"La solicitud ha sido Creada",
 		memberCreatedFromRequest:"La solicitud ha sido Aprobada. Nuevo Miembro creado.",
 		requestRejected:"La solicitud ha sido Rechazada",
-		requestUpdated:"La solicitud ha sido actualizada",
-		requestCanceled:"La solicitud ha sido cancelada"
+		requestUpdated:"La solicitud ha sido Actualizada",
+		requestCanceled:"La solicitud ha sido Cancelada"
 	},
 	/* Notification Descriptions */
 	notificaions:{
@@ -271,7 +274,8 @@ okulusApp.run(function($rootScope) {
 				loginBtn:"Iniciar Sesión"
 			},
 			register:{
-				title:"Regístrate", registerBtn:"Registrarse", emailDisclosure:"",
+				title:"Regístrate", titleRoot:"Registro de Super Usuario",
+				registerBtn:"Registrarse", emailDisclosure:"",
 				password: "Contraseña", passwordHint: "Tus palabras secretas",
 				pwdSize:"Al menos 8 caracteres", confirmPassword: "Confirma la contraseña",
 				alert:{ invalidEmail:"Ese no es un correo válido",

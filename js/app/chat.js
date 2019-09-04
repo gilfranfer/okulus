@@ -9,8 +9,8 @@ okulusApp.controller('ChatCenterCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(loggedUser){
-				if(!loggedUser.memberId){
-					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
+				if($rootScope.currentSession.user.type != constants.roles.root && !loggedUser.memberId){
+					$rootScope.response = { error:true, showHomeButton: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}

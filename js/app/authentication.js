@@ -14,9 +14,9 @@ okulusApp.run( ['$rootScope', '$location', function($rootScope,$location){
 /* Controller linked to page body, to control the whole app */
 okulusApp.controller('AuthenticationCntrl',
 	['$scope','$rootScope','$firebaseAuth','$location',
-	'AuthenticationSvc','AdminSvc','ChatSvc','MembersSvc','UsersSvc', 'ErrorsSvc',
+	'AuthenticationSvc','CountersSvc','ChatSvc','MembersSvc','UsersSvc', 'ErrorsSvc',
 	function($scope,$rootScope,$firebaseAuth,$location,
-		AuthenticationSvc,AdminSvc, ChatSvc,MembersSvc,UsersSvc,ErrorsSvc){
+		AuthenticationSvc,CountersSvc, ChatSvc,MembersSvc,UsersSvc,ErrorsSvc){
 
 		/* Function executed anytime an Authetication state changes in the app.
 		Like after login, or when refreshing page. */
@@ -25,26 +25,30 @@ okulusApp.controller('AuthenticationCntrl',
 					console.debug("AuthSvc: Auth State Changed");
 					AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(
 						function(loggedUser){
-							/* Every User, except Root, must be linked to a Member with a reference (memberId).
-							When the reference already exist, we need to check if the member is still valid */
-							if(loggedUser.memberId && !loggedUser.isRoot ){
-								validateMemberFromUser(loggedUser);
-							}
-							/* If the User doesn't have a Member reference, we'll use the User's email
-							to find a matching member and link it. */
-							else if(!loggedUser.memberId && !loggedUser.isRoot ){
-								setMemberToUser(loggedUser);
-							}
 							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
+
+							if(loggedUser.type == constants.roles.root ){
+								$rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
+							}else{
+								/* Every User that is not Root, must be linked to a Member with a reference (memberId).
+								 When the reference already exist, we need to check if the member is still valid */
+								if(loggedUser.memberId){
+									validateMemberFromUser(loggedUser);
+								}
+								/* If the User doesn't have a Member reference, we'll use the User's email
+								to find a matching member and link it. */
+								else if(!loggedUser.memberId){
+									setMemberToUser(loggedUser);
+								}
+							}
+
 							/* Load Unread Chats Count */
 							$rootScope.currentSession.unreadChats = ChatSvc.getUnreadChatsForUser(authUser.uid);
-							if(loggedUser.type == "admin"){
-								$rootScope.globalCount = AdminSvc.getGlobalCounters();
-								//$rootScope.globalCount.errors = ErrorsSvc.getGlobalErrorCounter();
-							}
+							$rootScope.globalCount = CountersSvc.getGlobalCounters();
 					});
 				}else{
+					console.debug("Redirecting from AuthenticationCntrl");
 					cleanRootScope();
 					$location.path( constants.pages.login );
 				}
@@ -285,29 +289,84 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 	}
 ]);
 
+//Mapping: /app/setRoot
+//Create a new root user, if it doesnt exists, and set initial System configs in DB
+okulusApp.controller('RegisterRootCntrl',
+	['$rootScope','$scope','$location','$firebaseAuth',
+	'ConfigSvc','UsersSvc','CountersSvc','AuthenticationSvc',
+	function($rootScope, $scope, $location, $firebaseAuth,
+		ConfigSvc, UsersSvc, CountersSvc, AuthenticationSvc){
+
+		/* Display the Root Register form only when a root doesnt already exist */
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+			$scope.response = {loading:true, message:systemMsgs.inProgress.loading};
+			ConfigSvc.getCurrentConfigurationsObj().$loaded().then(function(configs){
+				$scope.configs = configs;
+				if(authUser){
+					$location.path(constants.pages.home);
+					return;
+				}
+
+				if(configs.rootId){
+					//A root has been previously set
+					$rootScope.response = {error:true, showHomeButton: false, message:systemMsgs.error.rootAlreadySet};
+					$location.path(constants.pages.error);
+				}else{
+					$scope.response = null;
+				}
+			});
+		});
+
+		/* To register a root user:
+		- Register user in firebase with $createUserWithEmailAndPassword (auto-login)
+		- Create a user object in the DB
+		- Set initial app editable configs, and system fixed configs
+		- Create initial Global Counters
+		- Redirect to Home */
+		$scope.register = function(){
+			$scope.response = {working: true, message: systemMsgs.inProgress.registeringUser};
+			AuthenticationSvc.register($scope.newUser).then(function(regUser){
+				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
+				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.root);
+				ConfigSvc.setInitialConfigs(regUser.uid);
+				CountersSvc.setInitialCounters();
+				$location.path(constants.pages.home);
+			}).catch( function(error){
+				let message = undefined;
+				switch(error.code) {
+						case "auth/email-already-in-use":
+							message = systemMsgs.error.emailExist;
+							break;
+						default:
+							message = systemMsgs.error.tryAgainLater;
+				}
+				$scope.response = { error: true, message: message };
+				console.error(error);
+			});
+		};
+
+}]);
+
 /* Controller linked to /home */
 okulusApp.controller('HomeCntrl',
 	['$scope','$rootScope','$location','$firebaseAuth',
-	'MembersSvc','GroupsSvc','AdminSvc','AuthenticationSvc', 'MessageCenterSvc',
+	'MembersSvc','GroupsSvc','AuthenticationSvc', 'MessageCenterSvc',
 	function($scope, $rootScope, $location, $firebaseAuth,
-		MembersSvc, GroupsSvc, AdminSvc, AuthenticationSvc, MessageCenterSvc){
+		MembersSvc, GroupsSvc, AuthenticationSvc, MessageCenterSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
-			if(!authUser) return;
+			if(!authUser){
+				$location.path(constants.pages.login)
+				return;
+			}
+
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 				console.debug("**HomeCntrl: loadSessionData");
-				$scope.globalCount = AdminSvc.getGlobalCounters();
-				$scope.globalCount.$loaded().then(function(counter){
-					//console.log(counter);
-				});
-
-				if(user.isRoot){
-					//Root User needs to be redirected to /admin/monitor
-					$location.path(constants.pages.adminMonitor);
-				} else if($rootScope.redirectFromRegister){
-					//After user Registration only. No need to load Access Rules.
-					$rootScope.redirectFromRegister = undefined;
-				} else if(user.isValid){
+				if(user.type == constants.roles.root){
+					// $rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
+					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
+				}
+				else if(user.memberId){
 					/* Get Access Rules for a valid existing user, and use them to load the groups
 					it has access to. This is useful for the groupSelectModal triggered from Quick Actions*/
 					$rootScope.currentSession.accessGroups = [];
@@ -317,12 +376,11 @@ okulusApp.controller('HomeCntrl',
 							$rootScope.currentSession.accessGroups.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
 						});
 					});
-				}	else if(!user.isValid){
+				}	else if(!user.memberId){
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}
 			});
 		});
 
-	}]
-);
+}]);

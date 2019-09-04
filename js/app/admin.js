@@ -199,26 +199,24 @@ okulusApp.controller('MonitorCntrl',
 //Load all the elements for the Admin Summary
 okulusApp.controller('AdminSummaryCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',
-		'GroupsSvc','AdminSvc','AuthenticationSvc',
+		'GroupsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $location, $firebaseAuth,
-		GroupsSvc, AdminSvc, AuthenticationSvc){
+		GroupsSvc, AuthenticationSvc){
 
 		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingSummary};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
-				if(user.type == constants.roles.admin){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}else{
 					/* Get All Groups List, because Admin has access to all of them.
 					This is useful for the groupSelectModal triggered from Create Report Button*/
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
 					//Counters to build the Summary cards.
-					//$scope.globalCount = AdminSvc.getGlobalCounters(); - loaded on AuthenticationCntrl
 					$scope.globalCount.$loaded().then(function(counter){
 						$scope.response = null;
 					});
-				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
 				}
 			});
 		}});
@@ -228,14 +226,17 @@ okulusApp.controller('AdminSummaryCntrl',
 //Load all the elements for the Admin statistics and Admin Report Finder
 okulusApp.controller('AdminStatisticsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',
-		'WeeksSvc','GroupsSvc','AdminSvc','AuthenticationSvc','ConfigSvc',
+		'WeeksSvc','GroupsSvc','AuthenticationSvc','ConfigSvc',
 	function($rootScope, $scope, $location, $firebaseAuth,
-		WeeksSvc, GroupsSvc, AdminSvc, AuthenticationSvc,ConfigSvc){
+		WeeksSvc, GroupsSvc, AuthenticationSvc, ConfigSvc){
 
 		$scope.response = {loading:true, message:systemMsgs.inProgress.loadingReportFinder};
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
-				if(user.type == constants.roles.admin){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}else{
 					//Pre-defined values for the view
 					$scope.adminViewActive = true;
 					$scope.selectedWeeks = [];
@@ -258,26 +259,10 @@ okulusApp.controller('AdminStatisticsCntrl',
 					});
 
 					$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
-				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
 				}
 			});
 		}});
 
-}]);
-
-okulusApp.factory('AdminSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject',
-	function($rootScope, $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-
-		return {
-			getGlobalCounters: function(){
-				return $firebaseObject(baseRef.child(constants.db.folders.counters));
-			}
-		};
 }]);
 
 okulusApp.factory('MigrationSvc',

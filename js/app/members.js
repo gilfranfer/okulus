@@ -9,7 +9,10 @@ okulusApp.controller('MembersListCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then( function(user){
-				if(user.type == constants.roles.admin){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+				}else{
 					$rootScope.membersGlobalCount = MembersSvc.getGlobalMembersCounter();
 					$rootScope.membersGlobalCount.$loaded().then(
 						function(membersCount) {
@@ -25,10 +28,6 @@ okulusApp.controller('MembersListCntrl',
 								}
 							});
 					});
-				}else{
-					$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
 				}
 			});
 		}});
@@ -165,8 +164,8 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				/* Only Valid Users (with an associated MemberId) can see the content */
-				if(!user.isValid){
-					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
+					$rootScope.response = {error: true, showHomeButton:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
@@ -175,7 +174,6 @@ okulusApp.controller('MemberDetailsCntrl',
 				let requestId = $routeParams.requestId;
 				/* Prepare for Edit or View Details of Existing Member */
 				if(memberId){
-					console.debug("Existing Member");
 					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
 					$scope.objectDetails.basicInfo.$loaded().then(function(member){
 						//If member from DB hasn't shortname, is because no member was found
@@ -240,7 +238,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		/*Remove the address Object from scope, and from DB*/
 		$scope.removeAdress = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				if($scope.objectDetails.address.$id){
 					$scope.response = {working:true, message: systemMsgs.inProgress.deletingMemberAddress};
 					let memberId = $scope.memberEditParams.memberId;
@@ -265,7 +263,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		/*Save the changes to the Member´s Address */
 		$scope.saveAddress = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberAddress};
 				let memberId = $scope.memberEditParams.memberId;
 
@@ -290,7 +288,7 @@ okulusApp.controller('MemberDetailsCntrl',
 
 		$scope.saveBasicInfo = function(){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberInfo};
 				let memberId = $scope.memberEditParams.memberId;
 
@@ -331,7 +329,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				return;
 			}
 
-			if(memberInfo && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(memberInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingMember};
 				//Remove Member from members/list
 				let deletedMemberId = undefined;
@@ -353,7 +351,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		/* Toogle the Membership status.*/
 		$scope.setMembershipStatus = function(setMembershipActive){
 			clearResponse();
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 				let memberInfo = $scope.objectDetails.basicInfo;
 				memberInfo.isActive = setMembershipActive;
 				if(setMembershipActive){
@@ -383,7 +381,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.isLeader = function(isLeader) {
 			clearResponse();
 			let memberInfo = $scope.objectDetails.basicInfo;
-			if(memberInfo.isActive  && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(memberInfo.isActive  && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isLeader = isLeader;
 				memberInfo.$save().then(function() {
 					if(isLeader){
@@ -400,7 +398,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.isTrainee = function(isTrainee) {
 			clearResponse();
 			let memberInfo = $scope.objectDetails.basicInfo;
-			if(memberInfo.isActive && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(memberInfo.isActive && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isTrainee = isTrainee;
 				memberInfo.$save().then(function() {
 					if(isTrainee){
@@ -417,7 +415,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.isHost = function(isHost) {
 			clearResponse();
 			let memberInfo = $scope.objectDetails.basicInfo;
-			if(memberInfo.isActive && $rootScope.currentSession.user.type == constants.roles.admin){
+			if(memberInfo.isActive && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isHost = isHost;
 				memberInfo.$save().then(function() {
 					if(isHost){
@@ -458,7 +456,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.updateBaseGroup = function(){
 			clearResponse();
 			let memberInfo = $scope.objectDetails.basicInfo;
-			if($rootScope.currentSession.user.type == constants.roles.admin){
+			if($rootScope.currentSession.user.type != constants.roles.user){
 					if(memberInfo.baseGroupId){
 						let group = $scope.memberEditParams.groupsList.$getRecord(memberInfo.baseGroupId);
 						memberInfo.baseGroupName = group.name;
@@ -523,6 +521,7 @@ okulusApp.controller('MemberDetailsCntrl',
 
 			let requestRef = MemberRequestsSvc.persistRequest(request);
 			MemberRequestsSvc.getRequest(requestRef.key).$loaded().then(function(){
+				MemberRequestsSvc.increaseTotalRequestsCount(request.audit.createdById);
 				MemberRequestsSvc.increasePendingRequestsCount(request.audit.createdById);
 				let notification = { description: systemMsgs.notificaions.memberRequested,
 														action: constants.actions.create,

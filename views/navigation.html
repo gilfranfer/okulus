@@ -21,26 +21,21 @@
     </span>
   </button>
 
-  <!-- Menu when no User logged in -->
-  <ul class="navbar-nav ml-auto" ng-if="!currentSession.user">
-    <li class="nav-item">
-      <a class="nav-link" href="#!/register">{{i18n.navigation.register}}</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
-    </li>
-  </ul>
   <!-- Collapsable Menu for Logged users -->
   <div id="appMenu" class="collapse navbar-collapse">
+    <!-- Menu when no User logged in -->
+    <ul class="navbar-nav ml-auto" ng-if="!currentSession.user">
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="#!/register">{{i18n.navigation.register}}</a>
+      </li> -->
+      <li class="nav-item">
+        <a class="nav-link" href="#!/login">{{i18n.navigation.login}}</a>
+      </li>
+    </ul>
     <!--  Menu when User is logged in -->
     <ul class="navbar-nav ml-auto" ng-if="currentSession.user">
-      <!-- Home -->
-      <li class="nav-item">
-        <a class="d-md-none nav-link" href="#!/home">{{i18n.navigation.home}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-home" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
-      </li>
-      <!-- Admin Menu -->
-      <li class="nav-item dropdown" ng-if="currentSession.user.type == 'admin'">
+      <!-- Admin and Root Menu -->
+      <li class="nav-item dropdown" ng-if="currentSession.user.type != 'user'">
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,7 +64,7 @@
           <a class="dropdown-item" href="#!/groups">{{i18n.navigation.admin.groups}}</a>
           <a class="dropdown-item" href="#!/members">{{i18n.navigation.admin.members}}</a>
           <a class="dropdown-item" href="#!/weeks">{{i18n.navigation.admin.weeks}}</a>
-          <a class="dropdown-item" href="#!/requests">
+          <a class="dropdown-item" href="#!/requests/members">
             {{i18n.navigation.admin.requests}}
             <span ng-show="globalCount.requests.members.pending" class="badge badge-danger badge-text">
               {{globalCount.requests.members.pending}}
@@ -85,29 +80,34 @@
           <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>
         </div>
       </li>
+      <!-- Home -->
+      <li class="nav-item">
+        <a class="d-md-none nav-link" href="#!/home">{{i18n.navigation.home}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-home" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
+      </li>
       <!-- User Menu: if user has an associated Member -->
       <!-- Statistics -->
-      <li class="nav-item" ng-if="currentSession.memberData">
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/statistics">{{i18n.navigation.statistics}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
       </li>
-      <!-- Reports -->
-      <li class="nav-item" ng-if="currentSession.memberData">
+      <!-- My Reports -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.reports}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-clipboard-list" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
       </li>
-      <!-- Groups -->
-      <li class="nav-item" ng-if="currentSession.memberData">
+      <!-- My Groups -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.groups}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.groups}}"></a>
       </li>
-      <!-- Contacts -->
-      <li class="nav-item" ng-if="currentSession.memberData">
+      <!-- My Contacts -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.contacts}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
       </li>
-      <!-- Requests -->
-      <li class="nav-item" ng-if="currentSession.memberData">
+      <!-- My Requests -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/myrequests">{{i18n.navigation.requests}}
           <span ng-show="currentSession.user.counters.requests.members.pending" class="badge badge-danger badge-text">
             {{currentSession.user.counters.requests.members.pending}}
