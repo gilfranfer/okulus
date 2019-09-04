@@ -8,13 +8,16 @@
         </button>
       </div>
       <div class="modal-body">
-
+        <div class="alert alert-danger" role="alert" ng-show="!usersList.length" >
+         {{i18n.chat.modals.noUsersFound}}
+        </div>
+        <!-- Users List -->
         <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control"
-          ng-model="searchFilter" ng-show="allValidUsersList.length > config.minResultsToshowFilter"/>
-        <div class="list-group-item mt-2 pre-scrollable ">
+          ng-model="searchFilter" ng-show="usersList.length > config.minResultsToshowFilter"/>
+        <div class="list-group-item mt-2 pre-scrollable" ng-show="usersList.length" >
           <div id="user-{{user.$id}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
-  						ng-repeat="user in allValidUsersList | filter:searchFilter | orderBy:'shortname'"
-              ng-click="closeNewChatModal(user)" data-dismiss="modal">
+  						ng-repeat="user in usersList | filter:searchFilter | orderBy:'shortname'"
+              ng-click="createNewChat(user)" data-dismiss="modal">
   					<div class="w-100">
   					  <span class="mb-1 font-weight-bold">
   							{{user.shortname}}
@@ -25,7 +28,6 @@
   					</div>
   				</div>
 				</div>
-
       </div>
       <!-- <div class="modal-footer">
         <button type="button" class="btn clickable btn-secondary" data-dismiss="modal">{{i18n.btns.cancelBtn}}</button>

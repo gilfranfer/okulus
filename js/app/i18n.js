@@ -296,6 +296,7 @@ okulusApp.run(function($rootScope) {
 				editedMessage:"(Editado)",
 				modals:{
 					newChatTitle:"Nueva Conversación",
+					noUsersFound:"No se encontraron otros Usuarios",
 					deleteMessageTitle:"Eliminar Mensaje",
 					deleteForMeBtn:"Eliminar para mí",
 					deleteForAllBtn:"Eliminar para todos",

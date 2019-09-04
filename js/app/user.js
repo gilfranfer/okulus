@@ -120,12 +120,9 @@ okulusApp.factory('UsersSvc',
 		let validUsersRef = usersRef.orderByChild("isValid").equalTo(true);
 
 		return {
-			/* Valid Users are the ones with a MemberId associated. Currently used to initiate a chat */
-			loadValidUsersList: function(){
-				if(!$rootScope.allValidUsersList){
-					$rootScope.allValidUsersList = $firebaseArray(validUsersRef);
-				}
-				return $rootScope.allValidUsersList;
+			/* Get basic info from firebase and return as object */
+			getUsers: function(){
+				return $firebaseArray(usersRef);
 			},
 			/* Get basic info from firebase and return as object */
 			getUserBasicDataObject: function(whichUserId){

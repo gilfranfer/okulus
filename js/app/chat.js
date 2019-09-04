@@ -14,20 +14,22 @@ okulusApp.controller('ChatCenterCntrl',
 					$location.path(constants.pages.error);
 					return;
 				}
+
 				/* Setting some values useful in the frontend */
 				$scope.chatCenterParams = {
 					chatAreaHeight: Math.round(window.innerHeight*.75),
-					loggedUserId: loggedUser.$id, //loggedUserEmail: loggedUser.email,
+					loggedUserId: loggedUser.$id,
 					activeChatWith:undefined, activeChatMessages: undefined,
 					activeChatLimit: undefined
 				};
+
 				/*Load User's Chat List*/
 				if(!$rootScope.chatList){
 					$rootScope.chatList = ChatSvc.getChatRoomsForUser(loggedUser.$id);
 				}
 				$rootScope.chatList.$loaded().then(function(list){ $scope.response = undefined; });
 
-				//Register vent to post message with "Enter"
+				//Register event to post message with "Enter"
 				document.querySelector('#chatInput').addEventListener('keyup', function(e){
 		      if (e.keyCode === 13 && !e.shiftKey) {
 		        sendMessage();
@@ -38,16 +40,24 @@ okulusApp.controller('ChatCenterCntrl',
 
 		/* Prepare the List of Valid Users that will be displayed in the newChat modal*/
 		$scope.openNewChatModal = function(){
-			$rootScope.allValidUsersList = UsersSvc.loadValidUsersList();
+			$scope.usersList = new Array();
+			UsersSvc.getUsers().$loaded().then(function(users){
+				users.forEach(function(user){
+					if(user.$id != $rootScope.currentSession.user.$id){
+						$scope.usersList.push(user);
+					}
+				});
+			});
 		};
 
 		/* Function called from newChat modal, when clicking on a User name from the list.
-		Use the ChatSvc to create a new Chat in the User's chatList folder */
-		$scope.closeNewChatModal = function(selectedUser){
-			let loggedUserId = $rootScope.currentSession.user.$id;
-			let chatExists = $rootScope.chatList.$getRecord(selectedUser);
-			if(!chatExists){
-				ChatSvc.createChatRoomWith(loggedUserId,selectedUser);
+		Use the ChatSvc to create a new Chatroom in the User's chat folder */
+		$scope.createNewChat = function(selectedUser){
+			let chatIndex = $rootScope.chatList.$indexFor(selectedUser.$id);
+			if(chatIndex>=0){
+				console.debug("Existing chat!");
+			}else{
+				ChatSvc.createChatRoomWith($rootScope.currentSession.user.$id, selectedUser);
 			}
 		};
 
