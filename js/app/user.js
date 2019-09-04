@@ -150,7 +150,12 @@ okulusApp.factory('UsersSvc',
 				let record = {
 					email: userEmail, type: userType,
 					lastLoginOn: timestamp, lastActivityOn: timestamp,
-					sessionStatus: constants.status.online
+					sessionStatus: constants.status.online,
+					counters:{
+						notifications:{total:0},
+						reports:{approved:0, pending:0, rejected:0, total:0},
+						requests:{members:{approved:0, pending:0, rejected:0, total:0}}
+					}
 				};
 				usersRef.child(userId).set(record);
 			}
