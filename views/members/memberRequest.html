@@ -222,7 +222,7 @@
 
 </section>
 
-<section ng-show="(response && !response.loading) && !requestParams.isEdit && currentSession.user.type != 'user'">
+<section ng-show="!requestParams.isEdit && currentSession.user.type != 'user'">
   <div class="alert alert-danger" role="alert">
     {{i18n.requests.admin.donotCreateRequests}}
   </div>
