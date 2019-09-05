@@ -153,9 +153,9 @@ okulusApp.controller('MembersListCntrl',
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-		'MembersSvc','MemberRequestsSvc','GroupsSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
+		'MembersSvc','MemberRequestsSvc','GroupsSvc','ConfigSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, MemberRequestsSvc, GroupsSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
+		MembersSvc, MemberRequestsSvc, GroupsSvc, ConfigSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -172,6 +172,7 @@ okulusApp.controller('MemberDetailsCntrl',
 
 				let memberId = $routeParams.memberId;
 				let requestId = $routeParams.requestId;
+				$scope.countriesList = ConfigSvc.getCountriesList();
 				/* Prepare for Edit or View Details of Existing Member */
 				if(memberId){
 					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
@@ -182,8 +183,12 @@ okulusApp.controller('MemberDetailsCntrl',
 							$location.path(constants.pages.error);
 							return;
 						}
-						$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
+
 						$scope.objectDetails.audit = MembersSvc.getMemberAuditObject(memberId);
+						$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
+						$scope.objectDetails.address.$loaded().then(function(address){
+							$scope.statesList = ConfigSvc.getStatesForCountry(address.country);
+						});
 						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
 						// $scope.objectDetails.groups = MembersSvc.getMemberGroups(memberId);
 						// $scope.objectDetails.attendance = MembersSvc.getMemberAttendance(memberId);
@@ -210,6 +215,10 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		}});
 
+		$scope.updateStatesList = function() {
+			$scope.statesList = ConfigSvc.getStatesForCountry($scope.objectDetails.address.country);
+		};
+
 		$scope.prepareRequestEditView = function (requestId) {
 			$scope.requestParams = {};
 			// $scope.memberEditParams.actionLbl = $rootScope.i18n.members.modifyLbl;
@@ -233,6 +242,11 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.memberEditParams.isEdit = false;
 			$scope.memberEditParams.memberId = undefined;
 			$scope.response = undefined;
+
+
+			//Use config.location to set initial address details
+			$scope.statesList = ConfigSvc.getStatesForCountry($scope.config.location.country);
+			$scope.objectDetails.address = $scope.config.location;
 		};
 
 		/*Create address Object in scope so we can populate it's values from view*/

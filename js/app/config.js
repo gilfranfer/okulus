@@ -655,32 +655,18 @@ okulusApp.factory('ConfigSvc',
 			},
 			getGroupTypesArray: function(){
 				return $firebaseArray(appConfigRef.child(constants.db.folders.grouptypes));
+			},
+			getCountriesList: function(){
+				return countries_array;
+			},
+			getStatesForCountry: function(country){
+				let selectedCountryIndex = countries_array.indexOf(country);
+				let statesList = new Array();
+				if(selectedCountryIndex>=0){
+					statesList = states_array[selectedCountryIndex].split("|");
+				}
+				return statesList;
 			}
 		};
 	}
 ]);
-
-okulusApp.factory('CountersSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject',
-	function($rootScope, $firebaseArray, $firebaseObject){
-		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let globalCounters = baseRef.child(constants.db.folders.counters);
-
-		return {
-			setInitialCounters: function(){
-				let counters = {
-					errors:{systemErrors:0},
-					groups:{active:0, total:0},
-					members:{active:0, total:0, hosts:0, leads:0, trainees:0},
-					reports:{approved:0, pending:0, rejected:0, total:0},
-					requests:{members:{approved:0, pending:0, rejected:0, total:0}},
-					weeks:{open:0, visible:0, total:0}
-				};
-				globalCounters.set(counters);
-			},
-			getGlobalCounters: function(){
-				return $firebaseObject(globalCounters);
-			}
-		};
-
-}]);

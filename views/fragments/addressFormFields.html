@@ -36,13 +36,13 @@
   <!-- City, State, Country -->
   <div class="form-row">
     <div class="col-md-3 col-sm-6 form-group">
-        <label class="font-weight-bold" for="neighborhood">
-          {{i18n.address.neighborhoodLbl}}
-          <span class="text-danger">*</span>
-        </label>
-        <input type="text" name="neighborhood" id="neighborhood" class="form-control form-control-lg"
-          placeholder="{{i18n.address.neighborhoodHint}}" ng-model="$parent.objectDetails.address.neighborhood" ng-required="true">
-      </div>
+      <label class="font-weight-bold" for="neighborhood">
+        {{i18n.address.neighborhoodLbl}}
+        <span class="text-danger">*</span>
+      </label>
+      <input type="text" name="neighborhood" id="neighborhood" class="form-control form-control-lg"
+        placeholder="{{i18n.address.neighborhoodHint}}" ng-model="$parent.objectDetails.address.neighborhood" ng-required="true">
+    </div>
     <div class="col-md-3 col-sm-6 form-group">
       <label class="font-weight-bold" for="city">
         {{i18n.address.cityLbl}}
@@ -56,16 +56,24 @@
         {{i18n.address.stateLbl}}
         <span class="text-danger">*</span>
       </label>
-      <input type="text" name="state" id="state" class="form-control form-control-lg"
-        placeholder="{{i18n.address.stateHint}}" ng-model="$parent.objectDetails.address.state" ng-required="true">
+      <select id="gtype" class="form-control form-control-lg"
+        ng-model="$parent.objectDetails.address.state" ng-required="true">
+        <option ng-repeat="state in statesList | orderBy:'state' track by state" value="{{state}}">
+          {{state}}
+        </option>
+      </select>
     </div>
     <div class="col-md-3 col-sm-6 form-group">
       <label class="font-weight-bold" for="country">
         {{i18n.address.countryLbl}}
         <span class="text-danger">*</span>
       </label>
-      <input type="text" name="country" id="country" class="form-control form-control-lg"
-        placeholder="{{i18n.address.countryHint}}" ng-model="$parent.objectDetails.address.country" ng-required="true">
+      <select id="gtype" class="form-control form-control-lg"
+        ng-model="$parent.objectDetails.address.country" ng-required="true" ng-change="updateStatesList()">
+        <option ng-repeat="country in countriesList | orderBy:'country' track by country" value="{{country}}">
+          {{country}}
+        </option>
+      </select>
     </div>
   </div>
 </fieldset>
