@@ -53,28 +53,27 @@ okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
 	}
 ]);
 
-okulusApp.factory('UtilsSvc', ['$firebaseArray', '$firebaseObject', '$rootScope',
-	function( $firebaseArray, $firebaseObject, $rootScope){
-		let countersRef = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.counters);
+okulusApp.factory('CountersSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let globalCounters = baseRef.child(constants.db.folders.counters);
 
 		return {
-			buildDateJson: function(dateObject){
-		    	let dateJson = null;
-		    	if(dateObject){
-		    		dateJson = { day:dateObject.getDate(),
-							 month: dateObject.getMonth()+1,
-							 year:dateObject.getFullYear() };
-				}
-				return dateJson;
+			setInitialCounters: function(){
+				let counters = {
+					errors:{systemErrors:0},
+					groups:{active:0, total:0},
+					members:{active:0, total:0, hosts:0, leads:0, trainees:0},
+					reports:{approved:0, pending:0, rejected:0, total:0},
+					requests:{members:{approved:0, pending:0, rejected:0, total:0}},
+					weeks:{open:0, visible:0, total:0}
+				};
+				globalCounters.set(counters);
 			},
-			buildTimeJson: function(dateObject){
-		    	let timeJson = null;
-		    	if(dateObject){
-		    		timeJson = { HH:dateObject.getHours(),
-							 	 MM:dateObject.getMinutes() };
-				}
-				return timeJson;
+			getGlobalCounters: function(){
+				return $firebaseObject(globalCounters);
 			}
 		};
-	}
-]);
+
+}]);

@@ -672,9 +672,9 @@ okulusApp.controller('ReportsDashCntrl',
  * It will load the Report for the id passed */
 okulusApp.controller('ReportDetailsCntrl',
 ['$rootScope','$scope','$routeParams', '$location','$firebaseAuth',
- 'ReportsSvc', 'GroupsSvc', 'WeeksSvc','MembersSvc', 'UtilsSvc','AuditSvc','AuthenticationSvc',
+ 'ReportsSvc', 'GroupsSvc', 'WeeksSvc','MembersSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
-		ReportsSvc, GroupsSvc, WeeksSvc, MembersSvc,UtilsSvc,AuditSvc,AuthenticationSvc){
+		ReportsSvc, GroupsSvc, WeeksSvc, MembersSvc, AuditSvc, AuthenticationSvc){
 
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingReport };
@@ -1101,7 +1101,7 @@ okulusApp.controller('ReportDetailsCntrl',
 
 			//Preparing Report
 			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
-			$scope.objectDetails.basicInfo.date = UtilsSvc.buildDateJson($scope.reportParams.dateObj);
+			$scope.objectDetails.basicInfo.date = ReportsSvc.buildDateJson($scope.reportParams.dateObj);
 			$scope.objectDetails.basicInfo.dateMilis = $scope.reportParams.dateObj.getTime();
 			let membersAttendanceList = $scope.objectDetails.attendance.members;
 			let guestsAttendanceList = $scope.objectDetails.attendance.guests;
@@ -1536,6 +1536,15 @@ okulusApp.factory('ReportsSvc',
 			getReportsForWeek: function(weekId){
 				let ref = reportsListRef.orderByChild(constants.db.fields.weekId).equalTo(weekId);
 				return $firebaseArray(ref);
+			},
+			buildDateJson: function(dateObject){
+		    	let dateJson = null;
+		    	if(dateObject){
+		    		dateJson = { day:dateObject.getDate(),
+							 month: dateObject.getMonth()+1,
+							 year:dateObject.getFullYear() };
+				}
+				return dateJson;
 			}
 		};
 	}
