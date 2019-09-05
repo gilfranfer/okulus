@@ -427,6 +427,7 @@ okulusApp.config(['$routeProvider',
 //4. Editable Configurations
 const defaultConfigs = {
 	appName:"Okulus App",
+	location:{city:"Xalapa", state:"Veracruz", country:"Mexico"},
 	/*The Max lenght a firebaseArray should have in the initial request*/
 	maxQueryListResults: 50,
 	/*After this number of records, the Filter box will be visible*/
@@ -475,13 +476,14 @@ okulusApp.controller('AppConfigsCntrl',
 		  This function is used to confirm the user is Admin and prepare some initial values */
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$scope.groupTypeRegex = "[a-zA-Z0-9\\s]+";
+
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
 					if(user.type == constants.roles.user){
-						$rootScope.response = {error:true, showHomeButton: true,
-																	message:systemMsgs.error.noPrivileges};
+						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
 					}else{
+						$scope.countriesList = ConfigSvc.getCountriesList();
 						//Get the editable configurations (current app configs)
 						$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
 						$scope.currentAppConfigs.$loaded().then(function(configDb){
@@ -497,35 +499,20 @@ okulusApp.controller('AppConfigsCntrl',
 							dateSplit = configDb.members.minBirthdate.split("-");
 							month = (Number(dateSplit[1])-1);
 							$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+
+							//Load States according to the Country in DB
+							$scope.statesList = ConfigSvc.getStatesForCountry(configDb.location.country);
+
 							$scope.response = null;
 						});
+
 						//Load the Group types as firebaseArray for an easy manipulation
 						$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
 
 						//System Configurations are values set by the Okules and cannot be modified by the user
 						$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
 						$scope.systemConfigs.$loaded().then(function(options){
-							//When no system options available, might be the first time for the system,
-							//so let´s set the default ones in the DB
-							if(!options.dateTimeFormats){
-								$scope.systemConfigs.dateFormats = {op1:"MMM d, y", op2:"dd/MM/y",op3:"MM/dd/y" };
-								$scope.systemConfigs.timeFormats = {op1:"h:mm a", op2:"h:mm:ss a",op3:"H:mm", op4: "H:mm:ss" };
-								$scope.systemConfigs.dateTimeFormats = {
-							    op1:"MMM d, y h:mm a",
-							    op2:"MMM d, y H:mm",
-							    op3:"dd/MM/y h:mm a",
-							    op4:"dd/MM/y H:mm",
-							    op5:"MM/dd/y h:mm a",
-							    op6:"MM/dd/y H:mm"
-							  };
-								$scope.systemConfigs.$save().then(function(options) {
-									// console.debug("loading new", options);
-									loadOptionsToArrays($scope.systemConfigs);
-								});
-							}else{
-								// console.debug("loading existing", options);
-								loadOptionsToArrays(options);
-							}
+							loadOptionsToArrays(options);
 						});
 					}
 				});
@@ -607,6 +594,9 @@ okulusApp.controller('AppConfigsCntrl',
 			});
 		};
 
+		$scope.updateStatesList = function() {
+			$scope.statesList = ConfigSvc.getStatesForCountry($scope.currentAppConfigs.location.country);
+		};
 }
 ]);
 

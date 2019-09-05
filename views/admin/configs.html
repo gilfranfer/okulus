@@ -27,6 +27,7 @@
           </div>
         </div>
         <hr>
+        <!-- APP Name -->
         <div class="form-row">
           <div class="col form-group">
             <label class="font-weight-bold" for="appName">
@@ -38,6 +39,43 @@
             <small class="form-text text-muted">{{i18n.configs.appNameDesc}}</small>
           </div>
         </div>
+        <!-- Location -->
+        <div class="form-row">
+          <div class="col-md-4 col-sm-6 form-group">
+            <label class="font-weight-bold" for="city">
+              {{i18n.address.cityLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <input type="text" name="city" id="city" class="form-control form-control-lg"
+              placeholder="{{i18n.address.cityHint}}" ng-model="currentAppConfigs.location.city" ng-required="true">
+          </div>
+          <div class="col-md-4 col-sm-6 form-group">
+            <label class="font-weight-bold" for="state">
+              {{i18n.address.stateLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="gtype" class="form-control form-control-lg"
+              ng-model="currentAppConfigs.location.state" ng-required="true">
+              <option ng-repeat="state in statesList | orderBy:'state' track by state" value="{{state}}">
+                {{state}}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4 col-sm-6 form-group">
+            <label class="font-weight-bold" for="country">
+              {{i18n.address.countryLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="gtype" class="form-control form-control-lg"
+              ng-model="currentAppConfigs.location.country" ng-required="true" ng-change="updateStatesList()">
+              <option ng-repeat="country in countriesList | orderBy:'country' track by country" value="{{country}}">
+                {{country}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <small class="form-text text-muted mb-4 mt-0">{{i18n.configs.locationDesc}}</small>
+        <!--  -->
         <div class="form-row">
           <!-- The Max lenght a firebaseArray should have in the initial request -->
           <div class="col form-group">
@@ -312,5 +350,5 @@
       </div>
     </article>
   </form>
-  
+
 </section>

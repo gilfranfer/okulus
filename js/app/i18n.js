@@ -675,6 +675,7 @@ okulusApp.run(function($rootScope) {
 				groupTypeDec:"Utiliza solo letras y números",
 				appnameLbl:"Nombre de la Aplicación", appnameHint:"Okulus App",
 				appNameDesc:"El nombre es usado en la barra de navegación.",
+				locationDesc:"Usados en la dirección por defecto de Grupos y Miembros",
 				maxQueryResultLbl:"Límite de Registros", maxQueryResultHint:"",
 				maxQueryResultDesc:"Número máximo de registros regresados por la base de datos, en la consulta inicial.",
 				showFilterAtLbl:"Mínimo para mostrar Filtro", showFilterAtHint:"",
