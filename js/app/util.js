@@ -68,7 +68,7 @@ okulusApp.factory('CountersSvc',
 					members:{active:0, total:0, hosts:0, leads:0, trainees:0},
 					reports:{approved:0, pending:0, rejected:0, total:0},
 					requests:{members:{approved:0, pending:0, rejected:0, total:0}},
-					users:{active:0, total:0, roots:1, admins:0, users:0},
+					users:{active:1, total:1, roots:1, admins:0, users:0},
 					weeks:{open:0, visible:0, total:0}
 				};
 				globalCountersRef.set(counters);
