@@ -311,9 +311,9 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 //Create a new root user, if it doesnt exists, and set initial System configs in DB
 okulusApp.controller('RegisterRootCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',
-	'ConfigSvc','UsersSvc','CountersSvc','AuthenticationSvc',
+	'ConfigSvc','UsersSvc','AuditSvc','CountersSvc','AuthenticationSvc',
 	function($rootScope, $scope, $location, $firebaseAuth,
-		ConfigSvc, UsersSvc, CountersSvc, AuthenticationSvc){
+		ConfigSvc, UsersSvc, AuditSvc, CountersSvc, AuthenticationSvc){
 
 		/* Display the Root Register form only when a root doesnt already exist */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){
