@@ -31,7 +31,7 @@
             </span>
             <br ng-if="!notification.readed">
             <span class="text-primary">{{notification.description}}</span><br>
-            <small>{{i18n.notifications.by}} {{notification.from}},
+            <small>{{i18n.notifications.by}} {{notification.fromName}},
              {{notification.time | date: config.formats.datetime }}</small>
           </a>
           <div class="ml-auto">
