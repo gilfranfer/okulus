@@ -72,13 +72,13 @@
             </label>
             <select id="schdDay" name="schdDay" class="form-control form-control-lg"
                     ng-model="objectDetails.basicInfo.weekday" ng-required="true">
-              <option value="{{i18n.dropdowns.weekdays.mon}}">{{i18n.dropdowns.weekdays.mon}}</option>
-              <option value="{{i18n.dropdowns.weekdays.tue}}">{{i18n.dropdowns.weekdays.tue}}</option>
-              <option value="{{i18n.dropdowns.weekdays.wed}}">{{i18n.dropdowns.weekdays.wed}}</option>
-              <option value="{{i18n.dropdowns.weekdays.thu}}">{{i18n.dropdowns.weekdays.thu}}</option>
-              <option value="{{i18n.dropdowns.weekdays.fri}}">{{i18n.dropdowns.weekdays.fri}}</option>
-              <option value="{{i18n.dropdowns.weekdays.sat}}">{{i18n.dropdowns.weekdays.sat}}</option>
-              <option value="{{i18n.dropdowns.weekdays.sun}}">{{i18n.dropdowns.weekdays.sun}}</option>
+              <option value="{{i18n.weekdays.mon}}">{{i18n.weekdays.mon}}</option>
+              <option value="{{i18n.weekdays.tue}}">{{i18n.weekdays.tue}}</option>
+              <option value="{{i18n.weekdays.wed}}">{{i18n.weekdays.wed}}</option>
+              <option value="{{i18n.weekdays.thu}}">{{i18n.weekdays.thu}}</option>
+              <option value="{{i18n.weekdays.fri}}">{{i18n.weekdays.fri}}</option>
+              <option value="{{i18n.weekdays.sat}}">{{i18n.weekdays.sat}}</option>
+              <option value="{{i18n.weekdays.sun}}">{{i18n.weekdays.sun}}</option>
             </select>
           </div>
           <div class="col-6 col-md-4 form-group">
@@ -258,7 +258,7 @@
       </button>
       <div  class="collapse" id="collapseDelete">
         <div class="alert alert-danger" role="alert">
-          {{i18n.alerts.confirmDelete}}
+          {{i18n.alerts.confirmQuestion}}
           <button type="button" class="btn btn-danger" ng-click="deleteGroup()">
             {{i18n.btns.yesBtn}}
           </button>

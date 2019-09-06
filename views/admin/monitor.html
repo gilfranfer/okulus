@@ -21,7 +21,7 @@
         <!-- Search box -->
         <div class="row mb-4" ng-show="userRecords && userRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="filterUsers">
+            <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="filterUsers">
           </div>
         </div>
         <!-- Table Scroll -->
@@ -81,29 +81,29 @@
   <article id="audit">
     <div class="card mb-3">
       <div class="card-body">
-        <h4 class="card-title">{{i18n.admin.audit.title}}</h4>
+        <h4 class="card-title">{{i18n.audit.admin.title}}</h4>
         <hr>
         <!-- Load Button and Select -->
         <div class="row mb-4">
           <div class="col">
-            <label for="folderselect">{{i18n.admin.audit.select}}</label>
+            <label for="folderselect">{{i18n.audit.admin.select}}</label>
           </div>
         </div>
         <div class="form-group row">
           <div class="col">
             <select id="folderselect" class="form-control form-control-lg" ng-model="auditInFolder">
-              <option value="groups">{{i18n.admin.audit.groupsOptn}}</option>
-              <option value="members">{{i18n.admin.audit.membersOptn}}</option>
-              <option value="reports">{{i18n.admin.audit.reportsOptn}}</option>
-              <option value="users">{{i18n.admin.audit.usersOptn}}</option>
-              <option value="weeks">{{i18n.admin.audit.weeksOptn}}</option>
-              <option value="messages">{{i18n.admin.audit.messagesOptn}}</option>
+              <option value="groups">{{i18n.audit.admin.groupsOptn}}</option>
+              <option value="members">{{i18n.audit.admin.membersOptn}}</option>
+              <option value="reports">{{i18n.audit.admin.reportsOptn}}</option>
+              <option value="users">{{i18n.audit.admin.usersOptn}}</option>
+              <option value="weeks">{{i18n.audit.admin.weeksOptn}}</option>
+              <option value="messages">{{i18n.audit.admin.messagesOptn}}</option>
             </select>
           </div>
           <div class="col">
             <button class="btn btn-lg btn-block btn-warning clickable"
               ng-disabled="auditInFolder == currentAuditOn" ng-click="loadAuditRecords()">
-              {{i18n.admin.audit.loadAudit}}
+              {{i18n.audit.admin.loadAudit}}
             </button>
           </div>
         </div>
@@ -118,12 +118,12 @@
           {{response.message}}
         </div>
         <div class="alert alert-danger" role="alert" ng-if="response.auditSuccess && (!auditRecords || auditRecords.length == 0)">
-          {{i18n.admin.audit.noRecords}}
+          {{i18n.audit.admin.noRecords}}
         </div>
         <!-- Search box -->
         <div class="row mb-4" ng-show="auditRecords && auditRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="auditFilter">
+            <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="auditFilter">
           </div>
         </div>
         <!-- Table Scroll -->
@@ -132,10 +132,10 @@
             <thead class="thead-dark">
               <tr>
                 <!-- <th scope="col">#</th> -->
-                <th scope="col">{{i18n.admin.audit.table.action}}</th>
-                <th scope="col">{{i18n.admin.audit.table.on}}</th>
-                <th scope="col">{{i18n.admin.audit.table.by}}</th>
-                <th scope="col">{{i18n.admin.audit.table.date}}</th>
+                <th scope="col">{{i18n.audit.admin.table.action}}</th>
+                <th scope="col">{{i18n.audit.admin.table.on}}</th>
+                <th scope="col">{{i18n.audit.admin.table.by}}</th>
+                <th scope="col">{{i18n.audit.admin.table.date}}</th>
               </tr>
             </thead>
             <tbody>
@@ -185,7 +185,7 @@
         <!-- Search box -->
         <div class="row mb-4" ng-show="errorRecords && errorRecords.length > 0">
           <div class="col">
-            <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg" ng-model="filterErrors">
+            <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="filterErrors">
           </div>
         </div>
         <!-- Table Scroll -->

@@ -97,19 +97,19 @@ okulusApp.controller('WeeksCntrl',
 		getweekListParams = function (weekLoader) {
 			let weekListParams = {activeWeekLoader:weekLoader, searchFilter:undefined};
 			if(weekLoader == "loadAllWeeksList"){
-				weekListParams.title= $rootScope.i18n.weeks.totalWeeks;
+				weekListParams.title= $rootScope.i18n.weeks.totalWeeksLbl;
 				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.total;
 			} else if(weekLoader == "loadOpenWeeksList"){
-				weekListParams.title= $rootScope.i18n.weeks.openWeeks;
+				weekListParams.title= $rootScope.i18n.weeks.openWeeksLbl;
 				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.open;
 			} else if(weekLoader == "loadClosedWeeksList"){
-				weekListParams.title= $rootScope.i18n.weeks.closedWeeks;
+				weekListParams.title= $rootScope.i18n.weeks.closedWeeksLbl;
 				weekListParams.maxPossible = ($rootScope.weeksGlobalCounter.total - $rootScope.weeksGlobalCounter.open);
 			} else if(weekLoader == "loadVisibleWeeksList"){
-				weekListParams.title= $rootScope.i18n.weeks.visibleWeeks;
+				weekListParams.title= $rootScope.i18n.weeks.visibleWeeksLbl;
 				weekListParams.maxPossible = $rootScope.weeksGlobalCounter.visible;
 			} else if(weekLoader == "loadHiddenWeeksList"){
-				weekListParams.title= $rootScope.i18n.weeks.hiddenWeeks;
+				weekListParams.title= $rootScope.i18n.weeks.hiddenWeeksLbl;
 				weekListParams.maxPossible = ($rootScope.weeksGlobalCounter.total - $rootScope.weeksGlobalCounter.visible);
 			}
 			return weekListParams;
@@ -158,20 +158,24 @@ okulusApp.factory('WeeksSvc',
 
 		let updateOpenStatusCounterAndAudit = function (isWeekOpen, weekId) {
 			if(isWeekOpen){
-				AuditSvc.recordAudit(weekId, constants.actions.open, constants.db.folders.weeks);
+				let description = systemMsgs.notifications.weekOpened + weekId;
+				AuditSvc.saveAuditAndNotify(constants.actions.open, constants.db.folders.weeks, weekId, description);
 				increaseCounter(openWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, constants.actions.close, constants.db.folders.weeks);
+				let description = systemMsgs.notifications.weekClosed + weekId;
+				AuditSvc.saveAuditAndNotify(constants.actions.close, constants.db.folders.weeks, weekId, description);
 				decreaseCounter(openWeeksCounterRef);
 			}
 		};
 
 		let updateVisibilityCounterAndAudit = function (isWeekVisible, weekId) {
 			if(isWeekVisible){
-				AuditSvc.recordAudit(weekId, constants.actions.show, constants.db.folders.weeks);
+				let description = systemMsgs.notifications.weekVisible + weekId;
+				AuditSvc.saveAuditAndNotify(constants.actions.show, constants.db.folders.weeks, weekId, description);
 				increaseCounter(visibleWeeksCounterRef);
 			}else{
-				AuditSvc.recordAudit(weekId, constants.actions.hide, constants.db.folders.weeks);
+				let description = systemMsgs.notifications.weekHiden + weekId;
+				AuditSvc.saveAuditAndNotify(constants.actions.hide, constants.db.folders.weeks, weekId, description);
 				decreaseCounter(visibleWeeksCounterRef);
 			}
 		};
@@ -249,7 +253,7 @@ okulusApp.factory('WeeksSvc',
 			/* Get the Week Object from the firebaseArray in the rootScope
 			(when updating status from Weeks List), update the isOpen value (boolean),
 			update global counters,	update the Week's Audit details,
-			and generate the notification (triggered from recordAudit).*/
+			and generate the notification (triggered from saveAuditAndNotify).*/
 			updateWeekStatusInArray: function (weekId, isOpen){
 				let weekRecord = $rootScope.weeksList.$getRecord(weekId);
 				weekRecord.isOpen = isOpen;
@@ -259,7 +263,7 @@ okulusApp.factory('WeeksSvc',
 			},
 			/* When updating status from Week-Edit, we receive the Week Object,
 		  update the isOpen value (boolean), update global counters,
-			update the Week's Audit details, and generate the notification (triggered from recordAudit).*/
+			update the Week's Audit details, and generate the notification (triggered from saveAuditAndNotify).*/
 			updateWeekStatusInObject: function (weekObject, isOpen) {
 				weekObject.isOpen = isOpen;
 				weekObject.$save().then(function(ref) {
@@ -271,7 +275,7 @@ okulusApp.factory('WeeksSvc',
 			/* Get the Week Object from the firebaseArray in the rootScope
 			(when updating visibility from Weeks List), update the isVisible value (boolean),
 			update global counters,	update the Week's Audit details,
-			and generate the notification (triggered from recordAudit).*/
+			and generate the notification (triggered from saveAuditAndNotify).*/
 			updateWeekVisibilityInArray: function (weekId, isVisible) {
 				let weekRecord = $rootScope.weeksList.$getRecord(weekId);
 				weekRecord.isVisible = isVisible;
@@ -281,7 +285,7 @@ okulusApp.factory('WeeksSvc',
 			},
 			/* When updating visibility from Week-Edit, we receive the Week Object,
 		  update the isVisible value (boolean), update global counters,
-			update the Week's Audit details, and generate the notification (triggered from recordAudit). */
+			update the Week's Audit details, and generate the notification (triggered from saveAuditAndNotify). */
 			updateWeekVisibilityInObject: function (weekObject, isVisible) {
 				weekObject.isVisible = isVisible;
 				weekObject.$save().then(function(ref) {
@@ -419,7 +423,8 @@ okulusApp.controller('WeekDetailsCntrl',
 			//Update existing Week
 			if($scope.objectDetails.basicInfo.$id){
 				$scope.objectDetails.basicInfo.$save().then(function(ref) {
-					AuditSvc.recordAudit(weekId, constants.actions.update, constants.db.folders.weeks);
+					let description = systemMsgs.notifications.weekUpdated + weekId;
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.weeks, weekId, description);
 					$scope.response = {success:true, message: systemMsgs.success.weekInfoUpdated};
 				},function(error){
 					console.debug("Error:", error);
@@ -441,7 +446,8 @@ okulusApp.controller('WeekDetailsCntrl',
 
 						week.$save().then(function(ref) {
 							WeeksSvc.increaseTotalWeeksCounter();
-							AuditSvc.recordAudit(weekId, constants.actions.create, constants.db.folders.weeks);
+							let description = systemMsgs.notifications.weekCreated + weekId;
+							AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.weeks, weekId, description);
 							$rootScope.weekResponse = { created:true, message: $rootScope.i18n.weeks.weekCreated+" "+weekId };
 							$location.path(constants.pages.weekEdit+weekId);
 						},function(error){
@@ -475,8 +481,9 @@ okulusApp.controller('WeekDetailsCntrl',
 							WeeksSvc.decreaseVisibleWeeksCounter();
 						}
 						WeeksSvc.decreaseTotalWeeksCounter();
-						AuditSvc.recordAudit(weekInfo.$id, constants.actions.delete, constants.db.folders.weeks);
 						deletedWeekId = deletedWeekRef.key;
+						let description = systemMsgs.notifications.weekDeleted + deletedWeekId;
+						AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.weeks, deletedWeekId, description);
 						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
 						$location.path(constants.pages.adminWeeks);
 					}, function(error) {

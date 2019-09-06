@@ -233,7 +233,8 @@ okulusApp.controller('GroupDetailsCntrl',
 				if($scope.objectDetails.basicInfo.$id){
 					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
 					$scope.objectDetails.basicInfo.$save().then(function() {
-						AuditSvc.recordAudit(groupId, constants.actions.update, constants.db.folders.groups);
+						let description = systemMsgs.notifications.groupUpdated + $scope.objectDetails.basicInfo.name;
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, groupId, description);
 						$scope.response = {success:true, message: systemMsgs.success.groupInfoSaved};
 					});
 				}
@@ -243,7 +244,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					$scope.objectDetails.basicInfo.address = $scope.objectDetails.address;
 					let newgroupRef = GroupsSvc.persistGroup($scope.objectDetails.basicInfo);
 					GroupsSvc.getGroupBasicDataObject(newgroupRef.key).$loaded().then(function() {
-						AuditSvc.recordAudit(newgroupRef.key, constants.actions.create, constants.db.folders.groups);
+						let description = systemMsgs.notifications.groupCreated + $scope.objectDetails.basicInfo.name;
+						AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.groups, newgroupRef.key, description );
 						GroupsSvc.increaseTotalGroupsCount();
 						GroupsSvc.increaseActiveGroupsCount();
 						$rootScope.groupResponse = {created:true, message:systemMsgs.success.groupCreated };
@@ -270,6 +272,7 @@ okulusApp.controller('GroupDetailsCntrl',
 				return;
 			}
 
+			let deletedGroupName = groupInfo.name;
 			if(groupInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingGroup};
 				//Remove Group from groups/list
@@ -284,7 +287,8 @@ okulusApp.controller('GroupDetailsCntrl',
 				//After removing Group Basic Info
 				.then(function(deletedGroupRef){
 					deletedGroupId = deletedGroupRef.key;
-					AuditSvc.recordAudit(deletedGroupId, constants.actions.delete, constants.db.folders.groups);
+					let description = systemMsgs.notifications.groupDeleted + deletedGroupName;
+					AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.groups, deletedGroupId, description);
 					GroupsSvc.decreaseTotalGroupsCount();
 					return GroupsSvc.getAccessRulesList(deletedGroupId).$loaded();
 				})
@@ -304,13 +308,16 @@ okulusApp.controller('GroupDetailsCntrl',
 			if($rootScope.currentSession.user.type != constants.roles.user){
 				let groupInfo = $scope.objectDetails.basicInfo;
 				groupInfo.isActive = setGroupActive;
+				let notificationDesc = undefined;
 				if(setGroupActive){
+					notificationDesc = systemMsgs.notifications.groupSetActive + groupInfo.name;
 					GroupsSvc.increaseActiveGroupsCount();
 				}else{
+					notificationDesc = systemMsgs.notifications.groupSetInactive + groupInfo.name;
 					GroupsSvc.decreaseActiveGroupsCount();
 				}
 				groupInfo.$save();
-				AuditSvc.recordAudit(groupInfo.$id, constants.actions.update, constants.db.folders.groups);
+				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, groupInfo.$id, notificationDesc );
 				$scope.response = {success:true, message: systemMsgs.success.groupStatusUpdated};
 			}
 		};
@@ -340,7 +347,7 @@ okulusApp.controller('GroupDetailsCntrl',
 			});
 		};
 
-		/* Persist the Groups's Host Selection */
+		/* Persist the Groups's Lead Selection */
 		$scope.updateGroupLead = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
@@ -358,7 +365,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					newLeadRole.leadName = null;
 				}
 				newLeadRole.$save().then(function() {
-					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
+					let description = systemMsgs.notifications.groupLeadUpdated + " " + $scope.objectDetails.basicInfo.name;
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description );
 					$scope.groupEditParams.updatingGroupLead = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupLeadUpdated};
 				});
@@ -396,7 +404,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					groupRoles.hostName = null;
 				}
 				groupRoles.$save().then(function() {
-					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
+					let description = systemMsgs.notifications.groupHostUpdated + " " + $scope.objectDetails.basicInfo.name;
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description);
 					$scope.groupEditParams.updatingGroupHost = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupHostUpdated};
 				});
@@ -433,7 +442,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					groupRoles.traineeName = null;
 				}
 				groupRoles.$save().then(function() {
-					AuditSvc.recordAudit($scope.objectDetails.basicInfo.$id, constants.actions.update, constants.db.folders.groups);
+					let description = systemMsgs.notifications.groupTraineeUpdated + " " + $scope.objectDetails.basicInfo.name;
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description);
 					$scope.groupEditParams.updatingGroupTrainee = false;
 					$scope.response = {success:true, message: systemMsgs.success.groupTraineeUpdated};
 				});
@@ -606,7 +616,7 @@ okulusApp.controller('GroupAccessRulesCntrl',
 				$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
 
 				$scope.group.$loaded().then(function(group){
-					if(!group.$value){
+					if(group.$value === null){
 						$rootScope.response = { error:true, message:systemMsgs.error.inexistingGroup};
 						$location.path(constants.pages.error);
 						return;
@@ -651,13 +661,19 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			let record = { memberName: memberName, memberId: whichMember, date:creationDate};
 			//Use the Group´s access list to add a new record
 			$scope.acessList.$add(record).then(function(ref) {
-				AuditSvc.recordAudit(whichGroup, constants.actions.grantAccess, constants.db.folders.groups);
 				//Create cross Reference. The Member must have the same rule in members/details/:memberId/access
 				record = { groupName:groupName, groupId: whichGroup, date:creationDate };
 				MembersSvc.addAccessRuleToMember(whichMember,ref.key,record);
-				//notify the member that got the access
+				//Send notification the User linked to the member that got the access
 				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
-					NotificationsSvc.notifySpecificUser(member.userId, constants.actions.grantAccess, constants.db.folders.groups, whichGroup);
+					let description = member.shortname + " " + systemMsgs.notifications.gotAccessToGroup + groupName;
+					AuditSvc.saveAuditAndNotify(constants.actions.grantAccess, constants.db.folders.groups, whichGroup, description);
+					let notification = { description: description,
+															action: constants.actions.grantAccess,
+															onFolder: constants.db.folders.groups,
+															onObject: whichGroup,	url:null };
+					//Notify the request's creator about the rejection
+					NotificationsSvc.notifyUser(member.userId, notification);
 				});
 				$scope.response = { success: true, message: systemMsgs.success.ruleCreated};
 			}).catch( function(error){
@@ -673,12 +689,18 @@ okulusApp.controller('GroupAccessRulesCntrl',
 			var ruleRecord = $scope.acessList.$getRecord(ruleId);
 			let whichMember = ruleRecord.memberId;
 			$scope.acessList.$remove(ruleRecord).then(function(ref) {
-				AuditSvc.recordAudit(whichGroup, constants.actions.revokeAccess, constants.db.folders.groups);
 				//Remove the same rule from the Member's access folder
 				MembersSvc.addAccessRuleToMember(whichMember,ref.key,null);
-				//notify the member that got the access
+				//Send notification the User linked to the member that got the access
 				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
-					NotificationsSvc.notifySpecificUser(member.userId,constants.actions.revokeAccess, constants.db.folders.groups, whichGroup);
+					let description = member.shortname + " " + systemMsgs.notifications.lostAccessToGroup + groupName;
+					AuditSvc.saveAuditAndNotify(constants.actions.revokeAccess, constants.db.folders.groups, whichGroup, description);
+					let notification = { description: description,
+															action: constants.actions.revokeAccess,
+															onFolder: constants.db.folders.groups,
+															onObject: whichGroup,	url:null };
+					//Notify the request's creator about the rejection
+					NotificationsSvc.notifyUser(member.userId, notification);
 				});
 				$scope.response = { success: true, message: systemMsgs.success.ruleRemoved};
 			}).catch( function(error){

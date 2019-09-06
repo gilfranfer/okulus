@@ -49,39 +49,8 @@ okulusApp.controller('MonitorCntrl',
 			ErrorsSvc.deleteErrorRecord(error);
 		};
 
-		$scope.loadSystemUsers = function(){
-			$scope.response = {usersLoading: true, message: $rootScope.i18n.admin.users.loading};
-			if(!$scope.userRecords){
-				$scope.userRecords = $firebaseArray(usersRef);
-				$scope.userRecords.$loaded().then(function(list) {
-					$scope.response = {usersSuccess: true, message: list.length + " " + $rootScope.i18n.admin.users.loadingSuccess};
-				})
-				.catch( function(error){
-					$scope.response = {usersError: true, message: $rootScope.i18n.notifications.loadingError};
-					console.error(error);
-				});
-			}
-		};
-
-		$scope.loadAuditRecords = function(){
-			$scope.response = {auditLoading: true, message: $rootScope.i18n.admin.audit.loading};
-			$scope.currentAuditOn = $scope.auditInFolder;
-			$scope.auditRecords = $firebaseArray( auditRef.child($scope.currentAuditOn) );
-			$scope.auditRecords.$loaded().then(function(list) {
-				$scope.response = {auditSuccess: true, message: list.length + " " + $rootScope.i18n.admin.audit.loadingSuccess};
-			})
-			.catch( function(error){
-				$scope.response = {auditError: true, message: $rootScope.i18n.notifications.loadingError};
-				console.error(error);
-			});
-		};
-
 		$scope.updateUserType = function (userId, type) {
 			$scope.response = undefined;
-			// if($rootScope.currentSession.user.isRoot){
-			// 	$scope.response = { userErrorMsg: "Root no puede ser modificado"};
-			// 	return;
-			// }
 			if(userId == $rootScope.currentSession.user.$id){
 				$scope.response = { userErrorMsg: "No puedes modificar a tu usuario"};
 			}else{
@@ -91,7 +60,7 @@ okulusApp.controller('MonitorCntrl',
 					return obj.$save();
 				}).then(function (ref) {
 					$scope.response = { userOkMsg: "Usuario "+obj.email+" Actualizado"};
-					AuditSvc.recordAudit(userId, "type-update", "users");
+					// AuditSvc.recordAudit(userId, "type-update", "users");
 				}, function(error) {
 					$scope.response = { userErrorMsg: error};
 				});

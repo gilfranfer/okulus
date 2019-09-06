@@ -4,7 +4,7 @@
     <!-- No Reports Found -->
     <div class="col" ng-show="!response.loading && reportsToDisplay && reportsToDisplay.length == 0">
       <div class="alert alert-danger" role="alert">
-        {{i18n.admin.dashboard.noReportsError}}
+        {{i18n.reportFinder.noReportsError}}
       </div>
     </div>
     <!-- Reports Found -->
@@ -91,7 +91,7 @@
             <!-- Search -->
             <div class="row mb-3">
               <div class="col">
-                <input type="text" placeholder="{{i18n.forms.searchHint}}" class="form-control"
+                <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control"
                  ng-model="filterText" ng-show="reportsToDisplay.length > config.minResultsToshowFilter"/>
               </div>
             </div>

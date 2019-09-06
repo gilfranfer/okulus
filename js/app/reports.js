@@ -723,7 +723,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 			//Get Group Basic Object to Pre-populate some report fields
 			GroupsSvc.getGroupBasicDataObject(whichGroup).$loaded().then(function(groupObj) {
-				if(!groupObj.$value){
+				if(groupObj.$value === null){
 					$rootScope.response = { error: true, message: systemMsgs.error.inexistingGroup };
 					$location.path(constants.pages.error);
 					return;
@@ -1182,7 +1182,8 @@ okulusApp.controller('ReportDetailsCntrl',
 					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
 					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
 
-					AuditSvc.recordAudit(report.$id, constants.actions.update, constants.db.folders.reports);
+					let description = systemMsgs.notifications.reportUpdated;
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.reports, report.$id, description);
 					$scope.response = { success:true, message: systemMsgs.success.reportUpdated };
 				});
 			}
@@ -1212,7 +1213,8 @@ okulusApp.controller('ReportDetailsCntrl',
 
 					//Save a reference to this Report in the /group/details/reports and /users/details/folders
 					GroupsSvc.addReportReferenceToGroup(report);
-					AuditSvc.recordAudit(report.$id, constants.actions.create, constants.db.folders.reports);
+					let description = systemMsgs.notifications.reportCreated;
+					AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.reports, report.$id, description);
 					$rootScope.reportResponse = { created:true, message: systemMsgs.success.reportCreated };
 					$location.path(constants.pages.reportEdit+report.$id);
 				});
@@ -1245,7 +1247,8 @@ okulusApp.controller('ReportDetailsCntrl',
 					//Remove /report/details
 					ReportsSvc.removeReportDetails(reportId);
 					//Audit on Report Delete
-					AuditSvc.recordAudit(reportId, constants.actions.delete, constants.db.folders.reports);
+					let description = systemMsgs.notifications.reportDeleted;
+					AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.reports, reportId, description);
 					//Decrease total reports count
 					ReportsSvc.decreaseTotalReportsCount($scope.objectDetails.basicInfo.createdById);
 					//Decrease pending or rejected count
@@ -1283,7 +1286,8 @@ okulusApp.controller('ReportDetailsCntrl',
 				}else if(originalStatus == constants.status.rejected){
 					ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
 				}
-				AuditSvc.recordAudit(ref.key, constants.actions.approve, constants.db.folders.reports);
+				let description = systemMsgs.notifications.reportApproved;
+				AuditSvc.saveAuditAndNotify(constants.actions.approve, constants.db.folders.reports, ref.key, description);
 				$scope.response = { approved:true, message: systemMsgs.success.reportApproved };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});
@@ -1303,7 +1307,8 @@ okulusApp.controller('ReportDetailsCntrl',
 				}else if(originalStatus == constants.status.approved){
 					ReportsSvc.decreaseApprovedReportsCount($scope.objectDetails.basicInfo.createdById);
 				}
-				AuditSvc.recordAudit(ref.key, constants.actions.reject, constants.db.folders.reports);
+				let description = systemMsgs.notifications.reportRejected;
+				AuditSvc.saveAuditAndNotify(constants.actions.reject, constants.db.folders.reports, ref.key, description);
 				$scope.response = { rejected:true, message: systemMsgs.success.reportRejected };
 				$scope.reportParams.forceSaveBtnShow = false;
 			});

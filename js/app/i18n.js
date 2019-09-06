@@ -1,10 +1,13 @@
 /* Messages send from the backend. Usually used in Alert divs */
 const systemMsgs = {
 	error:{
+		loadingRecords:"Error al cargar los registros.",
+		noRecords:"No se encontraron registros.",
 		nologin: "Necesitas iniciar sesión para ver este contenido.",
 		noPrivileges: "No cuentas con los permisos necesarios para ver este contenido.",
 		noPrivilegesShort: "No cuentas con los permisos necesarios.",
 		rootAlreadySet:"El Super Usuario ya existe.",
+		inactiveUserLogged:"Su Usuario ha sido desactivado. Contacte al Administrador.",
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
@@ -60,13 +63,16 @@ const systemMsgs = {
 		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada.",
 		approvedRequestReject: "No se puede rechazar una Solicitud aprobada.",
 		approvedRequestCancel: "No se puede cancelar una Solicitud aprobada.",
-		noMemberRequestsFound: "No se encontraron solicitudes de miembros"
+		noMemberRequestsFound: "No se encontraron solicitudes de miembros",
+		/* Users JS*/
+		noUsersError:"No se encontraron Usuarios"
 	},
 	inProgress:{
 		sendingPwdResetEmail:"Enviando Correo...",
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		loadingRecords:"Cargando Información ...",
 		working:"Estamos trabajando en tu solicitud ...",
 		/*Members JS*/
 		loadingMember:"Cargando información del Miembro ...",
@@ -190,10 +196,58 @@ const systemMsgs = {
 		memberCreatedFromRequest:"La solicitud ha sido Aprobada. Nuevo Miembro creado.",
 		requestRejected:"La solicitud ha sido Rechazada",
 		requestUpdated:"La solicitud ha sido Actualizada",
-		requestCanceled:"La solicitud ha sido Cancelada"
+		requestCanceled:"La solicitud ha sido Cancelada",
+		/* Users JS */
+		allUsersTitle:"Usuarios Existentes", activeUsersTitle: "Usuarios Activos",	inactiveUsersTitle: "Usuarion Inactivos",
+		adminUsersTitle:"Usuarios Administradores", normalUsersTitle:"Usuarios Normales", rootUsersTitle:"Super Usuarios"
 	},
 	/* Notification Descriptions */
-	notificaions:{
+	notifications:{
+		userCreated:"Se ha creado un nuevo Usuario.",
+		rootCreated:"Se ha creado un nuevo Super Usuario.",
+		/* Groups */
+		groupCreated:"Grupo Creado: ",
+		groupUpdated:"Grupo Actualizado: ",
+		groupDeleted:"Grupo Eliminado: ",
+		groupSetActive:"Grupo Activo: ",
+		groupSetInactive:"Grupo Inactivo:",
+		groupHostUpdated:"Anfitrión actualizado. Grupo: ",
+		groupLeadUpdated:"Lider actualizado. Grupo: ",
+		groupTraineeUpdated:"Aprendiz actualizado. Grupo: ",
+		gotAccessToGroup:"Recibió acceso al Grupo: ",
+		lostAccessToGroup:"Perdió acceso al Grupo: ",
+		/* Members */
+		memberAddressRemoved:"Dirección eliminada, para el miembro ",
+		memberAddressAdded:"Dirección agregada, para el miembro ",
+		memberCreated:"Miembro Creado: ",
+		memberUpdated:"Miembro Actualizado: ",
+		memberDeleted:"Miembro Eliminado: ",
+		memberSetActive:"Miembro Activo: ",
+		memberSetInactive:"Miembro Inactivo:",
+		memberSetLead:"Role de Líder asignado a ",
+		memberSetHost:"Role de Anfitrión asignado a ",
+		memberSetTrainee:"Role de Aprendíz asignado a ",
+		memberRemovedLead:"Role de Líder removido a ",
+		memberRemovedHost:"Role de Anfitrión removido a ",
+		memberRemovedTrainee:"Role de Aprendíz removido a ",
+		baseGroupUpdated:"Grupo base actualizado para el miembro ",
+		/* Reports */
+		reportCreated:"Reporte Creado",
+		reportUpdated:"Reporte Actualizado",
+		reportDeleted:"Reporte Eliminado",
+		reportApproved:"Reporte Aprobado",
+		reportRejected:"Reporte Rechazado",
+		/* Weeks */
+		weekCreated:"Semana Creada: ",
+		weekUpdated:"Semana Actualizada: ",
+		weekDeleted:"Semana Eliminada: ",
+		weekOpened:"Semana Abierta: ",
+		weekClosed:"Semana Cerrada: ",
+		weekVisible:"Semana Visible: ",
+		weekHiden:"Semana Oculta: ",
+		/* Users */
+
+		/* Requests */
 		memberRequested:"Se ha solicitado la creación de un Miembro",
 		memberRequestedUpdated:"Solicitud de Miembro modificada",
 		memberRequestApproved:"Su solicitud de Miembro ha sido aprobada",
@@ -201,30 +255,6 @@ const systemMsgs = {
 		memberRequestCanceled:"Se ha cancelado una solicitud de Miembro"
 	}
 };
-
-/* Map with valid actions and their description. Used for notification Service*/
-const actionsDescMap = new Map([
-				[constants.actions.create, "creado"], [constants.actions.update, "actualizado"],
-				[constants.actions.delete, "eliminado"],
-				[constants.actions.approve,"aprobado"], [constants.actions.reject,"rechazado"],
-				[constants.actions.open,"abierto"], [constants.actions.close,"cerrado"],
-				[constants.actions.show,"visible"], [constants.actions.hide,"oculto"],
-				[constants.actions.grantAccess,"Acceso Concedido a"],
-				[constants.actions.revokeAccess,"Acceso Removido a"],
-				[constants.actions.updateRole,"Tipo de Usuario Modificado"],
-			]);
-
-/*Actions performed on the following elements can trigger notificaions
- Key: is used to validate an element can trigger a notificaciones
- Value: will be used to build the Notification description*/
-const notifiableElements = new Map([
-		[constants.db.folders.groups,"Grupo"],
-		[constants.db.folders.members,"Miembro"],
-		[constants.db.folders.reports,"Reporte"],
-		[constants.db.folders.weeks,"Semana"],
-		[constants.db.folders.users,"Usuario"],
-		[constants.db.folders.memberRequest,"solicitud"]
-	 ]);
 
 /** Using a run function to set the language in the rootScope **/
 okulusApp.run(function($rootScope) {
@@ -239,8 +269,13 @@ okulusApp.run(function($rootScope) {
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
 					groups: "Grupos", members: "Miembros", weeks: "Semanas",
 					reports: "Reportes", monitor:"Monitor", config:"Configuración",
-					reunions:"Reuniones", requests:"Solicitudes"
+					reunions:"Reuniones", requests:"Solicitudes", users:"Usuarios"
 				}
+			},
+			home:{
+				title:"Inicio", welcome:"Hola",
+				basicInfo: "Información Básica",
+				address: "Dirección"
 			},
 			profile:{
 				lastLogin: "Última sesión:",
@@ -311,6 +346,7 @@ okulusApp.run(function($rootScope) {
 			reports:{
 				reportLbl:"Reporte", reportsLbl:"Reportes",
 				myReportsLbl:"Mis Reportes",
+				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
 				/* Admin Reports */
 				adminTitle:"Administrador de Reportes",
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
@@ -324,9 +360,11 @@ okulusApp.run(function($rootScope) {
 				/**/
 				studyTitle:"Información del estudio",
 				allReportsLbl:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
-				totalReports:"Reportes Existentes", approvedReports:"Reportes Aprobados",
-				rejectedReports:"Reportes Rechazados", pendingReports:"Reportes Pendientes",
-				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
+				totalReportsLbl:"Reportes Existentes", totalLbl:"Existentes",
+				approvedReportsLbl:"Reportes Aprobados", approvedLbl:"Aprobados",
+				rejectedReportsLbl:"Reportes Rechazados", rejectedLbl:"Rechazados",
+				pendingReportsLbl:"Reportes Pendientes", pendingLbl:"Pendientes",
+				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión",
 				/*Form Labels*/
 				groupLbl:"Grupo", leadLbl: "Líder",	traineeLbl: "Aprendíz", hostLbl: "Anfitrión",
 				dateLbl: "Fecha de reunión", dateHint: "12/22/2017",
@@ -339,7 +377,6 @@ okulusApp.run(function($rootScope) {
 				title:"Datos generales de la Reunión",
 				cancelStatusLbl:"Reunión Cancelada", okStatusLbl:"Reunión Realizada",
 				canceledLbl: "Canceladas", completedLbl:"Completadas",
-				pendingLbl: "Pendientes", approvedLbl:"Aprobados", rejectedLbl:"Rechazados",
 				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
 				notesLegend: "Notas de la Reunión", notesHint: "Agregar notas y comentarios sobre la reunión",
 				attendanceLegend: "Asistencia",
@@ -353,14 +390,10 @@ okulusApp.run(function($rootScope) {
 				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
 				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
-				maleLbl: "Hombres", femaleLbl: "Mujeres",
-				maleAbrev: "H", femaleAbrev: "M",
-				adultLbl: "Adultos", youngLbl:"Jovenes", kidLbl:"Niños",
 				studyLbl: "Titulo", seriesLbl: "Serie",
 				noMembersList:"No se ha registrado la asistencia de Miembros",
 				noGuestsList:"No se ha registrado la asistencia de Invitados",
-				approvedReport: "Reporte Aprobado", rejectedReport:"Reporte Rechazado", pendingReport:"Reporte en Revisión",
-				reportEvalLegend:"Evaluación del Reporte",feedbackLbl:"Discusión"
+				reportEvalLegend:"Evaluación del Reporte", feedbackLbl:"Discusión"
 			},
 			weeks:{
 				weekLbl:"Semana", weeksLbl:"Semanas",
@@ -371,11 +404,14 @@ okulusApp.run(function($rootScope) {
           "Se recomienda cerrar cada semana cuando se hayan recibido todos los reportes, para que ya no aparezacn al momento de crear un reporte. "+
           "Tambíen es posbile ocultar las semanas del buscador de reportes.",
         /* Counter Section */
-        totalWeeks:"Semanas Existentes", openWeeks: "Semanas Abiertas", closedWeeks:"Semanas Cerradas",
-        visibleWeeks: "Semanas Visibles", hiddenWeeks:"Semanas Ocultas",
+        totalWeeksLbl:"Semanas Existentes", totalLbl:"Existentes",
+				openWeeksLbl: "Semanas Abiertas", openLbl: "Abiertas",
+				closedWeeksLbl:"Semanas Cerradas", closedLbl:"Cerradas",
+        visibleWeeksLbl: "Semanas Visibles", visibleLbl: "Visibles",
+				hiddenWeeksLbl:"Semanas Ocultas", hiddenLbl:"Ocultas",
         /* Badges */
-        openLbl:"Abierta", closedLbl:"Cerrada",
-        showLbl:"Visible", hideLbl:"Oculta",
+        status:{openLbl:"Abierta", closedLbl:"Cerrada",
+        showLbl:"Visible", hideLbl:"Oculta"},
         /*Buttons*/
         loadBtn:"Todas las Semanas",
 				newBtn:"Nueva Semana",
@@ -407,13 +443,32 @@ okulusApp.run(function($rootScope) {
 				showStatusLbl:"Sí. Semana Visible", hideStatusLbl:"No. Semana Oculta",
 				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado"
 			},
+			users:{
+				adminTitle:"Administrador de Usuarios",
+				totalUsersLbl:"Usuarios Existentes", totalLbl:"Existentes",
+				activeUsersLbl:"Usuarios Activos", activeLbl:"Activos",
+				inactiveUsersLbl:"Usuarios Inactivos", inactiveLbl:"Inactivos",
+				loadAllBtn:"Todos los Usuarios", newBtn:"Nuevo Usuario",
+				/*Alert Messages*/
+				loadingSuccess: "Usuarios Cargados.",
+				loadPending1: "Mostar ", loadPending2: "Usuarios restantes.",
+				status:{activeLbl:"Usuario Activo", inactiveLbl:"Usuario Inactivo",
+					onlineLbl:"Conectado", offlineLbl:"Desconectado",noMemberLbl:"Sin Miembro"},
+
+			},
+			roles:{
+				rootLbl:"Super Usuario", adminLbl:"Administrador", userLbl:"Usuario",
+				rootsLbl:"Super Usuarios", adminsLbl:"Administradores", usersLbl:"Usuarios"
+			},
 			members:{
 				memberLbl:"Miembro", membersLbl:"Miembros",
 				/* Admin Members */
-				adminTitle:"Administrador de  Miembros",
+				adminTitle:"Administrador de Miembros",
 				/* Global Badges */
-				totalMembers:"Miembros Existentes",
-				activeMembers:"Miembros Activos", inactiveMembers:"Miembros Inactivos",
+				totalMembersLbl:"Miembros Existentes", totalLbl:"Existentes",
+				activeMembersLbl:"Miembros Activos", activeLbl:"Activos",
+				inactiveMembersLbl:"Miembros Inactivos", inactiveLbl:"Inactivos",
+				/*Roles*/
 				leadLbl:"Líder", hostLbl:"Anfitrión", traineeLbl:"Aprendíz",
 				leadsLbl:"Líderes", hostsLbl:"Anfitriones", traineesLbl:"Aprendices",
 				/*Buttons*/
@@ -436,7 +491,7 @@ okulusApp.run(function($rootScope) {
 				membershipTitle:"Membresía",
 				groupsTitle:"Grupos",
 				modifyLbl:"Modificar información del", newLbl: "Nuevo",
-				activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo",
+				status:{activeLbl:"Miembro Activo", inactiveLbl:"Miembro Inactivo"},
 				activeStatusLbl:"Miembro Activo", inactiveStatusLbl:"Miembro Inactivo",
 				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
 				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
@@ -454,13 +509,6 @@ okulusApp.run(function($rootScope) {
 				approvedRequest:"Esta solicitud ha sido Aprobada.",
 				pendingRequest:"Esta solicitud ha sido Realizada. Actualmente en revisión.",
 				canceledRequest:"Esta solicitud ha sido Cancelada.",
-				/*TODO: Used?*/
-				filterDescription: "Usa el cuadro de texto para filtrar los resultados.",
-				loading:"Cargando Miembros...", loadingSuccess: "Miembros Cargados.",
-				loadingError: "Error al cargar los miembros. Intentelo más tarde.",
-				noMembersError: "No se encontraron Miembros.",
-				filterMemberType:"Tipo de Miembro", allMembersLabel:"Todos", hostLabel: "Anfitriones",
-				leadLabel:"Líderes", traineeLabel: "Aprendíces"
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
@@ -484,19 +532,20 @@ okulusApp.run(function($rootScope) {
 				/* Admin Groups */
 				adminTitle:"Administrador de Grupos Familiares",
 				/*Badges*/
-				activeGroups:"Grupos Activos", activeLbl:"Activo",
-				inactiveGroups:"Grupos Inactivos", inactiveLbl:"Inactivo",
-				totalGroups:"Grupos Existentes",
+				totalGroupsLbl:"Grupos Existentes", totalLbl:"Existentes",
+				activeGroupsLbl:"Grupos Activos", activeLbl:"Activos",
+				inactiveGroupsLbl:"Grupos Inactivos", inactiveLbl:"Inactivos",
+				/* status */
+				status:{
+					activeLbl:"Activo", inactiveLbl:"Inactivo"
+				},
 				/*Buttons*/
-				loadBtn:"Todos los Grupos",
-				newBtn:"Nuevo Grupo", goToBtn:"Ver Grupos",
-				editBtn:"Editar Grupo",
-				deleteBtn:"Eliminar Grupo", saveBtn:"Guardar",
+				loadBtn:"Todos los Grupos", goToBtn:"Ver Grupos",
+				newBtn:"Nuevo Grupo", saveBtn:"Guardar",
+				editBtn:"Editar Grupo", deleteBtn:"Eliminar Grupo",
 				/*Alert Messages*/
-        loadingSuccess: "Grupos Cargados.",
-				loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
-				/*Labels*/
-				groupLbl:"Grupo",
+        loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
+				/* Form Labels */
 				basicInfoTitle:"Información Básica",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
 				modifyLbl:"Modificar Información del", newLbl: "Nuevo",
@@ -519,10 +568,9 @@ okulusApp.run(function($rootScope) {
 				noRulesMessage: "No hay reglas de acceso en este grupo",
 				table:{
 					memberName:"Miembro", memberId:"Id", date:"Desde"
-				}
-			},
-			groupModal:{
-				title:"Seleccionar Grupo"
+				},
+				/* Modal */
+				selectGroupTitle:"Seleccionar Grupo"
 			},
 			address:{
 				legend: "Dirección",
@@ -541,7 +589,7 @@ okulusApp.run(function($rootScope) {
 			},
 			audit:{
 				title:"Detalles del Registro", creation:"Creación", update:"Última Actualización",
-				approval:"Aprobación", rejection: "Rechazo"
+				approval:"Aprobación", rejection:"Rechazo"
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
@@ -556,14 +604,11 @@ okulusApp.run(function($rootScope) {
 				approveBtn:"Aprobar Reporte" , rejectBtn:"Rechazar Reporte"
 			},
 			alerts:{
-				loading:"Cargando ...", working:"Estamos trabajando en tu solicitud ...",
-				invalidForm:"Hay datos faltantes o incorrectos en el formulario. Revisa los campos marcados con *",
-				confirmDelete: "Seguro que deseas eliminar este registro?",
-				confirmQuestion: "Seguro?"
+				loading:"Cargando ...", confirmQuestion: "Seguro?"
 			},
-			forms:{
+			filterBox:{
 				searchHint:"Buscar ...",
-				filterHint:"Filtrar resultados..."
+				filterHint:"Filtrar resultados ..."
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
@@ -584,6 +629,7 @@ okulusApp.run(function($rootScope) {
 				attendanceChartsTitle: "Gráficas de Reuniones y Asistencia",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
+				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 				table:{
 					reunionStatus:"Reunión", reportStatus:"Reporte",
 					group:"Grupo", week:"Semana",	date:"Fecha",
@@ -603,30 +649,13 @@ okulusApp.run(function($rootScope) {
 				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
 			},
 			summary:{
-				title:"Resumen del Sistema", adminLbl:"Administrador"
+				title:"Resumen del Sistema"
 			},
 			statistics:{
 				adminTitle:"Estadísticas de los Grupos",
 				userTitle:"Estadísticas de mis Grupos"
 			},
 			admin:{
-				weeksList:{noWeeksError: "No se han creado Semanas"},
-				dashboard:{
-					noReportsError: "No hay reportes disponibles para las opciones seleccionadas"
-				},
-				audit:{
-					title: "Auditoria de la Información", select: "Seleccionar Área a Auditar:",
-					groupsOptn:"Grupos", membersOptn:"Miembros", reportsOptn:"Reportes",
-					weeksOptn:"Semanas", usersOptn:"Usuarios", messagesOptn:"Mensajes",
-					loadAudit: "Mostrar Movimientos",
-					loading: "Cargando Registros ...",
-					loadingError: "Error al cargar los registros. Intentelo más tarde.",
-					loadingSuccess: "Registros cargados.",
-					noRecords: "No hay registros disponibles.",
-					table:{
-						action: "Accion", by:"Hecha por", on:"Hecha en", date:"Fecha"
-					}
-				},
 				users:{
 					title:"Usuarios Registrados", adminLbl: "Administrador", userLbl: "Usuario",
 					loadUsers: "Mostrar Lista de Usuarios",
@@ -652,20 +681,13 @@ okulusApp.run(function($rootScope) {
 					}
 				}
 			},
-			user:{
-				groups:{
-					title:"Mis Grupos Familiares",
-					description: "Grupos familiares a los que tengo acceso."
-				},
-				contactsList:{
-					title:"Miembros de mis Grupos Familiares",
-					noContactsError: "No encontramos ningun contacto."
-				}
+			mygroups:{
+				title:"Mis Grupos Familiares",
+				description: "Grupos familiares a los que tengo acceso."
 			},
-			home:{
-				title:"Inicio", welcome:"Hola",
-				basicInfo: "Información Básica",
-				address: "Dirección"
+			mycontacts:{
+				title:"Miembros de mis Grupos Familiares",
+				noContactsError: "No encontramos ningun contacto."
 			},
 			configs:{
 				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes",
@@ -714,16 +736,9 @@ okulusApp.run(function($rootScope) {
 				genericMessage:"Haz iniciado sesión correctamente, pero algo salió mal.",
 				message:"Houston, Tenemos Problemas!"
 			},
-			dropdowns:{
-				status:{
-					label: "Activo/Inactivo",
-					inactive: "Inactivo",
-					active: "Activo"
-				},
-				weekdays:{
-					mon:"Lunes", tue:"Martes", wed:"Miercoles", thu:"Jueves",
-					fri:"Viernes", sat:"Sabado", sun:"Domingo"
-				}
+			weekdays:{
+				mon:"Lunes", tue:"Martes", wed:"Miercoles", thu:"Jueves",
+				fri:"Viernes", sat:"Sabado", sun:"Domingo"
 			}
 		};
 });

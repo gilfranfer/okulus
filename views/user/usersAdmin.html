@@ -1,0 +1,151 @@
+<!-- Admin Users List View -->
+<section id="adminUsersList" ng-show="currentSession.user.type != 'user'">
+
+  <!-- Title -->
+  <article id="titleCard" class="card h-100 mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.users.adminTitle}}</h4>
+    </div>
+  </article>
+
+  <!-- Badges -->
+  <article class="row">
+    <div class="col mb-3">
+      <article id="badgesCard" class="card h-100">
+        <div class="card-body">
+          <h4>
+            <span class="badge badge-primary">{{usersCounters.total}}</span>
+            <span class="btn-link clickable" ng-click="loadAllUsersList()">{{i18n.users.totalLbl}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-success">{{usersCounters.active}}</span>
+            <span class="btn-link clickable" ng-click="loadActiveUsersList()">{{i18n.users.activeLbl}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-danger">{{usersCounters.total-usersCounters.active}}</span>
+            <span class="btn-link clickable" ng-click="loadInactiveUsersList()">{{i18n.users.inactiveLbl}}</span>
+          </h4>
+        </div>
+      </article>
+    </div>
+    <div class="col mb-3">
+      <article id="" class="card h-100">
+        <div class="card-body">
+          <h4>
+            <span class="badge badge-primary">{{usersCounters.roots}}</span>
+            <span class="btn-link clickable" ng-click="loadRootUsersList()">{{i18n.roles.rootsLbl}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-dark">{{usersCounters.admins}}</span>
+            <span class="btn-link clickable" ng-click="loadAdminUsersList()">{{i18n.roles.adminsLbl}}</span>
+          </h4>
+          <h4>
+            <span class="badge badge-warning">{{usersCounters.users}}</span>
+            <span class="btn-link clickable" ng-click="loadNormalUsersList()">{{i18n.roles.usersLbl}}</span>
+          </h4>
+        </div>
+      </article>
+    </div>
+  </article>
+
+  <!-- Buttons -->
+  <div class="row">
+    <div class="col mb-3">
+      <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllUsersList()">
+        {{i18n.users.loadAllBtn}}
+      </a>
+    </div>
+    <div class="col mb-3">
+      <a href="#!/users/new" class="btn btn-lg btn-block btn-primary">
+        {{i18n.users.newBtn}}
+      </a>
+    </div>
+  </div>
+
+  <!-- Alerts to show Response Message (Used after redirect from User Delete) -->
+  <div class="alert alert-success" role="alert" ng-show="userResponse.deleted" >
+    {{userResponse.message}}
+  </div>
+  <div ng-include="'views/alerts.html'"></div>
+
+  <!-- Title and Filter -->
+  <article class="card mb-3" ng-show="adminUsersList.length">
+    <div class="card-body">
+      <p class="lead">
+  			{{adminUsersParams.title}}
+  		</p>
+      <div class="row" ng-show="adminUsersList.length > config.minResultsToshowFilter">
+        <div class="col">
+          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
+            ng-model="adminUsersParams.searchFilter">
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Show number of loaded Users -->
+  <div class="alert alert-info" role="alert" ng-show="adminUsersList.length" >
+    {{adminUsersList.length}} {{i18n.users.loadingSuccess}}
+    <!-- Load all pending Users  -->
+    <span class="btn-link clickable" ng-click="loadPendingUsers()"
+      ng-if="(adminUsersList.length < adminUsersParams.maxPossible)" >
+      {{i18n.users.loadPending1}}
+      {{adminUsersParams.maxPossible - adminUsersList.length}}
+      {{i18n.users.loadPending2}}
+    </span>
+  </div>
+
+  <!-- Users Cards -->
+  <article id="usersList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="user in adminUsersList | filter:adminUsersParams.searchFilter | orderBy:'email' track by user.$id">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-if="user.type == 'root'" ng-href="#!/users/edit/{{user.$id}}">
+              {{i18n.roles.rootLbl}}
+            </a>
+            <a ng-if="user.type != 'root'" ng-href="#!/users/edit/{{user.$id}}">
+              {{user.email}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="user.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
+          <span class="badge badge-dark"  ng-if="user.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
+          <span class="badge badge-danger"  ng-if="user.type != 'root' && !user.memberId">{{i18n.users.status.noMemberLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{user.email}}">{{user.email}}</a>
+          </p>
+          <!-- Buttons -->
+          <div class="row">
+            <div class="col mb-2" ng-show="user.type == 'admin'">
+              <button class="btn btn-block btn-primary clickable" ng-click="makeAdmin(user.$id,false)">
+                {{i18n.roles.adminLbl}}
+              </button>
+            </div>
+            <div class="col mb-2" ng-show="user.type == 'user'">
+              <button class="btn btn-block btn-warning clickable" ng-click="makeAdmin(user.$id,true)">
+                {{i18n.roles.userLbl}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Load all pending Users  -->
+  <div class="row mb-3" ng-show="adminUsersList.length">
+    <div class="col text-center">
+      <span class="text-primary">
+        {{adminUsersList.length}} {{i18n.users.loadingSuccess}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingUsers()"
+        ng-if="(adminUsersList.length < adminUsersParams.maxPossible)" >
+        {{i18n.users.loadPending1}}
+        {{adminUsersParams.maxPossible - adminUsersList.length}}
+        {{i18n.users.loadPending2}}
+      </span>
+    </div>
+  </div>
+</section>

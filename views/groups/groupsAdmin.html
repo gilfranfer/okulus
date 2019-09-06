@@ -16,15 +16,15 @@
           <div class="row">
             <h4 class="col">
               <span class="badge badge-primary">{{groupsGlobalCount.total}}</span>
-              <span class="btn-link clickable" ng-click="loadAllGroupsList()">{{i18n.groups.totalGroups}}</span>
+              <span class="btn-link clickable" ng-click="loadAllGroupsList()">{{i18n.groups.totalLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-success">{{groupsGlobalCount.active}}</span>
-              <span class="btn-link clickable" ng-click="loadActiveGroupsList()">{{i18n.groups.activeGroups}}</span>
+              <span class="btn-link clickable" ng-click="loadActiveGroupsList()">{{i18n.groups.activeLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-danger">{{groupsGlobalCount.total-groupsGlobalCount.active}}</span>
-              <span class="btn-link clickable" ng-click="loadInactiveGroupsList()">{{i18n.groups.inactiveGroups}}</span>
+              <span class="btn-link clickable" ng-click="loadInactiveGroupsList()">{{i18n.groups.inactiveLbl}}</span>
             </h4>
           </div>
         </div>
@@ -60,7 +60,7 @@
   		</p>
       <div class="row" ng-show="adminGroupsList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
+          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
             ng-model="adminGroupsParams.searchFilter">
         </div>
       </div>

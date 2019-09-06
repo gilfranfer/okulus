@@ -60,6 +60,9 @@ const constants = {
 			approvedMembersCount:"counters/requests/members/approved",
 			rejectedMembersCount:"counters/requests/members/rejected",
 			totalMembersCount:"counters/requests/members/total",
+			/* Users Counter */
+			userCounters:"counters/users"
+
 		},
 		fields:{
 			baseGroup:"baseGroupId",
@@ -68,14 +71,16 @@ const constants = {
 			weekId:"weekId", status:"status",
 			auditCreatedById:"audit/createdById",
 			createdById:"createdById",
-			systemErrors:"systemErrors"
+			systemErrors:"systemErrors",
+			isActive:"isActive",
+			type:"type"
 		}
 	},
 	roles: {
 		user:"user", admin: "admin", system:"system", root:"root", type:"type",
 		isLead:"isLeader", isTrainee:"isTrainee", isHost:"isHost", isUser:"isUser",
 		userDefaultName:"Usuario sin miembro asociado",
-		rootName:"Super Administrador", systemName:"Okulus System"
+		rootName:"Super Usuario", systemName:"Okulus System"
 	},
 	status: {
 		online:"online", offline:"offline",
@@ -107,8 +112,7 @@ const constants = {
 		open:"open",close:"closed",show:"show",hide:"hide",
 		grantAccess:"access-granted", revokeAccess:"access-deleted",
 		updateRole:"type-update"
-	},
-	config:{isProdEnv: false}
+	}
 };
 
 //2. Angular Moduel
@@ -236,11 +240,30 @@ okulusApp.config(['$routeProvider',
 			// 	templateUrl: 'views/admin/monitor.html',
 			// 	controller: 'MonitorCntrl'
 			// })
+			.when('/users', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/user/usersAdmin.html',
+				controller: 'UsersListCntrl'
+			})
 			.when('/users/edit/:userId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})
 			.when('/users/view/:userId', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
 				templateUrl: 'views/user/userDetails.html',
 				controller: 'UserEditCntrl'
 			})

@@ -15,15 +15,15 @@
         <div class="card-body">
           <h4>
             <span class="badge badge-primary">{{membersGlobalCount.total}}</span>
-            <span class="btn-link clickable" ng-click="loadAllMembersList()">{{i18n.members.totalMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadAllMembersList()">{{i18n.members.totalLbl}}</span>
           </h4>
           <h4>
             <span class="badge badge-success">{{membersGlobalCount.active}}</span>
-            <span class="btn-link clickable" ng-click="loadActiveMembersList()">{{i18n.members.activeMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadActiveMembersList()">{{i18n.members.activeLbl}}</span>
           </h4>
           <h4>
             <span class="badge badge-danger">{{membersGlobalCount.total-membersGlobalCount.active}}</span>
-            <span class="btn-link clickable" ng-click="loadInactiveMembersList()">{{i18n.members.inactiveMembers}}</span>
+            <span class="btn-link clickable" ng-click="loadInactiveMembersList()">{{i18n.members.inactiveLbl}}</span>
           </h4>
         </div>
       </article>
@@ -76,7 +76,7 @@
   		</p>
       <div class="row" ng-show="adminMembersList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
+          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
             ng-model="adminMembersParams.searchFilter">
         </div>
       </div>
@@ -106,8 +106,8 @@
               {{member.shortname}}
             </a>
           </h4>
-          <span class="badge badge-success" ng-if="member.isActive">{{i18n.members.activeLbl}}</span>
-          <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.inactiveLbl}}</span>
+          <span class="badge badge-success" ng-if="member.isActive">{{i18n.members.status.activeLbl}}</span>
+          <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.status.inactiveLbl}}</span>
           <hr>
           <p>
             <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>

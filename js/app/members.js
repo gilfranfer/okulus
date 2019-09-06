@@ -202,7 +202,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				else if(requestId){
 					$scope.objectDetails = MemberRequestsSvc.getRequest(requestId);
 					$scope.objectDetails.$loaded().then(function(request){
-						if(!request.$value){
+						if(request.$value === null){
 							$rootScope.response = { error:true, message:systemMsgs.error.inexistingRequest};
 							$location.path(constants.pages.error);
 							return;
@@ -264,7 +264,8 @@ okulusApp.controller('MemberDetailsCntrl',
 					let memberId = $scope.memberEditParams.memberId;
 
 					$scope.objectDetails.address.$remove().then(function(ref) {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
+						let description = systemMsgs.notifications.memberAddressRemoved + $scope.objectDetails.basicInfo.shortname;
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
 						$scope.response = {success:true, message: systemMsgs.success.memberAddressRemoved};
 					}, function(error) {
 					  console.debug("Error:", error);
@@ -288,9 +289,10 @@ okulusApp.controller('MemberDetailsCntrl',
 				let memberId = $scope.memberEditParams.memberId;
 
 				//Update using the existing address firebaseObject
+				let description = systemMsgs.notifications.memberAddressAdded + $scope.objectDetails.basicInfo.shortname;
 				if($scope.objectDetails.address.$id){
 					$scope.objectDetails.address.$save().then(function(){
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -299,7 +301,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					MembersSvc.persistMemberAddress(memberId,$scope.objectDetails.address);
 					$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
 					$scope.objectDetails.address.$loaded().then(function() {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -315,7 +317,8 @@ okulusApp.controller('MemberDetailsCntrl',
 				/*UPDATE Current Member*/
 				if($scope.objectDetails.basicInfo.$id){
 					$scope.objectDetails.basicInfo.$save().then(function() {
-						AuditSvc.recordAudit(memberId, constants.actions.update, constants.db.folders.members);
+						let description = systemMsgs.notifications.memberUpdated + $scope.objectDetails.basicInfo.shortname;
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -324,7 +327,8 @@ okulusApp.controller('MemberDetailsCntrl',
 					$scope.objectDetails.basicInfo.isActive = true;
 					let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
 					MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function() {
-						AuditSvc.recordAudit(newmemberRef.key, constants.actions.create, constants.db.folders.members);
+						let description = systemMsgs.notifications.memberCreated + $scope.objectDetails.basicInfo.shortname;
+						AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.members, newmemberRef.key, description);
 						MembersSvc.increaseTotalMembersCount();
 						MembersSvc.increaseActiveMembersCount();
 						$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreated };
@@ -352,10 +356,12 @@ okulusApp.controller('MemberDetailsCntrl',
 			if(memberInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingMember};
 				//Remove Member from members/list
+				let memberName = memberInfo.shortname;
 				let deletedMemberId = undefined;
 				memberInfo.$remove().then(function(deletedMemberRef){
 					deletedMemberId = deletedMemberRef.key;
-					AuditSvc.recordAudit(deletedMemberId, constants.actions.delete, constants.db.folders.members);
+					let description = systemMsgs.notifications.memberDeleted + memberName;
+					AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.members, deletedMemberId, description);
 					MembersSvc.decreaseTotalMembersCount();
 					return MembersSvc.getAccessRulesList(deletedMemberId).$loaded();
 				}).then(function(accessList){
@@ -373,10 +379,13 @@ okulusApp.controller('MemberDetailsCntrl',
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
 				let memberInfo = $scope.objectDetails.basicInfo;
+				let description = undefined;
 				memberInfo.isActive = setMembershipActive;
 				if(setMembershipActive){
+					description = systemMsgs.notifications.memberSetActive + memberName;
 					MembersSvc.increaseActiveMembersCount();
 				}else{
+					description = systemMsgs.notifications.memberSetInactive + memberName;
 					MembersSvc.decreaseActiveMembersCount();
 					/*When setting Membership to Inactive, we must update ALL ROLES to false*/
 					if(memberInfo.isHost){
@@ -393,7 +402,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					}
 				}
 				memberInfo.$save();
-				AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
+				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 				$scope.response = {success:true, message: systemMsgs.success.membershipStatusUpdated};
 			}
 		};
@@ -403,13 +412,16 @@ okulusApp.controller('MemberDetailsCntrl',
 			let memberInfo = $scope.objectDetails.basicInfo;
 			if(memberInfo.isActive  && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isLeader = isLeader;
+				let description = undefined;
 				memberInfo.$save().then(function() {
 					if(isLeader){
 						MembersSvc.increaseLeadMembersCount();
+						description = systemMsgs.notifications.memberSetLead + memberInfo.shortname;
 					}else{
 						MembersSvc.decreaseLeadMembersCount();
+						description = systemMsgs.notifications.memberRemovedLead + memberInfo.shortname;
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -420,13 +432,16 @@ okulusApp.controller('MemberDetailsCntrl',
 			let memberInfo = $scope.objectDetails.basicInfo;
 			if(memberInfo.isActive && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isTrainee = isTrainee;
+				let description = undefined;
 				memberInfo.$save().then(function() {
 					if(isTrainee){
 						MembersSvc.increaseTraineeMembersCount();
+						description = systemMsgs.notifications.memberSetTrainee + memberInfo.shortname;
 					}else{
 						MembersSvc.decreaseTraineeMembersCount();
+						description = systemMsgs.notifications.memberRemovedTrainee + memberInfo.shortname;
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -437,13 +452,16 @@ okulusApp.controller('MemberDetailsCntrl',
 			let memberInfo = $scope.objectDetails.basicInfo;
 			if(memberInfo.isActive && $rootScope.currentSession.user.type != constants.roles.user){
 				memberInfo.isHost = isHost;
+				let description = undefined;
 				memberInfo.$save().then(function() {
 					if(isHost){
 						MembersSvc.increaseHostMembersCount();
+						description = systemMsgs.notifications.memberSetHost + memberInfo.shortname;
 					}else{
 						MembersSvc.decreaseHostMembersCount();
+						description = systemMsgs.notifications.memberRemovedHost + memberInfo.shortname;
 					}
-					AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
+					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 					$scope.response = {success:true, message: systemMsgs.success.memberRoleUpdated};
 				});
 			}
@@ -485,7 +503,8 @@ okulusApp.controller('MemberDetailsCntrl',
 						memberInfo.baseGroupId = null;
 					}
 					memberInfo.$save().then(function() {
-						AuditSvc.recordAudit(memberInfo.$id, constants.actions.update, constants.db.folders.members);
+						let description = systemMsgs.notifications.baseGroupUpdated + memberInfo.shortname;
+						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 						$scope.memberEditParams.updatingBaseGroup = false;
 						$scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};
 					});
@@ -510,11 +529,11 @@ okulusApp.controller('MemberDetailsCntrl',
 					MemberRequestsSvc.decreaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
 					MemberRequestsSvc.increasePendingRequestsCount($scope.objectDetails.audit.createdById);
 				}
-				let notification = { description: systemMsgs.notificaions.memberRequestedUpdated,
+				let notification = { description: systemMsgs.notifications.memberRequestedUpdated,
 														action: constants.actions.update,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: data.key,	url:null };
-				NotificationsSvc.notifyAdmins(notification);
+				//NotificationsSvc.notifyAdmins(notification);
 				$scope.response = { success:true, message: systemMsgs.success.requestUpdated };
 			});
 
@@ -543,11 +562,11 @@ okulusApp.controller('MemberDetailsCntrl',
 			MemberRequestsSvc.getRequest(requestRef.key).$loaded().then(function(){
 				MemberRequestsSvc.increaseTotalRequestsCount(request.audit.createdById);
 				MemberRequestsSvc.increasePendingRequestsCount(request.audit.createdById);
-				let notification = { description: systemMsgs.notificaions.memberRequested,
+				let notification = { description: systemMsgs.notifications.memberRequested,
 														action: constants.actions.create,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: requestRef.key,	url:null };
-				NotificationsSvc.notifyAdmins(notification);
+				// NotificationsSvc.notifyAdmins(notification);
 				$scope.response = { success:true, message: systemMsgs.success.requestCreated };
 			});
 		};
@@ -579,7 +598,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				MembersSvc.increaseTotalMembersCount();
 				MembersSvc.increaseActiveMembersCount();
 
-				let notification = { description: systemMsgs.notificaions.memberRequestApproved,
+				let notification = { description: systemMsgs.notifications.memberRequestApproved,
 														action: constants.actions.approve,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: memberData.$id,	url:null };
@@ -608,7 +627,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.objectDetails.$save().then(function(){
 				MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
 				MemberRequestsSvc.increaseRejectedRequestsCount($scope.objectDetails.audit.createdById);
-				let notification = { description: systemMsgs.notificaions.memberRequestRejected,
+				let notification = { description: systemMsgs.notifications.memberRequestRejected,
 														action: constants.actions.reject,
 														onFolder: constants.db.folders.memberRequest,
 														onObject: $scope.objectDetails.$id,	url:null };
@@ -640,7 +659,7 @@ okulusApp.controller('MemberDetailsCntrl',
 			// 	}else if(isPending){
 			// 		MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
 			// 	}
-			// 	let notification = { description: systemMsgs.notificaions.memberRequestCanceled,
+			// 	let notification = { description: systemMsgs.notifications.memberRequestCanceled,
 			// 											action: constants.actions.cancel,
 			// 											onFolder: constants.db.folders.memberRequest,
 			// 											onObject: $scope.objectDetails.$id,	url:null };

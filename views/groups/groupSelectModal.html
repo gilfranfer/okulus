@@ -3,7 +3,7 @@
     <div class="modal-content">
       <!-- Modal Header -->
       <div class="modal-header">
-        <h5 class="modal-title" id="groupSelectModalLabel">{{i18n.groupModal.title}}</h5>
+        <h5 class="modal-title" id="groupSelectModalLabel">{{i18n.groups.selectGroupTitle}}</h5>
         <button type="button" class="close clickable" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -11,7 +11,7 @@
 
       <div class="modal-body">
         <!-- FIlter box: filter on the groupName only -->
-        <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control"
+        <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control"
           ng-model="searchFilter.name" ng-show="currentSession.accessGroups.length > config.minResultsToshowFilter"/>
         <!-- List of Groups the Member has access to -->
         <div class="list-group mt-2 pre-scrollable">
@@ -25,9 +25,9 @@
                 </div>
                 <div class="col">
                   <span class="float-right badge badge-success" ng-if="group.isActive">
-                    {{i18n.groups.activeLbl}}</span>
+                    {{i18n.groups.status.activeLbl}}</span>
                     <span class="float-right badge badge-danger" ng-if="!group.isActive">
-                      {{i18n.groups.inactiveLbl}}</span>
+                      {{i18n.groups.status.inactiveLbl}}</span>
                 </div>
               </div>
   					</div>

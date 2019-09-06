@@ -20,15 +20,15 @@
             </h4> -->
             <h4 class="col">
               <span class="badge badge-primary">{{reportsGlobalCount.pending}}</span>
-              <span class="btn-link clickable" ng-click="loadPendingReportsList()">{{i18n.reports.pendingReports}}</span>
+              <span class="btn-link clickable" ng-click="loadPendingReportsList()">{{i18n.reports.pendingLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-success">{{reportsGlobalCount.approved}}</span>
-              <span class="btn-link clickable" ng-click="loadApprovedReportsList()">{{i18n.reports.approvedReports}}</span>
+              <span class="btn-link clickable" ng-click="loadApprovedReportsList()">{{i18n.reports.approvedLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-danger">{{reportsGlobalCount.rejected}}</span>
-              <span class="btn-link clickable" ng-click="loadRejectedReportsList()">{{i18n.reports.rejectedReports}}</span>
+              <span class="btn-link clickable" ng-click="loadRejectedReportsList()">{{i18n.reports.rejectedLbl}}</span>
             </h4>
           </div>
         </div>
@@ -73,7 +73,7 @@
   		</p>
       <div class="row" ng-show="adminReportsList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.forms.filterHint}}" class="form-control form-control-lg"
+          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
             ng-model="adminReportsParams.searchFilter">
         </div>
       </div>

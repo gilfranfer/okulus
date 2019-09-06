@@ -38,10 +38,10 @@ okulusApp.controller('ChatCenterCntrl',
 			});
 		}});
 
-		/* Prepare the List of Valid Users that will be displayed in the newChat modal*/
+		/* Prepare the List of Users that will be displayed in the newChat modal*/
 		$scope.openNewChatModal = function(){
 			$scope.usersList = new Array();
-			UsersSvc.getUsers().$loaded().then(function(users){
+			UsersSvc.getAllUsers().$loaded().then(function(users){
 				users.forEach(function(user){
 					if(user.$id != $rootScope.currentSession.user.$id){
 						$scope.usersList.push(user);

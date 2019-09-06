@@ -28,6 +28,12 @@ okulusApp.controller('AuthenticationCntrl',
 							/* Update lastlogin, and sessionStatus */
 							AuthenticationSvc.updateUserLastActivity(authUser.uid, constants.status.online);
 
+							if(!loggedUser.isActive){
+								$rootScope.response = { error:true, message: systemMsgs.error.inactiveUserLogged};
+								$location.path( constants.pages.error );
+								return;
+							}
+
 							if(loggedUser.type == constants.roles.root ){
 								$rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
 							}else{
@@ -236,7 +242,7 @@ okulusApp.controller('RegistrationCntrl',
 			AuthenticationSvc.register($scope.newUser).then(function(regUser){
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
-				AuditSvc.recordAudit(regUser.uid, constants.actions.create, constants.db.folders.users);
+				AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.userCreated );
 				$rootScope.redirectFromRegister = true;
 				$location.path(constants.pages.home);
 			})
@@ -340,6 +346,7 @@ okulusApp.controller('RegisterRootCntrl',
 			AuthenticationSvc.register($scope.newUser).then(function(regUser){
 				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.root);
+				AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.rootCreated );
 				ConfigSvc.setInitialConfigs(regUser.uid);
 				CountersSvc.setInitialCounters();
 				$location.path(constants.pages.home);
