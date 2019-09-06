@@ -238,6 +238,7 @@ okulusApp.controller('UserEditCntrl',
 					return;
 				}
 
+				if(!$routeParams.userId){return;}
 				$scope.objectDetails.basicInfo = UsersSvc.getUserBasicDataObject($routeParams.userId);
 				$scope.objectDetails.basicInfo.$loaded().then(function(user){
 					if(user.$value === null){
