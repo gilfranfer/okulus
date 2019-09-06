@@ -131,7 +131,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				//Additional Audit fields only For Reports
-				if(objectFolder == constants.folders.reports){
+				if(objectFolder == constants.db.folders.reports){
 					if(action == constants.actions.create || action == constants.actions.update){
 						objectAuditRef.update(
 							{ approvedById: null, approvedByName: null, approvedByEmail: null, approvedOn: null,
