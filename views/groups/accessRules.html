@@ -15,7 +15,8 @@
   		</p>
       <span>{{i18n.groups.accessDescription}}</span>
       <!-- Active Members List -->
-      <form class="mt-3" name="accessForm" novalidate ng-submit="addRule()">
+      <form class="mt-3" name="accessForm" novalidate
+       ng-if="group.isActive" ng-submit="addRule()">
         <div class="row mb-3">
           <div class="col-8">
             <select id="userSelect" class="form-control form-control-lg" ng-model="access.memberId" ng-required="true">
@@ -31,6 +32,9 @@
           </div>
         </div>
       </form>
+      <div class="alert alert-info mt-4" ng-if="!group.isActive">
+        {{i18n.groups.aceessInactiveGroup}}
+      </div>
     </div>
   </article>
 
