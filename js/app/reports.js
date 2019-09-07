@@ -1563,7 +1563,7 @@ okulusApp.controller('CreateReportCntrl',
 
 		/* When the member has only 1 access rule */
 		$scope.quickReportLauncher = function(){
-			let groupId = $rootScope.currentSession.accessRules[0].groupId;
+			let groupId = $rootScope.currentSession.accessGroups[0].$id;
 			$location.path(constants.pages.reportNew + groupId);
 		};
 

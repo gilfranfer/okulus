@@ -172,9 +172,9 @@ okulusApp.controller('MemberDetailsCntrl',
 
 				let memberId = $routeParams.memberId;
 				let requestId = $routeParams.requestId;
-				$scope.countriesList = ConfigSvc.getCountriesList();
 				/* Prepare for Edit or View Details of Existing Member */
 				if(memberId){
+					$scope.countriesList = ConfigSvc.getCountriesList();
 					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
 					$scope.objectDetails.basicInfo.$loaded().then(function(member){
 						//If member from DB hasn't shortname, is because no member was found
@@ -187,7 +187,14 @@ okulusApp.controller('MemberDetailsCntrl',
 						$scope.objectDetails.audit = MembersSvc.getMemberAuditObject(memberId);
 						$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
 						$scope.objectDetails.address.$loaded().then(function(address){
-							$scope.statesList = ConfigSvc.getStatesForCountry(address.country);
+							if(address.$value===null){
+								/* Set Default location from config.location, if no address exisiting */
+								$scope.statesList = ConfigSvc.getStatesForCountry($rootScope.config.location.country);
+								$scope.objectDetails.address = $rootScope.config.location;
+								$scope.objectDetails.address.isNew = true;
+							}else{
+								$scope.statesList = ConfigSvc.getStatesForCountry(address.country);
+							}
 						});
 						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
 						// $scope.objectDetails.groups = MembersSvc.getMemberGroups(memberId);
@@ -242,27 +249,22 @@ okulusApp.controller('MemberDetailsCntrl',
 			$scope.memberEditParams.isEdit = false;
 			$scope.memberEditParams.memberId = undefined;
 			$scope.response = undefined;
-
-
-			//Use config.location to set initial address details
-			$scope.statesList = ConfigSvc.getStatesForCountry($scope.config.location.country);
-			$scope.objectDetails.address = $scope.config.location;
 		};
 
 		/*Create address Object in scope so we can populate it's values from view*/
 		$scope.addAdress = function(){
 			clearResponse();
-			$scope.objectDetails.address = {};
+			$scope.objectDetails.address = $rootScope.config.location;
+			$scope.objectDetails.address.isNew = true;
 		};
 
 		/*Remove the address Object from scope, and from DB*/
 		$scope.removeAdress = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
-				if($scope.objectDetails.address.$id){
+				if(!$scope.objectDetails.address.isNew ){
 					$scope.response = {working:true, message: systemMsgs.inProgress.deletingMemberAddress};
 					let memberId = $scope.memberEditParams.memberId;
-
 					$scope.objectDetails.address.$remove().then(function(ref) {
 						let description = systemMsgs.notifications.memberAddressRemoved + $scope.objectDetails.basicInfo.shortname;
 						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
@@ -287,10 +289,11 @@ okulusApp.controller('MemberDetailsCntrl',
 			if($rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.savingMemberAddress};
 				let memberId = $scope.memberEditParams.memberId;
+				$scope.objectDetails.address.isNew = null;
 
 				//Update using the existing address firebaseObject
-				let description = systemMsgs.notifications.memberAddressAdded + $scope.objectDetails.basicInfo.shortname;
 				if($scope.objectDetails.address.$id){
+					let description = systemMsgs.notifications.memberAddressUpdated + $scope.objectDetails.basicInfo.shortname;
 					$scope.objectDetails.address.$save().then(function(){
 						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
@@ -298,6 +301,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				}
 				//Save address for the first time, and keep the address firebaseObject in scope
 				else{
+					let description = systemMsgs.notifications.memberAddressAdded + $scope.objectDetails.basicInfo.shortname;
 					MembersSvc.persistMemberAddress(memberId,$scope.objectDetails.address);
 					$scope.objectDetails.address = MembersSvc.getMemberAddressObject(memberId);
 					$scope.objectDetails.address.$loaded().then(function() {
@@ -382,10 +386,10 @@ okulusApp.controller('MemberDetailsCntrl',
 				let description = undefined;
 				memberInfo.isActive = setMembershipActive;
 				if(setMembershipActive){
-					description = systemMsgs.notifications.memberSetActive + memberName;
+					description = systemMsgs.notifications.memberSetActive + memberInfo.shortname;
 					MembersSvc.increaseActiveMembersCount();
 				}else{
-					description = systemMsgs.notifications.memberSetInactive + memberName;
+					description = systemMsgs.notifications.memberSetInactive + memberInfo.shortname;
 					MembersSvc.decreaseActiveMembersCount();
 					/*When setting Membership to Inactive, we must update ALL ROLES to false*/
 					if(memberInfo.isHost){
@@ -806,6 +810,7 @@ okulusApp.factory('MembersSvc',
 			/* Used when creating a Member */
 			increaseTotalMembersCount: function () {
 				let conunterRef = baseRef.child(constants.db.folders.totalMembersCount);
+				console.log(constants.db.folders.totalMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Used when deleting a Member */

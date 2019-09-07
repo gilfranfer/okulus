@@ -411,8 +411,7 @@ okulusApp.controller('WeekDetailsCntrl',
 		/* Save or Update Week data (Name and Description) */
 		$scope.saveWeek = function() {
 			clearResponse();
-			if($rootScope.currentSession.user.type != constants.roles.admin
-				|| !$scope.objectDetails.basicInfo){ return; }
+			if($rootScope.currentSession.user.type == constants.roles.user || !$scope.objectDetails.basicInfo){ return; }
 
 			$scope.response = {working:true, message:systemMsgs.inProgress.savingWeekInfo};
 			//Build week Id from the selected Week in the input

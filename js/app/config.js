@@ -56,10 +56,10 @@ const constants = {
 			rejectedReportsCount:"counters/reports/rejected",
 			/* Member Requests */
 			requestsCount:"counters/requests",
-			pendingMembersCount:"counters/requests/members/pending",
-			approvedMembersCount:"counters/requests/members/approved",
-			rejectedMembersCount:"counters/requests/members/rejected",
-			totalMembersCount:"counters/requests/members/total",
+			pendingMemberRequestsCount:"counters/requests/members/pending",
+			approvedMemberRequestsCount:"counters/requests/members/approved",
+			rejectedMemberRequestsCount:"counters/requests/members/rejected",
+			totalMemberRequestsCount:"counters/requests/members/total",
 			/* Users Counter */
 			userCounters:"counters/users"
 

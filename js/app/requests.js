@@ -108,45 +108,45 @@ okulusApp.factory('MemberRequestsSvc',
 			},
 			/* Used when creating a Member Request */
 			increaseTotalRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.totalMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.totalMemberRequestsCount);
 				increaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.totalMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.totalMemberRequestsCount);
 				increaseCounter(globalCountRef);
 			},
 			/* Used when creating or updating a Member Request */
 			increasePendingRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMemberRequestsCount);
 				increaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.pendingMemberRequestsCount);
 				increaseCounter(globalCountRef);
 			},
 			/* used after approving, rejecting, or canceling a request */
 			decreasePendingRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.pendingMemberRequestsCount);
 				decreaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.pendingMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.pendingMemberRequestsCount);
 				decreaseCounter(globalCountRef);
 			},
 			/* Used when approving a Member Request */
 			increaseApprovedRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.approvedMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.approvedMemberRequestsCount);
 				increaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.approvedMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.approvedMemberRequestsCount);
 				increaseCounter(globalCountRef);
 			},
 			/* Used when approving, updating or canceling a Member Request that was in rejected status.
 			Decrease the number of Rejected Member Request in the Requestor's (User) counters */
 			decreaseRejectedRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMemberRequestsCount);
 				decreaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.rejectedMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.rejectedMemberRequestsCount);
 				decreaseCounter(globalCountRef);
 			},
 			/* Used when rejecting a Member Request */
 			increaseRejectedRequestsCount: function (userId) {
-				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMembersCount);
+				let counterRef = usersListRef.child(userId).child(constants.db.folders.rejectedMemberRequestsCount);
 				increaseCounter(counterRef);
-				let globalCountRef = baseRef.child(constants.db.folders.rejectedMembersCount);
+				let globalCountRef = baseRef.child(constants.db.folders.rejectedMemberRequestsCount);
 				increaseCounter(globalCountRef);
 			},
 			getRequestCountsForUser: function (userId) {
