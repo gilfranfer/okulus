@@ -266,7 +266,8 @@ okulusApp.controller('RegistrationCntrl',
 /* Service methods for Authetication related tasks. */
 okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$firebaseAuth',
 	function($rootScope,$firebaseObject,$firebaseAuth){
-		let usersFolder = firebase.database().ref().child(constants.db.folders.root).child( constants.db.folders.usersList )
+		let usersFolder = firebase.database().ref().child(constants.db.folders.root).child(constants.db.folders.usersList);
+		let allowedEmailsRef = firebase.database().ref().child(constants.db.folders.allowedEmails);
 		var auth = $firebaseAuth();
 
 		return{
@@ -302,6 +303,9 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 			},
 			register: function(user){
 				return auth.$createUserWithEmailAndPassword(user.email, user.pwd);
+			},
+			updateEmailInAllowedList: function(id, email){
+				allowedEmailsRef.child(id).update({emial:email});
 			}
 		};
 	}

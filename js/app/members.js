@@ -323,6 +323,15 @@ okulusApp.controller('MemberDetailsCntrl',
 					$scope.objectDetails.basicInfo.$save().then(function() {
 						let description = systemMsgs.notifications.memberUpdated + $scope.objectDetails.basicInfo.shortname;
 						AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberId, description);
+
+						/* After any update in a member with allowUser flag, update the email in allowedEmails folder */
+						if($scope.objectDetails.basicInfo.allowUser){
+							if(!$scope.objectDetails.basicInfo.email){
+								AuthenticationSvc.updateEmailInAllowedList(memberId, null);
+							}else{
+								AuthenticationSvc.updateEmailInAllowedList(memberId, $scope.objectDetails.basicInfo.email);
+							}
+						}
 						$scope.response = {success:true, message: systemMsgs.success.memberInfoSAved};
 					});
 				}
@@ -365,6 +374,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				memberInfo.$remove().then(function(deletedMemberRef){
 					deletedMemberId = deletedMemberRef.key;
 					let description = systemMsgs.notifications.memberDeleted + memberName;
+					AuthenticationSvc.updateEmailInAllowedList(deletedMemberId, null);
 					AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.members, deletedMemberId, description);
 					MembersSvc.decreaseTotalMembersCount();
 					return MembersSvc.getAccessRulesList(deletedMemberId).$loaded();
@@ -513,6 +523,26 @@ okulusApp.controller('MemberDetailsCntrl',
 						$scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};
 					});
 			}
+		};
+
+		$scope.allowUser = function(allow){
+			let memberInfo = $scope.objectDetails.basicInfo;
+			memberInfo.allowUser = allow;
+			let description = undefined;
+
+			memberInfo.$save().then(function() {
+				if(allow){
+					description = memberInfo.shortname + systemMsgs.notifications.memberCanBeUser;
+					AuthenticationSvc.updateEmailInAllowedList(memberInfo.$id, memberInfo.email);
+				}else{
+					description = memberInfo.shortname + systemMsgs.notifications.memberCannotBeUser;
+					AuthenticationSvc.updateEmailInAllowedList(memberInfo.$id, null);
+				}
+
+				//Add the email to list of allowed emails
+				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
+				// $scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};
+			});
 		};
 
 		/* A request can be updated by the creator, if not approved. After an update,

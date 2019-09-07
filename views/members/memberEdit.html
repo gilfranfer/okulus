@@ -88,7 +88,7 @@
               {{i18n.contact.emailLbl}}
               <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
             </label>
-            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
+            <input id="email" name="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
               ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
           </div>
           <div class="col-md form-group">
@@ -287,6 +287,53 @@
             </button>
             <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
               ng-if="!objectDetails.basicInfo.isTrainee" ng-click="isTrainee(true)">
+              {{i18n.btns.noBtn}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- User -->
+  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user'">
+    <div class="card mb-2">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>{{i18n.members.userSection}}</legend>
+          </div>
+        </div>
+        <hr>
+        <!-- When Member already has User linked -->
+        <div class="row" ng-if="objectDetails.basicInfo.userId">
+          <div class="col">
+            <label class="font-weight-bold" for="">
+              {{i18n.members.memberHasUser}}
+            </label>
+            <a href="#!/users/edit/{{objectDetails.basicInfo.userId}}" class="btn btn-primary btn-block">
+              {{i18n.members.goToUser}}
+            </a>
+          </div>
+        </div>
+        <!-- When Member does not has User linked -->
+        <div class="row" ng-if="!objectDetails.basicInfo.userId">
+          <div class="col" ng-if="memberBasicInfoForm.email.$invalid">
+            <label class="font-weight-bold" for="">
+              {{i18n.members.setEmailFirst}}
+            </label>
+          </div>
+          <div class="col" ng-if="memberBasicInfoForm.email.$valid">
+            <label class="font-weight-bold" for="">
+              {{i18n.members.allowUser}}
+            </label>
+            <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+              ng-if="objectDetails.basicInfo.allowUser" ng-click="allowUser(false)">
+              {{i18n.btns.yesBtn}}
+            </button>
+            <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+              ng-if="!objectDetails.basicInfo.allowUser" ng-click="allowUser(true)">
               {{i18n.btns.noBtn}}
             </button>
           </div>

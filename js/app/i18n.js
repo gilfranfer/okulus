@@ -232,6 +232,8 @@ const systemMsgs = {
 		memberAddressRemoved:"Dirección eliminada, para el miembro ",
 		memberAddressAdded:"Dirección agregada, para el miembro ",
 		memberAddressUpdated:"Dirección actualizada, para el miembro ",
+		memberCanBeUser:" puede crear Usuario.",
+		memberCannotBeUser:" no puede crear Usuario.",
 		/* Reports */
 		reportCreated:"Reporte Creado",
 		reportUpdated:"Reporte Actualizado",
@@ -504,6 +506,10 @@ okulusApp.run(function($rootScope) {
 				isTraineeLbl:"Es Aprendíz?",
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
 				notesLbl: "Notas o comentarios",
+				userSection: "Usuario",
+				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
+				allowUser:"Permitir que este Miembro se registre como Usuario?",
+				setEmailFirst:"El Miembro debe tener un correo electrónico asignado.",
 				/*Member Request*/
 				memberRequestLbl:"Solicitud de Creación de Miembro.",
 				rejectedRequest:"Esta solicitud ha sido Rechazada.",
@@ -565,7 +571,8 @@ okulusApp.run(function($rootScope) {
 				loadPendingRules1: "Mostar ", loadPendingRules2: "Reglas restantes.",
 				ruleDate:"Desde",
 				ruleDeleteBtn:"Eliminar Regla",
-				accessDescription: "Proporcionar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo. La lista muestra solo los miembros con acceso al sistema.",
+				accessDescription: "Proporcionar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo.",
+				aceessInactiveGroup:"No pueden agregarse nuevas reglas a Grupos Inactivos.",
 				noRulesMessage: "No hay reglas de acceso en este grupo",
 				table:{
 					memberName:"Miembro", memberId:"Id", date:"Desde"

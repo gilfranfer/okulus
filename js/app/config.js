@@ -10,6 +10,7 @@ const constants = {
 	db: {
 		folders:{
 			root:"data", currentConfig:"config/app", systemConfigs:"config/fixed",
+			allowedEmails:"allowedEmails",
 			grouptypes:"grouptypes", errors:"errors",
 			config:"config", counters:"counters", details:"details",
 			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
