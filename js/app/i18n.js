@@ -23,7 +23,7 @@ const systemMsgs = {
 		/* RegistrationCntrl */
 		emailExist: "El correo electrónico ya está en uso.",
 		tryAgainLater: "Hubo un error. Intente más tarde.",
-		noMemberAssociated:"No cuentas con un Miembro asociado a tu cuenta. Contacta al administrador.",
+		noMemberAssociated:"Tu cuenta ha sido desactivada, o no cuentas con un Miembro asociado. Contacta al administrador.",
 		recordDoesntExist: "La información solicitada no está disponible. Puede que haya sido borrada.",
 		/*Members*/
 		noMembersError:"No se encontraron Miembros",

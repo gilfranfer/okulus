@@ -260,16 +260,18 @@ okulusApp.controller('UserEditCntrl',
 
 		$scope.setUserStatusActive = function(isActive) {
 			$scope.response = { working: true, message: systemMsgs.inProgress.working };
+			let description = undefined;
+			if(isActive){
+				description = systemMsgs.notifications.userSetActive + $scope.objectDetails.basicInfo.shortname;
+				CountersSvc.increaseActiveUsers();
+			}else{
+				description = systemMsgs.notifications.userSetInactive + $scope.objectDetails.basicInfo.shortname;
+				CountersSvc.decreaseActiveUsers();
+				$scope.objectDetails.basicInfo.memberId = null;
+			}
+
 			$scope.objectDetails.basicInfo.isActive = isActive;
 			$scope.objectDetails.basicInfo.$save().then(function(user) {
-				let description = undefined;
-				if(isActive){
-					description = systemMsgs.notifications.userSetActive + $scope.objectDetails.basicInfo.shortname;
-					CountersSvc.increaseActiveUsers();
-				}else{
-					description = systemMsgs.notifications.userSetInactive + $scope.objectDetails.basicInfo.shortname;
-					CountersSvc.decreaseActiveUsers();
-				}
 				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.users, user.key, description);
 				$scope.response = undefined;
 			});
