@@ -47,7 +47,8 @@
           <div class="row mb-1">
             <div class="col" ng-controller="CreateReportCntrl">
               <button class="btn btn-block btn-warning clickable"
-              ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length == 1">
+              ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length <= 1"
+              ng-disabled="currentSession.accessGroups.length < 1">
               {{i18n.launchpad.createReport}}
               </button>
               <div ng-include="'views/groups/groupSelectModal.html'"></div>
