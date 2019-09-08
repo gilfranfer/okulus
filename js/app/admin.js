@@ -1,4 +1,4 @@
-okulusApp.controller('MonitorCntrl',
+okulusApp.controller('ErrorsMonitorCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
 		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MigrationSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
@@ -6,17 +6,17 @@ okulusApp.controller('MonitorCntrl',
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let auditRef = baseRef.child('audit');
-		let usersRef = baseRef.child('users');
 		let errorsRef = baseRef.child('errors');
 
 		/*Executed when accessing to /admin/monitor, to confirm the user still admin*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type == 'user'){
-						$rootScope.response = {errorMsg: noAdminErrorMsg};
-						$location.path("/error");
+					if(user.type == constants.roles.user){
+						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+						$location.path(constants.pages.error);
+					}else{
+						$scope.loadSystemErrors();
 					}
 				});
 			}
@@ -49,26 +49,7 @@ okulusApp.controller('MonitorCntrl',
 			ErrorsSvc.deleteErrorRecord(error);
 		};
 
-		$scope.updateUserType = function (userId, type) {
-			$scope.response = undefined;
-			if(userId == $rootScope.currentSession.user.$id){
-				$scope.response = { userErrorMsg: "No puedes modificar a tu usuario"};
-			}else{
-				let obj = $firebaseObject( usersRef.child(userId) );
-				obj.$loaded().then(function (){
-					obj.type = type;
-					return obj.$save();
-				}).then(function (ref) {
-					$scope.response = { userOkMsg: "Usuario "+obj.email+" Actualizado"};
-					// AuditSvc.recordAudit(userId, "type-update", "users");
-				}, function(error) {
-					$scope.response = { userErrorMsg: error};
-				});
-			}
-		}
-
 		/* MIGRATION FUNCTIONS */
-
 		/* The metadata folder under contains the id of all unread Notifications.
 		Is better to remove this folder, and keep only the list folder.
 		The totals will be maintaint in the global counters */

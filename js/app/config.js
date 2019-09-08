@@ -170,6 +170,15 @@ okulusApp.config(['$routeProvider',
 			.when('/error', {
 				templateUrl: 'views/errors/error-general.html'
 			})
+			.when('/admin/errors', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/admin/errorsMonitor.html',
+				controller: 'ErrorsMonitorCntrl'
+			})
 			.when('/mygroups', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
@@ -237,15 +246,6 @@ okulusApp.config(['$routeProvider',
 				controller: 'AppConfigsCntrl',
 				templateUrl: 'views/admin/configs.html'
 			})
-			// .when('/admin/monitor', {
-			// 	resolve: {
-			// 		currentAuth: function(AuthenticationSvc){
-			// 			return AuthenticationSvc.isUserLoggedIn();
-			// 		}
-			// 	},
-			// 	templateUrl: 'views/admin/monitor.html',
-			// 	controller: 'MonitorCntrl'
-			// })
 			.when('/users', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){

@@ -275,7 +275,7 @@ okulusApp.run(function($rootScope) {
 				admin:{
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
 					groups: "Grupos", members: "Miembros", weeks: "Semanas",
-					reports: "Reportes", monitor:"Monitor", config:"Configuración",
+					reports: "Reportes", monitor:"Errores", config:"Configuración",
 					reunions:"Reuniones", requests:"Solicitudes", users:"Usuarios"
 				}
 			},

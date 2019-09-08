@@ -1,0 +1,102 @@
+<section id="adminMonitor" ng-show="currentSession.user.type != 'user'">
+
+  <article id="errors">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h4 class="card-title">
+          <span ng-show="globalCount.errors.systemErrors" class="badge badge-danger badge-text">
+            {{globalCount.errors.systemErrors}}
+          </span>
+          {{i18n.admin.errors.title}}
+        </h4>
+        <hr>
+        <!-- Alerts -->
+        <div class="alert alert-warning" role="alert" ng-if="response.errorsLoading">
+          {{response.message}}
+        </div>
+        <div class="alert alert-danger" role="alert" ng-if="response.errorsError">
+          {{response.message}}
+        </div>
+        <div class="alert alert-success" role="alert" ng-if="response.errorsSuccess && errorRecords && errorRecords.length > 0">
+          {{response.message}}
+        </div>
+        <div class="alert alert-danger" role="alert" ng-if="response.errorsSuccess && (!errorRecords || errorRecords.length == 0)">
+          {{i18n.admin.errors.noRecords}}
+        </div>
+        <!-- Search box -->
+        <div class="row mb-4" ng-show="errorRecords && errorRecords.length > 0">
+          <div class="col">
+            <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="filterErrors">
+          </div>
+        </div>
+        <!-- Table Scroll -->
+        <div class="pre-scrollable mb-4" ng-show="errorRecords && errorRecords.length > 0">
+          <table class="table table-sm table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <!-- <th scope="col">#</th> -->
+                <th scope="col">{{i18n.admin.errors.table.user}}</th>
+                <th scope="col">{{i18n.admin.errors.table.error}}</th>
+                <th scope="col">{{i18n.admin.errors.table.date}}</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="error in errorRecords | filter:filterErrors | orderBy:'-date' track by error.$id">
+                <!-- <th>{{$index + 1}}</th> -->
+                <td>
+                  <a target="_blank" ng-href="#!/users/edit/{{error.impactedUserId}}">
+                    {{error.impactedUserEmail}}
+                  </a>
+                </td>
+                <td>{{error.error}}</td>
+                <td>{{error.date | date: config.formats.datetime}}</td>
+                <td>
+                  <!-- Mark as readed -->
+                  <i class="clickable pr-2 fas fa-lg fa-eye" title="{{i18n.admin.errors.readBtn}}"
+                      ng-click="readErrorRecord(true,error)" ng-if="!error.readed"></i>
+                  <!-- Mark as unreaded -->
+                  <i class="clickable pr-2 fas fa-lg fa-eye-slash" title="{{i18n.errors.unreadBtn}}"
+                      ng-click="readErrorRecord(false,error)" ng-if="error.readed"></i>
+                  <!-- Delete Error -->
+                  <i class="clickable pr-2 fas fa-lg fa-trash-alt" title="{{i18n.admin.errors.deleteBtn}}"
+                      ng-click="deleteErrorRecord(error)"></i>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Load Errors Button -->
+        <!-- <div class="row" ng-show="!errorRecords">
+          <div class="col">
+            <button class="btn btn-lg btn-block btn-warning clickable" ng-click="loadSystemErrors()">
+              {{i18n.admin.errors.loadErrors}}
+            </button>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </article>
+
+  <article id="migration" ng-show="true">
+    <div class="card h-100">
+      <div class="card-body">
+        <h4 class="card-title">Migration</h4>
+        <hr>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateNotifications()">
+          Migrate Notifications
+        </button>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateWeeks()">
+          Migrate Weeks
+        </button>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateMembers()">
+          Migrate Members
+        </button>
+        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateGroups()">
+          Migrate Groups
+        </button>
+      </div>
+    </div>
+  </article>
+
+</section>
