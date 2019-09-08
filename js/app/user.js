@@ -110,7 +110,7 @@ okulusApp.controller('UsersListCntrl',
 		 used, and determining the max possible records to display. */
 		$scope.loadAllUsersList = function () {
  			$scope.response = { loading:true, message: systemMsgs.inProgress.loadingRecords };
-			$rootScope.adminUsersList = UsersSvc.getAllUsers();
+			$rootScope.adminUsersList = UsersSvc.getAllUsers($rootScope.config.maxQueryListResults);
  			$rootScope.adminUsersParams = getParamsByLoader("AllUsersLoader");
  			whenRecordsRetrieved();
 		};
@@ -192,15 +192,15 @@ okulusApp.controller('UsersListCntrl',
 			}
 			else if(loaderName == "NormalUsersLoader"){
 				params.title= systemMsgs.success.normalUsersTitle;
-				params.maxPossible = $scope.usersCounters.users;
+				params.maxPossible = $scope.usersCounters.user;
 			}
 			else if(loaderName == "AdminUsersLoader"){
 				params.title= systemMsgs.success.adminUsersTitle;
-				params.maxPossible = $scope.usersCounters.admins;
+				params.maxPossible = $scope.usersCounters.admin;
 			}
 			else if(loaderName == "RootUsersLoader"){
 				params.title= systemMsgs.success.rootUsersTitle;
-				params.maxPossible = $scope.usersCounters.roots;
+				params.maxPossible = $scope.usersCounters.root;
 			}
 			return params;
 		};
@@ -223,13 +223,13 @@ okulusApp.controller('UsersListCntrl',
 
 //To redirect from Audit Table
 okulusApp.controller('UserEditCntrl',
-	['$rootScope','$routeParams','$scope','$location','$firebaseObject','$firebaseAuth',
-		'AuthenticationSvc','MembersSvc', 'UsersSvc',
-	function($rootScope,$routeParams,$scope,$location,$firebaseObject,$firebaseAuth,
-					AuthenticationSvc,MembersSvc,UsersSvc){
+	['$scope','$rootScope','$routeParams','$location','$firebaseAuth',
+		'AuthenticationSvc', 'UsersSvc','AuditSvc','CountersSvc',
+	function($scope, $rootScope, $routeParams, $location, $firebaseAuth,
+					AuthenticationSvc, UsersSvc, AuditSvc, CountersSvc){
 
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
-			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingGroup };
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 			$scope.objectDetails = {};
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
 				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
@@ -248,22 +248,59 @@ okulusApp.controller('UserEditCntrl',
 					}
 
 					$scope.objectDetails.audit = UsersSvc.getUserAuditObject(user.$id);
-					if(user.memberId){
-						$scope.objectDetails.member = MembersSvc.getMemberBasicDataObject(user.memberId);
-					}else{
+					if(!user.memberId){
 						//it might be root, or a brand new user that didnt find a member
-						$scope.objectDetails.member = (user.type == constants.roles.root)?{shortname: constants.roles.rootName }:{shortname: constants.roles.userDefaultName};
+						$scope.objectDetails.basicInfo.shortname = (user.type == constants.roles.root)?constants.roles.rootName:constants.roles.userDefaultName;
 					}
+					$scope.response = null;
 				});
 
 			});
 		}});
 
+		$scope.setUserStatusActive = function(isActive) {
+			$scope.response = { working: true, message: systemMsgs.inProgress.working };
+			$scope.objectDetails.basicInfo.isActive = isActive;
+			$scope.objectDetails.basicInfo.$save().then(function(user) {
+				let description = undefined;
+				if(isActive){
+					description = systemMsgs.notifications.userSetActive + $scope.objectDetails.basicInfo.shortname;
+					CountersSvc.increaseActiveUsers();
+				}else{
+					description = systemMsgs.notifications.userSetInactive + $scope.objectDetails.basicInfo.shortname;
+					CountersSvc.decreaseActiveUsers();
+				}
+				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.users, user.key, description);
+				$scope.response = undefined;
+			});
+		};
+
+		$scope.setAdminRole = function(setAsAdmin) {
+			$scope.response = { working: true, message: systemMsgs.inProgress.working };
+			let description = undefined;
+			if(setAsAdmin){
+				$scope.objectDetails.basicInfo.type = constants.roles.admin;
+				description = systemMsgs.notifications.userSetAdminRole + $scope.objectDetails.basicInfo.shortname;
+				CountersSvc.increaseAdminUsers();
+				CountersSvc.decreaseNormalUsers();
+			}else{
+				$scope.objectDetails.basicInfo.type = constants.roles.user;
+				description = systemMsgs.notifications.userRemoveAdminRole + $scope.objectDetails.basicInfo.shortname;
+				CountersSvc.decreaseAdminUsers();
+				CountersSvc.increaseNormalUsers();
+			}
+
+			$scope.objectDetails.basicInfo.$save().then(function(user) {
+				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.users, user.key, description);
+				$scope.response = undefined;
+			});
+		};
+
 }]);
 
 okulusApp.factory('UsersSvc',
-	['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+	['$rootScope', '$firebaseArray', '$firebaseObject','CountersSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, CountersSvc){
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 		let usersRef = baseRef.child(constants.db.folders.usersList);
 
@@ -334,6 +371,7 @@ okulusApp.factory('UsersSvc',
 					}
 				};
 				usersRef.child(userId).set(record);
+				CountersSvc.increaseTotalUsers(userType);
 			}
 		};
 	}

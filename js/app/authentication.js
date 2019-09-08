@@ -223,40 +223,49 @@ okulusApp.controller('PwdResetCntrl',
 
 /* Controller linked to  /register */
 okulusApp.controller('RegistrationCntrl',
-	['$scope', '$rootScope', '$location', 'AuthenticationSvc','AuditSvc', 'UsersSvc',
-	function($scope, $rootScope, $location, AuthenticationSvc, AuditSvc, UsersSvc){
+	['$scope', '$rootScope', '$location', '$firebaseAuth', 'AuthenticationSvc', 'AuditSvc', 'UsersSvc',
+	function($scope, $rootScope, $location, $firebaseAuth, AuthenticationSvc, AuditSvc, UsersSvc){
 
-		/* When navigating to "#!/register", but the user is already logged-in
-		 we better redirect him to Home Page, instead of showing the login page */
-		if($rootScope.currentSession && $rootScope.currentSession.user){
-			$location.path(constants.pages.home); return;
-		}
+		$firebaseAuth().$onAuthStateChanged(function(authUser){
+			/* When navigating to "#!/register", but the user is already logged-in
+			 we better redirect him to Home Page, instead of showing the login page */
+			if($rootScope.currentSession && $rootScope.currentSession.user){
+				$location.path(constants.pages.home); return;
+			}
+		});
 
 		/* To register a user:
+		- Verify if the used email is in the allowedEmails folder
 		1. Create user in firebase Authentication with $createUserWithEmailAndPassword
 		2. After Firebase-User creation, record a user object in the DB
 		3. Trigger Audit Record
 		4. Redirect to Home */
 		$scope.register = function(){
 			$scope.response = {working: true, message: systemMsgs.inProgress.registeringUser};
-			AuthenticationSvc.register($scope.newUser).then(function(regUser){
-				$scope.response = {success: true, message: systemMsgs.success.userRegistered};
-				UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
-				AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.userCreated );
-				$rootScope.redirectFromRegister = true;
-				$location.path(constants.pages.home);
-			})
-			.catch( function(error){
-				let message = undefined;
-				switch(error.code) {
-						case "auth/email-already-in-use":
-								message = systemMsgs.error.emailExist;
-								break;
-						default:
-							message = systemMsgs.error.tryAgainLater;
-				}
-				$scope.response = { error: true, message: message };
-				console.error(error);
+			AuthenticationSvc.findEmailInAllowedList($scope.newUser.email).$loaded().then(
+				function(email){
+					console.log(email);
+					if(email.$value === null){
+						$scope.response = { error: true, message: systemMsgs.error.registerEmailNotAllowed };
+					}else{
+						AuthenticationSvc.register($scope.newUser).then(function(regUser){
+							$scope.response = {success: true, message: systemMsgs.success.userRegistered};
+							UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
+							AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.userCreated );
+							$location.path(constants.pages.home);
+						}).catch( function(error){
+							let message = undefined;
+							switch(error.code) {
+									case "auth/email-already-in-use":
+										message = systemMsgs.error.emailExist;
+										break;
+									default:
+										message = systemMsgs.error.tryAgainLater;
+							}
+							$scope.response = { error: true, message: message };
+							console.error(error);
+						});
+					}
 			});
 		};
 
@@ -305,7 +314,11 @@ okulusApp.factory('AuthenticationSvc', ['$rootScope','$firebaseObject', '$fireba
 				return auth.$createUserWithEmailAndPassword(user.email, user.pwd);
 			},
 			updateEmailInAllowedList: function(id, email){
-				allowedEmailsRef.child(id).update({emial:email});
+				allowedEmailsRef.child(id).update({email:email});
+			},
+			findEmailInAllowedList: function(email){
+				let reference = allowedEmailsRef.orderByChild(constants.db.fields.email).equalTo(email).limitToLast(1);
+				return $firebaseObject(reference);
 			}
 		};
 	}

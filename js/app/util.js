@@ -60,6 +60,22 @@ okulusApp.factory('CountersSvc',
 		let globalCountersRef = baseRef.child(constants.db.folders.counters);
 		let usersCountersRef = baseRef.child(constants.db.folders.userCounters);
 
+		/*Using a Transaction with an update function to reduce the counter by 1 */
+		let decreaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				if(currentCount>0)
+					return currentCount - 1;
+				return currentCount;
+			});
+		};
+
+		/*Using a Transaction with an update function to increase the counter by 1 */
+		let increaseCounter = function(counterRef){
+			counterRef.transaction(function(currentCount) {
+				return currentCount + 1;
+			});
+		};
+
 		return {
 			setInitialCounters: function(){
 				let counters = {
@@ -68,7 +84,7 @@ okulusApp.factory('CountersSvc',
 					members:{active:0, total:0, hosts:0, leads:0, trainees:0},
 					reports:{approved:0, pending:0, rejected:0, total:0},
 					requests:{members:{approved:0, pending:0, rejected:0, total:0}},
-					users:{active:1, total:1, roots:1, admins:0, users:0},
+					users:{active:1, total:1, root:1, admin:0, user:0},
 					weeks:{open:0, visible:0, total:0}
 				};
 				globalCountersRef.set(counters);
@@ -78,6 +94,34 @@ okulusApp.factory('CountersSvc',
 			},
 			getUsersGlobalCounters: function(){
 				return $firebaseObject(usersCountersRef);
+			},
+			/*** Users ***/
+			/* increaseTotalUsers: Called After User Creation. Increase the count of:
+			 - Total Users, - Active users, - User type  */
+			increaseTotalUsers: function(userType){
+				increaseCounter(usersCountersRef.child(constants.db.fields.total));
+				increaseCounter(usersCountersRef.child(constants.db.fields.active));
+				if(userType){
+					increaseCounter(usersCountersRef.child(userType));
+				}
+			},
+			increaseActiveUsers: function(){
+				increaseCounter(usersCountersRef.child(constants.db.fields.active));
+			},
+			decreaseActiveUsers: function(){
+				decreaseCounter(usersCountersRef.child(constants.db.fields.active));
+			},
+			increaseAdminUsers: function(){
+				increaseCounter(usersCountersRef.child(constants.db.fields.admin));
+			},
+			decreaseAdminUsers: function(){
+				decreaseCounter(usersCountersRef.child(constants.db.fields.admin));
+			},
+			increaseNormalUsers: function(){
+				increaseCounter(usersCountersRef.child(constants.db.fields.user));
+			},
+			decreaseNormalUsers: function(){
+				decreaseCounter(usersCountersRef.child(constants.db.fields.user));
 			}
 		};
 

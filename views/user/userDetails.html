@@ -1,26 +1,68 @@
-<section>
+<!-- Loading Member Alert -->
+<div class="alert alert-warning" role="alert" ng-show="response.loading" >
+  {{response.message}}
+</div>
+
+<section id="userView" ng-show="!response.loading">
 
   <div class="card h-100 mb-3">
     <div class="card-body">
       <h4 class="card-title">
-        {{objectDetails.member.shortname}}
-      </h4>
-      <h4 class="badge badge-success" ng-if="objectDetails.basicInfo.type != 'user'">
-        {{i18n.admin.users.adminLbl}}
-      </h4>
-      <h4 class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">
-        {{i18n.admin.users.userLbl}}
+        {{objectDetails.basicInfo.shortname}}
       </h4>
     </div>
   </div>
 
   <div class="card h-100 mb-3">
     <div class="card-body">
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.user}}: </span>{{objectDetails.basicInfo.email}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastLogin}}: </span>{{objectDetails.basicInfo.lastLoginOn | date: config.formats.datetime}}</p>
-      <p><span class="font-weight-bold">{{i18n.admin.users.table.lastActivity}}: </span>{{objectDetails.basicInfo.lastActivityOn | date: config.formats.datetime}}</p>
+      <p>
+        <span class="font-weight-bold">{{i18n.users.userTypeLbl}}:
+        <span class="badge badge-dark" ng-if="objectDetails.basicInfo.type == 'root'">{{i18n.roles.rootLbl}}</span>
+        <span class="badge badge-warning" ng-if="objectDetails.basicInfo.type == 'admin'">{{i18n.roles.adminLbl}}</span>
+        <span class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">{{i18n.roles.userLbl}}</span>
+
+        <span class="badge badge-success" ng-if="objectDetails.basicInfo.isActive">{{i18n.users.status.activeLbl}}</span>
+        <span class="badge badge-secondary" ng-if="!objectDetails.basicInfo.isActive">{{i18n.users.status.inactiveLbl}}</span>
+      </p>
+      <p><span class="font-weight-bold">{{i18n.contact.emailLbl}}: </span>{{objectDetails.basicInfo.email}}</p>
+      <p><span class="font-weight-bold">{{i18n.profile.lastLogin}} </span>{{objectDetails.basicInfo.lastLoginOn | date: config.formats.datetime}}</p>
+      <p><span class="font-weight-bold">{{i18n.profile.lastActivity}} </span>{{objectDetails.basicInfo.lastActivityOn | date: config.formats.datetime}}</p>
+      <p><span class="font-weight-bold">{{i18n.profile.sessionStatusLbl}} </span>
+        <span class="badge badge-success" ng-if="objectDetails.basicInfo.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
+        <span class="badge badge-secondary" ng-if="objectDetails.basicInfo.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
+      </p>
     </div>
   </div>
+
+  <!-- Admin Buttons -->
+  <div class="mb-3" ng-if="currentSession.user.type != 'user'">
+    <div class="row" ng-if="objectDetails.basicInfo.type !='root'">
+      <!-- Change User Role -->
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+        ng-if="objectDetails.basicInfo.type =='user'" ng-click="setAdminRole(true)">
+        {{i18n.users.setAdminRoleLbl}}
+      </button>
+      <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+      ng-if="objectDetails.basicInfo.type =='admin'" ng-click="setAdminRole(false)">
+      {{i18n.users.removeAdminRoleLbl}}
+    </button>
+  </div>
+      <!-- Change User Status-->
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+          ng-if="!objectDetails.basicInfo.isActive" ng-click="setUserStatusActive(true)">
+          {{i18n.users.setActiveLbl}}
+        </button>
+        <button type="button" class="btn btn-lg btn-block btn-success clickable"
+          ng-if="objectDetails.basicInfo.isActive" ng-click="setUserStatusActive(false)">
+          {{i18n.users.setInactiveLbl}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div ng-include="'views/alerts.html'"></div>
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>

@@ -32,15 +32,15 @@
       <article id="" class="card h-100">
         <div class="card-body">
           <h4>
-            <span class="badge badge-primary">{{usersCounters.roots}}</span>
+            <span class="badge badge-dark">{{usersCounters.root}}</span>
             <span class="btn-link clickable" ng-click="loadRootUsersList()">{{i18n.roles.rootsLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-dark">{{usersCounters.admins}}</span>
+            <span class="badge badge-warning">{{usersCounters.admin}}</span>
             <span class="btn-link clickable" ng-click="loadAdminUsersList()">{{i18n.roles.adminsLbl}}</span>
           </h4>
           <h4>
-            <span class="badge badge-warning">{{usersCounters.users}}</span>
+            <span class="badge badge-primary">{{usersCounters.user}}</span>
             <span class="btn-link clickable" ng-click="loadNormalUsersList()">{{i18n.roles.usersLbl}}</span>
           </h4>
         </div>
@@ -49,7 +49,7 @@
   </article>
 
   <!-- Buttons -->
-  <div class="row">
+  <!-- <div class="row">
     <div class="col mb-3">
       <a class="btn btn-lg btn-block btn-primary clickable text-light" ng-click="loadAllUsersList()">
         {{i18n.users.loadAllBtn}}
@@ -60,7 +60,7 @@
         {{i18n.users.newBtn}}
       </a>
     </div>
-  </div>
+  </div> -->
 
   <!-- Alerts to show Response Message (Used after redirect from User Delete) -->
   <div class="alert alert-success" role="alert" ng-show="userResponse.deleted" >
@@ -109,26 +109,23 @@
               {{user.email}}
             </a>
           </h4>
-          <span class="badge badge-success" ng-if="user.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
-          <span class="badge badge-dark"  ng-if="user.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
-          <span class="badge badge-danger"  ng-if="user.type != 'root' && !user.memberId">{{i18n.users.status.noMemberLbl}}</span>
           <hr>
           <p>
-            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{user.email}}">{{user.email}}</a>
+            <!-- Role Badge -->
+            <span class="badge badge-dark" ng-if="user.type == 'root'">{{i18n.roles.rootLbl}}</span>
+            <span class="badge badge-warning" ng-if="user.type == 'admin'">{{i18n.roles.adminLbl}}</span>
+            <span class="badge badge-primary" ng-if="user.type == 'user'">{{i18n.roles.userLbl}}</span>
+
+            <span class="badge badge-success" ng-if="user.isActive">{{i18n.users.status.activeLbl}}</span>
+            <span class="badge badge-secondary" ng-if="!user.isActive">{{i18n.users.status.inactiveLbl}}</span>
           </p>
-          <!-- Buttons -->
-          <div class="row">
-            <div class="col mb-2" ng-show="user.type == 'admin'">
-              <button class="btn btn-block btn-primary clickable" ng-click="makeAdmin(user.$id,false)">
-                {{i18n.roles.adminLbl}}
-              </button>
-            </div>
-            <div class="col mb-2" ng-show="user.type == 'user'">
-              <button class="btn btn-block btn-warning clickable" ng-click="makeAdmin(user.$id,true)">
-                {{i18n.roles.userLbl}}
-              </button>
-            </div>
-          </div>
+          <p><span class="font-weight-bold">{{i18n.contact.emailLbl}}: </span>{{user.email}}</p>
+          <p><span class="font-weight-bold">{{i18n.profile.lastLogin}} </span>{{user.lastLoginOn | date: config.formats.datetime}}</p>
+          <p><span class="font-weight-bold">{{i18n.profile.lastActivity}} </span>{{user.lastActivityOn | date: config.formats.datetime}}</p>
+          <p><span class="font-weight-bold">{{i18n.profile.sessionStatusLbl}} </span>
+            <span class="badge badge-success" ng-if="user.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
+            <span class="badge badge-secondary" ng-if="user.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
+          </p>
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ const systemMsgs = {
 		noMemberFound: "No se encontró un Miembro con el correo electrónico:",
 		moreThanOneMemberFound: "Existe mas de un Miembro con el correo electrónico:",
 		pwdResetEmailError: "Ha sucedido un Error. Revisa el correo proporcionado o comunícate con el Administrador.",
+		registerEmailNotAllowed: "El correo proporcionado no puedes ser registrado. Contacte al Administrador.",
 		/*LoginCntrl*/
 		incorrectCredentials: "Usuario o Contraseña Incorrectos",
 		/* RegistrationCntrl */
@@ -249,7 +250,10 @@ const systemMsgs = {
 		weekVisible:"Semana Visible: ",
 		weekHiden:"Semana Oculta: ",
 		/* Users */
-
+		userSetActive:"Usuario Activo: ",
+		userSetInactive:"Usuario Inactivo: ",
+		userSetAdminRole:"Rol de Administrador asignado a ",
+		userRemoveAdminRole:"Rol de Administrador removido a ",
 		/* Requests */
 		memberRequested:"Se ha solicitado la creación de un Miembro",
 		memberRequestedUpdated:"Solicitud de Miembro modificada",
@@ -283,6 +287,7 @@ okulusApp.run(function($rootScope) {
 			profile:{
 				lastLogin: "Última sesión:",
 				lastActivity: "Última actividad:",
+				sessionStatusLbl:"Estado de la sesión",
 				viewProfileBtn: "Ver Perfil"
 			},
 			launchpad:{
@@ -452,12 +457,14 @@ okulusApp.run(function($rootScope) {
 				activeUsersLbl:"Usuarios Activos", activeLbl:"Activos",
 				inactiveUsersLbl:"Usuarios Inactivos", inactiveLbl:"Inactivos",
 				loadAllBtn:"Todos los Usuarios", newBtn:"Nuevo Usuario",
+				userTypeLbl:"Tipo de Usuario",
 				/*Alert Messages*/
 				loadingSuccess: "Usuarios Cargados.",
 				loadPending1: "Mostar ", loadPending2: "Usuarios restantes.",
-				status:{activeLbl:"Usuario Activo", inactiveLbl:"Usuario Inactivo",
+				status:{activeLbl:"Activo", inactiveLbl:"Inactivo",
 					onlineLbl:"Conectado", offlineLbl:"Desconectado",noMemberLbl:"Sin Miembro"},
-
+				setActiveLbl:"Activar Usuario", setInactiveLbl:"Desactivar Usuario",
+				setAdminRoleLbl:"Hacer Administrador", removeAdminRoleLbl:"Remover Administrador"
 			},
 			roles:{
 				rootLbl:"Super Usuario", adminLbl:"Administrador", userLbl:"Usuario",
@@ -664,18 +671,6 @@ okulusApp.run(function($rootScope) {
 				userTitle:"Estadísticas de mis Grupos"
 			},
 			admin:{
-				users:{
-					title:"Usuarios Registrados", adminLbl: "Administrador", userLbl: "Usuario",
-					loadUsers: "Mostrar Lista de Usuarios",
-					loading: "Cargando Usuarios ...",
-					loadingError: "Error al cargar los usuarios. Intentelo más tarde.",
-					loadingSuccess: "Usuarios cargados.",
-					noRecords: "No se encontraron Usuarios.",
-					table:{
-						user: "Usuario", type:"Tipo",created:"Desde", lastLogin:"Última Sesión",
-						lastActivity:"Última Actividad", sessionStatus:"Estado"
-					}
-				},
 				errors:{
 					title:"Errores Importantes",
 					loadErrors: "Mostrar Lista de Errores",

@@ -74,7 +74,8 @@ const constants = {
 			createdById:"createdById",
 			systemErrors:"systemErrors",
 			isActive:"isActive",
-			type:"type"
+			type:"type", total:"total", active:"active",
+			admin:"admin", user:"user"
 		}
 	},
 	roles: {
@@ -126,6 +127,10 @@ okulusApp.config(['$routeProvider',
 			.when('/login',{
 				controller: 'LoginCntrl',
 				templateUrl: 'views/auth/login.html'
+			})
+			.when('/register',{
+				controller: 'RegistrationCntrl',
+				templateUrl: 'views/auth/register.html'
 			})
 			.when('/pwdreset',{
 				controller: 'PwdResetCntrl',
