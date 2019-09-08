@@ -36,7 +36,8 @@
         <div class="col-md-6 mb-1">
           <div ng-controller="CreateReportCntrl">
             <button class="btn btn-block btn-primary clickable"
-              ng-click="quickReportLauncher()"  ng-disabled="currentSession.accessGroups.length <= 0">
+              ng-click="quickReportLauncher()"  ng-show="currentSession.accessGroups.length <= 1"
+              ng-disabled="currentSession.accessGroups.length < 1">
               {{i18n.reports.newBtn}}
             </button>
             <div ng-include="'views/groups/groupSelectModal.html'"></div>
