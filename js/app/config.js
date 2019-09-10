@@ -216,7 +216,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/user/myRequests.html',
-				controller: "MyRequestsCntrl"
+				controller: "RequestsListCntrl"
 			})
 			.when('/admin/setRoot',{
 				controller: 'RegisterRootCntrl',
@@ -421,7 +421,7 @@ okulusApp.config(['$routeProvider',
 					}
 				},
 				templateUrl: 'views/requests/requestsAdmin.html',
-				controller: "AdminRequestsCntrl"
+				controller: "RequestsListCntrl"
 			})
 			.when('/requests/members/new', {
 				resolve: {

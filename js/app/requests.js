@@ -1,64 +1,24 @@
-okulusApp.controller('MyRequestsCntrl',
-	['$rootScope','$scope','$location','$firebaseAuth',
-		'AuthenticationSvc','MemberRequestsSvc',
-	function($rootScope,$scope,$location,$firebaseAuth,
-					AuthenticationSvc, MemberRequestsSvc){
-
-		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
-		$firebaseAuth().$onAuthStateChanged(function(authUser){if(authUser){
-			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(!user.memberId){
-					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
-					$location.path(constants.pages.error);
-					return;
-				}
-				/*Pre-load all the User's Requests*/
-				$scope.myRequestsList = MemberRequestsSvc.getRequestsForUser(user.$id);
-				$scope.myRequestsList.$loaded().then(function(requests) {
-					$scope.filteredRequestsList = requests;
-					$scope.response = undefined;
-				});
-			});
-
-		}});
-
-		$scope.filterRequestsByStatus = function(status){
-			$scope.myRequestsList.$loaded().then(function(requestList){
-				$scope.filteredRequestsList = new Array();
-				if(!status){
-					$scope.filteredRequestsList = $scope.myRequestsList;
-				}
-				requestList.forEach(function(request){
-					if(request.status == status){
-						$scope.filteredRequestsList.push(request);
-					}
-				});
-			});
-		};
-
-}]);
-
 /* Controlling the view where the admin can see the requests raised by the users.*/
-okulusApp.controller('AdminRequestsCntrl',
+okulusApp.controller('RequestsListCntrl',
 	['$rootScope','$scope','$location','$firebaseObject','$firebaseAuth',
 		'AuthenticationSvc','MemberRequestsSvc', 'UsersSvc',
 	function($rootScope,$scope,$location,$firebaseObject,$firebaseAuth,
 					AuthenticationSvc,MemberRequestsSvc,UsersSvc){
 
+		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
-			// $scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(user.type == constants.roles.user){
-					$rootScope.response = { error:true, message: systemMsgs.error.noPrivileges};
+				if(user.type == constants.roles.root && !user.memberId){
+					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
-				}else{
-					// $scope.getRequests(constants.status.pending);
 				}
+				$scope.response = null;
 			});
 
 		}});
 
+		/* ADMIN */
     $scope.loadPendingRequests = function(){
 			$scope.getRequests($scope.adminRequestsParams.activeRequestsLoader, true);
 		};
@@ -92,6 +52,61 @@ okulusApp.controller('AdminRequestsCntrl',
 				}
 				$scope.response = null;
       });
+
+		};
+
+		/* USER */
+		$scope.loadPendingUserRequests = function(){
+			$scope.getUserRequests($scope.myRequestsParams.activeRequestsLoader, true);
+		};
+
+		$scope.getUserRequests = function(status, loadAll){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+      $scope.filteredRequestsList = undefined;
+
+			/* Request by status must be filtered from the whole User's requests */
+			if(!$scope.allUserRequests){
+				$scope.allUserRequests = MemberRequestsSvc.getRequestsForUser($rootScope.currentSession.user.$id);
+			}
+
+			/* Build params used in the view */
+			let params = {activeRequestsLoader:status, searchFilter:undefined};
+			if(status == constants.status.pending){
+				params.title= systemMsgs.success.pendingRequestsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.requests.members.pending;
+			}else if(status == constants.status.approved){
+				params.title= systemMsgs.success.approvedRequestsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.requests.members.approved;
+			}else if(status == constants.status.rejected){
+				params.title= systemMsgs.success.rejectedRequestsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.requests.members.rejected;
+			}else{
+				params.title= systemMsgs.success.allRequestsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.requests.members.total;
+			}
+			$scope.myRequestsParams = params;
+
+			/* Proceed to filter the User's requests by the passed status. If no status
+			was passed is because the user want to see all requests, but we still need
+			to filter, to controll the amoun of requests to return. */
+			let maxResults = $rootScope.config.maxQueryListResults;
+			$scope.allUserRequests.$loaded().then(function(requestList) {
+				$scope.filteredRequestsList = new Array();
+				requestList.forEach(function(request){
+					if(request.status == status || !status){
+						maxResults --;
+						/* Limit the number of requests pushed to the Array */
+						if(!loadAll && maxResults<0){return}
+						$scope.filteredRequestsList.push(request);
+					}
+				});
+
+				if(!$scope.filteredRequestsList.length){
+					$scope.response = { error: true, message: systemMsgs.error.noMemberRequestsFound };
+				}else{
+					$scope.response = null;
+				}
+			});
 
 		};
 
@@ -335,13 +350,12 @@ okulusApp.controller('RequestDetailsCntrl',
 
 			$scope.objectDetails.$remove().then(function(ref){
 				MemberRequestsSvc.removeRequestDetails(ref.key)
-				$rootScope.response = { error:true, message: systemMsgs.success.requestDeleted };
+				$rootScope.requestResponse = { error:true, message: systemMsgs.success.requestDeleted };
 				$location.path(constants.pages.myRequests);
 			});
 		};
 
 }]);
-
 
 okulusApp.factory('MemberRequestsSvc',
 	['$rootScope', '$firebaseArray', '$firebaseObject',

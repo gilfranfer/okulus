@@ -202,6 +202,7 @@ const systemMsgs = {
 		pendingRequestsTitle:"Solicitudes Pendientes",
 		approvedRequestsTitle:"Solicitudes Aprobadas",
 		rejectedRequestsTitle:"Solicitudes Rechazadas",
+		allRequestsTitle:"Todas las Solicitudes",
 		/* Users JS */
 		allUsersTitle:"Usuarios Existentes", activeUsersTitle: "Usuarios Activos",	inactiveUsersTitle: "Usuarion Inactivos",
 		adminUsersTitle:"Usuarios Administradores", normalUsersTitle:"Usuarios Normales", rootUsersTitle:"Super Usuarios"
