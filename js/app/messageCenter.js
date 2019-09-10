@@ -42,7 +42,10 @@ okulusApp.controller('MessageCenterCntrl',
 			if($rootScope.currentSession.user.type != constants.roles.user){
 				let type = ($scope.message.isImportant)?"danger":"primary";
 				let record = { message: $scope.message.content, type: type,
-							createdBy: $rootScope.currentSession.user.email, createdOn:firebase.database.ServerValue.TIMESTAMP};
+							createdById: $rootScope.currentSession.user.$id,
+							createdByEmail: $rootScope.currentSession.user.email,
+							createdByName: $rootScope.currentSession.user.shortname,
+							createdOn:firebase.database.ServerValue.TIMESTAMP };
 
 				$scope.msgCenterMessages.$add(record).then(function(ref) {
 					$scope.response = {success:true, message: systemMsgs.success.postingMessageSuccess };

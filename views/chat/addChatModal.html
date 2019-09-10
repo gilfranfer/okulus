@@ -19,9 +19,13 @@
   						ng-repeat="user in usersList | filter:searchFilter | orderBy:'shortname'"
               ng-click="createNewChat(user)" data-dismiss="modal">
   					<div class="w-100">
-  					  <span class="mb-1 font-weight-bold">
+  					  <span class="mb-1 font-weight-bold" ng-show="user.shortname">
   							{{user.shortname}}
-  						</span><br>
+  						</span>
+              <span class="mb-1 font-weight-bold" ng-show="!user.shortname && user.type == 'root'">
+  							{{i18n.roles.rootLbl}}
+  						</span>
+              <br>
               <span>
                 {{user.email}}
               </span>

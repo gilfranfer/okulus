@@ -372,6 +372,9 @@ okulusApp.factory('UsersSvc',
 						requests:{members:{approved:0, pending:0, rejected:0, total:0}}
 					}
 				};
+				if(userType == constants.roles.root){
+					record.shortname = constants.roles.rootName;
+				}
 				usersRef.child(userId).set(record);
 				CountersSvc.increaseTotalUsers(userType);
 			}

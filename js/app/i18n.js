@@ -61,10 +61,11 @@ const systemMsgs = {
 		groupTypeNotRemoved:"Error al eliminar el Tipo de Grupo",
 		groupTypeExist:"El tipo de Grupo ya existe.",
 		/* Member Requests */
-		approvedRequestUpdate: "No se puede modificar una Solicitud aprobada.",
-		approvedRequestReject: "No se puede rechazar una Solicitud aprobada.",
-		approvedRequestCancel: "No se puede cancelar una Solicitud aprobada.",
-		noMemberRequestsFound: "No se encontraron solicitudes de miembros",
+		updateReqFailed: "No se puede modificar la Solicitud.",
+		approvedReqFailed: "No se puede aprobar la Solicitud.",
+		rejectReqFailed: "No se puede rechazar la Solicitud.",
+		deleteReqFailed: "No se puede elminar la Solicitud.",
+		noMemberRequestsFound: "No se encontraron Solicitudes.",
 		/* Users JS*/
 		noUsersError:"No se encontraron Usuarios"
 	},
@@ -194,10 +195,13 @@ const systemMsgs = {
 		/*Member Request*/
 		requestsLoaded:"Solictudes Cargadas",
 		requestCreated:"La solicitud ha sido Creada",
-		memberCreatedFromRequest:"La solicitud ha sido Aprobada. Nuevo Miembro creado.",
-		requestRejected:"La solicitud ha sido Rechazada",
-		requestUpdated:"La solicitud ha sido Actualizada",
-		requestCanceled:"La solicitud ha sido Cancelada",
+		memberCreatedFromRequest:"La Solicitud ha sido Aprobada. Nuevo Miembro creado.",
+		requestRejected:"La Solicitud ha sido Rechazada",
+		requestUpdated:"La Solicitud ha sido Actualizada",
+		requestDeleted:"La Solicitud ha sido Eliminada",
+		pendingRequestsTitle:"Solicitudes Pendientes",
+		approvedRequestsTitle:"Solicitudes Aprobadas",
+		rejectedRequestsTitle:"Solicitudes Rechazadas",
 		/* Users JS */
 		allUsersTitle:"Usuarios Existentes", activeUsersTitle: "Usuarios Activos",	inactiveUsersTitle: "Usuarion Inactivos",
 		adminUsersTitle:"Usuarios Administradores", normalUsersTitle:"Usuarios Normales", rootUsersTitle:"Super Usuarios"
@@ -256,10 +260,10 @@ const systemMsgs = {
 		userRemoveAdminRole:"Rol de Administrador removido a ",
 		/* Requests */
 		memberRequested:"Se ha solicitado la creación de un Miembro",
-		memberRequestedUpdated:"Solicitud de Miembro modificada",
-		memberRequestApproved:"Su solicitud de Miembro ha sido aprobada",
-		memberRequestRejected:"Su solicitud de Miembro ha sido rechazada",
-		memberRequestCanceled:"Se ha cancelado una solicitud de Miembro"
+		memberRequestedUpdated:"Solicitud de Miembro Modificada",
+		memberRequestDeleted:"Solicitud de Miembro Eliminada",
+		memberRequestApproved:"Solicitud de Miembro Aprobada",
+		memberRequestRejected:"Solicitud de Miembro Rechazada"
 	}
 };
 
@@ -367,7 +371,7 @@ okulusApp.run(function($rootScope) {
 				deleteBtn:"Eliminar Reporte",
 				/**/
 				studyTitle:"Información del estudio",
-				allReportsLbl:"Todos los Reportes", pendingReviewLbl:"Por Revisar",
+				allReportsLbl:"Todos los Reportes", underReviewLbl:"En Revisión", pendingReviewLbl:"Por Revisar",
 				totalReportsLbl:"Reportes Existentes", totalLbl:"Existentes",
 				approvedReportsLbl:"Reportes Aprobados", approvedLbl:"Aprobados",
 				rejectedReportsLbl:"Reportes Rechazados", rejectedLbl:"Rechazados",
@@ -516,29 +520,25 @@ okulusApp.run(function($rootScope) {
 				userSection: "Usuario",
 				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
 				allowUser:"Permitir que este Miembro se registre como Usuario?",
-				setEmailFirst:"El Miembro debe tener un correo electrónico asignado.",
-				/*Member Request*/
-				memberRequestLbl:"Solicitud de Creación de Miembro.",
-				rejectedRequest:"Esta solicitud ha sido Rechazada.",
-				approvedRequest:"Esta solicitud ha sido Aprobada.",
-				pendingRequest:"Esta solicitud ha sido Realizada. Actualmente en revisión.",
-				canceledRequest:"Esta solicitud ha sido Cancelada.",
+				setEmailFirst:"El Miembro debe tener un correo electrónico asignado."
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
 				myRequestsTitle:"Mis Solicitudes de Miembros", adminTitle:"Solicitudes de Creación de Miembros",
+				memberRequestTitle:"Solicitud de Creación de Miembro.",
 				pendingLbl:"Pendientes", approvedLbl:"Aprobadas", rejectedLbl:"Rechazadas",
-				allRequestsLbl:"Todas las Solicitudes", loadedLbl:"Solicitudes Cargadas",
+				allRequestsLbl:"Todas las Solicitudes",
+				loadedLbl:"Solicitudes Cargadas",
+				loadPending1: "Mostar ", loadPending2: "Solictudes restantes.",
+				pendingReviewShortLbl:"Por Revisar",
 				pendingRequestsLbl:"Solicitudes en Revisión",	pendingRequestLbl:"Solicitud en Revisión", pendingShortLbl:"En Revisión",
 				approvedRequestsLbl:"Solicitudes Aprobadas", approvedRequestLbl:"Solicitud Aprobada", approvedShortLbl:"Aprobadas",
 				rejectedRequestsLbl:"Solicitudes Rechazadas",	rejectedRequestLbl:"Solicitud Rechazada", rejectedShortLbl:"Rechazadas",
-				canceledRequestsLbl:"Solicitudes Canceladas",	canceledRequestLbl:"Solicitud Cancelada", canceledShortLbl:"Canceladas",
 				newMemberRequest:"Nueva Solicitud", openRequestBnt:"Ver Solicitud", myRequests:"Mis Solicitudes",
 				admin:{
 					donotCreateRequests:"Como Aministrador, puedes crear miembros sin necesidad de una Solicitud",
 					pendingLbl:"Solicitudes por Revisar", approvedLbl:"Solicitudes Aprobadas",
-					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas",
-					pendingShortLbl:"Por Revisar"
+					rejectedLbl:"Solicitudes Recahzadas", canceledLbl:"Solicitudes Canceladas"
 				}
 			},
 			groups:{
@@ -608,15 +608,12 @@ okulusApp.run(function($rootScope) {
 			},
 			btns:{
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
-				requestBtn:"Iniciar Solicitud", approveRequestBtn:"Aprobar Solicitud",
-				rejectRequestBtn:"Rechazar Solicitud", deleteRequestBtn:"Eliminar Solicitud",
-				yesBtn: "Si!", noBtn: "No!",
+				approveBtn:"Aprobar" , rejectBtn:"Rechazar", requestBtn:"Solicitar",
+				commentBtn:"Comentar", returnBtn:"Regresar",
+				yesBtn: "Sí", noBtn: "No",
+				addBtn: "+", here:"aquí",
 				/** Access Rules **/
-				returnBtn:"Regresar",
-				addReport: "Crear Reporte", accessRules:"Reglas de Accesos",
-				/*Reports*/
-				addBtn: "+",here:"aquí", commentBtn:"Comentar",
-				approveBtn:"Aprobar Reporte" , rejectBtn:"Rechazar Reporte"
+				addReport: "Crear Reporte", accessRules:"Reglas de Accesos"
 			},
 			alerts:{
 				loading:"Cargando ...", confirmQuestion: "Seguro?"

@@ -27,6 +27,7 @@ const constants = {
 			messagesList:"messages/list",
 			memberRequest:"requests/members",
 			memberRequestList:"requests/members/list",
+			memberRequestDetails:"requests/members/details",
 			membersAttendance:"attendance/members",	guestsAttendance:"attendance/guests",
 			notificationsList:"notifications/list",
 			/**Counters*/
@@ -106,7 +107,9 @@ const constants = {
 		groupEdit:"/groups/edit/",
 		reportEdit:"/reports/edit/",
 		reportNew:"/reports/new/",
-		weekEdit:"/weeks/edit/"
+		weekEdit:"/weeks/edit/",
+		myRequests:"/myrequests",
+		editMemberRequest:"requests/members/edit/"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
@@ -417,7 +420,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/admin/requests.html',
+				templateUrl: 'views/requests/requestsAdmin.html',
 				controller: "AdminRequestsCntrl"
 			})
 			.when('/requests/members/new', {
@@ -426,8 +429,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/memberRequest.html',
-				controller: 'MemberDetailsCntrl'
+				templateUrl: 'views/requests/memberRequest.html',
+				controller: 'RequestDetailsCntrl'
 			})
 			.when('/requests/members/edit/:requestId', {
 				resolve: {
@@ -435,8 +438,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/memberRequest.html',
-				controller: 'MemberDetailsCntrl'
+				templateUrl: 'views/requests/memberRequest.html',
+				controller: 'RequestDetailsCntrl'
 			})
 			.when('/requests/members/view/:requestId', {
 				resolve: {
@@ -444,8 +447,8 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/members/memberRequest.html',
-				controller: 'MemberDetailsCntrl'
+				templateUrl: 'views/requests/memberRequest.html',
+				controller: 'RequestDetailsCntrl'
 			})
 			.otherwise({
 				redirectTo: '/home'

@@ -1,6 +1,8 @@
-<section id="requestSection"  ng-show="currentSession.user.type != 'user'">
+<!-- Admin Member Requests View -->
+<section id="adminRequestsList"  ng-show="currentSession.user.type != 'user'">
+
   <!-- Title -->
-  <article class="card mb-3">
+  <article id="titleCard" class="card h-100 mb-3">
     <div class="card-body">
       <h4 class="card-title">{{i18n.requests.adminTitle}}</h4>
     </div>
@@ -30,15 +32,22 @@
     </div>
   </article>
 
-  <!-- Alerts -->
+  <!-- Alerts to show Response Message (Used after redirect from Request Delete) -->
+  <div class="alert alert-success" role="alert" ng-show="requestResponse.deleted" >
+    {{requestResponse.message}}
+  </div>
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Title and Filter -->
-  <article class="card mb-3" ng-show="filteredRequestsList.length && filteredRequestsList.length > config.minResultsToshowFilter">
+  <article class="card mb-3" ng-show="filteredRequestsList.length">
     <div class="card-body">
-      <div class="row">
+      <p class="lead">
+  			{{adminRequestsParams.title}}
+  		</p>
+      <div class="row" ng-show="filteredRequestsList.length > config.minResultsToshowFilter">
         <div class="col">
-          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="searchFilter">
+          <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
+            ng-model="adminRequestsParams.searchFilter">
         </div>
       </div>
     </div>
@@ -47,12 +56,19 @@
   <!-- Show number of loaded Requests -->
   <div class="alert alert-info" role="alert" ng-show="filteredRequestsList.length" >
     {{filteredRequestsList.length}} {{i18n.requests.loadedLbl}}
+    <!-- Load all pending Requests  -->
+    <span class="btn-link clickable" ng-click="loadPendingRequests()"
+      ng-if="(filteredRequestsList.length < adminRequestsParams.maxPossible)" >
+      {{i18n.requests.loadPending1}}
+      {{adminRequestsParams.maxPossible - filteredRequestsList.length}}
+      {{i18n.requests.loadPending2}}
+    </span>
   </div>
 
+  <!-- Requests Cards -->
   <article class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="request in filteredRequestsList | filter:searchFilter | orderBy:'request.audit.lastUpdateOn' track by request.$id">
-      <!-- Member card -->
+      ng-repeat="request in filteredRequestsList | filter:adminRequestsParams.searchFilter | orderBy:'request.audit.lastUpdateOn' track by request.$id">
       <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">
@@ -63,14 +79,13 @@
           <span class="badge badge-primary" ng-if="request.status == 'pending'">{{i18n.requests.pendingRequestLbl}}</span>
           <span class="badge badge-success" ng-if="request.status  == 'approved'">{{i18n.requests.approvedRequestLbl}}</span>
           <span class="badge badge-danger" ng-if="request.status == 'rejected'">{{i18n.requests.rejectedRequestLbl}}</span>
-          <!-- full name -->
           <p class="card-text mt-2" ng-if="request.notes">
             <span class="font-weight-bold">{{i18n.members.notesLbl}}:</span><br>
             {{request.notes}}
           </p>
-          <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/edit/{{request.$id}}">
+          <!-- <a class="btn btn-block btn-warning clickable" ng-href="#!/requests/members/edit/{{request.$id}}">
             {{i18n.requests.openRequestBnt}}
-          </a>
+          </a> -->
         </div>
       </div>
     </div>
@@ -81,6 +96,12 @@
     <div class="col text-center">
       <span class="text-primary">
         {{filteredRequestsList.length}} {{i18n.requests.loadedLbl}}
+      </span><br>
+      <span class="btn-link clickable" ng-click="loadPendingRequests()"
+        ng-if="(filteredRequestsList.length < adminRequestsParams.maxPossible)" >
+        {{i18n.requests.loadPending1}}
+        {{adminRequestsParams.maxPossible - filteredRequestsList.length}}
+        {{i18n.requests.loadPending2}}
       </span>
     </div>
   </div>

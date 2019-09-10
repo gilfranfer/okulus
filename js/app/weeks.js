@@ -321,9 +321,9 @@ okulusApp.factory('WeeksSvc',
  * It will load the Week for the id passed */
 okulusApp.controller('WeekDetailsCntrl',
 	['$rootScope','$routeParams','$scope','$location','$firebaseAuth',
-		'AuthenticationSvc','WeeksSvc', 'ReportsSvc', 'AuditSvc',
+		'AuthenticationSvc','WeeksSvc', 'ReportsSvc', 'AuditSvc', 'NotificationsSvc',
 	function($rootScope, $routeParams, $scope, $location, $firebaseAuth,
-		AuthenticationSvc, WeeksSvc, ReportsSvc, AuditSvc){
+		AuthenticationSvc, WeeksSvc, ReportsSvc, AuditSvc, NotificationsSvc){
 
 		/* Init. Executed everytime we enter to /weeks/view/:weekId or /weeks/edit/:weekId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
@@ -473,18 +473,24 @@ okulusApp.controller('WeekDetailsCntrl',
 					let isWeekVisible = $scope.objectDetails.basicInfo.isVisible;
 					//proceed with delete
 					weekInfo.$remove().then(function(deletedWeekRef) {
+						let deletedWeekId = deletedWeekRef.key;
+						let description = systemMsgs.notifications.weekDeleted + deletedWeekId;
+						let auditObj = $scope.objectDetails.audit;
+						// AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.weeks, deletedWeekId, description);
+						NotificationsSvc.notifyInvolvedParties(constants.actions.delete, constants.db.folders.weeks, deletedWeekId, description, auditObj);
+
+						WeeksSvc.decreaseTotalWeeksCounter();
 						if(isWeekOpen){
 							WeeksSvc.decreaseOpenWeeksCounter();
 						}
 						if(isWeekVisible){
 							WeeksSvc.decreaseVisibleWeeksCounter();
 						}
-						WeeksSvc.decreaseTotalWeeksCounter();
-						deletedWeekId = deletedWeekRef.key;
-						let description = systemMsgs.notifications.weekDeleted + deletedWeekId;
-						AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.weeks, deletedWeekId, description);
+
 						$rootScope.weekResponse = {deleted:true, message: systemMsgs.success.weekDeleted+" "+deletedWeekId};
+						$scope.objectDetails.audit.$remove();
 						$location.path(constants.pages.adminWeeks);
+
 					}, function(error) {
 						console.debug("Error:", error);
 					});

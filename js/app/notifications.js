@@ -84,11 +84,41 @@ okulusApp.factory('NotificationsSvc',
 			}
 			return $rootScope.allAdmins;
 		};
-		let getRootUsers = function() {
-			if(!$rootScope.allRoots){
-				$rootScope.allRoots = $firebaseArray(rootUsersRef);
+
+		let notifyUsersInAudit = function(audit,notification) {
+			/*array to control already notified users*/
+			let notifiedUsers = new Array();
+
+			/*Notify the User who created the element*/
+			if(audit.createdById){
+				notifiedUsers.push(audit.createdById);
+				pushNotification(audit.createdById, notification);
 			}
-			return $rootScope.allRoots;
+			/* Notify the User who did the last update in the element, only if has not been notified already*/
+			if(audit.lastUpdateById && notifiedUsers.indexOf(audit.lastUpdateById) < 0 ){
+				notifiedUsers.push(audit.lastUpdateById);
+				pushNotification(audit.lastUpdateById, notification);
+			}
+			/*Notify the User who approved the element (reports), only if has not been notified already*/
+			if(audit.approvedById && notifiedUsers.indexOf(audit.approvedById) < 0 ){
+				notifiedUsers.push(audit.approvedById);
+				pushNotification(audit.approvedById, notification);
+			}
+			/*Notify the User who rejected the element (reports), only if has not been notified already*/
+			if(audit.rejectedById && notifiedUsers.indexOf(audit.rejectedById) < 0 ){
+				notifiedUsers.push(audit.rejectedById);
+				pushNotification(audit.rejectedById, notification);
+			}
+
+			/*Notify all Admins and Roots, only if has not been notified already */
+			getAdminUsers().$loaded().then(function(admins){
+				admins.forEach(function(admin) {
+					if(notifiedUsers.indexOf(admin.$id) < 0){
+						pushNotification(admin.$id, notification);
+					}
+				});
+			});
+
 		};
 
 		/*This is for the actual notification creation in the DB*/
@@ -99,17 +129,6 @@ okulusApp.factory('NotificationsSvc',
 			notKey.set(notificationRecord);
 			increaseUnreadNotificationCounter(userIdToNotify);
 			increaseTotalNotificationCounter(userIdToNotify);
-		};
-
-		/*returns the notification object to be persisted in DB*/
-		let buildNotificationRecord = function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId, description) {
-			if(!description){
-				description = getNotificationDescription(actionPerformed, onFolder, objectId);
-			}
-			let notification = { action: actionPerformed, onFolder: onFolder, onObject: objectId,
-												from: actionByUser, fromId: actionByUserId, readed: false,
-												description: description, time: firebase.database.ServerValue.TIMESTAMP }
-			return notification;
 		};
 
 		/*Using a Transaction with an update function to reduce the counter by 1 */
@@ -156,10 +175,6 @@ okulusApp.factory('NotificationsSvc',
 				user.id = null;
 				user.email = null;
 				user.name = constants.roles.systemName;
-			} else if (session && session.user.type == constants.roles.root){
-				user.id = session.user.$id;
-				user.email = null;
-				user.name = constants.roles.rootName;
 			} else {
 				user.id = session.user.$id;
 				user.email = session.user.email;
@@ -174,103 +189,32 @@ okulusApp.factory('NotificationsSvc',
 			actionPerformed: create, update, delete, approved, rejected
 			onFolder: groups, members, reports, weeks, users, etc.
 			objectId: DB Refernce Id
-			user {id, email, name}: The user that performed the actio
-			description: Description used for the notification text */
-			notifyInterestedUsers: function(actionPerformed, onFolder, objectId, actionByUser, actionByUserId, description){
-				let notifiableElement = notifiableElements.has(onFolder);
-				if( notifiableElement ){
-					let notification = buildNotificationRecord(actionPerformed, onFolder, objectId, actionByUser, actionByUserId,description);
-
-					/* Send the notification only after the audit record is created/updated in the elment itself
-						This is because the audit folder will help us to identify the parties we need to notify
-						TODO: add child(onFolder).child("details")*/
-					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.db.folders.audit)).$loaded().then(function(audit) {
-						/*array to control already notified users*/
-						let notifiedUsers = new Array();
-						/*Notify the User who created the element*/
-						if(audit.createdById && audit.createdById != constants.roles.system){
-							notifiedUsers.push(audit.createdById);
-							pushNotification(audit.createdById, notification);
-						}
-						/*Notify the User who did the last update in the element, only if has not been notified already*/
-						if(audit.lastUpdateById && notifiedUsers.indexOf(audit.lastUpdateById) < 0 ){
-							notifiedUsers.push(audit.lastUpdateById);
-							pushNotification(audit.lastUpdateById, notification);
-						}
-						/*Notify the User who approved the element (reports), only if has not been notified already*/
-						if(audit.approvedById && notifiedUsers.indexOf(audit.approvedById) < 0 ){
-							notifiedUsers.push(audit.approvedById);
-							pushNotification(audit.approvedById, notification);
-						}
-						/*Notify the User who rejected the element (reports), only if has not been notified already*/
-						if(audit.rejectedById && notifiedUsers.indexOf(audit.rejectedById) < 0 ){
-							notifiedUsers.push(audit.rejectedById);
-							pushNotification(audit.rejectedById, notification);
-						}
-						/*Notify all Admins with MemberId mapped, only if has not been notified already
-						  TODO:Add notification according to their Preferences */
-						getAdminUsers().$loaded().then(function(admins){
-							admins.forEach(function(admin) {
-								if(admin.memberId && notifiedUsers.indexOf(admin.$id) < 0){
-									pushNotification(admin.$id, notification);
-								}
-							});
-						});
-
-					});
-
-				}
-			},
-			notifyInvolvedParties: function(actionPerformed, onFolder, objectId, user, description){
+			description: Description used for the notification text
+			auditObj: From where to get the involved partied */
+			notifyInvolvedParties: function(actionPerformed, onFolder, objectId, description, auditObj){
+				let sender = getNotificationSender();
 				let notification = {
 														action: actionPerformed, onFolder: onFolder, onObject: objectId,
 														description: description, url:null,
 														readed: false, time: firebase.database.ServerValue.TIMESTAMP,
-														fromId: user.id, fromName: user.name, fromEmail: user.email };
+														fromId: sender.id, fromName: sender.name, fromEmail: sender.email };
 
-					/* Send the notification only after the audit record is created/updated in the element itself
-						This is because the audit folder will help us to identify the parties we need to notify
-						TODO: add child(onFolder).child("details")*/
-					$firebaseObject(baseRef.child(onFolder).child(objectId).child(constants.db.folders.audit)).$loaded().then(function(audit){
-						/*array to control already notified users*/
-						let notifiedUsers = new Array();
-						/*Notify the User who created the element*/
-						if(audit.createdById){
-							notifiedUsers.push(audit.createdById);
-							pushNotification(audit.createdById, notification);
-						}
-						/* Notify the User who did the last update in the element, only if has not been notified already*/
-						if(audit.lastUpdateById && notifiedUsers.indexOf(audit.lastUpdateById) < 0 ){
-							notifiedUsers.push(audit.lastUpdateById);
-							pushNotification(audit.lastUpdateById, notification);
-						}
-						/*Notify the User who approved the element (reports), only if has not been notified already*/
-						if(audit.approvedById && notifiedUsers.indexOf(audit.approvedById) < 0 ){
-							notifiedUsers.push(audit.approvedById);
-							pushNotification(audit.approvedById, notification);
-						}
-						/*Notify the User who rejected the element (reports), only if has not been notified already*/
-						if(audit.rejectedById && notifiedUsers.indexOf(audit.rejectedById) < 0 ){
-							notifiedUsers.push(audit.rejectedById);
-							pushNotification(audit.rejectedById, notification);
-						}
+				/* Usually the auditObj is not passed, so we need to get it from DB as a $firebaseObject*/
+				if(auditObj && !auditObj.$id){
+					/* Case where an audit JS object was passed, but is not a $firebaseObject */
+					notifyUsersInAudit(auditObj,notification);
+					return;
+				}else if(!auditObj){
+					/* Usually the notification does not receives the audit object,
+						so we need to get it from DB as a $firebaseObject */
+					let objectAuditRef = baseRef.child(onFolder).child(constants.db.folders.details).child(objectId).child(constants.db.folders.audit);
+					auditObj = $firebaseObject(objectAuditRef);
+				}
 
-						/*Notify all Admins and Roots, only if has not been notified already */
-						getAdminUsers().$loaded().then(function(admins){
-							admins.forEach(function(admin) {
-								if(notifiedUsers.indexOf(admin.$id) < 0){
-									pushNotification(admin.$id, notification);
-								}
-							});
-						});
-						getRootUsers().$loaded().then(function(roots){
-							roots.forEach(function(root) {
-								if(notifiedUsers.indexOf(root.$id) < 0){
-									pushNotification(root.$id, notification);
-								}
-							});
-						});
-					});
+				/* Wait for the audit $firebaseObject to be loaded, because we'll read the involved parties from there */
+				auditObj.$loaded().then(function(audit){
+					notifyUsersInAudit(audit,notification);
+				});
 
 			},
 			/*Used when we want to notify someone that is not part of the audit folder of an element
@@ -284,6 +228,7 @@ okulusApp.factory('NotificationsSvc',
 				notification.fromEmail = sender.email;
 				pushNotification(userId, notification);
 			},
+
 			/* NOTIFICATION CENTER */
 			/*Return the list of notifications for specific user*/
 			getAllNotificationsForUser: function(userid) {

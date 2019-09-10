@@ -140,10 +140,6 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				user.id = null;
 				user.email = null;
 				user.name = constants.roles.systemName;
-			} else if (session && session.user.type == constants.roles.root){
-				user.id = session.user.$id;
-				user.email = null;
-				user.name = constants.roles.rootName;
 			} else {
 				user.id = session.user.$id;
 				user.email = session.user.email;
@@ -195,7 +191,7 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 				}
 
 				if(!avoidNotification){
-					NotificationsSvc.notifyInvolvedParties(action, objectFolder, objectId, user, description);
+					NotificationsSvc.notifyInvolvedParties(action, objectFolder, objectId, description, null);
 				}
 				return objectAuditRef;
 			}
