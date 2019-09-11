@@ -1,41 +1,45 @@
-<!-- Contacts List -->
-<article class="card mb-3">
-  <!-- <div class="card-header"></div> -->
-  <div class="card-body">
-    <h4 class="card-title">{{i18n.mycontacts.title}}</h4>
-    <hr>
-    <div class="card-text">
-        <!-- <p>{{i18n.mygroupsList.description}}</p> -->
-    </div>
-    <div class="mb-3">
-      <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control form-control-lg" ng-model="searchText">
-    </div>
-  </div>
-</article>
-
-<div ng-include="'views/alerts.html'"></div>
-
-<!-- Members Cards -->
-<article id="membersList" class="row">
-  <div class="col-md-6 col-lg-4 mb-3"
-    ng-repeat="member in membersList | filter:adminMembersParams.searchFilter | orderBy:'shortname' track by member.$id">
-    <div class="card h-100">
-      <div class="card-body">
-        <h4 class="card-title">
-          <a ng-href="#!/members/view/{{member.$id}}">
-            {{member.shortname}}
-          </a>
-        </h4>
-        <span class="badge badge-success" ng-if="member.isActive">{{i18n.members.status.activeLbl}}</span>
-        <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.status.inactiveLbl}}</span>
-        <hr>
-        <p>
-          <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>
-          <span class="font-weight-bold">{{i18n.members.lnameLbl}}:</span> {{member.lastname}}<br>
-          <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{member.email}}">{{member.email}}</a><br>
-          <span class="font-weight-bold">{{i18n.contact.phoneLbl}}:</span> <a href="tel:{{member.phone}}">{{member.phone}}</a>
-        </p>
+<section id="myContacts" ng-show="currentSession.user.memberId">
+  <!-- Title and Filter -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <h4 class="card-title">{{i18n.mycontacts.title}}</h4>
+      <hr>
+      <!-- <div class="card-text">
+          <p>{{i18n.mygroupsList.description}}</p>
+      </div> -->
+      <div class="mb-3" ng-show="membersList.length > config.minResultsToshowFilter">
+        <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control form-control-lg" ng-model="searchText">
       </div>
     </div>
+  </article>
+
+  <div class="alert alert-danger" role="alert" ng-show="!membersList.length" >
+    {{i18n.mycontacts.noResults}}
   </div>
-</article>
+
+  <!-- Contacts List -->
+  <article id="contactsList" class="row">
+    <div class="col-md-6 col-lg-4 mb-3"
+      ng-repeat="member in membersList | filter:searchText | orderBy:'shortname' track by member.$id">
+      <!-- Contact Card -->
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">
+            <a ng-href="#!/members/view/{{member.$id}}">
+              {{member.shortname}}
+            </a>
+          </h4>
+          <span class="badge badge-success" ng-if="member.isActive">{{i18n.members.status.activeLbl}}</span>
+          <span class="badge badge-danger"  ng-if="!member.isActive">{{i18n.members.status.inactiveLbl}}</span>
+          <hr>
+          <p>
+            <span class="font-weight-bold">{{i18n.members.fnameLbl}}:</span> {{member.firstname}}<br>
+            <span class="font-weight-bold">{{i18n.members.lnameLbl}}:</span> {{member.lastname}}<br>
+            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> <a href="mailto:{{member.email}}">{{member.email}}</a><br>
+            <span class="font-weight-bold">{{i18n.contact.phoneLbl}}:</span> <a href="tel:{{member.phone}}">{{member.phone}}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>

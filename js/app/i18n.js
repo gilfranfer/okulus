@@ -688,7 +688,7 @@ okulusApp.run(function($rootScope) {
 			},
 			mycontacts:{
 				title:"Miembros de mis Grupos Familiares",
-				noContactsError: "No encontramos ningun contacto."
+				noResults: "No encontramos ningun contacto."
 			},
 			configs:{
 				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes",
