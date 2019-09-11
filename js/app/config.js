@@ -666,6 +666,7 @@ okulusApp.factory('ConfigSvc',
 			setInitialConfigs: function(rootId){
 				appEditableConfigs.rootId = rootId;
 				appEditableConfigs.todayDate = null;
+				appEditableConfigs.isProd = true;
 				appConfigRef.set(appEditableConfigs);
 				systemConfigRef.set(systemFixedConfigs);
 			},
