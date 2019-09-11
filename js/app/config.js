@@ -188,7 +188,7 @@ okulusApp.config(['$routeProvider',
 						return AuthenticationSvc.isUserLoggedIn();
 					}
 				},
-				templateUrl: 'views/groups/groups-user.html',
+				templateUrl: 'views/groups/groupsUser.html',
 				controller: 'GroupsUserCntrl'
 			})
 			.when('/mycontacts', {

@@ -7,50 +7,24 @@
       <div class="card-text">
         <!-- <p>{{i18n.mygroups.description}}</p> -->
       </div>
-      <div class="mb-3">
-        <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="searchText">
+      <div class="mb-3" ng-show="adminGroupsList.length > config.minResultsToshowFilter">
+        <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="searchFilter">
       </div>
     </div>
   </article>
 
-  <!-- <article id="groupsList">
-    <div class="row">
-      <div class="col-md-6 mb-3"
-        ng-repeat="g in myGroupsList | filter:searchText | orderBy:'group.number' track by g.$id">
-        <!-- Group card
-        <div class="card h-100">
-          <div class="card-body">
-            <h4 class="card-title">
-              <a ng-href="#!/groups/edit/{{g.$id}}">
-                {{g.group.number}} - {{g.group.name}}
-              </a>
-            </h4>
-            <span class="badge badge-danger" ng-if="g.group.status == 'inactive'">{{i18n.groups.inactive}}</span>
-            <span class="badge badge-success" ng-if="g.group.status == 'active'">{{i18n.groups.active}}</span>
-            <hr>
-            <!-- Buttons
-            <div class="row">
-              <div class="col mb-2" ng-if="g.group.status == 'active'">
-                <a ng-href="#!/reports/new/{{g.$id}}" class="btn btn-block btn-warning">
-                  {{i18n.btns.addReport}}
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </article> -->
+  <div class="alert alert-danger" role="alert" ng-show="!myGroupsList.length" >
+    {{i18n.mygroups.noResults}}
+  </div>
 
   <article id="groupsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="group in myGroupsList | filter:adminGroupsParams.searchFilter | orderBy:'number' track by group.$id">
+      ng-repeat="group in myGroupsList | filter:searchFilter | orderBy:'number' track by group.$id">
       <!-- Group card -->
       <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">
-            <a ng-href="#!/groups/edit/{{group.$id}}">
+            <a ng-href="#!/groups/view/{{group.$id}}">
               {{group.number}} - {{group.name}}
             </a>
           </h4>
@@ -75,13 +49,6 @@
             <div class="col mb-2" ng-if="group.isActive">
               <a ng-href="#!/reports/new/{{group.$id}}" class="btn btn-block btn-warning">
                 {{i18n.btns.addReport}}
-              </a>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col" >
-              <a ng-href="#!/groups/access/{{group.$id}}" class="btn btn-block btn-warning">
-                {{i18n.btns.accessRules}}
               </a>
             </div>
           </div>

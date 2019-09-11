@@ -684,7 +684,7 @@ okulusApp.run(function($rootScope) {
 			},
 			mygroups:{
 				title:"Mis Grupos Familiares",
-				description: "Grupos familiares a los que tengo acceso."
+				noResults: "No cuentas con Grupos Familiares asignados."
 			},
 			mycontacts:{
 				title:"Miembros de mis Grupos Familiares",
