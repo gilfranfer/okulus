@@ -1,12 +1,12 @@
 <section id="userGroupsList" ng-show="currentSession.user.memberId">
-
+  <!-- Title and Filter -->
   <article class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">{{i18n.mygroups.title}}</h4>
       <hr>
-      <div class="card-text">
-        <!-- <p>{{i18n.mygroups.description}}</p> -->
-      </div>
+      <!-- <div class="card-text">
+        <p>{{i18n.mygroups.description}}</p>
+      </div> -->
       <div class="mb-3" ng-show="adminGroupsList.length > config.minResultsToshowFilter">
         <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="searchFilter">
       </div>
@@ -17,6 +17,7 @@
     {{i18n.mygroups.noResults}}
   </div>
 
+  <!-- Groups List -->
   <article id="groupsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
       ng-repeat="group in myGroupsList | filter:searchFilter | orderBy:'number' track by group.$id">
@@ -56,3 +57,4 @@
       </div>
     </div>
   </article>
+</section>
