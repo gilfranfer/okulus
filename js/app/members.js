@@ -174,6 +174,7 @@ okulusApp.controller('MemberDetailsCntrl',
 				$scope.countriesList = ConfigSvc.getCountriesList();
 				/* Prepare for Edit or View Details of Existing Member */
 				if(memberId){
+					// console.log(memberId);
 					$scope.objectDetails.basicInfo = MembersSvc.getMemberBasicDataObject(memberId);
 					$scope.objectDetails.basicInfo.$loaded().then(function(member){
 						//If member from DB hasn't shortname, is because no member was found
@@ -189,7 +190,7 @@ okulusApp.controller('MemberDetailsCntrl',
 							if(address.$value===null){
 								/* Set Default location from config.location, if no address exisiting */
 								$scope.statesList = ConfigSvc.getStatesForCountry($rootScope.config.location.country);
-								$scope.objectDetails.address = $rootScope.config.location;
+								$scope.objectDetails.address = { city:$rootScope.config.location.city, state: $rootScope.config.location.state, country: $rootScope.config.location.country};
 								$scope.objectDetails.address.isNew = true;
 							}else{
 								$scope.statesList = ConfigSvc.getStatesForCountry(address.country);
@@ -235,7 +236,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		/*Create address Object in scope so we can populate it's values from view*/
 		$scope.addAdress = function(){
 			clearResponse();
-			$scope.objectDetails.address = $rootScope.config.location;
+			$scope.objectDetails.address = { city:$rootScope.config.location.city, state: $rootScope.config.location.state, country: $rootScope.config.location.country};
 			$scope.objectDetails.address.isNew = true;
 		};
 
@@ -664,7 +665,6 @@ okulusApp.factory('MembersSvc',
 			/* Used when creating a Member */
 			increaseTotalMembersCount: function () {
 				let conunterRef = baseRef.child(constants.db.folders.totalMembersCount);
-				console.log(constants.db.folders.totalMembersCount);
 				increaseCounter(conunterRef);
 			},
 			/* Used when deleting a Member */
@@ -738,6 +738,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* returns $firebaseArray with all access rules in /members/details/:whichMember/access folder*/
 			getMemberAccessRules: function(whichMember) {
+				if(!whichMember) return;
 				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.db.folders.accessRules));
 			},
 			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/

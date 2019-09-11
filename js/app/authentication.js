@@ -244,7 +244,6 @@ okulusApp.controller('RegistrationCntrl',
 			$scope.response = {working: true, message: systemMsgs.inProgress.registeringUser};
 			AuthenticationSvc.findEmailInAllowedList($scope.newUser.email).$loaded().then(
 				function(email){
-					console.log(email);
 					if(email.$value === null){
 						$scope.response = { error: true, message: systemMsgs.error.registerEmailNotAllowed };
 					}else{
@@ -252,6 +251,7 @@ okulusApp.controller('RegistrationCntrl',
 							$scope.response = {success: true, message: systemMsgs.success.userRegistered};
 							UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
 							AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.userCreated );
+							$rootScope.redirectFromRegister = true;
 							$location.path(constants.pages.home);
 						}).catch( function(error){
 							let message = undefined;
@@ -402,7 +402,8 @@ okulusApp.controller('HomeCntrl',
 					// $rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
 				}
-				else if(user.memberId){
+				else if(user.memberId || $rootScope.redirectFromRegister){
+					console.log($rootScope.redirectFromRegister);
 					/* Get Access Rules for a valid existing user, and use them to load the groups
 					it has access to. This is useful for the groupSelectModal triggered from Quick Actions*/
 					$rootScope.currentSession.accessGroups = [];
@@ -413,6 +414,7 @@ okulusApp.controller('HomeCntrl',
 						});
 					});
 				}	else if(!user.memberId){
+					console.log("HomeCntrl: No member");
 					$rootScope.response = { error:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 				}

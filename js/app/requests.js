@@ -159,7 +159,7 @@ okulusApp.controller('RequestDetailsCntrl',
 			$scope.requestParams = { isEdit: false };
 			$scope.countriesList = ConfigSvc.getCountriesList();
 			$scope.statesList = ConfigSvc.getStatesForCountry($rootScope.config.location.country);
-			$scope.objectDetails.address = $rootScope.config.location;
+			$scope.objectDetails.address = { city:$rootScope.config.location.city, state: $rootScope.config.location.state, country: $rootScope.config.location.country};
 			$scope.objectDetails.basicInfo = {};
 			$scope.response = null;
 		};
@@ -172,7 +172,7 @@ okulusApp.controller('RequestDetailsCntrl',
 			if(!request.address){
 				/* Set Default location from config.location */
 				$scope.statesList = ConfigSvc.getStatesForCountry($rootScope.config.location.country);
-				$scope.objectDetails.address = $rootScope.config.location;
+				$scope.objectDetails.address = { city:$rootScope.config.location.city, state: $rootScope.config.location.state, country: $rootScope.config.location.country};
 			}else{
 				$scope.statesList = ConfigSvc.getStatesForCountry(request.address.country);
 			}
@@ -182,7 +182,7 @@ okulusApp.controller('RequestDetailsCntrl',
 		/* Create a new address Object in scope so we can populate it's values from view */
 		$scope.addAdressInRequest = function(){
 			$scope.statesList = ConfigSvc.getStatesForCountry($rootScope.config.location.country);
-			$scope.objectDetails.address = $rootScope.config.location;
+			$scope.objectDetails.address = { city:$rootScope.config.location.city, state: $rootScope.config.location.state, country: $rootScope.config.location.country};
 		};
 
 		/*Remove the address Object from scope, and from DB*/

@@ -296,7 +296,7 @@
   </article>
 
   <!-- User -->
-  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user'">
+  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user' && objectDetails.basicInfo.email">
     <div class="card mb-2">
       <div class="card-body">
         <!-- Header -->
@@ -319,12 +319,7 @@
         </div>
         <!-- When Member does not has User linked -->
         <div class="row" ng-if="!objectDetails.basicInfo.userId">
-          <div class="col" ng-if="memberBasicInfoForm.email.$invalid">
-            <label class="font-weight-bold" for="">
-              {{i18n.members.setEmailFirst}}
-            </label>
-          </div>
-          <div class="col" ng-if="memberBasicInfoForm.email.$valid">
+          <div class="col" ng-if="objectDetails.basicInfo.email && memberBasicInfoForm.email.$valid">
             <label class="font-weight-bold" for="">
               {{i18n.members.allowUser}}
             </label>
