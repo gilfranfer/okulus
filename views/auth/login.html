@@ -18,7 +18,7 @@
 		    	<input type="password" name="password" id="loginpwd" placeholder="{{i18n.login.passwordHint}}"
 		    		class="form-control form-control-lg" ng-model="user.pwd" ng-required="true" autocomplete="current-password">
 		    	<div class="alert alert-danger" role="alert" ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
-						{{i18n.login.alert.pwdRequired}}
+						{{i18n.login.pwdRequired}}
 					</div>
 					<a href="#!/pwdreset">{{i18n.login.forgotPwd}}</a>
 		  	</div>
