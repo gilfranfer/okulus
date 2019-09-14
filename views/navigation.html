@@ -157,7 +157,7 @@
 
 
 <!-- Message when User has not validated his email -->
-<div class="alert alert-danger" role="alert" ng-if="config.isProd && !currentSession.emailVerified">
+<div class="alert alert-danger" role="alert" ng-if="config.isProd && currentSession.user && !currentSession.emailVerified">
   <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
   <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
     {{i18n.emailValidation.verify}}
