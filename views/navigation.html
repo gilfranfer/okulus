@@ -148,8 +148,8 @@
       </li>
       <!-- Logout -->
       <li class="nav-item" ng-if="currentSession.user">
-        <a class="d-md-none nav-link" ng-click="logout()">{{i18n.navigation.logout}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
+        <a class="d-md-none nav-link clickable" ng-click="logout()">{{i18n.navigation.logout}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-sign-out-alt clickable" data-toggle="tooltip" title="{{i18n.navigation.logout}}" ng-click="logout()"></a>
       </li>
     </ul>
   </div>
@@ -157,7 +157,7 @@
 
 
 <!-- Message when User has not validated his email -->
-<div class="alert alert-danger" role="alert" ng-if="constants.config.isProdEnv && !currentSession.emailVerified">
+<div class="alert alert-danger" role="alert" ng-if="config.isProd && !currentSession.emailVerified">
   <h4>{{i18n.emailValidation.errorMessage}} {{currentSession.user.email}}</h4>
   <button class="btn btn-link clickable" ng-if="!response.emailSent" ng-click="sendVerificationEmail()">
     {{i18n.emailValidation.verify}}
