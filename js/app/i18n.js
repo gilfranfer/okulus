@@ -277,13 +277,17 @@ okulusApp.run(function($rootScope) {
 				home:"Inicio", chat:"Conversaciones", notifications:"Notificaciones",
 				groups:"Mis Grupos", contacts:"Mis Contactos", statistics:"Estadísticas",
 				reports:"Mis Reportes",
-				requests:"Mis Solicitudes",backToHome: "Regresar a la Página de Inicio",
+				requests:"Mis Solicitudes", backToHome: "Ir a la Página de Inicio",
 				admin:{
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
 					groups: "Grupos", members: "Miembros", weeks: "Semanas",
 					reports: "Reportes", monitor:"Errores", config:"Configuración",
 					reunions:"Reuniones", requests:"Solicitudes", users:"Usuarios"
 				}
+			},
+			welcome:{
+				title:"Bienvenido!",
+				message:"Ahora formas parte del equipo de trabajo!"
 			},
 			home:{
 				title:"Inicio", welcome:"Hola",

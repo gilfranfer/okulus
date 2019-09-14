@@ -252,7 +252,7 @@ okulusApp.controller('RegistrationCntrl',
 							UsersSvc.createUser(regUser.uid, $scope.newUser.email, constants.roles.user);
 							AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.users, regUser.uid, systemMsgs.notifications.userCreated );
 							$rootScope.redirectFromRegister = true;
-							$location.path(constants.pages.home);
+							$location.path(constants.pages.welcome);
 						}).catch( function(error){
 							let message = undefined;
 							switch(error.code) {
@@ -397,13 +397,15 @@ okulusApp.controller('HomeCntrl',
 			}
 
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				console.debug("**HomeCntrl: loadSessionData");
+				console.debug("** HomeCntrl: loadSessionData.",$rootScope.redirectFromRegister);
 				if(user.type == constants.roles.root){
 					// $rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
+				}else if($rootScope.redirectFromRegister){
+					$rootScope.redirectFromRegister = undefined;
+					$location.path(constants.pages.welcome);
 				}
-				else if(user.memberId || $rootScope.redirectFromRegister){
-					console.log($rootScope.redirectFromRegister);
+				else if(user.memberId){
 					/* Get Access Rules for a valid existing user, and use them to load the groups
 					it has access to. This is useful for the groupSelectModal triggered from Quick Actions*/
 					$rootScope.currentSession.accessGroups = [];

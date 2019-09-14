@@ -109,7 +109,8 @@ const constants = {
 		reportNew:"/reports/new/",
 		weekEdit:"/weeks/edit/",
 		myRequests:"/myrequests",
-		editMemberRequest:"requests/members/edit/"
+		editMemberRequest:"requests/members/edit/",
+		welcome:"/welcome"
 	},
 	actions:{
 		create:"create",update:"update",delete:"delete",
@@ -138,6 +139,12 @@ okulusApp.config(['$routeProvider',
 			.when('/pwdreset',{
 				controller: 'PwdResetCntrl',
 				templateUrl: 'views/auth/pwdReset.html'
+			})
+			.when('/welcome',{
+				currentAuth: function(AuthenticationSvc){
+					return AuthenticationSvc.isUserLoggedIn();
+				},
+				templateUrl: 'views/welcome.html'
 			})
 			.when('/home', {
 				controller: 'HomeCntrl',
