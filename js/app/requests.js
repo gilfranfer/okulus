@@ -8,7 +8,7 @@ okulusApp.controller('RequestsListCntrl',
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(user.type == constants.roles.root && !user.memberId){
+				if(user.type != constants.roles.root && !user.memberId){
 					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;

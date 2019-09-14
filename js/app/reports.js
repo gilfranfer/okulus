@@ -132,15 +132,16 @@ okulusApp.controller('MyReportsCntrl',
 	['$rootScope','$scope','$location','$firebaseAuth',
 	'AuthenticationSvc','MembersSvc','ReportsSvc','GroupsSvc',
 	function($rootScope,$scope,$location,$firebaseAuth,
-	AuthenticationSvc,MembersSvc,ReportsSvc,GroupsSvc){
+		AuthenticationSvc, MembersSvc, ReportsSvc, GroupsSvc){
 
-		/* Executed everytime we enter to /groups
+		/* Executed everytime we enter to /myreports
 		  This function is used to confirm the user is Admin */
 		$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				if(!user.memberId){
-					$rootScope.response = {error: true, message: systemMsgs.error.noMemberAssociated};
+				/* Only Valid Users (with an associated MemberId) can see the content */
+				if($rootScope.currentSession.user.type != constants.roles.root && !user.memberId){
+					$rootScope.response = {error: true, showHomeButton:true, message: systemMsgs.error.noMemberAssociated};
 					$location.path(constants.pages.error);
 					return;
 				}
@@ -153,30 +154,65 @@ okulusApp.controller('MyReportsCntrl',
 					rules.forEach(function(rule){
 						$rootScope.currentSession.accessGroups.push(GroupsSvc.getGroupBasicDataObject(rule.groupId));
 					});
-				});
-
-				/*Pre-load all the User's Reports*/
-				$scope.myReportsList = ReportsSvc.getReportsCreatedByUser(user.$id);
-				$scope.myReportsList.$loaded().then(function(reports){
-					$scope.filteredReportsList = reports;
 					$scope.response = undefined;
 				});
+
 			});
 
 		}});
 
-		$scope.filterReportsByStatus = function(status){
-			$scope.myReportsList.$loaded().then(function(reportsList){
+		$scope.loadPendingReports = function(){
+			$scope.getUserReports($scope.myReportsParams.activeLoader, true);
+		};
+
+		$scope.getUserReports = function(status, loadAll){
+			$scope.response = {loading: true, message: systemMsgs.inProgress.loading };
+      $scope.filteredReportsList = undefined;
+
+			/* Reports by status must be filtered from the whole User's reports */
+			if(!$scope.allUserReports){
+				$scope.allUserReports = ReportsSvc.getReportsCreatedByUser($rootScope.currentSession.user.$id);
+			}
+
+			/* Build params used in the view */
+			let params = {activeLoader:status, searchFilter:undefined};
+			if(status == constants.status.pending){
+				params.title= systemMsgs.success.pendingReportsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.reports.pending;
+			}else if(status == constants.status.approved){
+				params.title= systemMsgs.success.approvedReportsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.reports.approved;
+			}else if(status == constants.status.rejected){
+				params.title= systemMsgs.success.rejectedReportsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.reports.rejected;
+			}else{
+				params.title= systemMsgs.success.allReportsTitle;
+				params.maxPossible = $rootScope.currentSession.user.counters.reports.total;
+			}
+			$scope.myReportsParams = params;
+
+			/* Proceed to filter the User's reports by the passed status. If no status
+			was passed is because the user want to see all reports, but we still need
+			to filter, to controll the amount of reports to return. */
+			let maxResults = $rootScope.config.maxQueryListResults;
+			$scope.allUserReports.$loaded().then(function(reportsList) {
 				$scope.filteredReportsList = new Array();
-				if(!status){
-					$scope.filteredReportsList = $scope.myReportsList;
-				}
 				reportsList.forEach(function(report){
-					if(report.reviewStatus == status){
+					if(report.reviewStatus == status || !status){
+						maxResults --;
+						/* Limit the number of reports pushed to the Array */
+						if(!loadAll && maxResults<0){return}
 						$scope.filteredReportsList.push(report);
 					}
 				});
+
+				if(!$scope.filteredReportsList.length){
+					$scope.response = { error: true, message: systemMsgs.error.noMemberReportsFound };
+				}else{
+					$scope.response = null;
+				}
 			});
+
 		};
 
 	}
@@ -1554,7 +1590,6 @@ okulusApp.factory('ReportsSvc',
 		};
 	}
 ]);
-
 
 /*Controls the Quick "Create Report Button". */
 okulusApp.controller('CreateReportCntrl',

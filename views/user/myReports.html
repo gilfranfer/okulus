@@ -1,4 +1,6 @@
+<!-- My Reports View -->
 <section id="myReports">
+
   <!-- Title -->
   <article class="card mb-3">
     <div class="card-body">
@@ -14,15 +16,15 @@
           <div class="row">
             <h4 class="col">
               <span class="badge badge-primary">{{currentSession.user.counters.reports.pending}}</span>
-              <span class="btn-link clickable" ng-click="filterReportsByStatus('pending')">{{i18n.reports.pendingLbl}}</span>
+              <span class="btn-link clickable" ng-click="getUserReports('pending')">{{i18n.reports.pendingLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-success">{{currentSession.user.counters.reports.approved}}</span>
-              <span class="btn-link clickable" ng-click="filterReportsByStatus('approved')">{{i18n.reports.approvedLbl}}</span>
+              <span class="btn-link clickable" ng-click="getUserReports('approved')">{{i18n.reports.approvedLbl}}</span>
             </h4>
             <h4 class="col">
               <span class="badge badge-danger">{{currentSession.user.counters.reports.rejected}}</span>
-              <span class="btn-link clickable" ng-click="filterReportsByStatus('rejected')">{{i18n.reports.rejectedLbl}}</span>
+              <span class="btn-link clickable" ng-click="getUserReports('rejected')">{{i18n.reports.rejectedLbl}}</span>
             </h4>
           </div>
         </div>
@@ -54,7 +56,10 @@
     </div>
   </div>
 
-  <!-- Alerts -->
+  <!-- Alerts to show Response Message (Used after redirect from Report Delete) -->
+  <div class="alert alert-success" role="alert" ng-show="reportResponse.deleted" >
+    {{reportResponse.message}}
+  </div>
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Title and Filter -->
