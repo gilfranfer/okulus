@@ -584,7 +584,7 @@ okulusApp.run(function($rootScope) {
 				loadPendingRules1: "Mostar ", loadPendingRules2: "Reglas restantes.",
 				ruleDate:"Desde",
 				ruleDeleteBtn:"Eliminar Regla",
-				accessDescription: "Proporcionar acceso a un Usuario le permite crear reportes para el grupo y ver la información histórica del mismo.",
+				accessDescription: "Proporcionar acceso a un Miembro le permite crear reportes para el grupo y ver la información histórica del mismo.",
 				aceessInactiveGroup:"No pueden agregarse nuevas reglas a Grupos Inactivos.",
 				noRulesMessage: "No hay reglas de acceso en este grupo",
 				table:{

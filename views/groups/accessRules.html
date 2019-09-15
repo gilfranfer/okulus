@@ -19,7 +19,7 @@
        ng-if="group.isActive" ng-submit="addRule()">
         <div class="row mb-3">
           <div class="col-8">
-            <select id="userSelect" class="form-control form-control-lg" ng-model="access.memberId" ng-required="true">
+            <select id="memberSelect" class="form-control form-control-lg" ng-model="newRule.memberId" ng-required="true">
               <option ng-repeat="member in membersList | orderBy:'shortname' track by member.$id" value="{{member.$id}}">
                 {{member.shortname}}
               </option>
@@ -42,28 +42,28 @@
   <div ng-include="'views/alerts.html'"></div>
   <!-- No Records Alert -->
   <div class="row">
-    <div class="col" ng-show="acessList && acessList.length == 0">
+    <div class="col" ng-show="acessRulesList && acessRulesList.length == 0">
       <div class="alert alert-danger" role="alert">
         {{i18n.groups.noRulesMessage}}
       </div>
     </div>
   </div>
   <!-- Show number of loaded Rules -->
-  <div class="alert alert-info" role="alert" ng-show="acessList.length" >
-    {{acessList.length}} {{i18n.groups.loadingRulesSuccess}}
+  <div class="alert alert-info" role="alert" ng-show="acessRulesList.length" >
+    {{acessRulesList.length}} {{i18n.groups.loadingRulesSuccess}}
     <!-- Load all pending Groups  -->
     <span class="btn-link clickable" ng-click="loadPendingAccessRules()"
-      ng-if="(acessList.length < accessRulesParams.maxPossible)" >
+      ng-if="(acessRulesList.length < accessRulesParams.maxPossible)" >
       {{i18n.groups.loadPendingRules1}}
-      {{accessRulesParams.maxPossible - acessList.length}}
+      {{accessRulesParams.maxPossible - acessRulesList.length}}
       {{i18n.groups.loadPendingRules2}}
     </span>
   </div>
 
   <!-- Access Rules Cards -->
   <article id="rulesList" class="row">
-    <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="rule in acessList | filter:accessRulesParams.searchFilter | orderBy:'number' track by rule.$id">
+    <div class="col-sm-6 col-md-4 mb-3"
+      ng-repeat="rule in acessRulesList | filter:accessRulesParams.searchFilter | orderBy:'number' track by rule.$id">
       <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">
@@ -71,6 +71,7 @@
           </h4>
           <hr>
           <p>
+            <span class="font-weight-bold">{{i18n.contact.emailLbl}}:</span> {{rule.memberEmail}}<br>
             <span class="font-weight-bold">{{i18n.groups.ruleDate}}:</span> {{rule.date | date: config.formats.datetime}}<br>
           </p>
           <!-- Delete Group Button -->
