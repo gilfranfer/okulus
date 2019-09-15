@@ -2,7 +2,7 @@
   <a class="navbar-brand" href="#!/home" data-toggle="tooltip">{{config.appName}}</a>
 
   <!--  Collapsable button -->
-  <button class="navbar-toggler" type="button"
+  <button class="navbar-toggler clickable" type="button"
       data-toggle="collapse" data-target="#appMenu"
       aria-controls="appMenu" aria-expanded="false" aria-label="Navigation">
     <span class="navbar-toggler-icon">
@@ -35,7 +35,7 @@
     <!--  Menu when User is logged in -->
     <ul class="navbar-nav ml-auto" ng-if="currentSession.user">
       <!-- Admin and Root Menu -->
-      <li class="nav-item dropdown" ng-if="currentSession.user.type != 'user'">
+      <li class="nav-item dropdown clickable" ng-if="currentSession.user.type != 'user'">
         <!-- Use an icon for the menu in med size screen, but use text in smaller  -->
         <a id="navbarDropdown" class="d-none d-md-block nav-link dropdown-toggle fas fa-lg fa-user-tie" title="{{i18n.navigation.admin.menu}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -83,33 +83,33 @@
       </li>
       <!-- Home -->
       <li class="nav-item">
-        <a class="d-md-none nav-link" href="#!/home">{{i18n.navigation.home}}</a>
+        <a class="d-md-none nav-link" href="#!/home" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.home}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-home" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
       </li>
       <!-- User Menu: if user has an associated Member -->
       <!-- Statistics -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/statistics">{{i18n.navigation.statistics}}</a>
+        <a class="d-md-none nav-link" href="#!/statistics" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.statistics}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
       </li>
       <!-- My Reports -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/myreports">{{i18n.navigation.reports}}</a>
+        <a class="d-md-none nav-link" href="#!/myreports" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.reports}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-clipboard-list" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
       </li>
       <!-- My Groups -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/mygroups">{{i18n.navigation.groups}}</a>
+        <a class="d-md-none nav-link" href="#!/mygroups" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.groups}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-users" href="#!/mygroups" data-toggle="tooltip" title="{{i18n.navigation.groups}}"></a>
       </li>
       <!-- My Contacts -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/mycontacts">{{i18n.navigation.contacts}}</a>
+        <a class="d-md-none nav-link" href="#!/mycontacts" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.contacts}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
       </li>
       <!-- My Requests -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/myrequests">{{i18n.navigation.requests}}
+        <a class="d-md-none nav-link" href="#!/myrequests" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.requests}}
           <span ng-show="currentSession.user.counters.requests.members.pending" class="badge badge-danger badge-text">
             {{currentSession.user.counters.requests.members.pending}}
           </span>
@@ -122,7 +122,7 @@
       </li>
       <!-- Chats -->
       <li class="nav-item" ng-if="currentSession.memberData">
-        <a class="d-md-none nav-link" href="#!/chats">{{i18n.navigation.chat}}
+        <a class="d-md-none nav-link" href="#!/chats" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.chat}}
           <span ng-show="currentSession.unreadChats.length" class="badge badge-danger badge-text">
             {{currentSession.unreadChats.length}}
           </span>
@@ -135,7 +135,7 @@
       </li>
       <!-- Notifications -->
       <li class="nav-item" ng-if="currentSession.memberData">
-        <a class="d-md-none nav-link" href="#!/notifications">{{i18n.navigation.notifications}}
+        <a class="d-md-none nav-link" href="#!/notifications" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.notifications}}
           <span ng-show="currentSession.user.counters.notifications.unreaded" class="badge badge-danger badge-text">
             {{currentSession.user.counters.notifications.unreaded}}
           </span>
