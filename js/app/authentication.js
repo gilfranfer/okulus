@@ -397,7 +397,7 @@ okulusApp.controller('HomeCntrl',
 			}
 
 			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-				console.debug("** HomeCntrl: loadSessionData.",$rootScope.redirectFromRegister);
+				console.debug("** HomeCntrl: loadSessionData.");
 				if(user.type == constants.roles.root){
 					// $rootScope.currentSession.memberData = {shortname:constants.roles.rootName};
 					$rootScope.currentSession.accessGroups = GroupsSvc.getAllGroups();
