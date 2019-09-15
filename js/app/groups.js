@@ -614,7 +614,6 @@ okulusApp.controller('GroupAccessRulesCntrl',
 
 				let whichGroup = $routeParams.groupId;
 				$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
-
 				$scope.group.$loaded().then(function(group){
 					if(group.$value === null){
 						$rootScope.response = { error:true, message:systemMsgs.error.inexistingGroup};
@@ -631,55 +630,66 @@ okulusApp.controller('GroupAccessRulesCntrl',
 					$scope.membersList = MembersSvc.getMembersWithUser();
 					//Retrieve List of Users already having access (Some could be invalid Users)
 					$scope.acessList = GroupsSvc.getAccessRulesList(whichGroup);
+					$scope.newRule = {};
 					$scope.response = null;
 				});
 
 			});
 		}});
 
+		/* Rules are assigned to Members (/members/details/{memberId}/access)
+		 and to groups (/groups/details/{groupId}/access)*/
 		$scope.addRule = function(){
-			$scope.response = {working: true, message: systemMsgs.inProgress.creatingRule};
+			$scope.response = {working: true, message: systemMsgs.inProgress.creatingRule };
+			let memberObj = $scope.membersList.$getRecord($scope.newRule.memberId);
+			let whichMember = memberObj.$id;
 
-			let whichMember = $scope.access.memberId;
-			let memberName = document.getElementById('userSelect').options[document.getElementById('userSelect').selectedIndex].text;
-			let whichGroup = $scope.group.$id;
-			let groupName = $scope.group.name;
-
-			let ruleExists = false;
-			//Review in the current Lists, if a similar rule already exist
-			$scope.acessList.forEach(function(rule) {
-					if(rule.memberId == whichMember){
-						ruleExists = true;
-					}
-			});
-			if(ruleExists){
+			let existingRuleId = $scope.getExistingRuleId(whichMember);
+			if(existingRuleId){
 				$scope.response = {error: true, message: systemMsgs.error.duplicatedRule};
+				//Ensure the access rule (in the Group Folder) has the updated Member shortname and email
+				let index = $scope.acessList.$indexFor(existingRuleId);
+				let ruleObj = $scope.acessList.$getRecord(existingRuleId);
+				ruleObj.memberName = memberObj.shortname;
+				ruleObj.memberEmail = memberObj.email;
+				$scope.acessList.$save(index);
 				return;
 			}
 
 			let creationDate = firebase.database.ServerValue.TIMESTAMP;
-			let record = { memberName: memberName, memberId: whichMember, date:creationDate};
-			//Use the Group´s access list to add a new record
-			$scope.acessList.$add(record).then(function(ref) {
-				//Create cross Reference. The Member must have the same rule in members/details/:memberId/access
-				record = { groupName:groupName, groupId: whichGroup, date:creationDate };
-				MembersSvc.addAccessRuleToMember(whichMember,ref.key,record);
+			let ruleForGroup = { memberName: memberObj.shortname, memberId: memberObj.$id, memberEmail: memberObj.email, date:creationDate};
+			let ruleForMember = { groupName: $scope.group.name, groupId: $scope.group.$id, date:creationDate};
+
+			//Use the Group's access list to create the new rule
+			$scope.acessList.$add(ruleForGroup).then(function(ref) {
+				//Create cross Reference. The Member must have similar rule, with same rule Id.
+				MembersSvc.addAccessRuleToMember(whichMember, ref.key, ruleForMember);
 				//Send notification the User linked to the member that got the access
-				MembersSvc.getMemberBasicDataObject(whichMember).$loaded().then(function(member){
-					let description = member.shortname + " " + systemMsgs.notifications.gotAccessToGroup + groupName;
-					AuditSvc.saveAuditAndNotify(constants.actions.grantAccess, constants.db.folders.groups, whichGroup, description);
-					let notification = { description: description,
-															action: constants.actions.grantAccess,
-															onFolder: constants.db.folders.groups,
-															onObject: whichGroup,	url:null };
-					//Notify the request's creator about the rejection
-					NotificationsSvc.notifyUser(member.userId, notification);
-				});
+				let description = memberObj.shortname + " " + systemMsgs.notifications.gotAccessToGroup + $scope.group.name;
+				let notification = { description: description,
+					action: constants.actions.update,
+					onFolder: constants.db.folders.groups,
+					onObject: $scope.group.$id,	url:null };
+				//Notify the Group's Creator, Updator, and ADmins about the rule creation
+				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
+				//Notify the User who got the access about the rule creation
+				NotificationsSvc.notifyUser(memberObj.userId, notification);
 				$scope.response = { success: true, message: systemMsgs.success.ruleCreated};
 			}).catch( function(error){
 				$scope.response = { error: true, message: systemMsgs.error.creatingRuleError };
 				console.error(error);
 			});
+		};
+
+		$scope.getExistingRuleId = function(whichMember) {
+			let ruleId = undefined;
+			//Review in the current Lists, if a similar rule already exist
+			$scope.acessList.forEach(function(rule) {
+				if(rule.memberId == whichMember){
+					ruleId = rule.$id;
+				};
+			});
+			return ruleId;
 		};
 
 		$scope.deleteRule = function(ruleId){
