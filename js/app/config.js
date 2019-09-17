@@ -503,7 +503,9 @@ okulusApp.run(function($rootScope) {
 				});
 			}
 			//Add todays date that will be used to limit some date selectors
-			$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
+			var tomorrow = new Date();
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			$rootScope.config.tomorrowDate = tomorrow.toISOString().slice(0,10);
 	});
 });
 
@@ -627,7 +629,9 @@ okulusApp.controller('AppConfigsCntrl',
 				confReference.once('value').then( function(snapshot){
 					$rootScope.config = (snapshot.val());
 					//Add todays date that will be used to limit some date selectors
-					$rootScope.config.todayDate = new Date().toISOString().slice(0,10);
+					var tomorrow = new Date();
+					tomorrow.setDate(tomorrow.getDate() + 1);
+					$rootScope.config.tomorrowDate = tomorrow.toISOString().slice(0,10);
 				});
 				$scope.response = {success:true, message:systemMsgs.success.configSaved};
 			});
@@ -672,7 +676,7 @@ okulusApp.factory('ConfigSvc',
 		return {
 			setInitialConfigs: function(rootId){
 				appEditableConfigs.rootId = rootId;
-				appEditableConfigs.todayDate = null;
+				appEditableConfigs.tomorrowDate = null;
 				appEditableConfigs.isProd = true;
 				appConfigRef.set(appEditableConfigs);
 				systemConfigRef.set(systemFixedConfigs);

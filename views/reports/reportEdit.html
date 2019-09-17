@@ -164,7 +164,7 @@
               {{i18n.reports.dateLbl}}
               <span class="text-danger">*</span>
             </label>
-            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.todayDate}}"
+            <input type="date" id="date" name="date" min="{{config.reports.minDate}}" max="{{config.tomorrowDate}}"
               class="form-control form-control-lg" placeholder="{{i18n.reports.dateHint}}"
               ng-model="reportParams.dateObj" ng-required="true">
           </div>

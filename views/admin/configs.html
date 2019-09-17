@@ -223,7 +223,7 @@
             <select id="dateTimeFormat" class="form-control form-control-lg"
               ng-model="currentAppConfigs.formats.datetime" ng-required="true">
               <option ng-repeat="format in datetimeFormatList" value="{{format}}" >
-                {{config.todayDate | date: format}}
+                {{config.tomorrowDate | date: format}}
               </option>
             </select>
             <small class="form-text text-muted">{{i18n.configs.dateTimeFormatDesc}}</small>
@@ -237,7 +237,7 @@
             <select id="dateFormat" class="form-control form-control-lg"
               ng-model="currentAppConfigs.formats.date" ng-required="true">
               <option ng-repeat="format in dateFormatList" value="{{format}}" >
-                {{config.todayDate | date: format}}
+                {{config.tomorrowDate | date: format}}
               </option>
             </select>
             <small class="form-text text-muted">{{i18n.configs.dateFormatDesc}}</small>
@@ -251,7 +251,7 @@
             <select id="timeFormat" class="form-control form-control-lg"
               ng-model="currentAppConfigs.formats.time" ng-required="true">
               <option ng-repeat="format in timeFormatList" value="{{format}}" >
-                {{config.todayDate | date: format}}
+                {{config.tomorrowDate | date: format}}
               </option>
             </select>
             <small class="form-text text-muted">{{i18n.configs.timeFormatDesc}}</small>
