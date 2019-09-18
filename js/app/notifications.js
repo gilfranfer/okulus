@@ -113,7 +113,7 @@ okulusApp.factory('NotificationsSvc',
 			/*Notify all Admins and Roots, only if has not been notified already */
 			getAdminUsers().$loaded().then(function(admins){
 				admins.forEach(function(admin) {
-					if(notifiedUsers.indexOf(admin.$id) < 0){
+					if(admin.isActive && notifiedUsers.indexOf(admin.$id) < 0){
 						pushNotification(admin.$id, notification);
 					}
 				});
