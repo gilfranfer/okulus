@@ -744,7 +744,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			//To Control list of available members for attendance
 			$scope.reportParams.groupMembersList = new Array()
 			// /reports/list
-			$scope.objectDetails.basicInfo = { reviewStatus:null};
+			$scope.objectDetails.basicInfo = { reviewStatus:null, duration: $rootScope.config.reports.minDuration};
 			// reports/details
 			$scope.objectDetails.study = {};
 			$scope.objectDetails.audit = undefined;
@@ -1157,7 +1157,9 @@ okulusApp.controller('ReportDetailsCntrl',
 					});
 				}
 
-				$scope.objectDetails.study = null;
+				$scope.objectDetails.study.study = null;
+				$scope.objectDetails.study.series = null;
+				$scope.objectDetails.study.studyNotes = null;
 				$scope.objectDetails.attendance = { guests:[], members:[] };
 				$scope.objectDetails.basicInfo.duration = 0;
 				$scope.objectDetails.basicInfo.money = 0;
@@ -1175,15 +1177,12 @@ okulusApp.controller('ReportDetailsCntrl',
 			//Save Updates: Only valid for reports in "pending" or "rejected" review status
 			if($scope.reportParams.isEdit){
 				if($scope.objectDetails.basicInfo.reviewStatus == constants.status.rejected){
-					//decrease Rejected Reports Count
 					ReportsSvc.decreaseRejectedReportsCount($scope.objectDetails.basicInfo.createdById);
-					//Change this report to Pendind status
-					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pending;
-					//Increase Pending Reports Count
 					ReportsSvc.increasePendingReportsCount($scope.objectDetails.basicInfo.createdById);
+					$scope.objectDetails.basicInfo.reviewStatus = constants.status.pending;
 				}
-				//else: reviewStatus will be "pending", because "approved" reports cannot be modified
-				//Save changes in the $firebaseObject itself
+
+				/* Persist changes in basicInfo first (reports/list/{{reportId}}) */
 				$scope.objectDetails.basicInfo.$save().then(function(ref){
 					let report = $scope.objectDetails.basicInfo;
 					if($scope.objectDetails.study){
@@ -1200,15 +1199,19 @@ okulusApp.controller('ReportDetailsCntrl',
 							$scope.removedMembersMap = new Map();
 						}
 						//iterate over the members attendance list and push records to removedMembersMap
-						let membersList = Object.values($scope.objectDetails.atten.members);
-						membersList.forEach(function(elem){
-							$scope.removedMembersMap.set(elem.memberId, elem.memberId);
-						});
+						if($scope.objectDetails.atten.members){
+							let membersList = Object.values($scope.objectDetails.atten.members);
+							membersList.forEach(function(elem){
+								$scope.removedMembersMap.set(elem.memberId, elem.memberId);
+							});
+						}
 						membersAttendanceList = [];
 						guestsAttendanceList = [];
 					}
-					/* When editing a report, some members from the original list could have been removed,
-					so we need to remove the reference to the Report from the Member */
+
+					/* When editing a report, some members from the original attendance list could have
+					been removed, or all (in the case the reunion was moved from canceled to completed),
+					so we need to remove Member's folder reference to the Report */
 					ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap, report.$id );
 
 					//Always clean the Report's attendace folders, and set again
@@ -1268,14 +1271,14 @@ okulusApp.controller('ReportDetailsCntrl',
 		$scope.removeReport = function(){
 			clearResponse();
 			$scope.response = { working:true, message: systemMsgs.inProgress.removingReport };
-			//Normal Users only can remove reports pending to approve
 			let currentStatus = $scope.objectDetails.basicInfo.reviewStatus;
 
-			//Even admins cannot remove a report if it is already approved
+			//Approved Reports cannot be removed
 			if( currentStatus == constants.status.approved){
 				$scope.response = { error:true, message: systemMsgs.error.cantRemoveApprovedReport };
-			}else if( currentStatus == constants.status.pending || currentStatus == constants.status.rejected ){
-				//Admin removing a Pending or Rejected report or User removing a Pending Report
+			}
+			else if( currentStatus == constants.status.pending || currentStatus == constants.status.rejected ){
+				//Admin removing a Pending or Rejected report, or User removing a Pending Report
 				let reportId = $scope.objectDetails.basicInfo.$id;
 				let groupId = $scope.objectDetails.basicInfo.groupId;
 				//Remove /report/list
