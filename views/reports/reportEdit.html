@@ -34,7 +34,7 @@
     {{i18n.reports.pendingReport}}
   </div>
 
-  <form id="reportForm" name="reportForm" novalidate ng-submit="">
+  <form id="reportForm" name="reportForm" novalidate>
     <!-- Basic Details Card -->
     <article class="card mb-3">
       <div class="card-body">
@@ -188,7 +188,7 @@
           </div>
         </div>
 
-        <div ng-show="objectDetails.basicInfo.status == 'completed'">
+        <div ng-if="objectDetails.basicInfo.status == 'completed'">
         <!-- Duration and money -->
         <div class="form-row">
           <div class="col-sm form-group">
@@ -454,7 +454,7 @@
   <div ng-include="'views/alerts.html'"></div>
 
   <!-- Save Button -->
-  <div class="form-row" ng-if="objectDetails.basicInfo.reviewStatus != 'approved' && ( (!reportForm.$invalid && !reportForm.$pristine) || reportParams.forceSaveBtnShow)">
+  <div class="form-row" ng-if="objectDetails.basicInfo.reviewStatus != 'approved'">
     <div class="col-sm form-group" >
       <button type="button" class="btn btn-lg btn-block btn-warning clickable"
         ng-disabled="reportForm.$invalid || (reportForm.$pristine && !reportParams.forceSaveBtnShow)"
