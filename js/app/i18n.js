@@ -52,6 +52,7 @@ const systemMsgs = {
 		duplicatedAttendance:"ya está en la lista de asistencia.",
 		savingApprovedReport:"No se puede modificar el reporte porque ya ha sido aprobado",
 		cantRemoveApprovedReport:"No se puede eliminar el reporte porque ya ha sido aprobado",
+		cantRemoveClosedWeekReport:"No se puede eliminar el reporte porque la semana ya ha sido cerrada",
 		noMemberReportsFound:"No se encontraron Reportes",
 		/*Message Center*/
 		postingMessageError: "Error al crear el mensaje. Intentelo nuevamente.",

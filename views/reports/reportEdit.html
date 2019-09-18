@@ -319,7 +319,7 @@
                   {{element.memberName}}
                 </td>
                 <td class="col-6" scope="row">
-                  <button type="button" class="btn btn-danger" name="button" ng-click="removeMemberAttendance(element)">
+                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeMemberAttendance(element)">
                     {{i18n.btns.deleteBtn}}
                   </button>
                 </td>
@@ -398,7 +398,7 @@
                   {{element.guestName}}
                 </td>
                 <td class="col-6" scope="row">
-                  <button type="button" class="btn btn-danger" name="button" ng-click="removeGuestAttendance(element)">
+                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeGuestAttendance(element)">
                     {{i18n.btns.deleteBtn}}
                   </button>
                 </td>
@@ -550,6 +550,9 @@
   </article>
 
   <!-- Delete -->
+  <div class="alert alert-warning" role="alert" ng-show="response.deletingReport" >
+    {{response.message}}
+  </div>
   <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
     {{response.message}}
   </div>
