@@ -187,21 +187,26 @@ okulusApp.controller('AdminStatisticsCntrl',
 					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
 				}else{
+					console.debug("AdminStatisticsCntrl");
 					//Pre-defined values for the view
 					$scope.adminViewActive = true;
 					$scope.selectedWeeks = [];
 					$scope.selectedGroups = [];
 
-					//Initially, All Weeks are visilbe to the Admin
-					$scope.weeksList = WeeksSvc.getAllWeeks();
+					//Initially, Display Visible Weeks only
+					$rootScope.reportFinder.weekStatusOpt = 'visible';
+					$scope.weeksList = WeeksSvc.getVisibleWeeks();
+					//Preselect all weeks in the view
 					$scope.weeksList.$loaded().then(function(weeks){
-						//Preselect the latest week in the view
-						$scope.selectedWeeks.push(weeks.$keyAt(weeks.length-1));
+						weeks.forEach(function(week){
+							$scope.selectedWeeks.push(week.$id);
+						});
 					});
+
 					//Initially, All Groups are visilbe to the Admin
 					$scope.groupsList = GroupsSvc.getAllGroups();
+					//To preselect all the groups in the view
 					$scope.groupsList.$loaded().then(function(groups){
-						//To preselect all the groups in the view
 						groups.forEach(function(group){
 							$scope.selectedGroups.push(group.$id);
 						});
