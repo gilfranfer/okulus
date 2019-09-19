@@ -283,7 +283,7 @@ okulusApp.run(function($rootScope) {
 					menu: "Administrador", summary:"Resumen", statistics:"Estadísticas",
 					groups: "Grupos", members: "Miembros", weeks: "Semanas",
 					reports: "Reportes", monitor:"Errores", config:"Configuración",
-					reunions:"Reuniones", requests:"Solicitudes", users:"Usuarios"
+					requests:"Solicitudes", users:"Usuarios"
 				}
 			},
 			welcome:{
@@ -631,6 +631,7 @@ okulusApp.run(function($rootScope) {
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
+				reunionsLbl:"Reuniones", reportsLbl:"Reportes", attendanceLbl:"Asistentes", 
 				selectGroupLbl:"Seleccione los Grupos", selectWeekLbl:"Seleccione las Semanas",
 				allGroupTypes:"Cualquier tipo",
 				allGroups:"Cualquier estado", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
@@ -644,7 +645,6 @@ okulusApp.run(function($rootScope) {
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
 				resultsLoaded: "Reportes encontrados",
 				reportsListTitle: "Lista de Reportes",
-				attendanceSummaryTitle: "Asistencia",
 				attendanceChartsTitle: "Gráficas de Reuniones y Asistencia",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",

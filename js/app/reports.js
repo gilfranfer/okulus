@@ -631,7 +631,6 @@ okulusApp.controller('ReportsDashCntrl',
 
 		$scope.updateWeekSelectList = function (){
 			$scope.selectedWeeks = [];
-			console.debug($rootScope.reportFinder.weekStatusOpt);
 			switch($rootScope.reportFinder.weekStatusOpt){
 				case "all":
 					$scope.weeksList = WeeksSvc.getAllWeeks();
