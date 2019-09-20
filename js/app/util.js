@@ -1,57 +1,3 @@
-okulusApp.factory('ErrorsSvc', ['$rootScope','$firebaseObject',
-	function($rootScope,$firebaseObject){
-		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let errorsRef = baseRef.child(constants.db.folders.errors);
-		let counterRef = baseRef.child(constants.db.folders.errorsCount).child(constants.db.fields.systemErrors);
-
-		/*Using a Transaction with an update function to reduce the counter by 1 */
-		let decreaseUnreadErrorsCounter = function(){
-			counterRef.transaction(function(systemErrors) {
-				if(systemErrors>0)
-					return systemErrors - 1;
-				return systemErrors;
-			});
-		};
-
-		/*Using a Transaction with an update function to increase the counter by 1 */
-		let increaseUnreadErrorsCounter = function(){
-			counterRef.transaction(function(systemErrors) {
-				return systemErrors + 1;
-			});
-		};
-
-		return {
-			/*Add an error ecord in the DB, and increase the global error counter*/
-			logError: function(errorMessage){
-				console.error(errorMessage);
-				let record = { error: errorMessage, date: firebase.database.ServerValue.TIMESTAMP,
-											impactedUserId: $rootScope.currentSession.user.$id,
-											impactedUserEmail: $rootScope.currentSession.user.email
-										 };
-		    errorsRef.push().set(record);
-				increaseUnreadErrorsCounter();
-			},
-			updateErrorReadedStatus: function(errorId, isReaded){
-				errorsRef.child(errorId).update({readed:isReaded});
-				if(isReaded){
-					decreaseUnreadErrorsCounter();
-				}else{
-					increaseUnreadErrorsCounter();
-				}
-			},
-			/*Delete the error element, and reduce the counter */
-			deleteErrorRecord: function(error){
-				if(!error.readed){
-					decreaseUnreadErrorsCounter();
-				}
-				errorsRef.child(error.$id).set({});
-			},
-			getGlobalErrorCounter: function(){
-				return $firebaseObject(baseRef.child(constants.db.folders.errorsCount));
-			},
-		};
-	}
-]);
 
 okulusApp.factory('CountersSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
@@ -127,7 +73,8 @@ okulusApp.factory('CountersSvc',
 
 }]);
 
-okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
+okulusApp.factory('AuditSvc',
+	['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 	function($rootScope, ErrorsSvc, NotificationsSvc){
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
 
@@ -198,3 +145,178 @@ okulusApp.factory('AuditSvc', ['$rootScope', 'ErrorsSvc', 'NotificationsSvc',
 		};
 	}
 ]);
+
+okulusApp.factory('MigrationSvc',
+['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
+	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
+
+		let baseRef = firebase.database().ref().child(constants.db.folders.root);
+		let memberListRef = baseRef.child(constants.db.folders.membersList);
+		let membersRef = baseRef.child(constants.db.folders.members);
+		let groupsRef = baseRef.child(constants.db.folders.groups);
+
+		return {
+			migrateMembers: function(groups) {
+				let hostCount = 0;
+				let leadCount = 0;
+				let traineeCount = 0;
+				let totalCount = 0;
+				let memberFolderCount = 0;
+				let activeCount = 0;
+				let memberCountersRef = baseRef.child(constants.db.folders.membersCounters);
+				let membersListRef = baseRef.child(constants.db.folders.membersList);
+				let membersDetailsRef = baseRef.child(constants.db.folders.membersDetails);
+				let membersList = $firebaseArray(membersRef.orderByKey());
+
+				membersList.$loaded().then(function(list){
+					list.forEach(function(member) {
+						if(member.$id != "list" && member.$id != "details"){
+							//Move /audit, /access, /attendance, /address into /details
+							let detailsRecord = {};
+							if(member.access){
+								detailsRecord.access = member.access;
+							}
+							if(member.audit){
+								detailsRecord.audit = member.audit;
+							}
+							if(member.attendance){
+								detailsRecord.attendance = member.attendance;
+							}
+							if(member.address){
+								detailsRecord.address = member.address;
+							}
+							membersDetailsRef.child(member.$id).set(detailsRecord);
+
+							//Merge /user with /member and place in /list
+							let basicRecord = member.member;
+							if(basicRecord){
+								basicRecord.isActive = (basicRecord.status == "active");
+								basicRecord.canBeUser = null;
+								basicRecord.status = null;
+								if(basicRecord.baseGroup){
+									basicRecord.baseGroupId = basicRecord.baseGroup;
+									basicRecord.baseGroupName = groups.$getRecord(basicRecord.baseGroup).group.name;
+									basicRecord.baseGroup = null;
+								}
+								if(basicRecord.birthdate){
+									let dayString = (basicRecord.birthdate.day<10)?"0"+basicRecord.birthdate.day:basicRecord.birthdate.day;
+									let monthString = (basicRecord.birthdate.month<10)?"0"+basicRecord.birthdate.month:basicRecord.birthdate.month;
+									basicRecord.bday = basicRecord.birthdate.year+"-"+monthString+"-"+dayString;
+									basicRecord.birthdate = null;
+								}
+								if(member.user && member.user.userId){
+									basicRecord.isUser = true;
+									basicRecord.userId = member.user.userId;
+								}
+								if(!basicRecord.isActive){
+									basicRecord.isHost = false;
+									basicRecord.isLeader = false;
+									basicRecord.isTrainee = false;
+								}else{
+									activeCount++;
+								}
+								if(basicRecord.isHost){
+									hostCount++;
+								}
+								if(basicRecord.isLeader){
+									leadCount++;
+								}
+								if(basicRecord.isTrainee){
+									traineeCount++;
+								}
+								membersListRef.child(member.$id).set(basicRecord);
+								memberFolderCount++;
+							}else{
+								console.error("No member folder",member.$id);
+							}
+							totalCount++;
+						}
+					});
+					console.debug("List Size:",list.length);
+					console.debug("Total Members:",totalCount);
+					console.debug("With member folder",memberFolderCount);
+					console.debug("Active:",activeCount);
+					console.debug("Hosts:",hostCount);
+					console.debug("Leads:",leadCount);
+					console.debug("Trainees:",traineeCount);
+					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
+				});
+			},
+			migrateGroups: function(members) {
+
+				let totalCount = 0;
+				let activeCount = 0;
+				let groupFolderCount = 0;
+
+				let groupsCountersRef = baseRef.child(constants.db.folders.groupsCounters);
+				let groupsListRef = baseRef.child(constants.db.folders.groupsList);
+				let groupsDetailsRef = baseRef.child(constants.db.folders.groupsDetails);
+				let groupsList = $firebaseArray(groupsRef.orderByKey());
+
+				groupsList.$loaded().then(function(list){
+					list.forEach(function(group){
+						if(group.$id != "list" && group.$id != "details"){
+							// /access, /audit, /reports create /roles
+							let detailsRecord = {};
+
+							if(group.access){
+								detailsRecord.access = group.access;
+							}
+							if(group.audit){
+								detailsRecord.audit = group.audit;
+							}
+							if(group.reports){
+								detailsRecord.reports = group.reports;
+							}
+							detailsRecord.roles = {};
+							if(group.group.leadId){
+								detailsRecord.roles.leadId = group.group.leadId;
+								detailsRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
+								group.group.leadId = null;
+							}
+							if(group.group.hostId){
+								detailsRecord.roles.hostId = group.group.hostId;
+								detailsRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
+								group.group.hostId = null;
+							}
+							groupsDetailsRef.child(group.$id).set(detailsRecord);
+
+							// basicRecord ( /group, /schedule, /address )
+							let basicRecord = group.group;
+							if(!basicRecord){
+								console.error("No group folder",group.$id);
+								basicRecord = {};
+							}
+							if(group.address){
+								basicRecord.address = group.address;
+							}
+							if(group.schedule){
+								basicRecord.weekday = group.schedule.weekday;
+								let minutesText = (group.schedule.time.MM<10)?("0"+group.schedule.time.MM):group.schedule.time.MM;
+								basicRecord.time = group.schedule.time.HH +":"+minutesText;
+							}
+							basicRecord.isActive = (basicRecord.status == "active");
+							basicRecord.status = null;
+
+							groupsListRef.child(group.$id).set(basicRecord);
+
+							if(basicRecord.isActive){
+								activeCount++;
+							}
+							totalCount++;
+						}
+					});
+					console.debug("List Size:",list.length);
+					console.debug("Total Groups:",totalCount);
+					console.debug("Active:",activeCount);
+					groupsCountersRef.set({active:activeCount,total:totalCount});
+				});
+			},
+			getAllGroups: function(){
+				return $firebaseArray(groupsRef);
+			},
+			getMembersList: function(){
+				return $firebaseArray(memberListRef.orderByKey());
+			}
+		};
+}]);

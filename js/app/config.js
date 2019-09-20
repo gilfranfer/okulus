@@ -168,7 +168,10 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/notifications/notificationCenter.html',
 				controller: "NotificationCenterCntrl"
 			})
-			.when('/statistics', {
+			.when('/error', {
+				templateUrl: 'views/errors/error-general.html'
+			})
+			.when('/mystatistics', {
 				resolve: {
 					currentAuth: function(AuthenticationSvc){
 						return AuthenticationSvc.isUserLoggedIn();
@@ -176,18 +179,6 @@ okulusApp.config(['$routeProvider',
 				},
 				templateUrl: 'views/user/statistics.html',
 				controller: 'UserStatisticsCntrl'
-			})
-			.when('/error', {
-				templateUrl: 'views/errors/error-general.html'
-			})
-			.when('/admin/errors', {
-				resolve: {
-					currentAuth: function(AuthenticationSvc){
-						return AuthenticationSvc.isUserLoggedIn();
-					}
-				},
-				templateUrl: 'views/admin/errorsMonitor.html',
-				controller: 'ErrorsMonitorCntrl'
 			})
 			.when('/mygroups', {
 				resolve: {
@@ -228,6 +219,15 @@ okulusApp.config(['$routeProvider',
 			.when('/admin/setRoot',{
 				controller: 'RegisterRootCntrl',
 				templateUrl: 'views/auth/registerRoot.html'
+			})
+			.when('/admin/errors', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/admin/errorsMonitor.html',
+				controller: 'ErrorsMonitorCntrl'
 			})
 			.when('/admin/summary', {
 				resolve: {

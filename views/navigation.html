@@ -89,8 +89,8 @@
       <!-- User Menu: if user has an associated Member -->
       <!-- Statistics -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/statistics" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.statistics}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/statistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
+        <a class="d-md-none nav-link" href="#!/mystatistics" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.statistics}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/mystatistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
       </li>
       <!-- My Reports -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
