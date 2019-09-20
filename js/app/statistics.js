@@ -3,27 +3,29 @@
 okulusApp.controller('StatisticsCntrl',
 	['$rootScope','$scope', 'WeeksSvc','ReportsSvc','GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, GroupsSvc,MembersSvc) {
+
 		//Default chart Orientation (portrait or landscape)
 		$scope.chartOrientation = 'landscape';
-		//This will save the unflitered result from the report Finder
 		$scope.rawReportsFound = undefined;
 		$rootScope.reportFinder = {weekStatusOpt:'all', groupStatusOpt: 'all'};
-		/* Method to retrieve reports form database and build the detailed Dashboard.
-		We create separate DB calls (one per selected week) to fetch the reports. This
-		is because the selected weeks might not be in sequence. Later, a Map with the
-		selected groups is used to filter out irrelevant reports, and build the Dashboard elements. */
+
+		/* Method to retrieve reports from database, using promises to wait for the data,
+		 and build the detailed Dashboard. We create separate DB calls (one per selected week)
+		 to fetch the reports. This is because the selected weeks might not be in sequence.
+		 Then, a Map with the selected groups is used to filter out irrelevant reports,
+		 and build the Dashboard elements. */
 		$scope.buildReportsDashboard = function(){
 			$scope.response = {loading:true, message:systemMsgs.inProgress.searchingReports};
-			/* Get reports for each selected week, using promises to wait for the data */
+
+			/* Get Reports for each selected Week. Push promises into an array */
 			let selectedWeeksMap = new Map();
-			let weekReportsPromises = [];
+			let getReporstForWeekPromises = [];
 			$scope.selectedWeeks.forEach(function(weekId){
 				selectedWeeksMap.set(weekId,weekId);
-				weekReportsPromises.push( ReportsSvc.getReportsForWeek(weekId).$loaded() );
+				getReporstForWeekPromises.push( ReportsSvc.getReportsForWeek(weekId).$loaded() );
 			});
-			console.debug("Promises created:", weekReportsPromises);
 
-			/* Copy the selected group Ids to a Map. This will be used to filter out reports */
+			/* Copy the selected group Ids to a Map. This will be later used to filter reports */
 			let selectedGroupsMap = new Map();
 			$scope.selectedGroups.forEach( function(groupId){ selectedGroupsMap.set(groupId,groupId); });
 
@@ -31,63 +33,66 @@ okulusApp.controller('StatisticsCntrl',
 			in this case the list of reports for each selected week. We'll Use the data from the
 			promises to: 1) Filter-in only the reports for the selected groups, 2)Create a Watch
 			function for each week to detect real time DB updates, and 3) Build the charts. */
-			Promise.all(weekReportsPromises).then(function(reportsPerWeekArray){
+			Promise.all(getReporstForWeekPromises).then(function(reportsPerWeekArray){
+				//Put all inside apply to ensure the view is properly refreshed
 				$scope.$apply(function(){
-				console.debug("Promises fulfilled. Starting to filter reports");
-				let filteredReports = $scope.filterReports(reportsPerWeekArray, selectedGroupsMap);
+					console.debug("Promises fulfilled. Starting to filter reports");
+					$scope.response = {loading:true, message:systemMsgs.inProgress.filteringReports};
+					$scope.filterReports(reportsPerWeekArray, selectedGroupsMap);
 
-				//These 2 values are week-based (in the configurations)
-				let goodAttendanceIndicator = undefined;
-				let excelentAttendanceIndicator = undefined;
-				if(selectedGroupsMap.size == 1){
-					/* When ONE group is selected we'll display the Weeks as Category (X axis),
-					and the total attendance as Y axis. No need to modify the attendance indicators. */
-					$scope.reunionSummary.goodAttendanceIndicator = $rootScope.config.reports.goodAttendanceNumber;
-					$scope.reunionSummary.excelentAttendanceIndicator = $rootScope.config.reports.excelentAttendanceNumber;
-				}else if(selectedGroupsMap.size > 1){
-					/* When the user selects more than one group, the main chart will be displayed with Groups as
-					Category (X axis), and the total attendance (Y axis) will be the sum of attendance in each
-					report of the selected weeks. Because of that, we need to multiply those 2 values by the
-					number of selected weeks */
-					let numberOfWeeks = reportsPerWeekArray.length;
-					$scope.reunionSummary.goodAttendanceIndicator = $rootScope.config.reports.goodAttendanceNumber*numberOfWeeks;
-					$scope.reunionSummary.excelentAttendanceIndicator = $rootScope.config.reports.excelentAttendanceNumber*numberOfWeeks;
-				}
+					//These 2 values are week-based (in the configurations)
+					let goodAttendanceIndicator = undefined;
+					let excelentAttendanceIndicator = undefined;
+					if(selectedGroupsMap.size == 1){
+						/* When ONE group is selected we'll display the Weeks as Category (X axis),
+						and the total attendance as Y axis. No need to modify the attendance indicators. */
+						$scope.reunionSummary.goodAttendanceIndicator = $rootScope.config.reports.goodAttendanceNumber;
+						$scope.reunionSummary.excelentAttendanceIndicator = $rootScope.config.reports.excelentAttendanceNumber;
+					}else if(selectedGroupsMap.size > 1){
+						/* When the user selects more than one group, the main chart will be displayed with Groups as
+						Category (X axis), and the total attendance (Y axis) will be the sum of attendance in each
+						report of the selected weeks. Because of that, we need to multiply those 2 values by the
+						number of selected weeks */
+						let numberOfWeeks = reportsPerWeekArray.length;
+						$scope.reunionSummary.goodAttendanceIndicator = $rootScope.config.reports.goodAttendanceNumber*numberOfWeeks;
+						$scope.reunionSummary.excelentAttendanceIndicator = $rootScope.config.reports.excelentAttendanceNumber*numberOfWeeks;
+					}
 
-				$scope.response = null;
-				$scope.selectedGroupsMap = selectedGroupsMap;
-				$scope.selectedWeeksMap = selectedWeeksMap;
+					$scope.selectedGroupsMap = selectedGroupsMap;
+					$scope.selectedWeeksMap = selectedWeeksMap;
 
-				//Add watch functions
-				// reportsPerWeekArray.forEach(function(reportsPerWeek){
-				// 	reportsPerWeek.$watch(function(event){ notifyReportAdded(event); });
-				// 	// $scope.rawReportsFound = ReportsSvc.getReportsforWeeksPeriod(oldestWeek, newestWeek);
-				// 	// $scope.rawReportsFound.$loaded().then(function(reports){
-				// 	// 	$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
-				// 	// 	buildReportsDashboard(reports, selectedGroupsMap, selectedWeeksMap, $scope.chartOrientation);
-				// 	// 	$scope.selectedGroupsMap = selectedGroupsMap;
-				// 	// 	$scope.selectedWeeksMap = selectedWeeksMap;
-				// 	// 	$scope.response = null;
-				// 	// 	//$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
-				// 	// });
-				// });
-				//
-				// //Proceed to build the Table and Charts
-				$scope.sortBy = 'reviewStatus';
-				$scope.descSort = false;
+					//Add watch functions
+					// reportsPerWeekArray.forEach(function(reportsPerWeek){
+					// 	reportsPerWeek.$watch(function(event){ notifyReportAdded(event); });
+					// 	// $scope.rawReportsFound = ReportsSvc.getReportsforWeeksPeriod(oldestWeek, newestWeek);
+					// 	// $scope.rawReportsFound.$loaded().then(function(reports){
+					// 	// 	$scope.rawReportsFound.$watch(function(event){ notifyReportAdded(event); });
+					// 	// 	buildReportsDashboard(reports, selectedGroupsMap, selectedWeeksMap, $scope.chartOrientation);
+					// 	// 	$scope.selectedGroupsMap = selectedGroupsMap;
+					// 	// 	$scope.selectedWeeksMap = selectedWeeksMap;
+					// 	// 	$scope.response = null;
+					// 	// 	//$scope.response = {success:true, message:systemMsgs.success.reportsRetrieved};
+					// 	// });
+					// });
+					//
+					console.debug("Reunion Summary:", $scope.reunionSummary);
+					console.debug("Reports to Display:", $scope.reportsToDisplay);
+					console.debug("Details Map:", $scope.detailsMap);
 
-				console.debug("Reunion Summary:", $scope.reunionSummary);
-				console.debug("Reports to Display:", $scope.reportsToDisplay);
-				console.debug("Details Map:", $scope.detailsMap);
-				$scope.buildCharts($scope.reunionSummary, $scope.detailsMap, $scope.chartOrientation);
-				console.debug("Charts built");
+					//Proceed to build the Table and Charts
+					$scope.response = {loading:true, message:systemMsgs.inProgress.buildingCharts};
+					$scope.sortBy = 'reviewStatus';
+					$scope.descSort = false;
+					$scope.buildCharts($scope.reunionSummary, $scope.detailsMap, $scope.chartOrientation);
+					window.scrollBy(0, $( "#reportFinder" ).height());
+					$scope.response = null;
 				});
-				window.scrollBy(0, $( "#reportFinder" ).height());
 			});
 		};
 
-		/* Method to filter-in the reports belonging only to groups selected by the user
-		reportsPerWeekArray: An array containing $firebaseArray objects for each user's selected weeks
+		/* Called from buildReportsDashboard()
+		Method to filter-in the reports belonging only to groups selected by the user
+		reportsPerWeekArray: An array containing $firebaseArrays with Reports for each selected week
 		selectedGroups: Array with the Ids of the User's selected groups. It will be used to filter the reports */
 		$scope.filterReports = function(reportsPerWeekArray, selectedGroups){
 			/* For each report fetched from DB, confirm if it is a valid one and add it to
@@ -101,23 +106,21 @@ okulusApp.controller('StatisticsCntrl',
 				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
 				completedReunions: 0, canceledReunions: 0, totalReunions: 0,
 				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
+				maleAttendance: 0, femaleAttendance: 0,
 				totalMoney: 0.00, totalDuration:0
 			};
 
-			/* Each element of reportsPerWeekArray is a $firebaseArray, that needs to be
-			$loaded first, so we can iterate over each report for that week, and get the
-			required data to build the dashboard. */
-			reportsPerWeekArray.forEach(function(reportsOfOneWeek, index){
-				// console.debug("filtering reports of week:" + index, reportsOfOneWeek);
-				reportsOfOneWeek.forEach(function(report, index){
-					/*Discard reports with groupId not in the User's selection*/
+			reportsPerWeekArray.forEach(function(reportsOfTheWeek, index){
+				// console.debug("Filtering reports:", reportsOfTheWeek.length);
+				reportsOfTheWeek.forEach(function(report, index){
 					if( !selectedGroups.has(report.groupId) ){
+						console.debug("Report Discarted. Group not Selected:", report.groupname);
 						return;
 					}
 
 					reportsToDisplay.push(report);
+					//Increase Report Status Count
 					reunionParams.totalReports++;
-					/* Update counters */
 					if(report.reviewStatus == constants.status.approved){
 						reunionParams.approvedReports++;
 					} else if(report.reviewStatus == constants.status.pending){
@@ -126,19 +129,26 @@ okulusApp.controller('StatisticsCntrl',
 						reunionParams.rejectedReports++;
 						/* Data from Rejected Reports will not be considered because it will
 						introduce irrelevant or incorrect values to the totals */
+						console.debug("Report Discarted. Rejected Status");
 						return;
 					}
 
+					//Increase Reunion Status Count
+					reunionParams.totalReunions++;
 					if(report.status == constants.status.completed){
 						reunionParams.completedReunions++;
 					}else if(report.status == constants.status.canceled){
 						reunionParams.canceledReunions++;
 					}
-					reunionParams.totalReunions++;
-					//Update total attendance (summary), duration and money
+
+					//Increase attendance Count
 					reunionParams.totalAttendance += report.totalAttendance;
 					reunionParams.membersAttendance += report.membersAttendance;
 					reunionParams.guestsAttendance += report.guestsAttendance;
+					reunionParams.maleAttendance += report.maleAttendance;
+					reunionParams.femaleAttendance += report.femaleAttendance;
+
+					//Increase duration and money
 					reunionParams.totalDuration += report.duration;
 					if(report.money){
 						reunionParams.totalMoney += (parseFloat(report.money));
@@ -166,6 +176,8 @@ okulusApp.controller('StatisticsCntrl',
 						mapElement = detailsMap.get(mapKey);
 						mapElement.guests += report.guestsAttendance;
 						mapElement.members += report.membersAttendance;
+						mapElement.males += report.maleAttendance;
+						mapElement.females += report.femaleAttendance;
 						mapElement.duration += report.duration;
 						mapElement.reportsCount ++;
 						if(report.money){
@@ -175,14 +187,10 @@ okulusApp.controller('StatisticsCntrl',
 						/* Create a new Key, value */
 						report.money = (report.money)?report.money:0.00;
 						mapElement = {guests:report.guestsAttendance, members:report.membersAttendance,
+													males:report.maleAttendance, females:report.femaleAttendance,
 													 duration:report.duration, money:report.money, reportsCount:1};
 					}
-
 					detailsMap.set(mapKey,mapElement);
-
-					//For Money Scatter Charts
-					//moneyData.push( [report.money, guests+members] );
-
 				});
 			});
 
@@ -192,15 +200,13 @@ okulusApp.controller('StatisticsCntrl',
 			$scope.reportsToDisplay = reportsToDisplay;
 			//Build the Charts
 			$scope.detailsMap = detailsMap;
-			return reportsToDisplay;
 		};
 
-		/* Build Highcharts elements, using categoriesDataMap and reunionParams objects
-		constructed during the Report filtering process.
+		/* Called from buildReportsDashboard(). Build Highcharts elements, using categoriesDataMap and
+		reunionParams objects constructed during the Report filtering process.
 		- categoriesDataMap contains totals for each category.
 			ex. Map = [{ key: "San Antonio", value: { guests: 5, members: 12, money: 195.4, duration: 339 }, ... ]
-		- reunionSummary contains totals for all the reports in all categories. Used in then sumary table too.
-		*/
+		- reunionSummary contains totals for all the reports in all categories. Used in then sumary table too.	*/
 		$scope.buildCharts = function(reunionSummary, categoriesDataMap, chartOrientation){
 
 			/* Use the categoriesDataMap to build Data Series */
@@ -252,8 +258,9 @@ okulusApp.controller('StatisticsCntrl',
 			};
 			var attendancePieOptions = {
 					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
-					title: { text: $rootScope.i18n.charts.attendanceLbl}, credits: { enabled: false },
-					tooltip: {  pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>' },
+					title: { text: $rootScope.i18n.charts.attendanceLbl},
+				  credits: { enabled: false },
+					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
 					plotOptions: {
 							pie: {
 								dataLabels: { enabled: false },
@@ -266,6 +273,25 @@ okulusApp.controller('StatisticsCntrl',
 							data: [
 									[$rootScope.i18n.charts.attendanceMemberstSerie, reunionSummary.membersAttendance],
 									[$rootScope.i18n.charts.attendanceGuestsSerie, reunionSummary.guestsAttendance]
+							]
+					}]
+			};
+			var sexPieOptions = {
+					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+					title: { text: $rootScope.i18n.charts.attendanceMemberstSerie},
+					credits: { enabled: false },
+					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
+					plotOptions: {
+							pie: {
+								dataLabels: { enabled: false },
+								showInLegend: true, colors: ['rgba(0,123,255,.8)','rgba(255, 204, 255,.8)']
+							}
+					},
+					series: [{
+							type: 'pie', innerSize: '20%', name: $rootScope.i18n.charts.attendanceLbl,
+							data: [
+									[$rootScope.i18n.charts.maleSerie, reunionSummary.maleAttendance],
+									[$rootScope.i18n.charts.femaleSerie, reunionSummary.femaleAttendance]
 							]
 					}]
 			};
@@ -346,6 +372,7 @@ okulusApp.controller('StatisticsCntrl',
 			//Paint Charts
 			Highcharts.chart('attendanceByGroupContainer', attendanceByGroupOptions);
 			Highcharts.chart('attendancePieContainer', attendancePieOptions);
+			Highcharts.chart('sexPieContainer', sexPieOptions);
 			Highcharts.chart('reunionsPieContainer', reunionsPieOptions);
 			Highcharts.chart('durationContainer', durationByGroupOptions);
 			if($rootScope.config.reports.showMoneyField){
@@ -359,7 +386,7 @@ okulusApp.controller('StatisticsCntrl',
 			console.debug("durationSeries:",durationSeries);
 		};
 
-		/**/
+		/* Used for the Reports Table Sort, when clicking on the column header */
 		$scope.chageSort = function(sortByProperty) {
 			if($scope.sortBy == sortByProperty){
 				//When clicking in the same porperty, invert sort order
@@ -370,25 +397,6 @@ okulusApp.controller('StatisticsCntrl',
 				$scope.sortBy = sortByProperty;
 			}
 		};
-
-		$scope.selectAllGroups = function() {
-			selectObj = document.getElementById("specificGroupSelect");
-			let allgroups = [];
-			for(var i = 0; i < selectObj.length; i++) {
-				allgroups.push(selectObj.options[i].value);
-			}
-			$scope.specificGroups = allgroups;
-		};
-
-		/* Detect when changes happen to reports in the User's selected week period
-		notifyReportAdded = function(event){
-			// let reportId = event.key;
-			// ReportsSvc.getReportBasicObj(reportId).$loaded().then(function(report){
-			// 	if($scope.selectedGroupsMap.has(report.groupId) && $scope.selectedWeeksMap.has(report.weekId)){
-			// 		$scope.response = {error:true, message: systemMsgs.error.reportsWatch};
-			// 	}
-			// });
-		};*/
 
 		$scope.selectAllGroups = function (){
 			$scope.selectedGroups = [];
@@ -410,6 +418,8 @@ okulusApp.controller('StatisticsCntrl',
 			});
 		};
 
+		/* Called only from the Admin Report Finder.
+		Refresh the list of weeks displayed. */
 		$scope.updateWeekSelectList = function (){
 			$scope.selectedWeeks = [];
 			switch($rootScope.reportFinder.weekStatusOpt){
@@ -431,13 +441,40 @@ okulusApp.controller('StatisticsCntrl',
 			}
 		};
 
-		$scope.updateGroupSelectList = function (){
-			//console.debug($rootScope.reportFinder.groupStatusOpt);
-			$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
+		/* Called only from the Admin Report Finder.
+		Refresh the list of groups displayed, based on the selected Group status
+		(active/inacetive), and clear the selectedGroups array. Updating by the status
+		has an impact in the groupType filter, so we need to reset. */
+		$scope.updateGroupListByStatus = function (){
 			$scope.selectedGroups = [];
-			//Reset the Group type
-			$rootScope.reportFinder.groupTypeOpt="";
+			$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
+			$rootScope.reportFinder.groupTypeOpt = undefined;
 			$rootScope.reportFinder.currentGroupListFiltered = false;
+		};
+
+		/* The Group type select depends on the Group status select.
+		This method makes sure the $scope.groupsList has data from db for active,
+		inactive or both statuses, and then proceeds to filter groups from that list
+		based on the "type" value.*/
+		$scope.updateGroupListByType = function (){
+			let tempGroupList = new Array();
+			if($rootScope.reportFinder.currentGroupListFiltered){
+				//This means an original list from DB was filtered by this same method before,
+				//so we need to get a fresh list from DB to avoid missing groups
+				$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
+			}
+			//Use the Current $scope.groupsList with DB data to filter results by the selected group type
+			$scope.groupsList.$loaded().then(function(list) {
+				if($rootScope.reportFinder.groupTypeOpt){
+					list.forEach(function(group) {
+						if(group.type == $rootScope.reportFinder.groupTypeOpt){
+							tempGroupList.push(group);
+						}
+					});
+					$scope.groupsList = tempGroupList;
+					$rootScope.reportFinder.currentGroupListFiltered = true;
+				}
+			});
 		};
 
 		function getGroupsFromDatabase(groupStatus){
@@ -457,31 +494,15 @@ okulusApp.controller('StatisticsCntrl',
 			return groupsList;
 		};
 
-		/* The Group type select depends on the Group status select.
-		This method makes sure the $scope.groupsList has data from db for active,
-		inactive or both statuses, and then proceeds to filter groups from that list
-		based on the "type" value.*/
-		$scope.updateGroupTypeSelect = function (){
-			let tempGroupList = new Array();
-			if($rootScope.reportFinder.currentGroupListFiltered){
-				//This menas an original list from DB was filtered by this same method before,
-				//so we need to get a fresh list from DB to avoid missing groups
-				$scope.groupsList = getGroupsFromDatabase($rootScope.reportFinder.groupStatusOpt);
-			}
-			//Use the Current $scope.groupsList with DB data to filter results by the selected group type
-			$scope.groupsList.$loaded().then(function(list) {
-				if($rootScope.reportFinder.groupTypeOpt){
-					list.forEach(function(group) {
-						if(group.type == $rootScope.reportFinder.groupTypeOpt){
-							tempGroupList.push(group);
-						}
-					});
-					$scope.groupsList = tempGroupList;
-					$rootScope.reportFinder.currentGroupListFiltered = true;
-				}
-			});
-		};
-
+		/* Detect when changes happen to reports in the User's selected week period
+		notifyReportAdded = function(event){
+			// let reportId = event.key;
+			// ReportsSvc.getReportBasicObj(reportId).$loaded().then(function(report){
+			// 	if($scope.selectedGroupsMap.has(report.groupId) && $scope.selectedWeeksMap.has(report.weekId)){
+			// 		$scope.response = {error:true, message: systemMsgs.error.reportsWatch};
+			// 	}
+			// });
+		};*/
 }]);
 
 /* Controller linked to /mystatistics

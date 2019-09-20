@@ -37,8 +37,8 @@
           <!-- Admin Group Status select -->
           <div class="row">
             <div class="col pr-1">
-              <select id="groupTypeSelect" class="form-control mb-1"
-              ng-if="adminViewActive" ng-model="reportFinder.groupStatusOpt" ng-change="updateGroupSelectList()">
+              <select id="groupStatusSelect" class="form-control mb-1"
+              ng-if="adminViewActive" ng-model="reportFinder.groupStatusOpt" ng-change="updateGroupListByStatus()">
                 <option value="all">{{i18n.reportFinder.allGroups}}</option>
                 <option value="active">{{i18n.reportFinder.activeGroups}}</option>
                 <option value="inactive">{{i18n.reportFinder.inactiveGroups}}</option>
@@ -46,7 +46,7 @@
             </div>
             <div class="col pl-1">
               <select id="groupTypeSelect" class="form-control mb-1"
-                ng-if="adminViewActive" ng-model="reportFinder.groupTypeOpt" ng-change="updateGroupTypeSelect()">
+                ng-if="adminViewActive" ng-model="reportFinder.groupTypeOpt" ng-change="updateGroupListByType()">
                 <option value="">{{i18n.reportFinder.allGroupTypes}}</option>
                 <option ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id" value="{{type.name}}" >
                   {{type.name}}

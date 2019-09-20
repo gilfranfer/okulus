@@ -127,6 +127,8 @@ const systemMsgs = {
 		loadingSummary:"Cargando Resumen",
 		loadingReportFinder:"Cargando Buscador de Reportes",
 		searchingReports:"Buscando Reportes",
+		filteringReports:"Filtrando Reportes",
+		buildingCharts:"Construynedo Gráficas",
 		/*Message Center*/
 		postingMessage: "Publicando mensaje ...",
 		deletingMessage: "Eliminando mensaje ...",
@@ -631,7 +633,7 @@ okulusApp.run(function($rootScope) {
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
-				reunionsLbl:"Reuniones", reportsLbl:"Reportes", attendanceLbl:"Asistentes", 
+				reunionsLbl:"Reuniones", reportsLbl:"Reportes", attendanceLbl:"Asistentes",
 				selectGroupLbl:"Seleccione los Grupos", selectWeekLbl:"Seleccione las Semanas",
 				allGroupTypes:"Cualquier tipo",
 				allGroups:"Cualquier estado", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",
@@ -645,7 +647,7 @@ okulusApp.run(function($rootScope) {
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
 				resultsLoaded: "Reportes encontrados",
 				reportsListTitle: "Lista de Reportes",
-				attendanceChartsTitle: "Gráficas de Reuniones y Asistencia",
+				attendanceChartsTitle: "Asistencia de Mimebros e Invitados",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
 				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
@@ -663,6 +665,8 @@ okulusApp.run(function($rootScope) {
 				attendanceLbl:"Asistencia",
 				attendanceGuestsSerie:"Invitados",
 				attendanceMemberstSerie:"Miembros",
+				maleSerie:"Hombres",
+				femaleSerie:"Mujeres",
 				durationTitle:"Minutos Ministrados",
 				durationLbl:"Duración",
 				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
