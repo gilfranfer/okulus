@@ -63,16 +63,35 @@
   <!-- Alerts -->
   <div ng-include="'views/alerts.html'"></div>
 
-  <!-- Title and Filter -->
+  <!-- Title, Filter and Sort -->
   <article class="card mb-3" ng-show="adminReportsList.length">
     <div class="card-body">
       <p class="lead">
   			{{adminReportsParams.title}}
   		</p>
+      <!-- Filter Box -->
       <div class="row" ng-show="adminReportsList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
             ng-model="adminReportsParams.searchFilter">
+        </div>
+      </div>
+      <!-- Sorting -->
+      <div class="row mt-1" >
+        <div class="col">
+          <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle clickable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{i18n.filterBox.sortLbl}}
+            </button>
+            <div class="dropdown-menu">
+              <span  ng-repeat="option in sortOptions track by option.value"
+                class="dropdown-item clickable {{option.active}}" ng-click="setSortBy(option)">
+                {{option.text}}
+              </span>
+            </div>
+          </div>
+          <button ng-show="!reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-down" ng-click="setSortOrder(true)"></button>
+          <button ng-show="reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-up" ng-click="setSortOrder(false)"></button>
         </div>
       </div>
     </div>
@@ -93,7 +112,7 @@
   <!-- Reports Cards -->
   <article id="reportsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:'$id':false track by report.$id">
+      ng-repeat="report in adminReportsList | filter:adminReportsParams.searchFilter | orderBy:selectedSortBy:reverseSort track by report.$id">
       <!-- Report card -->
       <div class="card h-100">
         <div class="card-body">
