@@ -72,9 +72,28 @@
       <p class="lead">
   			{{weekListParams.title}}
   		</p>
+      <!-- Filter Box -->
       <div class="row" ng-show="weeksList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg" ng-model="weekListParams.searchFilter">
+        </div>
+      </div>
+      <!-- Sorting -->
+      <div class="row mt-1" >
+        <div class="col">
+          <div class="btn-group">
+            <button type="button" class="btn btn-warning dropdown-toggle clickable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{i18n.filterBox.sortLbl}}
+            </button>
+            <div class="dropdown-menu">
+              <span  ng-repeat="option in sortOptions track by option.value"
+                class="dropdown-item clickable {{option.active}}" ng-click="setSortBy(option)">
+                {{option.text}}
+              </span>
+            </div>
+          </div>
+          <button ng-show="!reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-down" ng-click="setSortOrder(true)"></button>
+          <button ng-show="reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-up" ng-click="setSortOrder(false)"></button>
         </div>
       </div>
     </div>
@@ -95,7 +114,7 @@
   <!-- Week Cards -->
   <article id="weeksList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="week in weeksList | filter:weekListParams.searchFilter | orderBy:'-$id' track by week.$id">
+      ng-repeat="week in weeksList | filter:weekListParams.searchFilter | orderBy:selectedSortBy:reverseSort track by week.$id">
       <!-- Group card -->
       <div class="card h-100">
         <div class="card-body">
