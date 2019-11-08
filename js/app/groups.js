@@ -36,7 +36,9 @@ okulusApp.controller('GroupsListCntrl',
 		/* Sorting */
 		$scope.selectedSortBy="number";
 		$scope.reverseSort=false;
-		$scope.sortOptions=[{text:"Nombre", value:"name",active:""},{text:"Número", value:"number",active:"active"},{text:"Tipo", value:"type",active:""}];
+		$scope.sortOptions=[{text:$scope.i18n.groups.numberLbl, value:"number",active:"active"},
+												{text:$scope.i18n.groups.nameLbl, value:"name",active:""},
+												{text:$scope.i18n.groups.typeLbl, value:"type",active:""}];
 
 		$scope.setSortBy = function(option) {
 			$scope.sortOptions.forEach(function(option){
