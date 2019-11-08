@@ -417,7 +417,6 @@ okulusApp.run(function($rootScope) {
 				reportEvalLegend:"Evaluación del Reporte", feedbackLbl:"Discusión"
 			},
 			weeks:{
-				weekLbl:"Semana", weeksLbl:"Semanas",
 				title: "Administrador de Semanas",
 				basicInfoTitle:"Información Básica",
 				description: "Las Semanas son los contenedores de los Reportes.",
@@ -445,17 +444,16 @@ okulusApp.run(function($rootScope) {
 				saveWeekBtn:"Guardar Semana",
 				deleteWeekBtn:"Eliminar Semana",
         /*Alert Messages*/
-        loading:"Cargando Semanas...", loadingSuccess: "Semanas Cargadas.",
-        loadingError: "Error al cargar las Semanas. Intentelo más tarde.",
+        loadingSuccess: "Semanas Cargadas.",
+        loadingError: "Error al cargar las Semanas.",
         noWeeksError: "No se encontraron Semanas.",
-				deleteError:"No se puede eliminar la semana porque tiene 1 o más reportes.",
 				weekUpdated:"Se ha actualizado la Semana",
 				weekCreated:"Se ha creado la Semana",
 				weekDeleted:"Se ha eliminado la semana",
 				weekExists:"Ya existe la Semana",
 				loadPending1: "Mostar ", loadPending2: "Semanas restantes.",
         /*Labels*/
-        weekLbl: "Semana", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
+        weekLbl: "Semana", weeksLbl:"Semanas", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
         yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
 				statusLbl:"Se pueden agregar reportes? (Estado)",
