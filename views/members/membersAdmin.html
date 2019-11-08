@@ -68,18 +68,21 @@
   </div>
   <div ng-include="'views/alerts.html'"></div>
 
-  <!-- Title and Filter -->
+  <!-- Title, Filter and Sort -->
   <article class="card mb-3" ng-show="adminMembersList.length">
     <div class="card-body">
       <p class="lead">
   			{{adminMembersParams.title}}
   		</p>
+      <!-- Filter Box -->
       <div class="row" ng-show="adminMembersList.length > config.minResultsToshowFilter">
         <div class="col">
           <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control form-control-lg"
             ng-model="adminMembersParams.searchFilter">
         </div>
       </div>
+      <!-- Sorting -->
+      <div ng-include="'views/fragments/sortingRow.html'"></div>
     </div>
   </article>
 
@@ -98,7 +101,7 @@
   <!-- Members Cards -->
   <article id="membersList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="member in adminMembersList | filter:adminMembersParams.searchFilter | orderBy:'shortname' track by member.$id">
+      ng-repeat="member in adminMembersList | filter:adminMembersParams.searchFilter | orderBy:selectedSortBy:reverseSort track by member.$id">
       <div class="card h-100">
         <div class="card-body">
           <h4 class="card-title">

@@ -32,6 +32,25 @@ okulusApp.controller('MembersListCntrl',
 			});
 		}});
 
+		/* Sorting */
+		$scope.selectedSortBy="firstname";
+		$scope.reverseSort=false;
+		$scope.sortOptions=[{text:$scope.i18n.members.fnameLbl, value:"firstname",active:"active"},
+												{text:$scope.i18n.members.lnameLbl, value:"lastname",active:""},
+												{text:$scope.i18n.members.aliasLbl, value:"shortname",active:""}];
+
+		$scope.setSortBy = function(option) {
+			$scope.sortOptions.forEach(function(option){
+				option.active="";
+			});
+			option.active = "active";
+			$scope.selectedSortBy = option.value;
+		};
+
+		$scope.setSortOrder = function(reverse) {
+			$scope.reverseSort = reverse;
+		};
+
 		/* All the following on-demand loaders (called from html view) will limit the
 		 initial result list to the maxQueryListResults value (from $rootScope.config).
 		 They will create a adminMembersParams object containing the name of the loader
