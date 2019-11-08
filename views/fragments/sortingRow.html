@@ -1,0 +1,18 @@
+<!-- Sorting -->
+<div class="row mt-1" >
+  <div class="col">
+    <div class="btn-group">
+      <button type="button" class="btn btn-warning dropdown-toggle clickable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{i18n.filterBox.sortLbl}}
+      </button>
+      <div class="dropdown-menu">
+        <span  ng-repeat="option in sortOptions track by option.value"
+          class="dropdown-item clickable {{option.active}}" ng-click="setSortBy(option)">
+          {{option.text}}
+        </span>
+      </div>
+    </div>
+    <button ng-show="!reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-down" ng-click="setSortOrder(true)"></button>
+    <button ng-show="reverseSort" class="h-100 btn btn-warning clickable fas fa-md fa-sort-alpha-up" ng-click="setSortOrder(false)"></button>
+  </div>
+</div>
