@@ -629,7 +629,8 @@ okulusApp.run(function($rootScope) {
 			},
 			filterBox:{
 				searchHint:"Buscar ...",
-				filterHint:"Filtrar resultados ..."
+				filterHint:"Filtrar ...",
+				sortLbl:"Ordenar"
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",

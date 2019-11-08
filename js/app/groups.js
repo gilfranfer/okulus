@@ -33,6 +33,23 @@ okulusApp.controller('GroupsListCntrl',
 			});
 		}});
 
+		/* Sorting */
+		$scope.selectedSortBy="number";
+		$scope.reverseSort=false;
+		$scope.sortOptions=[{text:"Nombre", value:"name",active:""},{text:"Número", value:"number",active:"active"},{text:"Tipo", value:"type",active:""}];
+
+		$scope.setSortBy = function(option) {
+			$scope.sortOptions.forEach(function(option){
+				option.active="";
+			});
+			option.active = "active";
+			$scope.selectedSortBy = option.value;
+		};
+
+		$scope.setSortOrder = function(reverse) {
+			$scope.reverseSort = reverse;
+		};
+
 		/* All the following on-demand loaders (called from html view) will limit the
 		 initial result list to the maxQueryListResults value (from $rootScope.config).
 		 They will create a params object containing the name of the loader used,
