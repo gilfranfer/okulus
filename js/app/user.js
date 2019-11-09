@@ -32,6 +32,25 @@ okulusApp.controller('UserMyContactsCntrl',
 				});
 		}});
 
+		/* Sorting */
+		$scope.selectedSortBy="firstname";
+		$scope.reverseSort=false;
+		$scope.sortOptions=[{text:$scope.i18n.members.fnameLbl, value:"firstname",active:"active"},
+												{text:$scope.i18n.members.lnameLbl, value:"lastname",active:""},
+												{text:$scope.i18n.members.aliasLbl, value:"shortname",active:""}];
+
+		$scope.setSortBy = function(option) {
+			$scope.sortOptions.forEach(function(option){
+				option.active="";
+			});
+			option.active = "active";
+			$scope.selectedSortBy = option.value;
+		};
+
+		$scope.setSortOrder = function(reverse) {
+			$scope.reverseSort = reverse;
+		};
+
 }]);
 
 //Mapping: /users

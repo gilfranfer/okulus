@@ -4,11 +4,11 @@
     <div class="card-body">
       <h4 class="card-title">{{i18n.mycontacts.title}}</h4>
       <hr>
-      <!-- <div class="card-text">
-          <p>{{i18n.mygroupsList.description}}</p>
-      </div> -->
       <div class="mb-3" ng-show="membersList.length > config.minResultsToshowFilter">
-        <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control form-control-lg" ng-model="searchText">
+        <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control form-control-lg"
+        ng-model="searchFilter">
+        <!-- Sorting -->
+        <div ng-include="'views/fragments/sortingRow.html'"></div>
       </div>
     </div>
   </article>
@@ -20,7 +20,7 @@
   <!-- Contacts List -->
   <article id="contactsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="member in membersList | filter:searchText | orderBy:'shortname' track by member.$id">
+      ng-repeat="member in membersList | filter:searchFilter | orderBy:selectedSortBy:reverseSort  track by member.$id">
       <!-- Contact Card -->
       <div class="card h-100">
         <div class="card-body">
