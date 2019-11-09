@@ -160,6 +160,26 @@ okulusApp.controller('GroupsUserCntrl',
 				});
 			}
 		});
+
+		/* Sorting */
+		$scope.selectedSortBy="number";
+		$scope.reverseSort=false;
+		$scope.sortOptions=[{text:$scope.i18n.groups.numberLbl, value:"number",active:"active"},
+												{text:$scope.i18n.groups.nameLbl, value:"name",active:""},
+												{text:$scope.i18n.groups.typeLbl, value:"type",active:""}];
+
+		$scope.setSortBy = function(option) {
+			$scope.sortOptions.forEach(function(option){
+				option.active="";
+			});
+			option.active = "active";
+			$scope.selectedSortBy = option.value;
+		};
+
+		$scope.setSortOrder = function(reverse) {
+			$scope.reverseSort = reverse;
+		};
+		
 	}
 ]);
 
