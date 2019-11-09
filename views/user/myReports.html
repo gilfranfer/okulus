@@ -68,6 +68,8 @@
             ng-model="searchFilter">
         </div>
       </div>
+      <!-- Sorting -->
+      <div ng-include="'views/fragments/sortingRow.html'"></div>
     </div>
   </article>
 
@@ -79,7 +81,7 @@
   <!-- Reports Cards -->
   <article id="reportsList" class="row">
     <div class="col-md-6 col-lg-4 mb-3"
-      ng-repeat="report in filteredReportsList | filter:searchFilter | orderBy:'$id':false track by report.$id">
+      ng-repeat="report in filteredReportsList | filter:searchFilter | orderBy:selectedSortBy:reverseSort  track by report.$id">
       <!-- Report card -->
       <div class="card h-100">
         <div class="card-body">

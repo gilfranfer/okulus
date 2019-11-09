@@ -183,6 +183,25 @@ okulusApp.controller('MyReportsCntrl',
 
 		}});
 
+		/* Sorting */
+		$scope.selectedSortBy="$id";
+		$scope.reverseSort=false;
+		$scope.sortOptions=[{text:$scope.i18n.reports.reportLbl, value:"$id",active:"active"},
+												{text:$scope.i18n.groups.groupLbl, value:"groupname",active:""},
+												{text:$scope.i18n.weeks.weekLbl, value:"weekName",active:""}];
+
+		$scope.setSortBy = function(option) {
+			$scope.sortOptions.forEach(function(option){
+				option.active="";
+			});
+			option.active = "active";
+			$scope.selectedSortBy = option.value;
+		};
+
+		$scope.setSortOrder = function(reverse) {
+			$scope.reverseSort = reverse;
+		};
+
 		$scope.loadPendingReports = function(){
 			$scope.getUserReports($scope.myReportsParams.activeLoader, true);
 		};
