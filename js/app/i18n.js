@@ -407,7 +407,7 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceDirections:"Selecciona un miembro de la lista, o agrega a todos",
 				guestsAttendanceDirections:"Escribe el nombre del invitado, o agrega multiples",
 				multipleGuestsDirections:"Multiples invitados? Escribe un nombre genérico.",
-				multipleGuestsQty:"Cantidad. Max",
+				multipleGuestsQty:"Max",
 				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
 				allMembersLbl:"Ver de otros grupos", groupMembersLbl:"Ver de este Grupo",
