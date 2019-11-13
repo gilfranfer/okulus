@@ -147,6 +147,15 @@ okulusApp.controller('RequestDetailsCntrl',
 				else{
 					$scope.prepareforNewRequest();
 				}
+
+				$scope.groupsList = new Array();
+				//Get the Groups the user has access to
+				MembersSvc.getAccessRulesList(user.memberId).$loaded().then(function(rules){
+					rules.forEach(function(rule) {
+						$scope.groupsList.push( GroupsSvc.getGroupBasicDataObject(rule.groupId) );
+					});
+				});
+
 			});
 		}});
 
@@ -271,31 +280,38 @@ okulusApp.controller('RequestDetailsCntrl',
 				return;
 			}
 
-			let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
-			$scope.objectDetails.status = constants.status.approved;
-			$scope.objectDetails.audit.lastUpdateByName = $rootScope.currentSession.user.shortname;
-			$scope.objectDetails.audit.lastUpdateByEmail = $rootScope.currentSession.user.email;
-			$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
-			$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
-			$scope.objectDetails.$save().then(function(){
-				MemberRequestsSvc.increaseApprovedRequestsCount($scope.objectDetails.audit.createdById);
-				MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
-			});
+			GroupsSvc.getGroupBasicDataObject($scope.objectDetails.basicInfo.baseGroupId).$loaded().then(
+				function(group) {
+					$scope.objectDetails.basicInfo.baseGroupName = group.name;
+					let newmemberRef = MembersSvc.persistMember($scope.objectDetails.basicInfo);
+					$scope.objectDetails.status = constants.status.approved;
+					$scope.objectDetails.audit.lastUpdateByName = $rootScope.currentSession.user.shortname;
+					$scope.objectDetails.audit.lastUpdateByEmail = $rootScope.currentSession.user.email;
+					$scope.objectDetails.audit.lastUpdateById = $rootScope.currentSession.user.$id;
+					$scope.objectDetails.audit.lastUpdateOn = firebase.database.ServerValue.TIMESTAMP;
+					$scope.objectDetails.$save().then(function(){
+						MemberRequestsSvc.increaseApprovedRequestsCount($scope.objectDetails.audit.createdById);
+						MemberRequestsSvc.decreasePendingRequestsCount($scope.objectDetails.audit.createdById);
+					});
 
-			MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function(memberData) {
-				MembersSvc.increaseTotalMembersCount();
-				MembersSvc.increaseActiveMembersCount();
-				MembersSvc.persistMemberAudit(memberData.$id,$scope.objectDetails.audit);
-				if($scope.objectDetails.address){
-					MembersSvc.persistMemberAddress(memberData.$id,$scope.objectDetails.address);
+					//Get the recently created Member
+					MembersSvc.getMemberBasicDataObject(newmemberRef.key).$loaded().then(function(memberData) {
+						MembersSvc.increaseTotalMembersCount();
+						MembersSvc.increaseActiveMembersCount();
+						MembersSvc.persistMemberAudit(memberData.$id,$scope.objectDetails.audit);
+						if($scope.objectDetails.address){
+							MembersSvc.persistMemberAddress(memberData.$id,$scope.objectDetails.address);
+						}
+
+						let description = systemMsgs.notifications.memberRequestApproved;
+						AuditSvc.saveAuditAndNotify(constants.actions.approve, constants.db.folders.memberRequest, $scope.objectDetails.$id, description);
+						$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreatedFromRequest };
+						//Redirect to the created member
+						$location.path(constants.pages.memberEdit+newmemberRef.key);
+					});
 				}
+			);
 
-				let description = systemMsgs.notifications.memberRequestApproved;
-				AuditSvc.saveAuditAndNotify(constants.actions.approve, constants.db.folders.memberRequest, $scope.objectDetails.$id, description);
-				$rootScope.memberResponse = { created:true, message: systemMsgs.success.memberCreatedFromRequest };
-				//Redirect to the created member
-				$location.path(constants.pages.memberEdit+newmemberRef.key);
-			});
 		};
 
 		/* Rejection can be given only to requests on 'pending' status.

@@ -114,6 +114,21 @@
                 ng-required="!(objectDetails.basicInfo.email)">
           </div>
         </div>
+        <!-- Base Group -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold" for="baseGroup">
+              {{i18n.members.baseGroupLbl}}
+              <span class="text-danger">*</span>
+            </label>
+            <select id="baseGroup" class="form-control form-control-lg" ng-required="true" ng-model="objectDetails.basicInfo.baseGroupId">
+              <option value="">{{i18n.members.noGroup}}</option>
+              <option ng-repeat="group in groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
+                {{group.number}}-{{group.name}}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
     </form>
   </article>
@@ -191,7 +206,7 @@
   <!-- Alerts to inform user on progress or result -->
   <div ng-include="'views/alerts.html'"></div>
 
-  <!-- User Buttons -->
+  <!-- User Buttons: Reuqets, Update, Delete -->
   <div class="row" ng-if="objectDetails.status != 'approved'">
     <!-- Request can be placed, while not on edit view -->
     <div class="col mb-2" ng-if="!requestParams.isEdit">
