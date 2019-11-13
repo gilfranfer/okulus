@@ -362,28 +362,27 @@ okulusApp.controller('ReportDetailsCntrl',
 		/* Create a one "normal" Array list to hold all the members (include inactive) with baseGroup = thisGroup
 		 plus, the Group's Lead, Host, Trainee (because sometimes those roles have a different baseGroup)*/
 		prepareMembersForAttendaceListSelect = function (whichGroup,roles) {
-
-			if(roles.leadId){
-				pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName})
-			}
-			if(roles.hostId){
-				pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName})
-			}
-			if(roles.traineeId){
-				pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName})
-			}
 			MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
 				list.forEach(function(member){
-					//Avoid duplicated Elements in Member attendance List (lead, host, and trainee where added previously)
-					if(member.$id != undefined && member.$id != roles.leadId  && member.$id != roles.traineeId && member.$id != roles.hostId){
-						$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id});
+					if(member.$id != undefined){
+						$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id,sex:member.sex});
 					}
 				});
+				//Proceed to add Roles to the Members list
+				if(roles.leadId){
+					pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName})
+				}
+				if(roles.hostId){
+					pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName})
+				}
+				if(roles.traineeId){
+					pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName})
+				}
 			});
 		};
 
 		/*Used when updating the Lead, Host, or Trainee; to add it in the list for attendance,
-		beacuse maybe the selected member has a different basegGroup. Do not add duplicated
+		because maybe the selected member has a different basegGroup. Do not add duplicated
 		members in the list, to avoid angular duplicity error while painting the select options*/
 		pushMemberToAttendanceSelectList = function (memberObj) {
 			let memberExist = false;
@@ -393,7 +392,9 @@ okulusApp.controller('ReportDetailsCntrl',
 				}
 			});
 			if(!memberExist){
-				$scope.reportParams.groupMembersList.push({name:memberObj.name, id:memberObj.id});
+				MembersSvc.getMemberSex(memberObj.id).$loaded().then(function(sex) {
+					if(sex.$value) $scope.reportParams.groupMembersList.push({id:memberObj.id, name:memberObj.name, sex:sex.$value})
+				});
 			}
 		};
 
@@ -431,7 +432,7 @@ okulusApp.controller('ReportDetailsCntrl',
 
 				let roles = {leadId:report.leadId, leadName: report.leadName,
 							traineeId: report.traineeId, traineeName: report.traineeName,
-							hostId: report.hostId, hostName: report.hostName,}
+							hostId: report.hostId, hostName: report.hostName}
 				prepareMembersForAttendaceListSelect(report.groupId, roles);
 				$scope.response = undefined;
 			}).catch( function(error){
@@ -443,14 +444,20 @@ okulusApp.controller('ReportDetailsCntrl',
 
 		/* Called from view */
 		$scope.addSelectedMemberToAttendancelist = function () {
-			let memberId = $scope.reportParams.addMemberId;
-			let memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
-			addMemberAttendance(memberId,memberName);
+			let selectedMemberId = $scope.reportParams.addMemberId;
+			$scope.reportParams.groupMembersList.some(function(member) {
+				if(member.id == selectedMemberId){
+					memberObj = member;
+					addMemberAttendance(member);
+				}
+				//short-circuit. Stop the loop when the member was found
+				return member.id == selectedMemberId;
+			});
 		};
 
 		$scope.addAllMembersToAteendace = function () {
 			$scope.reportParams.groupMembersList.forEach(function(member){
-				addMemberAttendance(member.id,member.name);
+				addMemberAttendance(member);
 			});
 		};
 
@@ -459,19 +466,19 @@ okulusApp.controller('ReportDetailsCntrl',
 		2. When a list is already present, iterate to find if the member is already there
 		3. Push the member to the attendace list
 		4. Remove member from  "removedMembersMap", if there */
-		addMemberAttendance = function(memberId,memberName){
+		addMemberAttendance = function(memberObj){
 			let memberExist = false;
-			$scope.objectDetails.attendance.members.forEach(function(member){
-				if(member.memberId == memberId){
+			$scope.objectDetails.attendance.members.some(function(member){
+				if(member.memberId == memberObj.id){
 					memberExist = true;
 				}
+				return member.memberId == memberObj.id;
 			});
 
 			if(memberExist){
-				$scope.response = { membersListError: memberName + " "+ systemMsgs.error.duplicatedAttendance};
+				$scope.response = { membersListError: memberObj.name + " "+ systemMsgs.error.duplicatedAttendance};
 			}else{
-				$scope.objectDetails.attendance.members.push({memberId:memberId,memberName:memberName});
-				// $scope.response = { membersListOk: memberName + " "+ systemMsgs.success.attendanceAdded};
+				$scope.objectDetails.attendance.members.push({memberId:memberObj.id, memberName:memberObj.name, sex:memberObj.sex});
 				$scope.response = null;
 				/* The removedMembersMap is used to track the members that must be removed from the report,
 				and the report should be removed from /member/details/:memberId/attendance
@@ -479,7 +486,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				1. remove a member from the attendace list (this will add the member Id in removedMembersMap),
 				2. and then add the member again. In this case we must delete the member from removedMembersMap */
 				if($scope.removedMembersMap){
-					$scope.removedMembersMap.delete(memberId);
+					$scope.removedMembersMap.delete(memberObj.id);
 				}
 			}
 		}
@@ -509,21 +516,22 @@ okulusApp.controller('ReportDetailsCntrl',
 		/* Called from view */
 		$scope.addGuestToAttendanceList = function () {
 			let guestName = $scope.reportParams.addGuestName;
+			let guestSex = $scope.reportParams.addGuestSex;
 			let addGuestNameQty = $scope.reportParams.addGuestNameQty;
 			if($scope.multipleGuestActive && addGuestNameQty > 1){
 				//Adding more than 1 guest will create: <Guest name> - <#>
 				while(addGuestNameQty>0){
-					addGuestAttendance(guestName + " "+addGuestNameQty);
+					addGuestAttendance(guestName + " "+addGuestNameQty, guestSex);
 					addGuestNameQty--;
 				}
 			}else{
-				addGuestAttendance(guestName);
+				addGuestAttendance(guestName, guestSex);
 			}
 			$scope.reportParams.addGuestName = "";
 			$scope.reportParams.addGuestNameQty = 1;
 		};
 
-		addGuestAttendance = function(guestName){
+		addGuestAttendance = function(guestName, guestSex){
 			let guestExist = false;
 			$scope.objectDetails.attendance.guests.forEach(function(member) {
 					if(member.guestName == guestName){
@@ -533,7 +541,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(guestExist){
 				$scope.response = { guestsListError: guestName + " " + systemMsgs.error.duplicatedAttendance};
 			}else{
-				$scope.objectDetails.attendance.guests.push({guestName:guestName});
+				$scope.objectDetails.attendance.guests.push({guestName:guestName, sex:guestSex});
 				$scope.response = null;
 				// $scope.response = { guestsListOk: guestName + " "+ systemMsgs.success.attendanceAdded};
 			}

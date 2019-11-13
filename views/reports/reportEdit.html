@@ -277,8 +277,6 @@
               <span class="badge badge-primary">{{objectDetails.attendance.members.length}}</span>
               <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
             </h5>
-            <!-- <button class="btn btn-link clickable" ng-show="!showingAllMembers" ng-click="showAllMembers()">{{i18n.reports.allMembersLbl}}</button> -->
-            <!-- <button class="btn btn-link clickable" ng-show="showingAllMembers" ng-click="showGroupMembers()">{{i18n.reports.groupMembersLbl}}</button> -->
           </div>
         </div>
         <!-- Members Select -->
@@ -297,7 +295,7 @@
           </div>
           <div class="col-4">
             <button type="button" class="btn btn-lg btn-block btn-primary clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
-              {{i18n.btns.addBtn}}
+              <span class="fas fa-plus"></span>
             </button>
           </div>
         </div>
@@ -305,23 +303,16 @@
         <div class="pre-scrollable">
           <table class="table table-md table-striped">
             <thead>
-              <tr>
-                <!-- <th scope="col">
-                  <span class="badge badge-danger">{{objectDetails.attendance.members.length}}</span>
-                  {{i18n.reports.membersAttendance}}
-                </th>
-                <th scope="col">&nbsp;</th> -->
-              </tr>
             </thead>
             <tbody>
               <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.members | orderBy:'memberName' track by element.memberId">
-                <td class="col-6" scope="row">
+                <td class="col" scope="row">
                   {{element.memberName}}
                 </td>
-                <td class="col-6" scope="row">
-                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeMemberAttendance(element)">
-                    {{i18n.btns.deleteBtn}}
-                  </button>
+                <td class="col" scope="row">
+                  <span class="btn btn-sm btn-info fas fa-male" ng-if="element.sex =='M'"></span>
+                  <span class="btn btn-sm btn-light fas fa-female" ng-if="element.sex =='F'"></span>
+                  <button type="button" class="btn btn-sm btn-danger clickable fas fa fa-trash" ng-click="removeMemberAttendance(element)"></button>
                 </td>
               </tr>
             </tbody>
@@ -357,15 +348,24 @@
         <!-- Guest Input -->
         <div class="row mb-4">
           <div class="col">
-            <input type="text" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/>
+            <input type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameLbl}}"
+              ng-model="reportParams.addGuestName" ng-required="true"/>
             <small id="" class="form-text text-muted" ng-show="!multipleGuestActive">
               {{i18n.reports.guestsAttendanceDirections}}
               <span class="btn-link clickable" ng-click="multipleGuestActive=true">{{i18n.btns.here}}</span>
             </small>
             <small id="" class="form-text text-muted" ng-show="multipleGuestActive">
               {{i18n.reports.multipleGuestsDirections}}
+              <span class="btn-link clickable" ng-click="multipleGuestActive=false">x</span>
             </small>
             <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
+          </div>
+          <div class="col">
+            <select id="sexSelect" class="form-control form-control-lg" ng-model="reportParams.addGuestSex" ng-required="true">
+              <option value="" >{{i18n.members.sexLbl}}</option>
+              <option value="M" >{{i18n.members.maleLbl}}</option>
+              <option value="F" >{{i18n.members.femaleLbl}}</option>
+            </select>
           </div>
           <div class="col-2" ng-show="multipleGuestActive" >
             <input type="number" min="1" max="{{config.reports.maxMultipleGuests}}" class="form-control form-control-lg"
@@ -374,10 +374,10 @@
               {{i18n.reports.multipleGuestsQty}} {{config.reports.maxMultipleGuests}}
             </small>
           </div>
-          <div class="col-4">
+          <div class="col-2">
             <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary clickable"
-              ng-disabled="!reportParams.addGuestName || (multipleGuestActive && !reportParams.addGuestNameQty)">
-              {{i18n.btns.addBtn}}
+              ng-disabled="!reportParams.addGuestName || !reportParams.addGuestSex || (multipleGuestActive && !reportParams.addGuestNameQty)">
+              <span class="fas fa-plus"></span>
             </button>
           </div>
         </div>
@@ -385,22 +385,16 @@
         <div class="pre-scrollable">
           <table class="table table-md table-striped">
             <thead>
-              <!-- <tr>
-                <th scope="col">
-                  <span class="badge badge-danger">{{objectDetails.attendance.guests.length}}</span>
-                  {{i18n.reports.guestsAttendance}}</th>
-                <th scope="col">&nbsp;</th>
-              </tr> -->
             </thead>
             <tbody>
               <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.guests | orderBy:'guestName'">
-                <td class="col-6" scope="row">
+                <td class="col" scope="row">
                   {{element.guestName}}
                 </td>
-                <td class="col-6" scope="row">
-                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeGuestAttendance(element)">
-                    {{i18n.btns.deleteBtn}}
-                  </button>
+                <td class="col" scope="row">
+                  <span class="btn btn-sm btn-info fas fa-male" ng-if="element.sex =='M'"></span>
+                  <span class="btn btn-sm btn-light fas fa-female" ng-if="element.sex =='F'"></span>
+                  <button type="button" class="btn btn-sm btn-danger clickable fas fa fa-trash" ng-click="removeGuestAttendance(element)"></button>
                 </td>
               </tr>
             </tbody>
