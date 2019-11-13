@@ -637,6 +637,10 @@ okulusApp.factory('MembersSvc',
 					return $firebaseArray(reference.equalTo(true));
 				}
 			},
+			/* Get member's sex value'*/
+			getMemberSex: function(whichMemberId){
+				return $firebaseObject(memberListRef.child(whichMemberId).child(constants.db.fields.sex));
+			},
 			/* Get member basic info from firebase and return as object */
 			getMemberBasicDataObject: function(whichMemberId){
 				return $firebaseObject(memberListRef.child(whichMemberId));
