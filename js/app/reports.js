@@ -279,16 +279,16 @@ okulusApp.controller('ReportDetailsCntrl',
 					return;
 				}
 
-				let whichReport = $routeParams.reportId;
 				let whichGroup = $routeParams.groupId;
-				// console.debug(whichReport,whichGroup);
-
-				/* When Group Id available, we are comming from /reports/new/:groupId */
+				let whichReport = $routeParams.reportId;
+				/* When groupId is available, we are comming from /reports/new/:groupId
+				and trying to create a new report for the provided group*/
 				if(whichGroup){
 					$scope.prepareViewForNew(whichGroup);
 				}
-				/* Prepare for Edit or View Details of Existing Report */
-				else{
+				/* When reportId is available, we are comming from /reports/edit/:reportId
+				or  /reports/view/:reportId and trying to retrieve an existing report */
+				else if(whichReport){
 					$scope.prepareViewForEdit(whichReport);
 				}
 			});
@@ -703,11 +703,21 @@ okulusApp.controller('ReportDetailsCntrl',
 			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
 			$scope.objectDetails.basicInfo.date = ReportsSvc.buildDateJson($scope.reportParams.dateObj);
 			$scope.objectDetails.basicInfo.dateMilis = $scope.reportParams.dateObj.getTime();
-			let membersAttendanceList = $scope.objectDetails.attendance.members;
-			let guestsAttendanceList = $scope.objectDetails.attendance.guests;
+			let membersAttndList = $scope.objectDetails.attendance.members;
+			let guestsAttndList = $scope.objectDetails.attendance.guests;
 
 			/* When a Report is marked as "Canceled Reunion", some data must be
-			 set to default values (Important when editing existing report)*/
+			 set to default values (Important when editing existing report) */
+			 /*Attendance Values*/
+			 $scope.objectDetails.basicInfo.membersAttendance = 0;
+			 $scope.objectDetails.basicInfo.femaleMembers = 0;
+			 $scope.objectDetails.basicInfo.maleMembers = 0;
+			 $scope.objectDetails.basicInfo.guestsAttendance = 0;
+			 $scope.objectDetails.basicInfo.femaleGuests = 0;
+			 $scope.objectDetails.basicInfo.maleGuests = 0;
+			 $scope.objectDetails.basicInfo.totalAttendance = 0;
+			 $scope.objectDetails.basicInfo.totalFemale = 0;
+			 $scope.objectDetails.basicInfo.totalMale = 0;
 			if($scope.objectDetails.basicInfo.status == constants.status.canceled){
 
 				//All Members in Attendance list, if any, need to be moved to "removedMembersMap"
@@ -727,15 +737,33 @@ okulusApp.controller('ReportDetailsCntrl',
 				$scope.objectDetails.attendance = { guests:[], members:[] };
 				$scope.objectDetails.basicInfo.duration = 0;
 				$scope.objectDetails.basicInfo.money = 0;
-				$scope.objectDetails.basicInfo.membersAttendance = 0;
-				$scope.objectDetails.basicInfo.guestsAttendance = 0;
-				$scope.objectDetails.basicInfo.totalAttendance = 0;
 			}else{
-				$scope.objectDetails.basicInfo.membersAttendance = membersAttendanceList?membersAttendanceList.length:0;
-				$scope.objectDetails.basicInfo.guestsAttendance = guestsAttendanceList?guestsAttendanceList.length:0;
+				/* Iterate over the members attendance list to identify number of males and females */
+				$scope.objectDetails.attendance.members.forEach(function(record) {
+					$scope.objectDetails.basicInfo.membersAttendance ++;
+					if(record.sex == 'F'){
+						$scope.objectDetails.basicInfo.femaleMembers ++;
+					}else if(record.sex == 'M'){
+						$scope.objectDetails.basicInfo.maleMembers ++;
+					}
+				});
+
+				/* Iterate over the guests attendance list to identify number of males and females */
+				$scope.objectDetails.attendance.guests.forEach(function(record) {
+					$scope.objectDetails.basicInfo.guestsAttendance ++;
+					if(record.sex == 'F'){
+						$scope.objectDetails.basicInfo.femaleGuests ++;
+					}else if(record.sex == 'M'){
+						$scope.objectDetails.basicInfo.maleGuests ++;
+					}
+				});
+
 				$scope.objectDetails.basicInfo.totalAttendance = $scope.objectDetails.basicInfo.membersAttendance + $scope.objectDetails.basicInfo.guestsAttendance;
+				$scope.objectDetails.basicInfo.totalFemale = $scope.objectDetails.basicInfo.femaleMembers + $scope.objectDetails.basicInfo.femaleGuests;
+				$scope.objectDetails.basicInfo.totalMale = $scope.objectDetails.basicInfo.maleMembers + $scope.objectDetails.basicInfo.maleGuests;
 			}
 
+			//Saving Report
 			$scope.response = { working:true, message: systemMsgs.inProgress.savingReport };
 
 			//Save Updates: Only valid for reports in "pending" or "rejected" review status
@@ -769,8 +797,8 @@ okulusApp.controller('ReportDetailsCntrl',
 								$scope.removedMembersMap.set(elem.memberId, elem.memberId);
 							});
 						}
-						membersAttendanceList = [];
-						guestsAttendanceList = [];
+						membersAttndList = [];
+						guestsAttndList = [];
 					}
 
 					/* When editing a report, some members from the original attendance list could have
@@ -782,8 +810,8 @@ okulusApp.controller('ReportDetailsCntrl',
 					$scope.objectDetails.atten.members = null;
 					$scope.objectDetails.atten.guests = null;
 					$scope.objectDetails.atten.$save();
-					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
-					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
+					ReportsSvc.setMembersAttendaceList(membersAttndList,report);
+					ReportsSvc.setGuestAttendaceList(guestsAttndList,report);
 
 					let description = systemMsgs.notifications.reportUpdated;
 					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.reports, report.$id, description);
@@ -809,8 +837,8 @@ okulusApp.controller('ReportDetailsCntrl',
 					ReportsSvc.increasePendingReportsCount($rootScope.currentSession.user.$id);
 					ReportsSvc.setReportStudyInfo(reportStudyInfo,report.$id);
 					//Members and Guests attendace list is added separately from the report basic info
-					ReportsSvc.setMembersAttendaceList(membersAttendanceList,report);
-					ReportsSvc.setGuestAttendaceList(guestsAttendanceList,report);
+					ReportsSvc.setMembersAttendaceList(membersAttndList,report);
+					ReportsSvc.setGuestAttendaceList(guestsAttndList,report);
 					//No need to removeReportRefereceFromMembers when creating a new report
 					//ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap,report.$id);
 
@@ -1127,7 +1155,7 @@ okulusApp.factory('ReportsSvc',
 				if(attendanceList){
 					attendanceList.forEach(function(member) {
 						reportsDetailsRef.child(report.$id).child(constants.db.folders.membersAttendance).child(member.memberId).set(
-							{memberId:member.memberId, memberName:member.memberName}
+							{memberId:member.memberId, memberName:member.memberName, sex:member.sex}
 						);
 						MembersSvc.addReportReferenceToMember(member.memberId, report);
 					});
@@ -1137,7 +1165,7 @@ okulusApp.factory('ReportsSvc',
 			setGuestAttendaceList: function(attendanceList, report) {
 				if(attendanceList){
 					attendanceList.forEach(function(guest) {
-						reportsDetailsRef.child(report.$id).child(constants.db.folders.guestsAttendance).push({guestName:guest.guestName});
+						reportsDetailsRef.child(report.$id).child(constants.db.folders.guestsAttendance).push({guestName:guest.guestName, sex:guest.sex});
 					});
 				}
 			},

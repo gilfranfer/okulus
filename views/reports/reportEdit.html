@@ -349,7 +349,7 @@
         <div class="row mb-4">
           <div class="col">
             <input type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameLbl}}"
-              ng-model="reportParams.addGuestName" ng-required="true"/>
+              ng-model="reportParams.addGuestName" ng-required="false"/>
             <small id="" class="form-text text-muted" ng-show="!multipleGuestActive">
               {{i18n.reports.guestsAttendanceDirections}}
               <span class="btn-link clickable" ng-click="multipleGuestActive=true">{{i18n.btns.here}}</span>
@@ -361,7 +361,7 @@
             <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
           </div>
           <div class="col">
-            <select id="sexSelect" class="form-control form-control-lg" ng-model="reportParams.addGuestSex" ng-required="true">
+            <select id="sexSelect" class="form-control form-control-lg" ng-model="reportParams.addGuestSex" ng-required="false">
               <option value="" >{{i18n.members.sexLbl}}</option>
               <option value="M" >{{i18n.members.maleLbl}}</option>
               <option value="F" >{{i18n.members.femaleLbl}}</option>
