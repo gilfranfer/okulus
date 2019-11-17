@@ -179,7 +179,7 @@ okulusApp.controller('GroupsUserCntrl',
 		$scope.setSortOrder = function(reverse) {
 			$scope.reverseSort = reverse;
 		};
-		
+
 	}
 ]);
 
@@ -237,8 +237,42 @@ okulusApp.controller('GroupDetailsCntrl',
 			});
 		}});
 
+		$scope.basicInfoExpanded = true;
+		$scope.addressInfoExpanded = true;
+		$scope.rolesInfoExpanded = true;
+		$scope.auditInfoExpanded = false;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'addressInfo':
+					$scope.addressInfoExpanded = value;
+					break;
+				case 'rolesInfo':
+					$scope.rolesInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
+
+		clearResponse = function() {
+			$rootScope.groupResponse = null;
+			$scope.response = null;
+		};
+
 		$scope.updateStatesList = function() {
 			$scope.statesList = ConfigSvc.getStatesForCountry($scope.objectDetails.address.country);
+		};
+
+		/*Called when change detected on time input*/
+		$scope.updateTimeModel = function(){
+			$scope.groupEditParams.timeUpdated = true;
+			let schdTime = document.getElementById("schdTime").value;
+			$scope.objectDetails.basicInfo.time = schdTime;
 		};
 
 		$scope.prepareViewForEdit = function (groupObject) {
@@ -262,6 +296,7 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.objectDetails.address = $scope.config.location;
 		};
 
+		/* Save a new Group, or update existing one */
 		$scope.saveGroup = function() {
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
@@ -294,13 +329,12 @@ okulusApp.controller('GroupDetailsCntrl',
 			}
 		};
 
-		/* A group can be deleted by Admin , if not active, and if there are no reports associated to it.
-		 When deleting a Group:
+		/* A group can be deleted by Admin , if not active, and if there are no
+		reports associated to it. When deleting a Group:
 		  1. Delete from /groups/list
 		  2. Delete from /groups/details
 			3. Decrease the Groups total count
-			4. Delete all references to this group from member/access
-		*/
+			4. Delete all references to this group from member/access */
 		$scope.deleteGroup = function() {
 			clearResponse();
 			let groupId = $scope.objectDetails.basicInfo.$id;
@@ -361,18 +395,7 @@ okulusApp.controller('GroupDetailsCntrl',
 			}
 		};
 
-		clearResponse = function() {
-			$rootScope.groupResponse = null;
-			$scope.response = null;
-		};
-
-		/*Called when change detected on time input*/
-		$scope.updateTimeModel = function(){
-			$scope.groupEditParams.timeUpdated = true;
-			let schdTime = document.getElementById("schdTime").value;
-			$scope.objectDetails.basicInfo.time = schdTime;
-		};
-
+		/* Role Update related functions */
 		$scope.prepareForGroupLeadUpdate = function(){
 			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
 
@@ -385,8 +408,6 @@ okulusApp.controller('GroupDetailsCntrl',
 				$scope.groupEditParams.currentLeadId= $scope.objectDetails.roles.leadId;
 			});
 		};
-
-		/* Persist the Groups's Lead Selection */
 		$scope.updateGroupLead = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
@@ -424,8 +445,6 @@ okulusApp.controller('GroupDetailsCntrl',
 				$scope.groupEditParams.currentHostId= $scope.objectDetails.roles.hostId;
 			});
 		};
-
-		/*Persist the Groups's Host Selection */
 		$scope.updateGroupHost = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){
@@ -463,8 +482,6 @@ okulusApp.controller('GroupDetailsCntrl',
 				$scope.groupEditParams.currentTraineeId= $scope.objectDetails.roles.traineeId;
 			});
 		};
-
-		/*Persist the Groups's Trainee Selection */
 		$scope.updateGroupTrainee = function(){
 			clearResponse();
 			if($rootScope.currentSession.user.type != constants.roles.user){

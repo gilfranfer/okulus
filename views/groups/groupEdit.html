@@ -23,14 +23,24 @@
 
   <!-- Basic Details Card -->
   <article class="card mb-3">
-    <form id="groupForm" name="groupForm" novalidate ng-submit="">
+    <form name="groupForm" novalidate ng-submit="">
       <div class="card-body">
         <!-- Header -->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.groups.basicInfoTitle}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+              ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+              ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+              {{i18n.groups.basicInfoTitle}}
+            </legend>
           </div>
         </div>
+        <!-- Form Fields -->
+        <div id="basicInfo" class="collapse show">
         <hr>
         <!-- Number and Name -->
         <div class="form-row">
@@ -108,6 +118,7 @@
                 ng-required="!(objectDetails.basicInfo.email)">
           </div>
         </div>
+        </div>
       </div>
     </form>
   </article>
@@ -119,18 +130,139 @@
         <!-- Header and Add Button (Admin)-->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.address.legend}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#addressInfo" aria-expanded="false" aria-controls="addressInfo"
+              ng-if="addressInfoExpanded" ng-click="expandSection('addressInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#addressInfo" aria-expanded="true" aria-controls="addressInfo"
+              ng-if="!addressInfoExpanded" ng-click="expandSection('addressInfo',true)"></i>
+              {{i18n.address.legend}}
+            </legend>
           </div>
         </div>
         <!-- Address -->
-        <div ng-include="'views/fragments/addressFormFields.html'"></div>
+        <div id="addressInfo" class="collapse show">
+          <hr>
+          <div ng-include="'views/fragments/addressFormFields.html'"></div>
+        </div>
       </div>
     </form>
   </article>
 
+  <!-- Groups Additional Info Card (Only for Admin) -->
+  <article class="mb-3" ng-if="groupEditParams.isEdit && currentSession.user.type != 'user'">
+    <div class="card">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#rolesInfo" aria-expanded="false" aria-controls="rolesInfo"
+              ng-if="rolesInfoExpanded" ng-click="expandSection('rolesInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#rolesInfo" aria-expanded="true" aria-controls="rolesInfo"
+              ng-if="!rolesInfoExpanded" ng-click="expandSection('rolesInfo',true)"></i>
+              {{i18n.groups.additionalInfoTitle}}
+            </legend>
+          </div>
+        </div>
+        <div id="rolesInfo" class="collapse show">
+          <hr>
+          <!-- Host and Lead -->
+          <div class="form-row">
+            <div class="col-11 col-md-5 form-group">
+              <label class="font-weight-bold" for="groupLead">
+                {{i18n.members.leadLbl}}
+              </label>
+              <input type="text" disabled class="form-control form-control-lg"
+                ng-if="!groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadName">
+              <select id="groupLead" class="form-control form-control-lg" ng-required="false"
+                ng-if="groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadId">
+                <option value="">{{i18n.groups.noLeadLbl}}</option>
+                <option ng-repeat="lead in groupEditParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
+                  {{lead.shortname}}
+                </option>
+              </select>
+            </div>
+            <div class="col-1 form-group">
+              <label></label><br>
+              <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                  ng-if="groupEditParams.updatingGroupLead" ng-click="updateGroupLead()" ></i>
+              <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                  ng-if="!groupEditParams.updatingGroupLead" ng-click="prepareForGroupLeadUpdate()" ></i>
+            </div>
+            <div class="col-11 col-md-5 form-group">
+              <label class="font-weight-bold" for="groupHost">
+                {{i18n.members.hostLbl}}
+              </label>
+              <input type="text" disabled class="form-control form-control-lg"
+                ng-if="!groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostName">
+              <select id="groupHost" class="form-control form-control-lg" ng-required="false"
+                ng-if="groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostId">
+                <option value="">{{i18n.groups.noHostLbl}}</option>
+                <option ng-repeat="host in groupEditParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
+                  {{host.shortname}}
+                </option>
+              </select>
+            </div>
+            <div class="col-1 form-group">
+              <label></label><br>
+              <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                  ng-if="groupEditParams.updatingGroupHost" ng-click="updateGroupHost()" ></i>
+              <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                  ng-if="!groupEditParams.updatingGroupHost" ng-click="prepareForGroupHostUpdate()" ></i>
+            </div>
+          </div>
+          <!-- Trainee and Group Status -->
+          <div class="form-row">
+            <div class="col-11 col-md-5 form-group">
+              <label class="font-weight-bold" for="groupTrainee">
+                {{i18n.members.traineeLbl}}
+              </label>
+              <input type="text" disabled class="form-control form-control-lg"
+                ng-if="!groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeName">
+              <select id="groupTrainee" class="form-control form-control-lg" ng-required="false"
+                ng-if="groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeId">
+                <option value="">{{i18n.groups.noTraineeLbl}}</option>
+                <option ng-repeat="trainee in groupEditParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
+                  {{trainee.shortname}}
+                </option>
+              </select>
+            </div>
+            <div class="col-1 form-group">
+              <label></label><br>
+              <i class="clickable pr-2 fas fa-2x fa-save" title=""
+                  ng-if="groupEditParams.updatingGroupTrainee" ng-click="updateGroupTrainee()" ></i>
+              <i class="clickable pr-2 fas fa-2x fa-edit" title=""
+                  ng-if="!groupEditParams.updatingGroupTrainee" ng-click="prepareForGroupTraineeUpdate()" ></i>
+            </div>
+            <div class="col-12 col-md-6 form-group">
+              <label class="font-weight-bold" for="status">
+                {{i18n.groups.statusLbl}}
+              </label>
+              <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
+                ng-show="objectDetails.basicInfo.isActive" ng-click="setGroupStatus(false)">
+                {{i18n.groups.activeStatusLbl}}
+              </button>
+              <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
+                ng-show="!objectDetails.basicInfo.isActive" ng-click="setGroupStatus(true)">
+                {{i18n.groups.inactiveStatusLbl}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+
   <!-- Save Buttons (Only for Admin) -->
-  <div class="mb-3" ng-if="currentSession.user.type != 'user'">
-    <div class="row">
+  <div ng-if="currentSession.user.type != 'user'">
+    <div class="row mb-3">
       <div class="col">
         <button type="button" class="btn btn-lg btn-block btn-warning clickable"
           ng-show="(!groupEditParams.isEdit && !groupForm.$invalid && !groupAddressForm.$invalid) ||
@@ -142,106 +274,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Alerts to inform user on progress or result -->
-  <div ng-include="'views/alerts.html'"></div>
-
-  <!-- Groups Additional Info Card (Only for Admin) -->
-  <article class="mb-3" ng-if="groupEditParams.isEdit && currentSession.user.type != 'user'">
-    <div class="card mb-2">
-      <div class="card-body">
-        <!-- Header -->
-        <div class="row">
-          <div class="col">
-            <legend>{{i18n.groups.additionalInfoTitle}}</legend>
-          </div>
-        </div>
-        <hr>
-        <!-- Host and Lead -->
-        <div class="form-row">
-          <div class="col-11 col-md-5 form-group">
-            <label class="font-weight-bold" for="groupLead">
-              {{i18n.members.leadLbl}}
-            </label>
-            <input type="text" disabled class="form-control form-control-lg"
-              ng-if="!groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadName">
-            <select id="groupLead" class="form-control form-control-lg" ng-required="false"
-              ng-if="groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadId">
-              <option value="">{{i18n.groups.noLeadLbl}}</option>
-              <option ng-repeat="lead in groupEditParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
-                {{lead.shortname}}
-              </option>
-            </select>
-          </div>
-          <div class="col-1 form-group">
-            <label></label><br>
-            <i class="clickable pr-2 fas fa-2x fa-save" title=""
-                ng-if="groupEditParams.updatingGroupLead" ng-click="updateGroupLead()" ></i>
-            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
-                ng-if="!groupEditParams.updatingGroupLead" ng-click="prepareForGroupLeadUpdate()" ></i>
-          </div>
-          <div class="col-11 col-md-5 form-group">
-            <label class="font-weight-bold" for="groupHost">
-              {{i18n.members.hostLbl}}
-            </label>
-            <input type="text" disabled class="form-control form-control-lg"
-              ng-if="!groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostName">
-            <select id="groupHost" class="form-control form-control-lg" ng-required="false"
-              ng-if="groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostId">
-              <option value="">{{i18n.groups.noHostLbl}}</option>
-              <option ng-repeat="host in groupEditParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
-                {{host.shortname}}
-              </option>
-            </select>
-          </div>
-          <div class="col-1 form-group">
-            <label></label><br>
-            <i class="clickable pr-2 fas fa-2x fa-save" title=""
-                ng-if="groupEditParams.updatingGroupHost" ng-click="updateGroupHost()" ></i>
-            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
-                ng-if="!groupEditParams.updatingGroupHost" ng-click="prepareForGroupHostUpdate()" ></i>
-          </div>
-        </div>
-        <!-- Trainee and Group Status -->
-        <div class="form-row">
-          <div class="col-11 col-md-5 form-group">
-            <label class="font-weight-bold" for="groupTrainee">
-              {{i18n.members.traineeLbl}}
-            </label>
-            <input type="text" disabled class="form-control form-control-lg"
-              ng-if="!groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeName">
-            <select id="groupTrainee" class="form-control form-control-lg" ng-required="false"
-              ng-if="groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeId">
-              <option value="">{{i18n.groups.noTraineeLbl}}</option>
-              <option ng-repeat="trainee in groupEditParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
-                {{trainee.shortname}}
-              </option>
-            </select>
-          </div>
-          <div class="col-1 form-group">
-            <label></label><br>
-            <i class="clickable pr-2 fas fa-2x fa-save" title=""
-                ng-if="groupEditParams.updatingGroupTrainee" ng-click="updateGroupTrainee()" ></i>
-            <i class="clickable pr-2 fas fa-2x fa-edit" title=""
-                ng-if="!groupEditParams.updatingGroupTrainee" ng-click="prepareForGroupTraineeUpdate()" ></i>
-          </div>
-          <div class="col-12 col-md-6 form-group">
-            <label class="font-weight-bold" for="status">
-              {{i18n.groups.statusLbl}}
-            </label>
-            <button type="button" id ="status" class="btn btn-lg btn-block btn-primary clickable"
-              ng-show="objectDetails.basicInfo.isActive" ng-click="setGroupStatus(false)">
-              {{i18n.groups.activeStatusLbl}}
-            </button>
-            <button type="button" id ="status" class="btn btn-lg btn-block btn-secondary clickable"
-              ng-show="!objectDetails.basicInfo.isActive" ng-click="setGroupStatus(true)">
-              {{i18n.groups.inactiveStatusLbl}}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </article>
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>

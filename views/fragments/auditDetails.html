@@ -1,41 +1,54 @@
 <div class="card h-100 mb-3">
   <div class="card-body">
-    <h4 class="card-title">
-      {{i18n.audit.title}}
-    </h4>
-    <hr>
+    <!-- Header -->
     <div class="row">
-      <div class="col" ng-show="objectDetails.audit.createdByName">
-        <label class="font-weight-bold">{{i18n.audit.creation}}</label><br>
-        <span>
-          <a ng-if="objectDetails.audit.createdById" href="#!/users/view/{{objectDetails.audit.createdById}}">{{objectDetails.audit.createdByName}}</a>
-          <span ng-if="!objectDetails.audit.createdById">{{objectDetails.audit.createdByName}}</span>
-        </span><br>
-        <span>{{objectDetails.audit.createdOn | date: config.formats.datetime}}</span>
+      <div class="col">
+        <legend>
+          <i class="clickable far fa-minus-square"
+           data-toggle="collapse" data-target="#auditInfo" aria-expanded="true" aria-controls="auditInfo"
+          ng-if="auditInfoExpanded" ng-click="expandSection('auditInfo',false)"></i>
+          <i class="clickable far fa-plus-square"
+           data-toggle="collapse" data-target="#auditInfo" aria-expanded="false" aria-controls="auditInfo"
+          ng-if="!auditInfoExpanded" ng-click="expandSection('auditInfo',true)"></i>
+          {{i18n.audit.title}}
+        </legend>
       </div>
-      <div class="col" ng-show="objectDetails.audit.lastUpdateByName">
-        <label class="font-weight-bold">{{i18n.audit.update}}</label><br>
-        <span>
-          <a ng-if="objectDetails.audit.lastUpdateById" href="#!/users/view/{{objectDetails.audit.lastUpdateById}}">{{objectDetails.audit.lastUpdateByName}}</a>
-          <span ng-if="!objectDetails.audit.lastUpdateById">{{objectDetails.audit.lastUpdateByName}}</span>
-        </span><br>
-        <span>{{objectDetails.audit.lastUpdateOn | date: config.formats.datetime}}</span>
-      </div>
-      <div class="col" ng-show="objectDetails.audit.approvedByName">
-        <label class="font-weight-bold">{{i18n.audit.approval}}</label><br>
-        <span>
-          <a ng-if="objectDetails.audit.approvedById" href="#!/users/view/{{objectDetails.audit.approvedById}}">{{objectDetails.audit.approvedByName}}</a>
-          <span ng-if="!objectDetails.audit.approvedById">{{objectDetails.audit.approvedByName}}</span>
-        </span><br>
-        <span>{{objectDetails.audit.approvedOn | date: config.formats.datetime}}</span>
-      </div>
-      <div class="col" ng-show="objectDetails.audit.rejectedByName">
-        <label class="font-weight-bold">{{i18n.audit.rejection}}</label><br>
-        <span>
-          <a ng-if="objectDetails.audit.rejectedById" href="#!/users/view/{{objectDetails.audit.rejectedById}}">{{objectDetails.audit.rejectedByName}}</a>
-          <span ng-if="!objectDetails.audit.rejectedById">{{objectDetails.audit.rejectedByName}}</span>
-        </span><br>
-        <span>{{objectDetails.audit.rejectedOn | date: config.formats.datetime}}</span>
+    </div>
+    <div id="auditInfo" class="collapse">
+      <hr>
+      <div class="row">
+        <div class="col" ng-show="objectDetails.audit.createdByName">
+          <label class="font-weight-bold">{{i18n.audit.creation}}</label><br>
+          <span>
+            <a ng-if="objectDetails.audit.createdById" href="#!/users/view/{{objectDetails.audit.createdById}}">{{objectDetails.audit.createdByName}}</a>
+            <span ng-if="!objectDetails.audit.createdById">{{objectDetails.audit.createdByName}}</span>
+          </span><br>
+          <span>{{objectDetails.audit.createdOn | date: config.formats.datetime}}</span>
+        </div>
+        <div class="col" ng-show="objectDetails.audit.lastUpdateByName">
+          <label class="font-weight-bold">{{i18n.audit.update}}</label><br>
+          <span>
+            <a ng-if="objectDetails.audit.lastUpdateById" href="#!/users/view/{{objectDetails.audit.lastUpdateById}}">{{objectDetails.audit.lastUpdateByName}}</a>
+            <span ng-if="!objectDetails.audit.lastUpdateById">{{objectDetails.audit.lastUpdateByName}}</span>
+          </span><br>
+          <span>{{objectDetails.audit.lastUpdateOn | date: config.formats.datetime}}</span>
+        </div>
+        <div class="col" ng-show="objectDetails.audit.approvedByName">
+          <label class="font-weight-bold">{{i18n.audit.approval}}</label><br>
+          <span>
+            <a ng-if="objectDetails.audit.approvedById" href="#!/users/view/{{objectDetails.audit.approvedById}}">{{objectDetails.audit.approvedByName}}</a>
+            <span ng-if="!objectDetails.audit.approvedById">{{objectDetails.audit.approvedByName}}</span>
+          </span><br>
+          <span>{{objectDetails.audit.approvedOn | date: config.formats.datetime}}</span>
+        </div>
+        <div class="col" ng-show="objectDetails.audit.rejectedByName">
+          <label class="font-weight-bold">{{i18n.audit.rejection}}</label><br>
+          <span>
+            <a ng-if="objectDetails.audit.rejectedById" href="#!/users/view/{{objectDetails.audit.rejectedById}}">{{objectDetails.audit.rejectedByName}}</a>
+            <span ng-if="!objectDetails.audit.rejectedById">{{objectDetails.audit.rejectedByName}}</span>
+          </span><br>
+          <span>{{objectDetails.audit.rejectedOn | date: config.formats.datetime}}</span>
+        </div>
       </div>
     </div>
   </div>

@@ -569,7 +569,7 @@ okulusApp.run(function($rootScope) {
 				/* Form Labels */
 				basicInfoTitle:"Información Básica",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
-				modifyLbl:"Modificar Información del", newLbl: "Nuevo",
+				modifyLbl:"Información del", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
 				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",
 				typeLbl:"Tipo", scheduleLbl:"Horario", schdTimeHint: "20:00",
