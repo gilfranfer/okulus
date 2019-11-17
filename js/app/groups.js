@@ -238,6 +238,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		}});
 
 		$scope.basicInfoExpanded = true;
+		$scope.viewContactInfoExpanded = true;
 		$scope.addressInfoExpanded = true;
 		$scope.rolesInfoExpanded = true;
 		$scope.auditInfoExpanded = false;
@@ -245,6 +246,9 @@ okulusApp.controller('GroupDetailsCntrl',
 			switch (section) {
 				case 'basicInfo':
 					$scope.basicInfoExpanded = value;
+					break;
+				case 'viewContactInfo':
+					$scope.viewContactInfoExpanded = value;
 					break;
 				case 'addressInfo':
 					$scope.addressInfoExpanded = value;

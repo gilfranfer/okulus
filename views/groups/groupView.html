@@ -47,40 +47,50 @@
       <!-- Header and Add Button (Admin)-->
       <div class="row">
         <div class="col">
-          <legend>{{i18n.groups.contactTitle}}</legend>
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#viewContactInfo" aria-expanded="false" aria-controls="viewContactInfo"
+            ng-if="viewContactInfoExpanded" ng-click="expandSection('viewContactInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#viewContactInfo" aria-expanded="true" aria-controls="viewContactInfo"
+            ng-if="!viewContactInfoExpanded" ng-click="expandSection('viewContactInfo',true)"></i>
+            {{i18n.groups.contactTitle}}
+          </legend>
         </div>
       </div>
-      <hr>
-      <!-- Roles -->
-      <div class="form-row">
-        <div class="col-md form-group" ng-if="objectDetails.roles.leadName">
-          <label class="font-weight-bold">
-            {{i18n.members.leadLbl}}:
-          </label>
-          <span>{{objectDetails.roles.leadName}}</span>
+      <div id="viewContactInfo" class="collapse show">
+        <hr>
+        <!-- Roles -->
+        <div class="form-row">
+          <div class="col-md form-group" ng-if="objectDetails.roles.leadName">
+            <label class="font-weight-bold">
+              {{i18n.members.leadLbl}}:
+            </label>
+            <span>{{objectDetails.roles.leadName}}</span>
+          </div>
+          <div class="col-md form-group" ng-if="objectDetails.roles.hostName">
+            <label class="font-weight-bold">
+              {{i18n.members.hostLbl}}:
+            </label>
+            <span>{{objectDetails.roles.hostName}}</span>
+          </div>
         </div>
-        <div class="col-md form-group" ng-if="objectDetails.roles.hostName">
-          <label class="font-weight-bold">
-            {{i18n.members.hostLbl}}:
-          </label>
-          <span>{{objectDetails.roles.hostName}}</span>
-        </div>
-      </div>
-      <!-- Address -->
-      <div ng-include="'views/fragments/addressView.html'"></div>
-      <!-- Email and Phone -->
-      <div class="form-row">
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
-          <label class="font-weight-bold">
-            {{i18n.contact.emailLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.email}}</span>
-        </div>
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
-          <label class="font-weight-bold">
-            {{i18n.contact.phoneLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.phone}}</span>
+        <!-- Address -->
+        <div ng-include="'views/fragments/addressView.html'"></div>
+        <!-- Email and Phone -->
+        <div class="form-row">
+          <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
+            <label class="font-weight-bold">
+              {{i18n.contact.emailLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.email}}</span>
+          </div>
+          <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+            <label class="font-weight-bold">
+              {{i18n.contact.phoneLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.phone}}</span>
+          </div>
         </div>
       </div>
     </div>
