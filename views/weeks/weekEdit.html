@@ -5,7 +5,6 @@
 
 <!-- Following section will be displayed onyl after week is loaded -->
 <section id="weekEdit" ng-show="!response.loading">
-
   <!-- Informs a Week was created (used after redirect from weeks/new to weeks/edit) -->
   <div class="alert alert-success" role="alert" ng-show="weekResponse.created" >
     {{weekResponse.message}}
@@ -17,70 +16,113 @@
       <h4 class="card-title">
         {{weekEditParams.actionLbl}} {{i18n.weeks.weekLbl}}
         <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.$id}}</span>
-        <!-- <div class="d-inline" ng-if="weekEditParams.showBadges">
-          <span class="ml-4 badge badge-success" ng-if="objectDetails.basicInfo.isOpen">
-            {{i18n.weeks.openLbl}}
-          </span>
-          <span class="ml-4 badge badge-danger" ng-if="!objectDetails.basicInfo.isOpen">
-            {{i18n.weeks.closedLbl}}
-          </span>
-          <span class="ml-4 badge badge-primary" ng-if="objectDetails.basicInfo.isVisible">
-            {{i18n.weeks.showLbl}}
-          </span>
-          <span class="ml-4 badge badge-dark" ng-if="!objectDetails.basicInfo.isVisible">
-            {{i18n.weeks.hideLbl}}
-          </span>
-        </div> -->
       </h4>
     </div>
   </article>
 
   <!-- Basic Details Card -->
   <article class="card mb-3">
-    <form id="weekForm" name="weekForm" novalidate ng-submit="">
-      <div class="card-body">
+    <div class="card-body">
+      <!-- Name, Weekd, Due date, and notes -->
+      <form id="weekForm" name="weekForm" novalidate ng-submit="">
         <!-- Header -->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.weeks.basicInfoTitle}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+              ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+              ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+              {{i18n.weeks.basicInfoTitle}}
+            </legend>
           </div>
         </div>
-        <hr>
-        <!-- Week name -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label class="font-weight-bold" for="weekName">
-              {{i18n.weeks.nameLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input id="weekName" type="text" class="form-control form-control-lg"
-              placeholder="{{i18n.weeks.nameHint}}" ng-model="objectDetails.basicInfo.name" ng-required="true">
+        <div id="basicInfo" class="collapse show">
+          <hr>
+          <!-- Week name -->
+          <div class="form-row">
+            <div class="col form-group">
+              <label class="font-weight-bold" for="weekName">
+                {{i18n.weeks.nameLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input id="weekName" type="text" class="form-control form-control-lg"
+                placeholder="{{i18n.weeks.nameHint}}" ng-model="objectDetails.basicInfo.name" ng-required="true">
+            </div>
+            <!-- Week Code -->
+            <div class="col form-group">
+              <label class="font-weight-bold" for="weekDate">
+                {{i18n.weeks.weekDateLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="week" id="weekDate" class="form-control form-control-lg" placeholder=""
+                min="{{config.reports.minDate}}" max="{{config.tomorrowDate}}"
+                ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
+            </div>
           </div>
-          <!-- Week Code -->
-          <div class="col form-group">
-            <label class="font-weight-bold" for="weekDate">
-              {{i18n.weeks.weekDateLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input type="week" id="weekDate" class="form-control form-control-lg" placeholder=""
-              min="{{config.reports.minDate}}" max="{{config.tomorrowDate}}"
-              ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
+          <!-- Notes -->
+          <div class="form-row">
+            <div class="col form-group">
+              <label class="font-weight-bold" for="weekNotes">
+                {{i18n.weeks.notesLbl}}
+              </label>
+              <textarea id="weekNotes" name="notes" class="form-control form-control-lg"
+                placeholder="{{i18n.weeks.notesHint}}" ng-model="objectDetails.basicInfo.notes">
+              </textarea>
+            </div>
+          </div>
+          <!-- (Open & Show) Actions available for Admin, only after Week creation -->
+          <div class="mb-3" ng-if="weekEditParams.isEdit && currentSession.user.type != 'user'">
+            <div class="form-row">
+              <!-- Open / Close -->
+              <div class="col-sm-6 form-group">
+                <label class="font-weight-bold" for="weekStatus">
+                  {{i18n.weeks.statusLbl}}
+                </label><br>
+                <span class="mb-3 badge badge-success" ng-show="objectDetails.basicInfo.isOpen">
+                  {{i18n.weeks.openStatusLbl}}</span>
+                <span class="mb-3 badge badge-danger" ng-show="!objectDetails.basicInfo.isOpen">
+                  {{i18n.weeks.closedStatusLbl}}</span>
+                <br>
+                <button type="button" id ="weekStatus" class="btn btn-success clickable"
+                  ng-show="!objectDetails.basicInfo.isOpen" ng-click="setWeekOpenStatus(true)">
+                  {{i18n.weeks.openWeekBtn}}
+                </button>
+                <button type="button" id ="weekStatus" class="btn btn-danger clickable"
+                  ng-show="objectDetails.basicInfo.isOpen" ng-click="setWeekOpenStatus(false)">
+                  {{i18n.weeks.closeWeekBtn}}
+                </button>
+              </div>
+              <!-- Show / Hide -->
+              <div class="col-sm-6 form-group">
+                <label class="font-weight-bold" for="weekVisibility">
+                  {{i18n.weeks.visibilityLbl}}
+                </label><br>
+                <span class="mb-3 badge badge-primary" ng-show="objectDetails.basicInfo.isVisible">
+                  {{i18n.weeks.showStatusLbl}}</span>
+                <span class="mb-3 badge badge-dark" ng-show="!objectDetails.basicInfo.isVisible">
+                  {{i18n.weeks.hideStatusLbl}}</span>
+                <br>
+                <button type="button" id ="weekVisibility" class="btn btn-primary clickable"
+                  ng-show="!objectDetails.basicInfo.isVisible" ng-click="setWeekVisibility(true)">
+                  {{i18n.weeks.showWeekBtn}}
+                </button>
+                <button type="button" id ="weekVisibility" class="btn btn-dark clickable"
+                  ng-show="objectDetails.basicInfo.isVisible" ng-click="setWeekVisibility(false)">
+                  {{i18n.weeks.hideWeekBtn}}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- Notes -->
-        <div class="form-row">
-          <div class="col form-group">
-            <label class="font-weight-bold" for="weekNotes">
-              {{i18n.weeks.notesLbl}}
-            </label>
-            <textarea id="weekNotes" name="notes" class="form-control form-control-lg"
-              placeholder="{{i18n.weeks.notesHint}}" ng-model="objectDetails.basicInfo.notes">
-            </textarea>
-          </div>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </article>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
 
   <!-- Save Button (Only for Admin) -->
   <div class="row mb-3" ng-if="currentSession.user.type != 'user'">
@@ -92,70 +134,6 @@
       </button>
     </div>
   </div>
-
-  <!-- Alerts to inform user on progress or result -->
-  <div ng-include="'views/alerts.html'"></div>
-
-  <!--  (Opne & Show) Actions available for Admin, only after Week creation -->
-  <article class="mb-3" ng-if="weekEditParams.isEdit && currentSession.user.type != 'user'">
-    <div class="card mb-2">
-      <div class="card-body">
-        <!-- Header -->
-        <div class="row">
-          <div class="col">
-            <legend>{{i18n.weeks.statusTitle}}</legend>
-          </div>
-        </div>
-        <hr>
-        <!-- labels and badges -->
-        <div class="form-row">
-          <div class="col-sm-6 form-group">
-            <label class="font-weight-bold" for="weekStatus">
-              {{i18n.weeks.statusLbl}}
-            </label><br>
-            <span class="badge badge-success" ng-show="objectDetails.basicInfo.isOpen">
-              {{i18n.weeks.openStatusLbl}}</span>
-            <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isOpen">
-              {{i18n.weeks.closedStatusLbl}}</span>
-          </div>
-          <div class="col-sm-6 form-group">
-            <label class="font-weight-bold" for="weekVisibility">
-              {{i18n.weeks.visibilityLbl}}
-            </label><br>
-            <span class="badge badge-primary" ng-show="objectDetails.basicInfo.isVisible">
-              {{i18n.weeks.showStatusLbl}}</span>
-            <span class="badge badge-dark" ng-show="!objectDetails.basicInfo.isVisible">
-              {{i18n.weeks.hideStatusLbl}}</span>
-          </div>
-        </div>
-        <!-- Status Change Buttons -->
-        <div class="form-row">
-          <!-- Open / Close -->
-          <div class="col-sm-6 form-group">
-            <button type="button" id ="weekStatus" class="btn btn-success clickable"
-              ng-show="!objectDetails.basicInfo.isOpen" ng-click="setWeekOpenStatus(true)">
-              {{i18n.weeks.openWeekBtn}}
-            </button>
-            <button type="button" id ="weekStatus" class="btn btn-danger clickable"
-              ng-show="objectDetails.basicInfo.isOpen" ng-click="setWeekOpenStatus(false)">
-              {{i18n.weeks.closeWeekBtn}}
-            </button>
-          </div>
-          <!-- Show / Hide -->
-          <div class="col-sm-6 form-group">
-            <button type="button" id ="weekVisibility" class="btn btn-primary clickable"
-              ng-show="!objectDetails.basicInfo.isVisible" ng-click="setWeekVisibility(true)">
-              {{i18n.weeks.showWeekBtn}}
-            </button>
-            <button type="button" id ="weekVisibility" class="btn btn-dark clickable"
-              ng-show="objectDetails.basicInfo.isVisible" ng-click="setWeekVisibility(false)">
-              {{i18n.weeks.hideWeekBtn}}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </article>
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>

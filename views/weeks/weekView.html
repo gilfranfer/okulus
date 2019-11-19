@@ -15,62 +15,58 @@
     </div>
   </article>
 
-  <div class="row">
-    <!-- Basic Details Card -->
-    <div class="col-md-6 mb-3">
-      <article class="card h-100">
-        <div class="card-body">
-          <!-- Header -->
-          <div class="row">
-            <div class="col">
-              <legend>{{i18n.weeks.basicInfoTitle}}</legend>
-            </div>
-          </div>
-          <hr>
-          <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{objectDetails.basicInfo.name}} <br>
-          <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{objectDetails.basicInfo.year}}
-          <span class="ml-3 font-weight-bold">{{i18n.weeks.weekLbl}}:</span> #{{objectDetails.basicInfo.weekNumber}} <br>
-          <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span> {{objectDetails.basicInfo.notes}}
+  <!-- Basic Details Card -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+            ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+            ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+            {{i18n.weeks.basicInfoTitle}}
+          </legend>
         </div>
-      </article>
-    </div>
-    <!-- Status Card -->
-    <div class="col-md-6 mb-3">
-      <article class="card h-100">
-        <div class="card-body">
-          <!-- Header -->
-          <div class="row">
-            <div class="col">
-              <legend>{{i18n.weeks.statusTitle}}</legend>
-            </div>
-          </div>
-          <hr>
-          <div class="row">
-            <div class="col">
-              <label class="font-weight-bold">
-                {{i18n.weeks.statusLbl}}:
-              </label><br>
-              <span class="badge badge-success" ng-show="objectDetails.basicInfo.isOpen">
-                {{i18n.weeks.openStatusLbl}}</span>
-              <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isOpen">
-                {{i18n.weeks.closedStatusLbl}}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <label class="font-weight-bold">
-                {{i18n.weeks.visibilityLbl}}:
-              </label><br>
-              <span class="badge badge-primary" ng-show="objectDetails.basicInfo.isVisible">
-                {{i18n.weeks.showStatusLbl}}</span>
-              <span class="badge badge-dark" ng-show="!objectDetails.basicInfo.isVisible">
-                {{i18n.weeks.hideStatusLbl}}</span>
-            </div>
+      </div>
+      <div id="basicInfo" class="collapse show">
+        <hr>
+        <div class="row">
+          <div class="col">
+            <span class="font-weight-bold">{{i18n.weeks.nameLbl}}:</span> {{objectDetails.basicInfo.name}} <br>
+            <span class="font-weight-bold">{{i18n.weeks.yearLbl}}:</span> {{objectDetails.basicInfo.year}}
+            <span class="ml-3 font-weight-bold">{{i18n.weeks.weekLbl}}:</span> #{{objectDetails.basicInfo.weekNumber}} <br>
+            <span class="font-weight-bold">{{i18n.weeks.notesLbl}}:</span> {{objectDetails.basicInfo.notes}}
           </div>
         </div>
-      </article>
+        <div class="row">
+          <div class="col">
+            <label class="font-weight-bold">
+              {{i18n.weeks.statusLbl}}:
+            </label>
+            <span class="badge badge-success" ng-show="objectDetails.basicInfo.isOpen">
+              {{i18n.weeks.openStatusLbl}}</span>
+            <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isOpen">
+              {{i18n.weeks.closedStatusLbl}}</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label class="font-weight-bold">
+              {{i18n.weeks.visibilityLbl}}:
+            </label>
+            <span class="badge badge-primary" ng-show="objectDetails.basicInfo.isVisible">
+              {{i18n.weeks.showStatusLbl}}</span>
+            <span class="badge badge-dark" ng-show="!objectDetails.basicInfo.isVisible">
+              {{i18n.weeks.hideStatusLbl}}</span>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </article>
 
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>

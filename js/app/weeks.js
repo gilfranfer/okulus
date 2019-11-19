@@ -379,6 +379,19 @@ okulusApp.controller('WeekDetailsCntrl',
 				});
 		}});
 
+		$scope.basicInfoExpanded = true;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
+
  		$scope.prepareViewForEdit = function (weekObject) {
 			$scope.weekEditParams = {};
 			$scope.weekEditParams.actionLbl = $rootScope.i18n.weeks.modifyLbl;
