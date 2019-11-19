@@ -526,6 +526,7 @@ okulusApp.run(function($rootScope) {
 				notesLbl: "Notas o comentarios",
 				userSection: "Usuario",
 				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
+				memberHasNotUser:"Éste Miembro aún no tiene un usuario asociado.", 
 				allowUser:"Permitir que este Miembro se registre como Usuario?",
 				setEmailFirst:"El Miembro debe tener un correo electrónico asignado."
 			},

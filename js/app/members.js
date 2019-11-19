@@ -231,6 +231,32 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		}});
 
+		$scope.basicInfoExpanded = true;
+		$scope.addressInfoExpanded = true;
+		$scope.userInfoExpanded = true;
+		$scope.membershipInfoExpanded = true;
+		$scope.auditInfoExpanded = false;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'addressInfo':
+					$scope.addressInfoExpanded = value;
+					break;
+				case 'userInfo':
+					$scope.userInfoExpanded = value;
+					break;
+				case 'membershipInfo':
+					$scope.membershipInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
+
 		$scope.updateStatesList = function() {
 			$scope.statesList = ConfigSvc.getStatesForCountry($scope.objectDetails.address.country);
 		};

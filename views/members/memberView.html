@@ -21,44 +21,54 @@
       <!-- Header -->
       <div class="row">
         <div class="col">
-          <legend>{{i18n.members.basicInfoTitle}}</legend>
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+            ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+            ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+            {{i18n.members.basicInfoTitle}}
+          </legend>
         </div>
       </div>
-      <hr>
-      <!-- Fullname and Alias -->
-      <div class="form-row">
-        <div class="col-md form-group">
-          <label class="font-weight-bold">
-            {{i18n.members.fnameLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.firstname}} {{objectDetails.basicInfo.lastname}}</span>
+      <div id="basicInfo" class="collapse show">
+        <hr>
+        <!-- Fullname and Alias -->
+        <div class="form-row">
+          <div class="col-md form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.fnameLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.firstname}} {{objectDetails.basicInfo.lastname}}</span>
+          </div>
+          <div class="col-md form-group">
+            <label class="font-weight-bold">
+              {{i18n.members.aliasLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.shortname}}</span>
+          </div>
         </div>
-        <div class="col-md form-group">
-          <label class="font-weight-bold">
-            {{i18n.members.aliasLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.shortname}}</span>
-        </div>
-      </div>
-      <!-- Birthdate, Email and Phone -->
-      <div class="form-row">
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.bday">
-          <label class="font-weight-bold">
-            {{i18n.members.bdayLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.bday |  date: config.formats.date}}</span>
-        </div>
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
-          <label class="font-weight-bold">
-            {{i18n.contact.emailLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.email}}</span>
-        </div>
-        <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
-          <label class="font-weight-bold">
-            {{i18n.contact.phoneLbl}}:
-          </label>
-          <span>{{objectDetails.basicInfo.phone}}</span>
+        <!-- Birthdate, Email and Phone -->
+        <div class="form-row">
+          <div class="col-md form-group" ng-if="objectDetails.basicInfo.bday">
+            <label class="font-weight-bold">
+              {{i18n.members.bdayLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.bday |  date: config.formats.date}}</span>
+          </div>
+          <div class="col-md form-group" ng-if="objectDetails.basicInfo.email">
+            <label class="font-weight-bold">
+              {{i18n.contact.emailLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.email}}</span>
+          </div>
+          <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
+            <label class="font-weight-bold">
+              {{i18n.contact.phoneLbl}}:
+            </label>
+            <span>{{objectDetails.basicInfo.phone}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -70,12 +80,22 @@
       <!-- Header and Add Button (Admin)-->
       <div class="row">
         <div class="col">
-          <legend>{{i18n.address.legend}}</legend>
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#addressInfo" aria-expanded="false" aria-controls="addressInfo"
+            ng-if="addressInfoExpanded" ng-click="expandSection('addressInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#addressInfo" aria-expanded="true" aria-controls="addressInfo"
+            ng-if="!addressInfoExpanded" ng-click="expandSection('addressInfo',true)"></i>
+            {{i18n.address.legend}}
+          </legend>
         </div>
       </div>
-      <hr>
-      <!-- Address -->
-      <div ng-include="'views/fragments/addressView.html'"></div>
+      <div id="addressInfo" class="collapse show">
+        <hr>
+        <!-- Address -->
+        <div ng-include="'views/fragments/addressView.html'"></div>
+      </div>
     </div>
   </article>
 
@@ -86,53 +106,107 @@
         <!-- Header -->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.members.membershipTitle}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#membershipInfo" aria-expanded="false" aria-controls="membershipInfo"
+              ng-if="membershipInfoExpanded" ng-click="expandSection('membershipInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#membershipInfo" aria-expanded="true" aria-controls="membershipInfo"
+              ng-if="!membershipInfoExpanded" ng-click="expandSection('membershipInfo',true)"></i>
+              {{i18n.members.membershipTitle}}
+            </legend>
           </div>
         </div>
-        <hr>
-        <!-- Base Group -->
-        <div class="form-row">
-          <div class="col form-group" ng-show="objectDetails.basicInfo.baseGroupName">
-            <label class="font-weight-bold">
-              {{i18n.members.baseGroupLbl}}:
-            </label>
-            <span>{{objectDetails.basicInfo.baseGroupName}}</span>
+        <div id="membershipInfo" class="collapse show">
+          <hr>
+          <!-- Base Group -->
+          <div class="form-row">
+            <div class="col form-group" ng-show="objectDetails.basicInfo.baseGroupName">
+              <label class="font-weight-bold">
+                {{i18n.members.baseGroupLbl}}:
+              </label>
+              <span>{{objectDetails.basicInfo.baseGroupName}}</span>
+            </div>
+          </div>
+          <!-- Membership Status -->
+          <div class="form-row">
+            <div class="col-md-6 form-group">
+              <label class="font-weight-bold">
+                {{i18n.members.statusLbl}}:
+              </label>
+              <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
+                {{i18n.members.activeStatusLbl}}</span>
+              <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
+                {{i18n.members.inactiveStatusLbl}}</span>
+            </div>
+          </div>
+          <!-- Roles -->
+          <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
+            <div class="col-6 col-md-4 form-group">
+              <label class="font-weight-bold">
+                {{i18n.members.isHostLbl}}:
+              </label>
+              <span ng-show="objectDetails.basicInfo.isHost">{{i18n.btns.yesBtn}}</span>
+              <span ng-show="!objectDetails.basicInfo.isHost">{{i18n.btns.noBtn}}</span>
+            </div>
+            <div class="col-6 col-md-4 form-group">
+              <label class="font-weight-bold">
+                {{i18n.members.isLeadLbl}}:
+              </label>
+              <span ng-show="objectDetails.basicInfo.isLeader">{{i18n.btns.yesBtn}}</span>
+              <span ng-show="!objectDetails.basicInfo.isLeader">{{i18n.btns.noBtn}}</span>
+            </div>
+            <div class="col-6 col-md-4 form-group">
+              <label class="font-weight-bold">
+                {{i18n.members.isTraineeLbl}}:
+              </label>
+              <span ng-show="objectDetails.basicInfo.isTrainee">{{i18n.btns.yesBtn}}</span>
+              <span ng-show="!objectDetails.basicInfo.isTrainee">{{i18n.btns.noBtn}}</span>
+            </div>
           </div>
         </div>
-        <!-- Membership Status -->
-        <div class="form-row">
-          <div class="col-md-6 form-group">
-            <label class="font-weight-bold">
-              {{i18n.members.statusLbl}}:
-            </label>
-            <span class="badge badge-success" ng-show="objectDetails.basicInfo.isActive">
-              {{i18n.members.activeStatusLbl}}</span>
-            <span class="badge badge-danger" ng-show="!objectDetails.basicInfo.isActive">
-              {{i18n.members.inactiveStatusLbl}}</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- User: Only visible for Admin -->
+  <article class="mb-3" ng-if="currentSession.user.type != 'user'">
+    <div class="card">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#userInfo" aria-expanded="false" aria-controls="userInfo"
+              ng-if="userInfoExpanded" ng-click="expandSection('userInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#userInfo" aria-expanded="true" aria-controls="userInfo"
+              ng-if="!userInfoExpanded" ng-click="expandSection('userInfo',true)"></i>
+              {{i18n.members.userSection}}
+            </legend>
           </div>
         </div>
-        <!-- Roles -->
-        <div class="form-row" ng-show="objectDetails.basicInfo.isActive">
-          <div class="col-6 col-md-4 form-group">
-            <label class="font-weight-bold">
-              {{i18n.members.isHostLbl}}:
-            </label>
-            <span ng-show="objectDetails.basicInfo.isHost">{{i18n.btns.yesBtn}}</span>
-            <span ng-show="!objectDetails.basicInfo.isHost">{{i18n.btns.noBtn}}</span>
+        <div id="userInfo" class="collapse show">
+          <hr>
+          <!-- When Member already has User linked -->
+          <div class="row" ng-if="objectDetails.basicInfo.userId">
+            <div class="col">
+              <label class="font-weight-bold" for="">
+                {{i18n.members.memberHasUser}}
+              </label>
+              <a href="#!/users/edit/{{objectDetails.basicInfo.userId}}" class="btn btn-lg btn-primary btn-block">
+                {{i18n.members.goToUser}}
+              </a>
+            </div>
           </div>
-          <div class="col-6 col-md-4 form-group">
-            <label class="font-weight-bold">
-              {{i18n.members.isLeadLbl}}:
-            </label>
-            <span ng-show="objectDetails.basicInfo.isLeader">{{i18n.btns.yesBtn}}</span>
-            <span ng-show="!objectDetails.basicInfo.isLeader">{{i18n.btns.noBtn}}</span>
-          </div>
-          <div class="col-6 col-md-4 form-group">
-            <label class="font-weight-bold">
-              {{i18n.members.isTraineeLbl}}:
-            </label>
-            <span ng-show="objectDetails.basicInfo.isTrainee">{{i18n.btns.yesBtn}}</span>
-            <span ng-show="!objectDetails.basicInfo.isTrainee">{{i18n.btns.noBtn}}</span>
+          <!-- When Member does not has User linked -->
+          <div class="row" ng-if="!objectDetails.basicInfo.userId">
+            <div class="col">
+              <label class="font-weight-bold" for="">
+                {{i18n.members.memberHasNotUser}}
+              </label>
+            </div>
           </div>
         </div>
       </div>
