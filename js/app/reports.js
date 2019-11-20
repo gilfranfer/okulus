@@ -294,6 +294,40 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 		}});
 
+		$scope.basicInfoExpanded = true;
+		$scope.rolesInfoExpanded = true;
+		$scope.studyInfoExpanded = true;
+		$scope.notesInfoExpanded = true;
+		$scope.feedbackInfoExpanded = true;
+		$scope.attendanceInfoExpanded = true;
+		$scope.auditInfoExpanded = false;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'rolesInfo':
+					$scope.rolesInfoExpanded = value;
+					break;
+				case 'studyInfo':
+					$scope.studyInfoExpanded = value;
+					break;
+				case 'attendanceInfo':
+					$scope.attendanceInfoExpanded = value;
+					break;
+				case 'notesInfo':
+					$scope.notesInfoExpanded = value;
+					break;
+				case 'feedbackInfo':
+					$scope.feedbackInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
+
 		$scope.prepareViewForNew = function (whichGroup) {
 			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.newLbl,
 															isEdit: false, reportId: undefined, dateObj: new Date() };

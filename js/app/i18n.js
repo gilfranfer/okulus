@@ -371,8 +371,7 @@ okulusApp.run(function($rootScope) {
 				/* Admin Reports */
 				adminTitle:"Administrador de Reportes",
 				modifyLbl:"Modificar", newLbl: "Nuevo", reportLbl:"Reporte",
-				reunionLbl:"Reporte de Reunión", basicInfoTitle:"Grupo y Roles",
-				detailsInfoTitle:"Detalles de la Reunión",
+				reunionLbl:"Reporte de Reunión", rolesInfoTitle:"Grupo y Roles",
 				/* Buttons */
 				editBtn:"Editar Reporte",
 				newBtn:"Nuevo Reporte",
@@ -395,7 +394,6 @@ okulusApp.run(function($rootScope) {
 				commentsLbl:"Notas",
 				newReport: "Nuevo Reporte", reunionLegend:"Reunión del Grupo",
 				basicDataLegend: "Detalles de la Reunión",
-				title:"Datos generales de la Reunión",
 				cancelStatusLbl:"Reunión Cancelada", okStatusLbl:"Reunión Realizada",
 				canceledLbl: "Canceladas", completedLbl:"Completadas",
 				pendingStatusLbl: "Pendiente", approvedStatusLbl:"Aprobado", rejectedStatusLbl:"Rechazado",
@@ -526,7 +524,7 @@ okulusApp.run(function($rootScope) {
 				notesLbl: "Notas o comentarios",
 				userSection: "Usuario",
 				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
-				memberHasNotUser:"Éste Miembro aún no tiene un usuario asociado.", 
+				memberHasNotUser:"Éste Miembro aún no tiene un usuario asociado.",
 				allowUser:"Permitir que este Miembro se registre como Usuario?",
 				setEmailFirst:"El Miembro debe tener un correo electrónico asignado."
 			},
