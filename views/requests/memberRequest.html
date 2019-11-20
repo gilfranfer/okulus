@@ -41,92 +41,102 @@
         <!-- Header -->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.members.basicInfoTitle}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+              ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+              ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+              {{i18n.members.basicInfoTitle}}
+            </legend>
           </div>
         </div>
-        <hr>
-        <!-- Firstname, Lastname and Alias -->
-        <div class="form-row">
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="firstname">
-              {{i18n.members.fnameLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input id="firstname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameHint}}"
-              ng-model="objectDetails.basicInfo.firstname" ng-required="true">
+        <div id="basicInfo" class="collapse show">
+          <hr>
+          <!-- Firstname, Lastname and Alias -->
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="firstname">
+                {{i18n.members.fnameLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input id="firstname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameHint}}"
+                ng-model="objectDetails.basicInfo.firstname" ng-required="true">
+            </div>
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="lastname">
+                {{i18n.members.lnameLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
+                  ng-model="objectDetails.basicInfo.lastname" ng-required="true">
+            </div>
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="shortname">
+                {{i18n.members.aliasLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input id="shortname" name="shortname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.aliasHint}}"
+                ng-model="objectDetails.basicInfo.shortname" ng-required="true">
+            </div>
           </div>
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="lastname">
-              {{i18n.members.lnameLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input type="text" id="lastname" class="form-control form-control-lg" placeholder="{{i18n.members.lnameHint}}"
-                ng-model="objectDetails.basicInfo.lastname" ng-required="true">
+          <!-- Sex and Birthdate -->
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="shortname">
+                {{i18n.members.sexLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <select id="sexSelect" class="form-control form-control-lg"
+                ng-model="objectDetails.basicInfo.sex" ng-required="true">
+                <option value="M" >{{i18n.members.maleLbl}}</option>
+                <option value="F" >{{i18n.members.femaleLbl}}</option>
+              </select>
+            </div>
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="bday">
+                {{i18n.members.bdayLbl}}
+              </label>
+              <input type="date" id="bday" name="bday" class="form-control form-control-lg"
+                min="{{config.members.minBDate}}" max="{{config.tomorrowDate}}" value="{{objectDetails.basicInfo.bday}}"
+                ng-required="false" onchange="updateBdayValue()">
+            </div>
           </div>
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="shortname">
-              {{i18n.members.aliasLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <input id="shortname" name="shortname" type="text" class="form-control form-control-lg" placeholder="{{i18n.members.aliasHint}}"
-              ng-model="objectDetails.basicInfo.shortname" ng-required="true">
+          <!-- Email and Phone -->
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="email">
+                {{i18n.contact.emailLbl}}
+                <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
+              </label>
+              <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
+                ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
+            </div>
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="phone">
+                {{i18n.contact.phoneLbl}}
+                <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
+              </label>
+              <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
+                  ng-model="objectDetails.basicInfo.phone"
+                  ng-required="!(objectDetails.basicInfo.email)">
+            </div>
           </div>
-        </div>
-        <!-- Sex and Birthdate -->
-        <div class="form-row">
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="shortname">
-              {{i18n.members.sexLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <select id="sexSelect" class="form-control form-control-lg"
-              ng-model="objectDetails.basicInfo.sex" ng-required="true">
-              <option value="M" >{{i18n.members.maleLbl}}</option>
-              <option value="F" >{{i18n.members.femaleLbl}}</option>
-            </select>
-          </div>
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="bday">
-              {{i18n.members.bdayLbl}}
-            </label>
-            <input type="date" id="bday" name="bday" class="form-control form-control-lg"
-              min="{{config.members.minBDate}}" max="{{config.tomorrowDate}}" value="{{objectDetails.basicInfo.bday}}"
-              ng-required="false" onchange="updateBdayValue()">
-          </div>
-        </div>
-        <!-- Email and Phone -->
-        <div class="form-row">
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="email">
-              {{i18n.contact.emailLbl}}
-              <span class="text-danger" ng-show="!(objectDetails.basicInfo.phone)">*</span>
-            </label>
-            <input id="email" type="email" class="form-control form-control-lg" placeholder="{{i18n.contact.emailHint}}"
-              ng-model="objectDetails.basicInfo.email" ng-required="!(objectDetails.basicInfo.phone)">
-          </div>
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="phone">
-              {{i18n.contact.phoneLbl}}
-              <span class="text-danger" ng-show="!(objectDetails.basicInfo.email)">*</span>
-            </label>
-            <input type="tel" id="phone" class="form-control form-control-lg" placeholder="{{i18n.contact.phoneHint}}"
-                ng-model="objectDetails.basicInfo.phone"
-                ng-required="!(objectDetails.basicInfo.email)">
-          </div>
-        </div>
-        <!-- Base Group -->
-        <div class="form-row">
-          <div class="col-md form-group">
-            <label class="font-weight-bold" for="baseGroup">
-              {{i18n.members.baseGroupLbl}}
-              <span class="text-danger">*</span>
-            </label>
-            <select id="baseGroup" class="form-control form-control-lg" ng-required="true" ng-model="objectDetails.basicInfo.baseGroupId">
-              <option value="">{{i18n.members.noGroup}}</option>
-              <option ng-repeat="group in groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
-                {{group.number}}-{{group.name}}
-              </option>
-            </select>
+          <!-- Base Group -->
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="baseGroup">
+                {{i18n.members.baseGroupLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <select id="baseGroup" class="form-control form-control-lg" ng-required="true" ng-model="objectDetails.basicInfo.baseGroupId">
+                <option value="">{{i18n.members.noGroup}}</option>
+                <option ng-repeat="group in groupsList | orderBy:'group.number' track by group.$id" value="{{group.$id}}" >
+                  {{group.number}}-{{group.name}}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -140,7 +150,15 @@
         <!-- Header and Add Button (Admin)-->
         <div class="row">
           <div class="col">
-            <legend>{{i18n.address.legend}}</legend>
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#addressInfo" aria-expanded="false" aria-controls="addressInfo"
+              ng-if="addressInfoExpanded" ng-click="expandSection('addressInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#addressInfo" aria-expanded="true" aria-controls="addressInfo"
+              ng-if="!addressInfoExpanded" ng-click="expandSection('addressInfo',true)"></i>
+              {{i18n.address.legend}}
+            </legend>
           </div>
           <!-- Button to Add/Remove address -->
           <div class="col">
@@ -172,9 +190,10 @@
             </div>
           </div>
         </div>
-        <hr ng-show="objectDetails.address">
-        <!-- Address -->
-        <div ng-show="objectDetails.address" ng-include="'views/fragments/addressFormFields.html'"></div>
+        <div id="addressInfo" class="collapse show">
+          <hr ng-show="objectDetails.address">
+          <div ng-show="objectDetails.address" ng-include="'views/fragments/addressFormFields.html'"></div>
+        </div>
       </div>
     </form>
   </article>
@@ -185,15 +204,26 @@
       <div class="card-body">
         <div class="row">
           <div class="col">
-            <legend>{{i18n.members.notesLbl}}</legend>
+
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#notesInfo" aria-expanded="false" aria-controls="notesInfo"
+              ng-if="notesInfoExpanded" ng-click="expandSection('notesInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#notesInfo" aria-expanded="true" aria-controls="notesInfo"
+              ng-if="!notesInfoExpanded" ng-click="expandSection('notesInfo',true)"></i>
+              {{i18n.members.notesLbl}}
+            </legend>
           </div>
         </div>
-        <hr>
-        <div class="form-row">
-          <div class="col-md form-group">
-            <textarea id="notes" name="notes" class="form-control form-control-lg"
-            placeholder="" ng-model="objectDetails.notes" ng-required="true">
-            </textarea>
+        <div id="notesInfo" class="collapse show">
+          <hr>
+          <div class="form-row">
+            <div class="col-md form-group">
+              <textarea id="notes" name="notes" class="form-control form-control-lg"
+              placeholder="" ng-model="objectDetails.notes" ng-required="true">
+              </textarea>
+            </div>
           </div>
         </div>
       </div>
@@ -206,7 +236,7 @@
   <!-- Alerts to inform user on progress or result -->
   <div ng-include="'views/alerts.html'"></div>
 
-  <!-- User Buttons: Reuqets, Update, Delete -->
+  <!-- User Buttons: Requets, Update, Delete -->
   <div class="row" ng-if="objectDetails.status != 'approved'">
     <!-- Request can be placed, while not on edit view -->
     <div class="col mb-2" ng-if="!requestParams.isEdit">

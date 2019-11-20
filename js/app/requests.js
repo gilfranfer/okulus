@@ -159,6 +159,27 @@ okulusApp.controller('RequestDetailsCntrl',
 			});
 		}});
 
+		$scope.basicInfoExpanded = true;
+		$scope.addressInfoExpanded = true;
+		$scope.notesInfoExpanded = true;
+		$scope.auditInfoExpanded = false;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'addressInfo':
+					$scope.addressInfoExpanded = value;
+					break;
+				case 'notesInfo':
+					$scope.notesInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
 		/* Called from Address fragment */
 		$scope.updateStatesList = function() {
 			$scope.statesList = ConfigSvc.getStatesForCountry($scope.objectDetails.address.country);
