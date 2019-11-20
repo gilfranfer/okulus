@@ -458,7 +458,8 @@ okulusApp.run(function($rootScope) {
 				openStatusLbl:"Sí. Semana Abierta", closedStatusLbl:"No. Semana Cerrada",
 				visibilityLbl:"Se muestra en el buscador de Reportes? (Visibilidad)",
 				showStatusLbl:"Sí. Semana Visible", hideStatusLbl:"No. Semana Oculta",
-				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado"
+				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado",
+				studyLbl: "Titulo del Estudio", seriesLbl: "Título de la Serie",
 			},
 			users:{
 				adminTitle:"Administrador de Usuarios", userInfoTitle:"Información del Usuario",

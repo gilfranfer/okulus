@@ -41,7 +41,7 @@
         </div>
         <div id="basicInfo" class="collapse show">
           <hr>
-          <!-- Week name -->
+          <!-- Week name and code -->
           <div class="form-row">
             <div class="col form-group">
               <label class="font-weight-bold" for="weekName">
@@ -51,7 +51,6 @@
               <input id="weekName" type="text" class="form-control form-control-lg"
                 placeholder="{{i18n.weeks.nameHint}}" ng-model="objectDetails.basicInfo.name" ng-required="true">
             </div>
-            <!-- Week Code -->
             <div class="col form-group">
               <label class="font-weight-bold" for="weekDate">
                 {{i18n.weeks.weekDateLbl}}
@@ -62,6 +61,7 @@
                 ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
             </div>
           </div>
+          <!-- Week Due date -->
           <div class="form-row">
             <div class="col form-group">
               <label class="font-weight-bold" for="weekDate">
@@ -70,6 +70,23 @@
               </label>
               <input type="datetime-local" id="weekDueDate" class="form-control form-control-lg"
                 min="{{config.reports.minDate}}" ng-required="true" ng-model="weekEditParams.duedate">
+            </div>
+          </div>
+          <!-- Study title and Serie -->
+          <div class="form-row">
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="study">
+                {{i18n.weeks.studyLbl}}
+              </label>
+              <input type="text" id="study" name="study" class="form-control form-control-lg"
+                placeholder="{{i18n.weeks.studyHint}}" ng-model="objectDetails.basicInfo.study" ng-required="false">
+            </div>
+            <div class="col-md form-group">
+              <label class="font-weight-bold" for="series">
+                {{i18n.weeks.seriesLbl}}
+              </label>
+              <input type="text" id="series" name="series" class="form-control form-control-lg"
+                placeholder="{{i18n.weeks.seriesHint}}" ng-model="objectDetails.basicInfo.series" ng-required="false">
             </div>
           </div>
           <!-- Notes -->
