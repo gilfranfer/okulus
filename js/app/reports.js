@@ -399,18 +399,24 @@ okulusApp.controller('ReportDetailsCntrl',
 			MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
 				list.forEach(function(member){
 					if(member.$id != undefined){
-						$scope.reportParams.groupMembersList.push({name:member.shortname,id:member.$id,sex:member.sex});
+						$scope.reportParams.groupMembersList.push({id:member.$id,name:member.shortname,sex:member.sex});
 					}
 				});
 				//Proceed to add Roles to the Members list
 				if(roles.leadId){
-					pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName})
+					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
+						pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName, sex:sex})
+					});
 				}
 				if(roles.hostId){
-					pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName})
+					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
+						pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName, sex:sex})
+					});
 				}
 				if(roles.traineeId){
-					pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName})
+					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
+						pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName, sex:sex})
+					});
 				}
 			});
 		};
@@ -425,10 +431,9 @@ okulusApp.controller('ReportDetailsCntrl',
 					memberExist = true;
 				}
 			});
+
 			if(!memberExist){
-				MembersSvc.getMemberSex(memberObj.id).$loaded().then(function(sex) {
-					if(sex.$value) $scope.reportParams.groupMembersList.push({id:memberObj.id, name:memberObj.name, sex:sex.$value})
-				});
+				$scope.reportParams.groupMembersList.push({id:memberObj.id, name:memberObj.name, sex:memberObj.sex})
 			}
 		};
 
@@ -613,7 +618,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(hostId){
 				let member = $scope.reportParams.hostsList.$getRecord(hostId);
 				$scope.objectDetails.basicInfo.hostName = member.shortname;
-				pushMemberToAttendanceSelectList({id:hostId, name: member.shortname})
+				pushMemberToAttendanceSelectList({id:hostId, name:member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.hostId = null;
 				$scope.objectDetails.basicInfo.hostName = null;
@@ -641,7 +646,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(leadId){
 				let member = $scope.reportParams.leadsList.$getRecord(leadId);
 				$scope.objectDetails.basicInfo.leadName = member.shortname;
-				pushMemberToAttendanceSelectList({id:leadId, name: member.shortname})
+				pushMemberToAttendanceSelectList({id:leadId, name: member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.leadId = null;
 				$scope.objectDetails.basicInfo.leadName = null;
@@ -669,7 +674,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(traineeId){
 				let member = $scope.reportParams.traineesList.$getRecord(traineeId);
 				$scope.objectDetails.basicInfo.traineeName = member.shortname;
-				pushMemberToAttendanceSelectList({id:traineeId, name: member.shortname})
+				pushMemberToAttendanceSelectList({id:traineeId, name: member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.traineeId = null;
 				$scope.objectDetails.basicInfo.traineeName = null;
