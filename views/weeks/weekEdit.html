@@ -57,9 +57,19 @@
                 {{i18n.weeks.weekDateLbl}}
                 <span class="text-danger">*</span>
               </label>
-              <input type="week" id="weekDate" class="form-control form-control-lg" placeholder=""
-                min="{{config.reports.minDate}}" max="{{config.tomorrowDate}}"
+              <input type="week" id="weekDate" class="form-control form-control-lg"
+                min="{{config.reports.minDate}}"
                 ng-required="{{weekEditParams.dateRequired}}" ng-model="weekEditParams.date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col form-group">
+              <label class="font-weight-bold" for="weekDate">
+                {{i18n.weeks.weekDueDateLbl}}
+                <span class="text-danger">*</span>
+              </label>
+              <input type="datetime-local" id="weekDueDate" class="form-control form-control-lg"
+                min="{{config.reports.minDate}}" ng-required="true" ng-model="weekEditParams.duedate">
             </div>
           </div>
           <!-- Notes -->

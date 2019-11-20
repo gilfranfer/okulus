@@ -452,7 +452,7 @@ okulusApp.run(function($rootScope) {
 				loadPending1: "Mostar ", loadPending2: "Semanas restantes.",
         /*Labels*/
         weekLbl: "Semana", weeksLbl:"Semanas", nameLbl:"Nombre", nameHint:"Enero 01 al 07",
-        yearLbl:"Año", weekDateLbl:"Semana del año", weekDateHint:"",
+        yearLbl:"Año", weekDateLbl:"Semana del año", weekDueDateLbl:"Fecha Límite:",
 				notesLbl: "Notas o comentarios", notesHint:"Vacaciones de Año Nuevo.",
 				statusLbl:"Se pueden agregar reportes? (Estado)",
 				openStatusLbl:"Sí. Semana Abierta", closedStatusLbl:"No. Semana Cerrada",
