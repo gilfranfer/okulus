@@ -76,7 +76,8 @@ const constants = {
 			systemErrors:"systemErrors",
 			isActive:"isActive",
 			type:"type", total:"total", active:"active",
-			admin:"admin", user:"user", sex: "sex"
+			admin:"admin", user:"user", sex: "sex",
+			weekReportsCount: "reports"
 		}
 	},
 	roles: {

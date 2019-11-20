@@ -330,6 +330,14 @@ okulusApp.factory('WeeksSvc',
 			},
 			getGlobalWeeksCounter: function(){
 				return $firebaseObject(baseRef.child(constants.db.folders.weeksCounters));
+			},
+			decreaseReportsCountForWeek: function(weekId) {
+				let conunterRef = weeksListRef.child(weekId).child(constants.db.fields.weekReportsCount);
+				decreaseCounter(conunterRef);
+			},
+			increaseReportsCountForWeek: function(weekId) {
+				let conunterRef = weeksListRef.child(weekId).child(constants.db.fields.weekReportsCount);
+				increaseCounter(conunterRef);
 			}
 		};//return end
 	}
@@ -508,14 +516,13 @@ okulusApp.controller('WeekDetailsCntrl',
 		$scope.deleteWeek = function() {
 			clearResponse();
 			let weekInfo = $scope.objectDetails.basicInfo;
-
 			if(weekInfo && $rootScope.currentSession.user.type != constants.roles.user){
 				$scope.response = {working:true, message: systemMsgs.inProgress.deletingWeek};
-				if($scope.objectDetails.basicInfo.reportsCount > 0){
+				if(weekInfo.reports > 0){
 					$scope.response = {deleteError:true, message: systemMsgs.error.deleteWeekError};
 				}else{
-					let isWeekOpen = $scope.objectDetails.basicInfo.isOpen;
-					let isWeekVisible = $scope.objectDetails.basicInfo.isVisible;
+					let isWeekOpen = weekInfo.isOpen;
+					let isWeekVisible = weekInfo.isVisible;
 					//proceed with delete
 					weekInfo.$remove().then(function(deletedWeekRef) {
 						let deletedWeekId = deletedWeekRef.key;

@@ -867,6 +867,7 @@ okulusApp.controller('ReportDetailsCntrl',
 				//Get Object after creation, and perform the rest of pendind tasks
 				let reportObj = ReportsSvc.getReportBasicObj(reportRef.key);
 				reportObj.$loaded().then(function(report){
+					WeeksSvc.increaseReportsCountForWeek(reportBasicInfo.weekId);
 					ReportsSvc.increaseTotalReportsCount($rootScope.currentSession.user.$id);
 					ReportsSvc.increasePendingReportsCount($rootScope.currentSession.user.$id);
 					ReportsSvc.setReportStudyInfo(reportStudyInfo,report.$id);
@@ -913,6 +914,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					GroupsSvc.removeReportReferenceFromGroup(groupId,reportId);
 
 					//Reduce the counters
+					WeeksSvc.decreaseReportsCountForWeek($scope.objectDetails.basicInfo.weekId);
 					ReportsSvc.decreaseTotalReportsCount($scope.objectDetails.basicInfo.createdById);
 					if(currentStatus == constants.status.pending){
 						ReportsSvc.decreasePendingReportsCount($scope.objectDetails.basicInfo.createdById);

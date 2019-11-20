@@ -97,7 +97,7 @@ okulusApp.controller('ErrorsMonitorCntrl',
 						let yearStr = idtxt.substring(0,4);
 						let weekStr = idtxt.substring(4);
 						weekObj.year = Number(yearStr);
-						weekObj.weekNumber = Number(weekStr);
+						weekObj.week = Number(weekStr);
 						weekObj.name = week.name;
 						//Add isOpen and isVisible from week status
 						if(week.status == "open"){
