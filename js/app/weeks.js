@@ -417,11 +417,10 @@ okulusApp.controller('WeekDetailsCntrl',
 				weekInput.disabled = true;
 				weekInput.value = weekCode;
 			}
-			/* Set value for the Dude date input*/
-			let duedateInput = document.querySelector("#weekDueDate");
-			if(duedateInput){
-				duedateInput.value = weekObject.duedate;
-			}
+			/* Set value for the Due date input, from database value*/
+			let dueDate = new Date();
+			dueDate.setTime(weekObject.duedate);
+			$scope.weekEditParams.duedate = dueDate;
 			$scope.response = undefined;
 		}
 
@@ -431,7 +430,13 @@ okulusApp.controller('WeekDetailsCntrl',
 			$scope.weekEditParams.isEdit = false;
 			$scope.weekEditParams.dateRequired = true;
 			$scope.weekEditParams.date = new Date();
-			// $scope.weekEditParams.duedate = datenow; - DD/MM/YYYY HH:MM:SS.MMM
+
+			let dueDate = new Date();
+			dueDate.setHours(0);
+			dueDate.setMinutes(0);
+			dueDate.setSeconds(0);
+			dueDate.setMilliseconds(0);
+			$scope.weekEditParams.duedate = dueDate;
 			$scope.response = undefined;
 		};
 
@@ -469,8 +474,7 @@ okulusApp.controller('WeekDetailsCntrl',
 
 			//Update existing Week
 			if($scope.objectDetails.basicInfo.$id){
-				$scope.objectDetails.basicInfo.duedate = duedateStr;
-				$scope.objectDetails.basicInfo.duetime = dudateMilis;
+				$scope.objectDetails.basicInfo.duedate = dudateMilis;
 				$scope.objectDetails.basicInfo.$save().then(function(ref) {
 					let description = systemMsgs.notifications.weekUpdated + weekId;
 					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.weeks, weekId, description);
@@ -493,8 +497,7 @@ okulusApp.controller('WeekDetailsCntrl',
 						week.isOpen = false;
 						week.isVisible = false;
 						week.reports = 0;
-						week.duedate = duedateStr;
-						week.duetime = dudateMilis;
+						week.duedate = dudateMilis;
 
 						week.$save().then(function(ref) {
 							WeeksSvc.increaseTotalWeeksCounter();
