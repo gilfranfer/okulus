@@ -300,7 +300,7 @@ okulusApp.run(function($rootScope) {
 			profile:{
 				lastLogin: "Última sesión:",
 				lastActivity: "Última actividad:",
-				sessionStatusLbl:"Estado de la sesión",
+				sessionStatusLbl:"Sesión",
 				viewProfileBtn: "Ver Perfil"
 			},
 			launchpad:{
@@ -461,17 +461,15 @@ okulusApp.run(function($rootScope) {
 				modifyLbl:"Modificar", newLbl: "Nueva", statusTitle:"Estado"
 			},
 			users:{
-				adminTitle:"Administrador de Usuarios",
+				adminTitle:"Administrador de Usuarios", userInfoTitle:"Información del Usuario",
 				totalUsersLbl:"Usuarios Existentes", totalLbl:"Existentes",
 				activeUsersLbl:"Usuarios Activos", activeLbl:"Activos",
 				inactiveUsersLbl:"Usuarios Inactivos", inactiveLbl:"Inactivos",
 				loadAllBtn:"Todos los Usuarios", newBtn:"Nuevo Usuario",
-				userTypeLbl:"Tipo de Usuario",
-				/*Alert Messages*/
+				userRoleLbl:"Rol", userStatusLbl:"Estado",
 				loadingSuccess: "Usuarios Cargados.",
 				loadPending1: "Mostar ", loadPending2: "Usuarios restantes.",
-				status:{activeLbl:"Activo", inactiveLbl:"Inactivo",
-					onlineLbl:"Conectado", offlineLbl:"Desconectado",noMemberLbl:"Sin Miembro"},
+				status:{activeLbl:"Activo", inactiveLbl:"Inactivo", onlineLbl:"Conectado", offlineLbl:"Desconectado"},
 				setActiveLbl:"Activar Usuario", setInactiveLbl:"Desactivar Usuario",
 				setAdminRoleLbl:"Hacer Administrador", removeAdminRoleLbl:"Remover Administrador"
 			},

@@ -246,7 +246,7 @@ okulusApp.controller('UserEditCntrl',
 					}
 
 					$scope.objectDetails.audit = UsersSvc.getUserAuditObject(user.$id);
-					if(!user.memberId){
+					if(!user.memberId && !user.shortname){
 						//it might be root, or a brand new user that didnt find a member
 						$scope.objectDetails.basicInfo.shortname = (user.type == constants.roles.root)?constants.roles.rootName:constants.roles.userDefaultName;
 					}
@@ -255,6 +255,20 @@ okulusApp.controller('UserEditCntrl',
 
 			});
 		}});
+
+		$scope.basicInfoExpanded = true;
+		$scope.auditInfoExpanded = false;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'basicInfo':
+					$scope.basicInfoExpanded = value;
+					break;
+				case 'auditInfo':
+					$scope.auditInfoExpanded = value;
+					break;
+				default:
+			}
+		};
 
 		$scope.setUserStatusActive = function(isActive) {
 			$scope.response = { working: true, message: systemMsgs.inProgress.working };

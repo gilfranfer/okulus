@@ -5,32 +5,51 @@
 
 <section id="userView" ng-show="!response.loading">
 
-  <div class="card h-100 mb-3">
+  <!-- <div class="card h-100 mb-3">
     <div class="card-body">
       <h4 class="card-title">
-        {{objectDetails.basicInfo.shortname}}
+        {{i18n.users.userInfoTitle}}
       </h4>
     </div>
-  </div>
+  </div> -->
 
   <div class="card h-100 mb-3">
     <div class="card-body">
-      <p>
-        <span class="font-weight-bold">{{i18n.users.userTypeLbl}}:
-        <span class="badge badge-dark" ng-if="objectDetails.basicInfo.type == 'root'">{{i18n.roles.rootLbl}}</span>
-        <span class="badge badge-warning" ng-if="objectDetails.basicInfo.type == 'admin'">{{i18n.roles.adminLbl}}</span>
-        <span class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">{{i18n.roles.userLbl}}</span>
-
-        <span class="badge badge-success" ng-if="objectDetails.basicInfo.isActive">{{i18n.users.status.activeLbl}}</span>
-        <span class="badge badge-secondary" ng-if="!objectDetails.basicInfo.isActive">{{i18n.users.status.inactiveLbl}}</span>
-      </p>
-      <p><span class="font-weight-bold">{{i18n.contact.emailLbl}}: </span>{{objectDetails.basicInfo.email}}</p>
-      <p><span class="font-weight-bold">{{i18n.profile.lastLogin}} </span>{{objectDetails.basicInfo.lastLoginOn | date: config.formats.datetime}}</p>
-      <p><span class="font-weight-bold">{{i18n.profile.lastActivity}} </span>{{objectDetails.basicInfo.lastActivityOn | date: config.formats.datetime}}</p>
-      <p><span class="font-weight-bold">{{i18n.profile.sessionStatusLbl}} </span>
-        <span class="badge badge-success" ng-if="objectDetails.basicInfo.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
-        <span class="badge badge-secondary" ng-if="objectDetails.basicInfo.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
-      </p>
+      <div class="row">
+        <div class="col">
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="false" aria-controls="basicInfo"
+            ng-if="basicInfoExpanded" ng-click="expandSection('basicInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#basicInfo" aria-expanded="true" aria-controls="basicInfo"
+            ng-if="!basicInfoExpanded" ng-click="expandSection('basicInfo',true)"></i>
+            {{i18n.users.userInfoTitle}}
+          </legend>
+        </div>
+      </div>
+      <div id="basicInfo" class="collapse show">
+        <hr>
+        <p><span class="font-weight-bold">{{i18n.members.memberLbl}}: </span>
+          <a ng-href="#!/members/view/{{objectDetails.basicInfo.memberId}}">{{objectDetails.basicInfo.shortname}}</a>
+        </p>
+        <p><span class="font-weight-bold">{{i18n.contact.emailLbl}}: </span>{{objectDetails.basicInfo.email}}</p>
+        <p>
+          <span class="font-weight-bold">{{i18n.users.userRoleLbl}}:</span>
+          <span class="badge badge-dark" ng-if="objectDetails.basicInfo.type == 'root'">{{i18n.roles.rootLbl}}</span>
+          <span class="badge badge-warning" ng-if="objectDetails.basicInfo.type == 'admin'">{{i18n.roles.adminLbl}}</span>
+          <span class="badge badge-primary" ng-if="objectDetails.basicInfo.type == 'user'">{{i18n.roles.userLbl}}</span>
+          <span class="font-weight-bold">{{i18n.users.userStatusLbl}}:</span>
+          <span class="badge badge-success" ng-if="objectDetails.basicInfo.isActive">{{i18n.users.status.activeLbl}}</span>
+          <span class="badge badge-secondary" ng-if="!objectDetails.basicInfo.isActive">{{i18n.users.status.inactiveLbl}}</span>
+        </p>
+        <p><span class="font-weight-bold">{{i18n.profile.sessionStatusLbl}} </span>
+          <span class="badge badge-success" ng-if="objectDetails.basicInfo.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
+          <span class="badge badge-secondary" ng-if="objectDetails.basicInfo.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
+        </p>
+        <p><span class="font-weight-bold">{{i18n.profile.lastLogin}} </span>{{objectDetails.basicInfo.lastLoginOn | date: config.formats.datetime}}</p>
+        <p><span class="font-weight-bold">{{i18n.profile.lastActivity}} </span>{{objectDetails.basicInfo.lastActivityOn | date: config.formats.datetime}}</p>
+      </div>
     </div>
   </div>
 
