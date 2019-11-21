@@ -345,6 +345,8 @@ okulusApp.controller('ReportDetailsCntrl',
 					let week = weekList[0];
 					$scope.objectDetails.basicInfo.weekId = week.$id;
 					$scope.objectDetails.basicInfo.weekName = week.name;
+					$scope.objectDetails.study.study = week.study;
+					$scope.objectDetails.study.series = week.series;
 				}
 			});
 			//Get Group Basic Object to Pre-populate some report fields
@@ -702,6 +704,8 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(weekId){
 				let week = $scope.reportParams.weeksList.$getRecord(weekId);
 				$scope.objectDetails.basicInfo.weekName = week.name;
+				$scope.objectDetails.study.study = week.study;
+				$scope.objectDetails.study.series = week.series;
 			}else{
 				$scope.objectDetails.basicInfo.weekId = null;
 				$scope.objectDetails.basicInfo.weekName = null;

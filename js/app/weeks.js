@@ -491,13 +491,15 @@ okulusApp.controller('WeekDetailsCntrl',
 						$scope.response = {error:true, message: systemMsgs.error.weekExists+" "+weekId };
 					}else{
 						week.name = $scope.objectDetails.basicInfo.name;
-						week.notes = ($scope.objectDetails.basicInfo.notes)?$scope.objectDetails.basicInfo.notes:null;
 						week.year = codeSplit[0];
 						week.week = codeSplit[1];
+						week.duedate = dudateMilis;
+						week.study = ($scope.objectDetails.basicInfo.study)?$scope.objectDetails.basicInfo.study:null;;
+						week.series = ($scope.objectDetails.basicInfo.series)?$scope.objectDetails.basicInfo.series:null;;
+						week.notes = ($scope.objectDetails.basicInfo.notes)?$scope.objectDetails.basicInfo.notes:null;
 						week.isOpen = false;
 						week.isVisible = false;
 						week.reports = 0;
-						week.duedate = dudateMilis;
 
 						week.$save().then(function(ref) {
 							WeeksSvc.increaseTotalWeeksCounter();
