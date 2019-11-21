@@ -720,6 +720,8 @@ okulusApp.run(function($rootScope) {
 				maxDurationDesc:"Duración máxima de una renion, en minutos.",
 				maxMultipleGuestsLbl:"Límite de Invitados múltiples",
 				maxMultipleGuestsDesc:"Cantidad máxima de invitados que se generan a la vez.",
+				notOnTimeMessage:"Mensaje para Reporte tardío",
+				notOnTimeMessageDesc:"Mensaje para el usuario que crea un reporte después de la fecha límite.",
 				minReportsDateLbl:"Fecha mínima para reportes",
 				minReportsDateDesc:"La fecha mínima que puede tener un reporte, o una semana.",
 				minBdateLbl:"Fecha mínima de nacimiento",

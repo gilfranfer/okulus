@@ -153,9 +153,10 @@
             <small class="form-text text-muted">{{i18n.configs.maxDurationDesc}}</small>
           </div>
         </div>
+        <!-- Multiple guests and Money field -->
         <div class="form-row">
           <div class="col form-group">
-            <label class="font-weight-bold" for="maxDuration">
+            <label class="font-weight-bold" for="maxMultipleGuests">
               {{i18n.configs.maxMultipleGuestsLbl}}
               <span class="text-danger">*</span>
             </label>
@@ -175,7 +176,19 @@
             <small class="form-text text-muted">{{i18n.configs.showMoneyDesc}}</small>
           </div>
         </div>
-
+        <!-- notOnTimeMessage -->
+        <div class="form-row">
+          <div class="col form-group">
+            <label class="font-weight-bold" for="notOnTimeMessage">
+              {{i18n.configs.notOnTimeMessage}}
+              <span class="text-danger">*</span>
+            </label>
+            <textarea id="notOnTimeMessage" name="notOnTimeMessage" class="form-control form-control-lg"
+              placeholder="" ng-model="currentAppConfigs.reports.notOnTimeMessage" ng-required="false">
+            </textarea>
+            <small class="form-text text-muted">{{i18n.configs.notOnTimeMessageDesc}}</small>
+          </div>
+        </div>
       </div>
     </article>
 
