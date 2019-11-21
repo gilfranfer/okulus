@@ -5,11 +5,10 @@
 
 <section id="reportEdit" ng-show="!response.loading">
   <!-- Title -->
-  <article class="card mb-3">
+  <article class="card mb-3" ng-show="reportParams.actionLbl">
     <div class="card-body">
       <h4 class="card-title">
-        {{reportParams.actionLbl}} {{i18n.reports.reportLbl}}
-        <span class="tx-darkblue d-inline">{{objectDetails.basicInfo.weekName}}</span>
+        {{reportParams.actionLbl}}
       </h4>
     </div>
   </article>
@@ -32,6 +31,10 @@
   </div>
   <div class="alert alert-primary" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'pending'">
     {{i18n.reports.pendingReport}}
+  </div>
+
+  <div class="alert alert-warning" role="alert" ng-show="!objectDetails.basicInfo.onTime && config.reports.notOnTimeMessage">
+    {{config.reports.notOnTimeMessage}}
   </div>
 
   <form id="reportForm" name="reportForm" novalidate>

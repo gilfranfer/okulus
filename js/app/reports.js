@@ -347,6 +347,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					$scope.objectDetails.basicInfo.weekName = week.name;
 					$scope.objectDetails.study.study = week.study;
 					$scope.objectDetails.study.series = week.series;
+					$scope.reportParams.selectedWeek = week;
 				}
 			});
 			//Get Group Basic Object to Pre-populate some report fields
@@ -440,8 +441,7 @@ okulusApp.controller('ReportDetailsCntrl',
 		};
 
 		$scope.prepareViewForEdit = function (whichReport) {
-			$scope.reportParams = { actionLbl: $rootScope.i18n.reports.modifyLbl,
-															isEdit: true, reportId: whichReport };
+			$scope.reportParams = { actionLbl: null, isEdit: true, reportId: whichReport };
 			//To Control list of available members for attendance
 			$scope.reportParams.groupMembersList = new Array();
 
@@ -700,16 +700,18 @@ okulusApp.controller('ReportDetailsCntrl',
 		/*Update the Report weekId according to Week Selection */
 		$scope.updateWeek = function(){
 			clearResponse();
+			let selectedWeek = null;
 			let weekId = $scope.objectDetails.basicInfo.weekId;
 			if(weekId){
-				let week = $scope.reportParams.weeksList.$getRecord(weekId);
-				$scope.objectDetails.basicInfo.weekName = week.name;
-				$scope.objectDetails.study.study = week.study;
-				$scope.objectDetails.study.series = week.series;
+				selectedWeek = $scope.reportParams.weeksList.$getRecord(weekId);
+				$scope.objectDetails.basicInfo.weekName = selectedWeek.name;
+				$scope.objectDetails.study.study = selectedWeek.study;
+				$scope.objectDetails.study.series = selectedWeek.series;
 			}else{
 				$scope.objectDetails.basicInfo.weekId = null;
 				$scope.objectDetails.basicInfo.weekName = null;
 			}
+			$scope.reportParams.selectedWeek = selectedWeek;
 			$scope.reportParams.updatingWeek = false;
 		};
 
@@ -870,6 +872,13 @@ okulusApp.controller('ReportDetailsCntrl',
 				reportBasicInfo.reviewStatus = constants.status.pending;
 				//Used for an easy way to get all the reports created by one user
 				reportBasicInfo.createdById = $rootScope.currentSession.user.$id;
+
+				/* Check if the report was created on time */
+				if($scope.reportParams.selectedWeek){
+					let weekDuedate = $scope.reportParams.selectedWeek.duedate;
+					let reportDate = $scope.objectDetails.basicInfo.dateMilis;
+					reportBasicInfo.onTime = (weekDuedate >= reportDate);
+				}
 				//Persist object to DB
 				reportRef.set(reportBasicInfo);
 
