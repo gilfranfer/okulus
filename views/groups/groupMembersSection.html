@@ -60,7 +60,11 @@
                   <td scope="row">{{member.firstname}}</td>
                   <td scope="row">{{member.lastname}}</td>
                   <td scope="row">
-                    <!-- <a class="clickable fas fa-lg fa-eye"  target="_blank" ng-href="#!/reports/edit/{{report.$id}}"></a> -->
+                    <i class="fas fa-lg fa-male" style="color:#007bff"  ng-if="member.sex =='M'"></i>
+                    <i class="fas fa-lg fa-female" style="color:#e83e8c" ng-if="member.sex =='F'"></i>
+                    <i class="fas fa-lg fa-check-square" style="color:#28a745" ng-if="member.isActive"></i>
+                    <i class="fas fa-lg fa-minus-square" style="color:#dc3545" ng-if="!member.isActive"></i>
+                    <a class="clickable fas fa-lg fa-eye" style="color:#343a40"  target="_blank" ng-href="#!/members/view/{{member.$id}}"></a>
                   </td>
                 </tr>
               </tbody>
