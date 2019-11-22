@@ -565,7 +565,7 @@ okulusApp.run(function($rootScope) {
 				/*Alert Messages*/
         loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
 				/* Form Labels */
-				basicInfoTitle:"Información Básica",
+				basicInfoTitle:"Información Básica", membershipTitle:"Miembros del Grupo",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
 				modifyLbl:"Información del", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
@@ -644,7 +644,7 @@ okulusApp.run(function($rootScope) {
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
 				resultsLoaded: "Reportes encontrados",
 				reportsListTitle: "Lista de Reportes",
-				attendanceChartsTitle: "Asistencia de Mimebros e Invitados",
+				attendanceChartsTitle: "Asistencia de Miembros e Invitados",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
 				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
@@ -666,7 +666,10 @@ okulusApp.run(function($rootScope) {
 				femaleSerie:"Mujeres",
 				durationTitle:"Minutos Ministrados",
 				durationLbl:"Duración",
-				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio"
+				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio",
+				leadSerieLbl:"Líderes", hostSerieLbl:"Anfitriones", traineeSerieLbl:"Aprendices",
+				maleSerieLbl:"Hombres", femaleSerieLbl:"Mujeres",
+				activeSerieLbl:"Miembros Activos", inactiveSerieLbl:"Miembros Inactivos"
 			},
 			summary:{
 				title:"Resumen del Sistema"

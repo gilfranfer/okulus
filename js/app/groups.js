@@ -241,6 +241,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		$scope.viewContactInfoExpanded = true;
 		$scope.addressInfoExpanded = true;
 		$scope.rolesInfoExpanded = true;
+		$scope.membersInfoExpanded = false;
 		$scope.auditInfoExpanded = false;
 		$scope.expandSection = function(section, value) {
 			switch (section) {
@@ -256,11 +257,110 @@ okulusApp.controller('GroupDetailsCntrl',
 				case 'rolesInfo':
 					$scope.rolesInfoExpanded = value;
 					break;
+				case 'membersInfo':
+					$scope.membersInfoExpanded = value;
+					break;
 				case 'auditInfo':
 					$scope.auditInfoExpanded = value;
 					break;
 				default:
 			}
+		};
+
+		$scope.chageSort = function(sortByProperty) {
+			if($scope.sortBy == sortByProperty){
+				//When clicking in the same porperty, invert sort order
+				$scope.descSort = !$scope.descSort;
+			}else{
+				//start new sort always in asc order
+				$scope.descSort = false;
+				$scope.sortBy = sortByProperty;
+			}
+		};
+
+		$scope.getMembership = function(){
+			if($scope.groupEditParams.membership){
+				return;
+			}
+
+			let membershipMetrics = {
+				active:0, inactive:0,
+				male:0, female:0,
+				lead:0, host:0, trainee:0,
+				total:0
+			};
+			$scope.groupEditParams.membership = MembersSvc.getMembersForBaseGroup($scope.objectDetails.basicInfo.$id);
+			/* Traverse the members returned to build some metrics */
+			$scope.groupEditParams.membership.$loaded().then(function(members){
+				members.forEach(function(member){
+					membershipMetrics.total++;
+					if(member.isActive){
+						membershipMetrics.active++;
+					}else{
+						membershipMetrics.inactive++;
+					}
+
+					if(member.sex=="M"){
+						membershipMetrics.male++;
+					}else if(member.sex=="F"){
+						membershipMetrics.female++;
+					}
+
+					if(member.isLeader){
+						membershipMetrics.lead++;
+					}
+					if(member.isHost){
+						membershipMetrics.host++;
+					}
+					if(member.isTrainee){
+						membershipMetrics.trainee++;
+					}
+				});
+				$scope.groupEditParams.membershipMetrics = membershipMetrics;
+				buildMembershipCharts(membershipMetrics);
+			});
+
+		};
+
+		buildMembershipCharts = function(membershipMetrics){
+			var pieOptions = {
+					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+					title: { text: ""},
+				  credits: { enabled: false },
+					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
+					plotOptions: { pie: { dataLabels: { enabled: false }, showInLegend: true }}
+			};
+
+			//Active and Inactive pie
+			// pieOptions.title.text = "Active";
+			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(220,53,69,.8)'];
+			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
+							data: [
+								[$rootScope.i18n.charts.activeSerieLbl, membershipMetrics.active],
+								[$rootScope.i18n.charts.inactiveSerieLbl, membershipMetrics.inactive] ]
+					}];
+			Highcharts.chart('activePie', pieOptions);
+
+			//Sex pie
+			// pieOptions.title.text = "Sex";
+			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(243,124,251,.8)'];
+			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
+							data: [
+								[$rootScope.i18n.charts.maleSerieLbl, membershipMetrics.male],
+								[$rootScope.i18n.charts.femaleSerieLbl, membershipMetrics.female] ]
+					}];
+			Highcharts.chart('sexPie', pieOptions);
+
+			//Roles pie
+			// pieOptions.title.text = "Roles";
+			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(71,184,109,.8)','rgba(255,193,7,.8)'];
+			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
+							data: [
+								[$rootScope.i18n.charts.leadSerieLbl, membershipMetrics.lead],
+								[$rootScope.i18n.charts.hostSerieLbl, membershipMetrics.host],
+								[$rootScope.i18n.charts.traineeSerieLbl, membershipMetrics.trainee] ]
+					}];
+			Highcharts.chart('rolesPie', pieOptions);
 		};
 
 		clearResponse = function() {

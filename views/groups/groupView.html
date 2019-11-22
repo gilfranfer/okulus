@@ -96,6 +96,9 @@
     </div>
   </article>
 
+  <!-- Group Membership -->
+  <article ng-if="objectDetails.audit" ng-include="'views/groups/groupMembersSection.html'"></article>
+
   <!-- Audit -->
   <article ng-if="objectDetails.audit" ng-include="'views/fragments/auditDetails.html'"></article>
 

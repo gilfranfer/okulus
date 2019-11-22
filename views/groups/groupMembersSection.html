@@ -1,0 +1,85 @@
+<article class="mb-3" ng-if="groupEditParams.isEdit">
+  <div class="card">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#membersInfo" aria-expanded="false" aria-controls="membersInfo"
+            ng-if="membersInfoExpanded" ng-click="expandSection('membersInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#membersInfo" aria-expanded="true" aria-controls="membersInfo"
+            ng-if="!membersInfoExpanded" ng-click="expandSection('membersInfo',true);getMembership()"></i>
+            {{i18n.groups.membershipTitle}}
+          </legend>
+        </div>
+      </div>
+      <div id="membersInfo" class="collapse">
+        <hr>
+        <!-- Search -->
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control"
+             ng-model="filterText" ng-show="groupEditParams.membership.length > config.minResultsToshowFilter"/>
+          </div>
+        </div>
+        <!-- Table -->
+        <div class="row mb-3">
+          <div class="pre-scrollable col">
+            <table class="table table-responsive-s table-md table-striped">
+              <thead class="">
+                <tr>
+                  <!-- <th scope="col"></th> -->
+                  <th scope="col">
+                    <span class="clickable fas fa-md fa-sort"
+                      ng-click="chageSort('firstname')" ng-show="sortBy!='firstname'"></span>
+                    <span class="clickable fas fa-md fa-sort-up"
+                      ng-click="chageSort('firstname')" ng-show="(sortBy=='firstname' && descSort)"></span>
+                    <span class="clickable fas fa-md fa-sort-down"
+                      ng-click="chageSort('firstname')" ng-show="(sortBy=='firstname' && !descSort)"></span>
+                    <span>{{i18n.members.fnameLbl}}</span>
+                  </th>
+                  <th scope="col">
+                    <span class="clickable fas fa-md fa-sort"
+                    ng-click="chageSort('lastname')" ng-show="sortBy!='lastname'"></span>
+                    <span class="clickable fas fa-md fa-sort-up"
+                    ng-click="chageSort('lastname')" ng-show="(sortBy=='lastname' && descSort)"></span>
+                    <span class="clickable fas fa-md fa-sort-down"
+                    ng-click="chageSort('lastname')" ng-show="(sortBy=='lastname' && !descSort)"></span>
+                    <span>{{i18n.members.lnameLbl}}</span>
+                  </th>
+                  <th scope="col">
+                    <span></span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="member in groupEditParams.membership | filter:filterText | orderBy:sortBy:descSort track by member.$id">
+                  <!-- <td scope="row">{{$index + 1}}</td> -->
+                  <td scope="row">{{member.firstname}}</td>
+                  <td scope="row">{{member.lastname}}</td>
+                  <td scope="row">
+                    <!-- <a class="clickable fas fa-lg fa-eye"  target="_blank" ng-href="#!/reports/edit/{{report.$id}}"></a> -->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Charts -->
+        <div class="row mb-3 mt-3">
+          <div class="col-sm col-lg-4">
+            <div id="activePie" style="width:100%; height:300px;"></div>
+          </div>
+          <div class="col-sm col-lg-4">
+            <div id="rolesPie" style="width:100%; height:300px;"></div>
+          </div>
+          <div class="col-sm col-lg-4">
+            <div id="sexPie" style="width:100%; height:300px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
