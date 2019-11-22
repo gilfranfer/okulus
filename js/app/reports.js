@@ -408,17 +408,17 @@ okulusApp.controller('ReportDetailsCntrl',
 				//Proceed to add Roles to the Members list
 				if(roles.leadId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName, sex:sex})
+						pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName, sex:sex.$value})
 					});
 				}
 				if(roles.hostId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName, sex:sex})
+						pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName, sex:sex.$value})
 					});
 				}
 				if(roles.traineeId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName, sex:sex})
+						pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName, sex:sex.$value})
 					});
 				}
 			});
