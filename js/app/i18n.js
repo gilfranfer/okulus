@@ -412,7 +412,8 @@ okulusApp.run(function($rootScope) {
 				studyLbl: "Titulo", seriesLbl: "Serie",
 				noMembersList:"No se ha registrado la asistencia de Miembros",
 				noGuestsList:"No se ha registrado la asistencia de Invitados",
-				reportEvalLegend:"Evaluación del Reporte", feedbackLbl:"Discusión"
+				reportEvalLegend:"Evaluación del Reporte", feedbackLbl:"Discusión",
+				onTimeLbl:"A tiempo", notOnTimeLbl:"Atrasados"
 			},
 			weeks:{
 				title: "Administrador de Semanas",
@@ -514,7 +515,7 @@ okulusApp.run(function($rootScope) {
 				fnameLbl:"Nombre", fnameHint:"Francisco Fernando",
 				lnameLbl:"Apellido", lnameHint:"Gil Villalobos",
 				aliasLbl:"Alias", aliasHint:"Franfer Gil",
-				sexLbl:"Sexo", maleLbl:"Hombre", femaleLbl:"Mujer",
+				sexLbl:"Sexo", maleLbl:"Hombre", femaleLbl:"Mujer", malesLbl:"Hombres", femalesLbl:"Mujeres",
 				bdayLbl:"Fecha de nacimiento",
 				statusLbl:"Estado de la membresía",
 				isHostLbl:"Es Anfitrión?", isLeadLbl:"Es Líder?",
@@ -645,6 +646,7 @@ okulusApp.run(function($rootScope) {
 				resultsLoaded: "Reportes encontrados",
 				reportsListTitle: "Lista de Reportes",
 				attendanceChartsTitle: "Asistencia de Miembros e Invitados",
+				reunionsChartsTitle: "Reportes y Reuniones",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
 				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
@@ -658,17 +660,10 @@ okulusApp.run(function($rootScope) {
 			},
 			charts:{
 				attendanceTitle:"Personas Ministradas",
-				reunionsLbl:"Reuniones", completedLbl:"Completadas", canceledLbl:"Canceladas",
-				attendanceLbl:"Asistencia",
-				attendanceGuestsSerie:"Invitados",
-				attendanceMemberstSerie:"Miembros",
-				maleSerie:"Hombres",
-				femaleSerie:"Mujeres",
-				durationTitle:"Minutos Ministrados",
-				durationLbl:"Duración",
-				moneyTitle:"Ofrenda",	moneyAvgTitle:"Promedio",
-				leadSerieLbl:"Líderes", hostSerieLbl:"Anfitriones", traineeSerieLbl:"Aprendices",
-				maleSerieLbl:"Hombres", femaleSerieLbl:"Mujeres",
+				reportsAndReunionsTitle:"Reportes y Reuniones",
+				durationTitle:"Minutos Ministrados", durationAvgTitle:"Promedios",
+				durationLbl:"Duración", durationAvgReunionLbl:"Promedio por Reunión", durationAvgAttnLbl:"Promedio por Reunión",
+				moneyTitle:"Ofrenda",	moneyAvgReunionTitle:"Promedio por Reunión", moneyAvgAttnTitle:"Promedio por Asistencia",
 				activeSerieLbl:"Miembros Activos", inactiveSerieLbl:"Miembros Inactivos"
 			},
 			summary:{

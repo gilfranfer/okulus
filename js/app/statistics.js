@@ -4,6 +4,32 @@ okulusApp.controller('StatisticsCntrl',
 	['$rootScope','$scope', 'WeeksSvc','ReportsSvc','GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, GroupsSvc,MembersSvc) {
 
+		$scope.reportsListExpanded = true;
+		$scope.reportChartsExpanded = true;
+		$scope.attnChartsExpanded = true;
+		$scope.moneyChartsExpanded = true;
+		$scope.durationChartsExpanded = true;
+		$scope.expandSection = function(section, value) {
+			switch (section) {
+				case 'reportsList':
+					$scope.reportsListExpanded = value;
+					break;
+				case 'reportCharts':
+					$scope.reportChartsExpanded = value;
+					break;
+				case 'attnCharts':
+					$scope.attnChartsExpanded = value;
+					break;
+				case 'moneyCharts':
+					$scope.moneyChartsExpanded = value;
+					break;
+				case 'durationCharts':
+					$scope.durationChartsExpanded = value;
+					break;
+				default:
+			}
+		};
+
 		//Default chart Orientation (portrait or landscape)
 		$scope.chartOrientation = 'landscape';
 		$scope.rawReportsFound = undefined;
@@ -75,15 +101,16 @@ okulusApp.controller('StatisticsCntrl',
 					// 	// });
 					// });
 					//
-					console.debug("Reunion Summary:", $scope.reunionSummary);
-					console.debug("Reports to Display:", $scope.reportsToDisplay);
-					console.debug("Details Map:", $scope.detailsMap);
+
+					// console.debug("Reunion Summary:", $scope.reunionSummary);
+					// console.debug("Reports to Display:", $scope.reportsToDisplay);
+					// console.debug("Details Map:", $scope.categoriesDataMap);
 
 					//Proceed to build the Table and Charts
 					$scope.response = {loading:true, message:systemMsgs.inProgress.buildingCharts};
 					$scope.sortBy = 'reviewStatus';
 					$scope.descSort = false;
-					$scope.buildCharts($scope.reunionSummary, $scope.detailsMap, $scope.chartOrientation);
+					$scope.buildCharts($scope.reunionSummary, $scope.categoriesDataMap, $scope.chartOrientation);
 					window.scrollBy(0, $( "#reportFinder" ).height());
 					$scope.response = null;
 				});
@@ -92,143 +119,249 @@ okulusApp.controller('StatisticsCntrl',
 
 		/* Called from buildReportsDashboard()
 		Method to filter-in the reports belonging only to groups selected by the user
-		reportsPerWeekArray: An array containing $firebaseArrays with Reports for each selected week
-		selectedGroups: Array with the Ids of the User's selected groups. It will be used to filter the reports */
+		- reportsPerWeekArray: An array containing $firebaseArrays with Reports for each selected week
+		- selectedGroups: Array with the Ids of the User's selected groups. It will be used to filter the reports */
 		$scope.filterReports = function(reportsPerWeekArray, selectedGroups){
-			/* For each report fetched from DB, confirm if it is a valid one and add it to
-			the reportsToDisplay list. A report is valid when its groupId	exists in the
-			user's selection (selectedGroups).
-			Use Data from each report to update the totals in reunionParams.
-			The detailsMap will be used, later on, as the Chart's categories and series */
+			let categoriesDataMap = new Map();
 			let reportsToDisplay = [];
-			let detailsMap = new Map();
-			let reunionParams = {
-				totalReports:0, approvedReports: 0, rejectedReports: 0, pendingReports: 0,
-				completedReunions: 0, canceledReunions: 0, totalReunions: 0,
-				totalAttendance: 0, membersAttendance: 0, guestsAttendance:0,
-				maleAttendance: 0, femaleAttendance: 0,
-				totalMoney: 0.00, totalDuration:0
+			let allReportsTotals = {
+				reports:{ total:0, approved:0, rejected:0, pending:0, onTime:0, notOnTime:0 },
+				reunions:{ total:0,completed:0, canceled:0 },
+				attn:{
+					total:0, members:0, guests:0,
+					//Not used in the view right now
+					male:0, female:0,
+					membersMale:0, membersFemale:0,
+					guestsMale:0, guestsFemale:0
+				},
+				//Not used in the view right now
+				money:{total:0},
+				duration:{total:0}
 			};
 
 			reportsPerWeekArray.forEach(function(reportsOfTheWeek, index){
-				// console.debug("Filtering reports:", reportsOfTheWeek.length);
+				/* For each report fetched from DB, confirm if it is a valid one and add it to
+				the reportsToDisplay list. A report is valid when its groupId	exists in the
+				user's selection (selectedGroups).
+				Use Data from each report to update: 1. The totals in allReportsTotals, and
+				2. The totals in the categoriesDataMap (this will be used later as the Chart's categories and series */
 				reportsOfTheWeek.forEach(function(report, index){
 					if( !selectedGroups.has(report.groupId) ){
 						console.debug("Report Discarted. Group not Selected:", report.groupname);
 						return;
 					}
+					//Determine the key for the categoriesDataMap
+					let mapKey = undefined;
+					if(selectedGroups.size == 1){
+						/* When only 1 group was selected, the weekId will be the key in the Map */
+						let str = report.weekId;
+						let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
+						mapKey = formattedWeekId;
+					}
+					else if(selectedGroups.size > 1){
+						/* When selecting more than one group, we'll use the Group Id as the key */
+						mapKey = report.groupname;
+					}
+
+					/* The map might already have the key because:
+					1. When the mapKey is the week: There are more than one report for the same week and group combination.
+					2. When the mapKeyis the groupId: There are more than one report for the group (not necessarily for the same week)
+					In this case, we always accumulate the values.*/
+					let mapElement = undefined;
+					if(!categoriesDataMap.has(mapKey)){
+						mapElement = {
+							reports:{ total:0, approved:0, rejected:0, pending:0, onTime:0, notOnTime:0 },
+							reunions:{ total:0,completed:0, canceled:0 },
+							attn:{
+								total:0, members:0, guests:0,
+								male:0, female:0,
+								membersMale:0, membersFemale:0,
+								guestsMale:0, guestsFemale:0
+							},
+							money:{total:0.0},
+							duration:{total:0}
+						};
+						categoriesDataMap.set(mapKey,mapElement);
+					}
+					mapElement = categoriesDataMap.get(mapKey);
 
 					reportsToDisplay.push(report);
-					//Increase Report Status Count
-					reunionParams.totalReports++;
+					allReportsTotals.reports.total++;
+					mapElement.reports.total++;
+
 					if(report.reviewStatus == constants.status.approved){
-						reunionParams.approvedReports++;
+						allReportsTotals.reports.approved++;
+						mapElement.reports.approved++;
 					} else if(report.reviewStatus == constants.status.pending){
-						reunionParams.pendingReports++;
+						allReportsTotals.reports.pending++;
+						mapElement.reports.pending++;
 					} else if(report.reviewStatus == constants.status.rejected){
-						reunionParams.rejectedReports++;
+						allReportsTotals.reports.rejected++;
+						mapElement.reports.rejected++;
 						/* Data from Rejected Reports will not be considered because it will
 						introduce irrelevant or incorrect values to the totals */
 						console.debug("Report Discarted. Rejected Status");
 						return;
 					}
 
-					//Increase Reunion Status Count
-					reunionParams.totalReunions++;
-					if(report.status == constants.status.completed){
-						reunionParams.completedReunions++;
-					}else if(report.status == constants.status.canceled){
-						reunionParams.canceledReunions++;
-					}
-
-					//Increase attendance Count
-					reunionParams.totalAttendance += report.totalAttendance;
-					reunionParams.membersAttendance += report.membersAttendance;
-					reunionParams.guestsAttendance += report.guestsAttendance;
-					reunionParams.maleAttendance += report.maleAttendance;
-					reunionParams.femaleAttendance += report.femaleAttendance;
-
-					//Increase duration and money
-					reunionParams.totalDuration += report.duration;
-					if(report.money){
-						reunionParams.totalMoney += (parseFloat(report.money));
-					}
-
-					/* Save everyting in the detailsMap, that will be used to paint the charts */
-					let mapKey = undefined;
-					let mapElement = undefined;
-					if(selectedGroups.size == 1){
-						/* When 1 group was selected, the weekId will be the key in the Map */
-						let str = report.weekId;
-						let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
-						mapKey = formattedWeekId;
-					}
-					else if(selectedGroups.size > 1){
-						/* When selecting more than one group, we'll use the Group Names the key */
-						mapKey = report.groupname;
-					}
-
-					if(detailsMap.has(mapKey)){
-						/* The map might already have the key because of:
-						1. When the mapKey is the week: There are more than one report for the same week and group combination.
-						2. When the mapKeyis the groupname: There are more than one report for the group (not necessarily for the same week)
-						In this case, we accumulate the values.*/
-						mapElement = detailsMap.get(mapKey);
-						mapElement.guests += report.guestsAttendance;
-						mapElement.members += report.membersAttendance;
-						mapElement.males += report.maleAttendance;
-						mapElement.females += report.femaleAttendance;
-						mapElement.duration += report.duration;
-						mapElement.reportsCount ++;
-						if(report.money){
-							mapElement.money += report.money;
-						}
+					if(report.onTime){
+						allReportsTotals.reports.onTime++;
+						mapElement.reports.onTime++;
 					}else{
-						/* Create a new Key, value */
-						report.money = (report.money)?report.money:0.00;
-						mapElement = {guests:report.guestsAttendance, members:report.membersAttendance,
-													males:report.maleAttendance, females:report.femaleAttendance,
-													 duration:report.duration, money:report.money, reportsCount:1};
+						allReportsTotals.reports.notOnTime++;
+						mapElement.reports.notOnTime++;
 					}
-					detailsMap.set(mapKey,mapElement);
+					//Increase Reunion Status Count
+					allReportsTotals.reunions.total++;
+					mapElement.reunions.total++;
+					if(report.status == constants.status.completed){
+						allReportsTotals.reunions.completed++;
+						mapElement.reunions.completed++;
+					}else if(report.status == constants.status.canceled){
+						allReportsTotals.reunions.canceled++;
+						mapElement.reunions.canceled++;
+					}
+
+					//Increase attendance
+					allReportsTotals.attn.total += report.totalAttendance;
+					allReportsTotals.attn.female += report.totalFemale;
+					allReportsTotals.attn.male += report.totalMale;
+					allReportsTotals.attn.members += report.membersAttendance;
+					allReportsTotals.attn.membersMale += report.maleMembers;
+					allReportsTotals.attn.membersFemale += report.femaleMembers;
+					allReportsTotals.attn.guests += report.guestsAttendance;
+					allReportsTotals.attn.guestsMale += report.maleGuests;
+					allReportsTotals.attn.guestsFemale += report.femaleGuests;
+					mapElement.attn.total += report.totalAttendance;
+					mapElement.attn.female += report.totalFemale;
+					mapElement.attn.male += report.totalMale;
+					mapElement.attn.members += report.membersAttendance;
+					mapElement.attn.membersMale += report.maleMembers;
+					mapElement.attn.membersFemale += report.femaleMembers;
+					mapElement.attn.guests += report.guestsAttendance;
+					mapElement.attn.guestsMale += report.maleGuests;
+					mapElement.attn.guestsFemale += report.femaleGuests;
+
+					//Increase duration
+					allReportsTotals.duration.total += report.duration;
+					mapElement.duration.total += report.duration;
+					allReportsTotals.duration.avgCompletedReunion = (allReportsTotals.duration.total / allReportsTotals.reunions.completed);
+					allReportsTotals.duration.avgAttendance = (allReportsTotals.duration.total / allReportsTotals.attn.total);
+					mapElement.duration.avgCompletedReunion = (mapElement.duration.total / mapElement.reunions.completed);
+					mapElement.duration.avgAttendance = (mapElement.duration.total / mapElement.attn.total);
+
+					//Increase money
+					if(report.money){
+						allReportsTotals.money.total += (parseFloat(report.money));
+						mapElement.money.total += (parseFloat(report.money));
+						allReportsTotals.money.avgCompletedReunion = (allReportsTotals.money.total / allReportsTotals.reunions.completed);
+						allReportsTotals.money.avgAttendance = (allReportsTotals.money.total / allReportsTotals.attn.total);
+						mapElement.money.avgCompletedReunion = (mapElement.money.total / mapElement.reunions.completed);
+						mapElement.money.avgAttendance = (mapElement.money.total / mapElement.attn.total);
+					}
 				});
 			});
 
 			//For the Summary Cards
-			$scope.reunionSummary = reunionParams;
+			$scope.reunionSummary = allReportsTotals;
 			//For the Reports table
 			$scope.reportsToDisplay = reportsToDisplay;
 			//Build the Charts
-			$scope.detailsMap = detailsMap;
+			$scope.categoriesDataMap = categoriesDataMap;
 		};
 
 		/* Called from buildReportsDashboard(). Build Highcharts elements, using categoriesDataMap and
-		reunionParams objects constructed during the Report filtering process.
+		allReportsTotals objects constructed during the Report filtering process.
 		- categoriesDataMap contains totals for each category.
 			ex. Map = [{ key: "San Antonio", value: { guests: 5, members: 12, money: 195.4, duration: 339 }, ... ]
 		- reunionSummary contains totals for all the reports in all categories. Used in then sumary table too.	*/
-		$scope.buildCharts = function(reunionSummary, categoriesDataMap, chartOrientation){
+		$scope.buildCharts = function(allReportsTotals, categoriesDataMap, chartOrientation){
 
 			/* Use the categoriesDataMap to build Data Series */
 			let categories = [];
 			let guestsSeries = [];
 			let membersSeries = [];
-			let moneySeries = [];
-			let moneyAvgSeries = [];
-			let durationSeries = [];
+			let maleSeries = [];
+			let femaleSeries = [];
+			let moneySeries = [], moneyAvgReunionSeries = [], moneyAvgAttnSeries = [];
+			let durationSeries = [], durationAvgReunionSeries = [], durationAvgAttnSeries = [];
+			let completedSeries = [];
+			let canceledSeries = [];
+			let dueReportSeries = [];
+			let onTimeReportSeries = [];
+			let approvedSeries = [];
+			let pendingSeries = [];
+			let rejectedSeries = [];
 			let series = 0;
+
+			//Prepare all the series for the bar charts
 			categoriesDataMap.forEach(function(reunionTotals, key){
-				categories.push(key);
-				guestsSeries.push(reunionTotals.guests);
-				membersSeries.push(reunionTotals.members);
-				moneySeries.push(reunionTotals.money);
-				moneyAvgSeries.push( (reunionTotals.money/(reunionTotals.guests+reunionTotals.members)) );
-				durationSeries.push(reunionTotals.duration);
+				categories.push(key); //groupname or weekid
+				guestsSeries.push(reunionTotals.attn.guests);
+				membersSeries.push(reunionTotals.attn.members);
+				maleSeries.push(reunionTotals.attn.male);
+				femaleSeries.push(reunionTotals.attn.female);
+				completedSeries.push(reunionTotals.reunions.completed);
+				canceledSeries.push(reunionTotals.reunions.canceled);
+				dueReportSeries.push(reunionTotals.reports.notOnTime);
+				onTimeReportSeries.push(reunionTotals.reports.onTime);
+				approvedSeries.push(reunionTotals.reports.approved);
+				rejectedSeries.push(reunionTotals.reports.rejected);
+				pendingSeries.push(reunionTotals.reports.pending);
+
+				moneySeries.push(reunionTotals.money.total);
+				durationSeries.push(reunionTotals.duration.total);
+
+				if(reunionTotals.reunions.completed){
+					let avg = reunionTotals.duration.total/reunionTotals.reunions.completed;
+					avg = avg.toFixed(2);
+					durationAvgReunionSeries.push( parseFloat(avg) );
+
+					avg = reunionTotals.money.total/reunionTotals.reunions.completed;
+					avg = avg.toFixed(2);
+					moneyAvgReunionSeries.push( parseFloat(avg) );
+				}else{
+					moneyAvgReunionSeries.push(0);
+					durationAvgReunionSeries.push(0);
+				}
+
+				if(reunionTotals.attn.total){
+					let avg = reunionTotals.duration.total/reunionTotals.attn.total;
+					avg = avg.toFixed(2);
+					durationAvgAttnSeries.push( parseFloat(avg) );
+
+					avg = reunionTotals.money.total/reunionTotals.attn.total;
+					avg = avg.toFixed(2);
+					moneyAvgAttnSeries.push( parseFloat(avg) );
+				}else{
+					durationAvgAttnSeries.push(0);
+					moneyAvgAttnSeries.push(0);
+				}
+
 				series++;
 			});
+			// console.debug("categories:",categories);
+			// console.debug("guestsSeries:",guestsSeries);
+			// console.debug("membersSeries:",membersSeries);
+			// console.debug("moneySeries:",moneySeries);
+			// console.debug("durationSeries:",durationSeries);
+
+			let colors = $rootScope.config.charts.colors;
 
 			//Build Chart Config Objects
-			var attendanceByGroupOptions = {
+			var sexPie = getPieChartOptions();
+			sexPie.series[0].data =  [
+					{name:$rootScope.i18n.members.malesLbl, y:allReportsTotals.attn.male, color: colors.members.male},
+					{name:$rootScope.i18n.members.femalesLbl, y:allReportsTotals.attn.female, color: colors.members.female}
+			];
+
+			var attnPie = getPieChartOptions();
+			attnPie.series[0].data =  [
+				{name:$rootScope.i18n.reports.membersLbl, y:allReportsTotals.attn.members, color:colors.members.member},
+				{name:$rootScope.i18n.reports.guestsLbl, y:allReportsTotals.attn.guests, color:colors.members.guest}
+			];
+
+			var attendanceChart = {
 				//chart: attendanceChart,
 				title: { text: '' }, legend: { reversed: true }, credits: { enabled: false },
 				xAxis: { categories: categories },
@@ -239,151 +372,168 @@ okulusApp.controller('StatisticsCntrl',
 					},
 					plotLines: [
 						//lines for good attendance indicator
-						{ value: reunionSummary.goodAttendanceIndicator, zIndex: 3,
+						{ value: allReportsTotals.goodAttendanceIndicator, zIndex: 3,
 							color: 'red', width: 2, dashStyle: 'dash',
 							label: {text: '', align:'center', style:{color: 'gray'}}
 						},
 						//lines for excelent attendance indicator
-						{ value: reunionSummary.excelentAttendanceIndicator, zIndex: 3,
+						{ value: allReportsTotals.excelentAttendanceIndicator, zIndex: 3,
 							color: 'green', width: 2, dashStyle: 'dash',
 							label: {text: '', align:'center', style:{color: 'gray'}}
 						}
 					]
 				},
-				plotOptions: { series: {stacking: 'normal'} },
+				plotOptions: { column: {stacking: 'normal'} },
 				series: [
-					{ name: $rootScope.i18n.charts.attendanceGuestsSerie, color: 'rgba(40,167,69,.8)', data: guestsSeries },
-					{ name: $rootScope.i18n.charts.attendanceMemberstSerie, color: 'rgba(0,123,255,.8)', data: membersSeries }
+					{ type: 'column',  data: guestsSeries, name: $rootScope.i18n.reports.guestsLbl, color: colors.members.guest },
+					{ type: 'column',  data: membersSeries, name: $rootScope.i18n.reports.membersLbl, color: colors.members.member},
+					{ type: 'spline', data: femaleSeries, name: $rootScope.i18n.members.femalesLbl, color: colors.members.female, lineWidth:4, label:{enabled:false} },
+					{ type: 'spline', data: maleSeries, name: $rootScope.i18n.members.malesLbl, color: colors.members.male, lineWidth:4, label:{enabled:false} }
 				]
 			};
-			var attendancePieOptions = {
-					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
-					title: { text: $rootScope.i18n.charts.attendanceLbl},
-				  credits: { enabled: false },
-					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
-					plotOptions: {
-							pie: {
-								dataLabels: { enabled: false },
-								showInLegend: true, colors: ['rgba(0,123,255,.8)','rgba(40,167,69,.8)']
-							}
-					},
-					series: [{
-							type: 'pie', name: $rootScope.i18n.charts.attendanceLbl,
-							innerSize: '20%',
-							data: [
-									[$rootScope.i18n.charts.attendanceMemberstSerie, reunionSummary.membersAttendance],
-									[$rootScope.i18n.charts.attendanceGuestsSerie, reunionSummary.guestsAttendance]
-							]
-					}]
+
+			var reportsPie = getPieChartOptions();
+			reportsPie.title.text = $rootScope.i18n.reports.reportsLbl;
+			reportsPie.series[0].data =  [
+					{name:$rootScope.i18n.reports.pendingLbl,  y:allReportsTotals.reports.pending, color: colors.reports.pending},
+					{name:$rootScope.i18n.reports.approvedLbl, y:allReportsTotals.reports.approved, color: colors.reports.approved},
+					{name:$rootScope.i18n.reports.rejectedLbl, y:allReportsTotals.reports.rejected, color: colors.reports.rejected}
+			];
+
+			var reunionsPie = getPieChartOptions();
+			reunionsPie.title.text = $rootScope.i18n.reportFinder.reunionsLbl;
+			reunionsPie.series[0].data =  [
+					{name:$rootScope.i18n.reports.completedLbl, y:allReportsTotals.reunions.completed, color: colors.reunions.completed},
+					{name:$rootScope.i18n.reports.canceledLbl, y:allReportsTotals.reunions.canceled, color: colors.reunions.canceled}
+			];
+
+			var onTimePie = getPieChartOptions();
+			onTimePie.title.text = $rootScope.i18n.reportFinder.reportsLbl;
+			onTimePie.series[0].data =  [
+					{name:$rootScope.i18n.reports.onTimeLbl, y:allReportsTotals.reports.onTime, color: colors.reports.ontime},
+					/* Rejected reports are not checked for "onTime", so we take them out */
+					{name:$rootScope.i18n.reports.notOnTimeLbl, y:allReportsTotals.reports.notOnTime, color: colors.reports.due}
+			];
+
+			var reunionsChart = {
+				//chart: attendanceChart,
+				title: { text: $rootScope.i18n.charts.reportsLbl }, legend: { reversed: true }, credits: { enabled: false },
+				xAxis: { categories: categories },
+				yAxis: {
+					min:0, title: { text: $rootScope.i18n.charts.reportsAndReunionsTitle },
+					stackLabels: { enabled: true,
+						style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
+					}, plotLines: []
+				},
+				plotOptions: { column: {stacking: 'normal'} },
+				series: [
+					{ type: 'column', stack:'reunion', data: completedSeries, name: $rootScope.i18n.reports.completedLbl, color: colors.reunions.completed },
+					{ type: 'column', stack:'reunion', data: canceledSeries, name: $rootScope.i18n.reports.canceledLbl, color: colors.reunions.canceled },
+					{ type: 'column', stack:'reports', data: approvedSeries, name: $rootScope.i18n.reports.approvedLbl, color: colors.reports.approved},
+					{ type: 'column', stack:'reports', data: pendingSeries, name: $rootScope.i18n.reports.pendingLbl, color: colors.reports.pending},
+					{ type: 'column', stack:'reports', data: rejectedSeries, name: $rootScope.i18n.reports.rejectedLbl, color: colors.reports.rejected},
+					{ type: 'spline', data: dueReportSeries, name: $rootScope.i18n.reports.notOnTimeLbl, color: colors.reports.due, lineWidth:4, label:{enabled:false} },
+					{ type: 'spline', data: onTimeReportSeries , name: $rootScope.i18n.reports.onTimeLbl, color: colors.reports.ontime, lineWidth:4, label:{enabled:false} }
+				]
 			};
-			var sexPieOptions = {
-					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
-					title: { text: $rootScope.i18n.charts.attendanceMemberstSerie},
-					credits: { enabled: false },
-					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
-					plotOptions: {
-							pie: {
-								dataLabels: { enabled: false },
-								showInLegend: true, colors: ['rgba(0,123,255,.8)','rgba(255, 204, 255,.8)']
-							}
-					},
-					series: [{
-							type: 'pie', innerSize: '20%', name: $rootScope.i18n.charts.attendanceLbl,
-							data: [
-									[$rootScope.i18n.charts.maleSerie, reunionSummary.maleAttendance],
-									[$rootScope.i18n.charts.femaleSerie, reunionSummary.femaleAttendance]
-							]
-					}]
-			};
-			var reunionsPieOptions = {
-					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
-					title: { text: $rootScope.i18n.charts.reunionsLbl}, credits: { enabled: false },
-					tooltip: {  pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>' },
-					plotOptions: {
-							pie: {
-								dataLabels: { enabled: false },
-								showInLegend: true, colors: ['rgba(40,167,69,.8)','#dc3545']
-							}
-					},
-					series: [{
-							type: 'pie', name: $rootScope.i18n.charts.reunionsLbl,
-							innerSize: '20%',
-							data: [
-									[$rootScope.i18n.charts.completedLbl, reunionSummary.completedReunions],
-									[$rootScope.i18n.charts.canceledLbl, reunionSummary.canceledReunions]
-							]
-					}]
-			};
+
 			var durationByGroupOptions = {
 					//chart: areaCharts,
 					title: { text: '' },credits: { enabled: false },
 					xAxis: { categories: categories },
-					yAxis: { min:0, title: { text: $rootScope.i18n.charts.durationTitle},
-									stackLabels: { enabled: true,
-											style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
-									}
-								},
+					yAxis: [{ min:0, title: { text: $rootScope.i18n.charts.durationTitle},
+									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
+									},
+									{ min:0, title: { text: $rootScope.i18n.charts.durationAvgAttnLbl}, opposite:true,
+										stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
+									}],
 					legend: { reversed: true },
-					series: [ { name: $rootScope.i18n.charts.durationLbl, data: durationSeries } ]
-			};
-			var moneyByGroupOptions = {
-					//chart: areaCharts,
-					credits: { enabled: false },
-					title: { text: '' },
-					xAxis: { categories: categories },
-					yAxis: { min:0, title: { text: $rootScope.i18n.charts.moneyTitle },
-									stackLabels: { enabled: true,
-											style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
-									}
-								},
-					legend: { reversed: true },
-					series: [ { type:'column', name: $rootScope.i18n.charts.moneyTitle , data: moneySeries},
-										{ type:'line', name: $rootScope.i18n.charts.moneyAvgTitle , data: moneyAvgSeries, label:{enabled:false} } ]
+					series: [ { type: 'column', name: $rootScope.i18n.charts.durationLbl, data: durationSeries, color: colors.reunions.duration },
+					 					{ type: 'spline', name: $rootScope.i18n.charts.durationAvgReunionLbl, data: durationAvgReunionSeries, color: colors.reunions.durationAvgR, lineWidth:4, label:{enabled:false} },
+					 					{ type: 'spline', name: $rootScope.i18n.charts.durationAvgAttnLbl, data: durationAvgAttnSeries, color: colors.reunions.durationAvgA, lineWidth:4, label:{enabled:false}, yAxis: 1 }
+									]
 			};
 
-			//adjust some char config according to the Chart Orientation
-			if( chartOrientation == 'landscape'){
-				attendanceByGroupOptions.chart =  { type: 'column', height:600};
-				attendanceByGroupOptions.yAxis.opposite =  false;
-				attendanceByGroupOptions.xAxis.labels =  {rotation: -90};
+			var moneyByGroupOptions = {
+					//chart: areaCharts,
+					title: { text: '' },credits: { enabled: false },
+					xAxis: { categories: categories },
+					yAxis: [{ min:0, title: { text: $rootScope.i18n.charts.moneyTitle },
+									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } }
+								},
+								{ min:0, title: { text: $rootScope.i18n.charts.moneyAvgAttnTitle}, opposite:true,
+									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
+								}],
+					legend: { reversed: true },
+					series: [ { type:'column', name: $rootScope.i18n.charts.moneyTitle , data: moneySeries, color: colors.reunions.money},
+										{ type:'spline', name: $rootScope.i18n.charts.moneyAvgReunionTitle , data: moneyAvgReunionSeries, color: colors.reunions.moneyAvgR, lineWidth:4, label:{enabled:false}},
+										{ type:'spline', name: $rootScope.i18n.charts.moneyAvgAttnTitle , data: moneyAvgAttnSeries, color: colors.reunions.moneyAvgA, lineWidth:4, label:{enabled:false}, yAxis: 1}
+									]
+			};
+
+			//Adjust some properties according to the Chart Orientation
+			if(chartOrientation == 'landscape'){
+				attendanceChart.chart =  { type: 'column', height:600};
+				attendanceChart.yAxis.opposite =  false;
+
+				reunionsChart.chart =  { type: 'column', height:600};
+				reunionsChart.yAxis.opposite =  false;
 
 				durationByGroupOptions.chart = { type: 'column', inverted: false, height:600 };
 				durationByGroupOptions.yAxis.opposite =  false;
-				durationByGroupOptions.xAxis.labels =  {rotation: -90};
 
 				moneyByGroupOptions.chart = { inverted: false, height:600 };
 				moneyByGroupOptions.yAxis.opposite =  false;
-				moneyByGroupOptions.xAxis.labels =  {rotation: -90};
+
+				if(categories.length > 5){
+					attendanceChart.xAxis.labels =  {rotation: -90};
+					reunionsChart.xAxis.labels =  {rotation: -90};
+					durationByGroupOptions.xAxis.labels =  {rotation: -90};
+					moneyByGroupOptions.xAxis.labels =  {rotation: -90};
+				}
 			}else{
 				//portrait
-				attendanceByGroupOptions.chart =  { type: 'bar', height: (300+(series*15)) };
-				attendanceByGroupOptions.yAxis.opposite =  true;
-				attendanceByGroupOptions.xAxis.labels =  {rotation: 0};
+				attendanceChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				attendanceChart.yAxis.opposite =  true;
+				attendanceChart.xAxis.labels =  {rotation: 0};
 
 				durationByGroupOptions.chart = { type: 'bar', inverted: true, height: (300+(series*20)) };
 				durationByGroupOptions.yAxis.opposite =  true;
 				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				moneyByGroupOptions.chart = { inverted: true, height: (300+(series*20)) };
+				moneyByGroupOptions.chart = { type: 'bar', inverted: true, height: (300+(series*20)) };
 				moneyByGroupOptions.yAxis.opposite =  true;
 				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 			}
 
 			//Paint Charts
-			Highcharts.chart('attendanceByGroupContainer', attendanceByGroupOptions);
-			Highcharts.chart('attendancePieContainer', attendancePieOptions);
-			Highcharts.chart('sexPieContainer', sexPieOptions);
-			Highcharts.chart('reunionsPieContainer', reunionsPieOptions);
+			Highcharts.chart('attendanceChartContainer', attendanceChart);
+			Highcharts.chart('sexPieContainer', sexPie);
+			Highcharts.chart('attTypePieContainer', attnPie);
+			Highcharts.chart('reportsPieContainer', reportsPie);
+			Highcharts.chart('onTimePieContainer', onTimePie);
+			Highcharts.chart('reunionsPieContainer', reunionsPie);
+			Highcharts.chart('reunionsChartContainer', reunionsChart);
 			Highcharts.chart('durationContainer', durationByGroupOptions);
 			if($rootScope.config.reports.showMoneyField){
 				Highcharts.chart('moneyContainer', moneyByGroupOptions);
 			}
+		};
 
-			console.debug("categories:",categories);
-			console.debug("guestsSeries:",guestsSeries);
-			console.debug("membersSeries:",membersSeries);
-			console.debug("moneySeries:",moneySeries);
-			console.debug("durationSeries:",durationSeries);
+		getPieChartOptions = function(){
+			return {
+					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
+					title: { text: ''},
+					credits: { enabled: false },
+					tooltip: {  pointFormat: '<b>{point.y} ({point.percentage:.1f}%)</b>' },
+					plotOptions: {
+							pie: {
+								dataLabels: { enabled: false },
+								showInLegend: true
+							}
+					},
+					series: [{type: 'pie', innerSize: '20%', name:''}]
+			};
 		};
 
 		/* Used for the Reports Table Sort, when clicking on the column header */

@@ -323,6 +323,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		};
 
 		buildMembershipCharts = function(membershipMetrics){
+			let colors = $rootScope.config.charts.colors.members;
 			var pieOptions = {
 					chart: { type: 'pie', plotBackgroundColor: null, plotBorderWidth: 0, plotShadow: false },
 					title: { text: ""},
@@ -332,33 +333,28 @@ okulusApp.controller('GroupDetailsCntrl',
 			};
 
 			//Active and Inactive pie
-			// pieOptions.title.text = "Active";
-			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(220,53,69,.8)'];
 			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
 							data: [
-								[$rootScope.i18n.charts.activeSerieLbl, membershipMetrics.active],
-								[$rootScope.i18n.charts.inactiveSerieLbl, membershipMetrics.inactive] ]
+								{ name: $rootScope.i18n.charts.activeSerieLbl, y:membershipMetrics.active, color:colors.active},
+								{ name: $rootScope.i18n.charts.inactiveSerieLbl, y:membershipMetrics.inactive, color:colors.inactive} ]
 					}];
 			Highcharts.chart('activePie', pieOptions);
 
 			//Sex pie
-			// pieOptions.title.text = "Sex";
-			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(243,124,251,.8)'];
 			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
 							data: [
-								[$rootScope.i18n.charts.maleSerieLbl, membershipMetrics.male],
-								[$rootScope.i18n.charts.femaleSerieLbl, membershipMetrics.female] ]
+								{ name:$rootScope.i18n.members.malesLbl, y:membershipMetrics.male, color: colors.male},
+								{ name:$rootScope.i18n.members.femalesLbl, y:membershipMetrics.female, color: colors.female} ]
 					}];
 			Highcharts.chart('sexPie', pieOptions);
 
 			//Roles pie
 			// pieOptions.title.text = "Roles";
-			pieOptions.plotOptions.pie.colors = ['rgba(0,123,255,.8)','rgba(71,184,109,.8)','rgba(255,193,7,.8)'];
 			pieOptions.series = [{ type: 'pie', innerSize: '20%', name: "",
 							data: [
-								[$rootScope.i18n.charts.leadSerieLbl, membershipMetrics.lead],
-								[$rootScope.i18n.charts.hostSerieLbl, membershipMetrics.host],
-								[$rootScope.i18n.charts.traineeSerieLbl, membershipMetrics.trainee] ]
+								{name:$rootScope.i18n.members.leadsLbl, y:membershipMetrics.lead, color: colors.lead},
+								{name:$rootScope.i18n.members.hostsLbl, y:membershipMetrics.host, color: colors.host},
+								{name:$rootScope.i18n.members.traineesLbl, y:membershipMetrics.trainee, color: colors.trainee} ]
 					}];
 			Highcharts.chart('rolesPie', pieOptions);
 		};

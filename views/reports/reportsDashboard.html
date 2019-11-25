@@ -24,20 +24,20 @@
           <div class="card-body">
             <div class="row">
               <h4 class="col">
-                <span class="badge badge-warning">{{reunionSummary.totalReports}}</span>
+                <span class="badge badge-warning">{{reunionSummary.reports.total}}</span>
                 <span class="card-title">{{i18n.reportFinder.reportsLbl}}</span>
               </h4>
             </div>
             <hr>
             <div class="row">
               <div class="col">
-                <span class="badge badge-primary">{{reunionSummary.pendingReports}}</span>
+                <span class="badge badge-primary">{{reunionSummary.reports.pending}}</span>
                 <span>{{i18n.reports.pendingLbl}}</span>
                 <br>
-                <span class="badge badge-success">{{reunionSummary.approvedReports}}</span>
+                <span class="badge badge-success">{{reunionSummary.reports.approved}}</span>
                 <span>{{i18n.reports.approvedLbl}}</span>
                 <br>
-                <span class="badge badge-danger">{{reunionSummary.rejectedReports}}</span>
+                <span class="badge badge-danger">{{reunionSummary.reports.rejected}}</span>
                 <span>{{i18n.reports.rejectedLbl}}</span>
               </div>
             </div>
@@ -50,17 +50,17 @@
           <div class="card-body">
             <div class="row">
               <h4 class="col">
-                <span class="badge badge-warning">{{reunionSummary.totalReunions}}</span>
+                <span class="badge badge-warning">{{reunionSummary.reunions.total}}</span>
                 <span class="card-title">{{i18n.reportFinder.reunionsLbl}}</span>
               </h4>
             </div>
             <hr>
             <div class="row">
               <div class="col">
-                <span class="badge badge-success">{{reunionSummary.completedReunions}}</span>
+                <span class="badge badge-success">{{reunionSummary.reunions.completed}}</span>
                 <span>{{i18n.reports.completedLbl}}</span>
                 <br>
-                <span class="badge badge-danger">{{reunionSummary.canceledReunions}}</span>
+                <span class="badge badge-danger">{{reunionSummary.reunions.canceled}}</span>
                 <span>{{i18n.reports.canceledLbl}}</span>
               </div>
             </div>
@@ -73,17 +73,17 @@
           <div class="card-body">
             <div class="row">
               <h4 class="col">
-                <span class="badge badge-warning">{{reunionSummary.totalAttendance}}</span>
+                <span class="badge badge-warning">{{reunionSummary.attn.total}}</span>
                 <span class="card-title">{{i18n.reportFinder.attendanceLbl}}</span>
               </h4>
             </div>
             <hr>
             <div class="row">
               <div class="col">
-                <span class="badge badge-primary">{{reunionSummary.membersAttendance}}</span>
+                <span class="badge badge-primary">{{reunionSummary.attn.members}}</span>
                 <span>{{i18n.reports.membersLbl}}</span>
                 <br>
-                <span class="badge badge-success">{{reunionSummary.guestsAttendance}}</span>
+                <span class="badge badge-success">{{reunionSummary.attn.guests}}</span>
                 <span>{{i18n.reports.guestsLbl}}</span>
               </div>
             </div>
@@ -93,11 +93,24 @@
     </article>
 
     <!-- Reports Table -->
-    <article class="row mb-3">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">{{i18n.reportFinder.reportsListTitle}}</h4>
+    <article class="mb-3">
+      <div class="card">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>
+                <i class="clickable far fa-minus-square"
+                 data-toggle="collapse" data-target="#reportsList" aria-expanded="false" aria-controls="reportsList"
+                ng-if="reportsListExpanded" ng-click="expandSection('reportsList',false)"></i>
+                <i class="clickable far fa-plus-square"
+                 data-toggle="collapse" data-target="#reportsList" aria-expanded="true" aria-controls="reportsList"
+                ng-if="!reportsListExpanded" ng-click="expandSection('reportsList',true)"></i>
+                {{i18n.reportFinder.reportsListTitle}}
+              </legend>
+            </div>
+          </div>
+          <div id="reportsList" class="collapse show">
             <hr>
             <!-- Search -->
             <div class="row mb-3">
@@ -225,29 +238,42 @@
       </div>
     </article>
 
-    <!-- Attendance Charts -->
-    <article class="row mb-3">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">
-              {{i18n.reportFinder.attendanceChartsTitle}}
-            </h4>
+    <!-- Reports and Reunions Charts -->
+    <article class="mb-3">
+      <div class="card">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>
+                <i class="clickable far fa-minus-square"
+                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="false" aria-controls="reportCharts"
+                ng-if="reportChartsExpanded" ng-click="expandSection('reportCharts',false)"></i>
+                <i class="clickable far fa-plus-square"
+                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="true" aria-controls="reportCharts"
+                ng-if="!reportChartsExpanded" ng-click="expandSection('reportCharts',true)"></i>
+                {{i18n.reportFinder.reunionsChartsTitle}}
+              </legend>
+            </div>
+          </div>
+          <div id="reportCharts" class="collapse show">
             <hr>
+            <!-- Pie Charts -->
             <div class="row mt-4">
-              <div class="col mb-3">
-                <div id="attendanceByGroupContainer" style="width:100%;"></div>
+              <div class="col-sm mb-3">
+                <div id="reportsPieContainer" style="width:100%; height:350px;"></div>
+              </div>
+              <div class="col-sm mb-3">
+                <div id="onTimePieContainer" style="width:100%; height:350px;"></div>
+              </div>
+              <div class="col-sm mb-3">
+                <div id="reunionsPieContainer" style="width:100%; height:350px;"></div>
               </div>
             </div>
+            <!-- Bar Chart -->
             <div class="row mt-4">
-              <div class="col-sm mb-3">
-                <div id="attendancePieContainer" style="width:100%; height:300px;"></div>
-              </div>
-              <div class="col-sm mb-3">
-                <div id="sexPieContainer" style="width:100%; height:300px;"></div>
-              </div>
-              <div class="col-sm mb-3">
-                <div id="reunionsPieContainer" style="width:100%; height:300px;"></div>
+              <div class="col mb-3">
+                <div id="reunionsChartContainer" style="width:100%;"></div>
               </div>
             </div>
           </div>
@@ -255,18 +281,39 @@
       </div>
     </article>
 
-    <!-- Duration Chart -->
-    <article class="row mb-3">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">
-              {{i18n.reportFinder.durationChartsTitle}}
-            </h4>
+    <!-- Attendance Charts -->
+    <article class="mb-3">
+      <div class="card">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>
+                <i class="clickable far fa-minus-square"
+                 data-toggle="collapse" data-target="#attnCharts" aria-expanded="false" aria-controls="attnCharts"
+                ng-if="attnChartsExpanded" ng-click="expandSection('attnCharts',false)"></i>
+                <i class="clickable far fa-plus-square"
+                 data-toggle="collapse" data-target="#attnCharts" aria-expanded="true" aria-controls="attnCharts"
+                ng-if="!attnChartsExpanded" ng-click="expandSection('attnCharts',true)"></i>
+                {{i18n.reportFinder.attendanceChartsTitle}}
+              </legend>
+            </div>
+          </div>
+          <div id="attnCharts" class="collapse show">
             <hr>
+            <!-- Bar Chart -->
             <div class="row mt-4">
-              <div class="col-md mb-3">
-                <div id="durationContainer" style="width:100%;"></div>
+              <div class="col mb-3">
+                <div id="attendanceChartContainer" style="width:100%;"></div>
+              </div>
+            </div>
+            <!-- Pie Charts -->
+            <div class="row mt-4">
+              <div class="col-sm mb-3">
+                <div id="attTypePieContainer" style="width:100%; height:350px;"></div>
+              </div>
+              <div class="col-sm mb-3">
+                <div id="sexPieContainer" style="width:100%; height:350px;"></div>
               </div>
             </div>
           </div>
@@ -275,13 +322,24 @@
     </article>
 
     <!-- Money Chart -->
-    <article class="row mb-3" ng-if="config.reports.showMoneyField">
-      <div class="col">
-        <div class="card">
-          <div class="card-body">
-            <h4 class="card-title">
-              {{i18n.reportFinder.moneyChartsTitle}}
-            </h4>
+    <article class="mb-3" ng-if="config.reports.showMoneyField">
+      <div class="card">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>
+                <i class="clickable far fa-minus-square"
+                 data-toggle="collapse" data-target="#moneyCharts" aria-expanded="false" aria-controls="moneyCharts"
+                ng-if="moneyChartsExpanded" ng-click="expandSection('moneyCharts',false)"></i>
+                <i class="clickable far fa-plus-square"
+                 data-toggle="collapse" data-target="#moneyCharts" aria-expanded="true" aria-controls="moneyCharts"
+                ng-if="!moneyChartsExpanded" ng-click="expandSection('moneyCharts',true)"></i>
+                {{i18n.reportFinder.moneyChartsTitle}}
+              </legend>
+            </div>
+          </div>
+          <div id="moneyCharts" class="collapse show">
             <hr>
             <div class="row mt-4">
               <div class="col-md mb-3">
@@ -297,5 +355,36 @@
         </div>
       </div>
     </article>
+
+    <!-- Duration Chart -->
+    <article class="mb-3">
+      <div class="card">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="row">
+            <div class="col">
+              <legend>
+                <i class="clickable far fa-minus-square"
+                 data-toggle="collapse" data-target="#durationCharts" aria-expanded="false" aria-controls="durationCharts"
+                ng-if="durationChartsExpanded" ng-click="expandSection('durationCharts',false)"></i>
+                <i class="clickable far fa-plus-square"
+                 data-toggle="collapse" data-target="#durationCharts" aria-expanded="true" aria-controls="durationCharts"
+                ng-if="!durationChartsExpanded" ng-click="expandSection('durationCharts',true)"></i>
+                {{i18n.reportFinder.durationChartsTitle}}
+              </legend>
+            </div>
+          </div>
+          <div id="durationCharts" class="collapse show">
+            <hr>
+            <div class="row mt-4">
+              <div class="col-md mb-3">
+                <div id="durationContainer" style="width:100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
   </div>
 </article>
