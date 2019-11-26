@@ -466,7 +466,7 @@ okulusApp.config(['$routeProvider',
 
 //4. Editable Configurations
 const defaultConfigs = {
-	appName:"Okulus App",
+	appName:"Okulus App", isProd:true, rootId:undefined,
 	location:{city:"Xalapa", state:"Veracruz", country:"Mexico"},
 	/*The Max lenght a firebaseArray should have in the initial request*/
 	maxQueryListResults: 50,
@@ -481,7 +481,8 @@ const defaultConfigs = {
 		minDuration:30, //minutes
 		maxDuration:300,//minutes
 		showMoneyField: true,
-		maxMultipleGuests: 10
+		maxMultipleGuests: 10,
+		notOnTimeMessage: undefined
 	},
 	formats: {
 		date:"MMM dd yyyy",
@@ -489,7 +490,40 @@ const defaultConfigs = {
 		time:"H:mm"},
 	grouptypes:{
 		default:{name:"Default"}
-	}
+	},
+
+	charts: {
+    colors: {
+      members: {
+        active: "#3ec266",
+        female: "#c23e6c",
+        guest: "#3e9ac2",
+        host: "#f09669",
+        inactive: "#c26a3e",
+        lead: "#69bff0",
+        male: "#4c614f",
+        member: "#6cc23e",
+        trainee: "#f0da69"
+      },
+      reports: {
+        aproved: "#3e9ac2",
+        due: "#b83e35",
+        ontime: "#35b858",
+        pending: "#c26a3e",
+        rejected: "#c23e6c"
+      },
+      reunions: {
+        cnceled: "#c73b3b",
+        completed: "#6cc23e",
+        duration: "#3e9ac2",
+        durationAvgA: "#6cc23e",
+        durationAvgR: "#c23e6c",
+        money: "#3e9ac2",
+        moneyAvgA: "#6cc23e",
+        moneyAvgR: "#c23e6c"
+      }
+    }
+  }
 };
 
 okulusApp.run(function($rootScope) {
