@@ -731,7 +731,28 @@ okulusApp.run(function($rootScope) {
 				dateFormatLbl:"Formato de Fecha", dateFormatDesc:"",
 				timeFormatLbl:"Formato de Hora", timeFormatDesc:"",
 				saveBtn:"Guardar Configuraciones",
-				noGroupTypesList:"No se ha registrado Tipos de Grupos"
+				noGroupTypesList:"No se ha registrado Tipos de Grupos",
+				chartColors:{
+					title:"Gráficas",
+					membersTitle:"Colores para Miembros",
+					reportsTitle:"Colores para Reportes",
+					reunionsTitle:"Colores para Reuniones",
+					members:{
+						active:"Activos", inactive:"Inactivos",
+						male:"Hombres", female:"Mujeres",
+						guest:"Miembros", member:"Invitados",
+						host:"Anfitriones", lead:"Líderes", trainee:"Aprendices",
+					},
+					reports:{
+						approved:"Aprobados", rejected:"Rechazados",pending:"Pendientes",
+						due:"Atrasados", ontime:"A tiempo",
+					},
+					reunions:{
+						canceled: "Canceladas", completed: "Completadas",
+						duration:"Duración", durationAvgA:"Duración promedio por Asistencia", durationAvgR:"Duración promedio por Reunión",
+						money:"Ofrenda",	moneyAvgA:"Ofrenda promedio por Asistencia", moneyAvgR:"Ofrenda promedio por Reunión"
+					}
+				}
 			},
 			success:{
 				deleted:{
