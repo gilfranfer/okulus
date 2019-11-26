@@ -334,7 +334,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			//To Control list of available members for attendance
 			$scope.reportParams.groupMembersList = new Array()
 			// /reports/list
-			$scope.objectDetails.basicInfo = { reviewStatus:null, duration: $rootScope.config.reports.minDuration};
+			$scope.objectDetails.basicInfo = { reviewStatus:null, onTime:true, duration: $rootScope.config.reports.minDuration};
 			// reports/details
 			$scope.objectDetails.study = {};
 			$scope.objectDetails.audit = undefined;
@@ -874,9 +874,11 @@ okulusApp.controller('ReportDetailsCntrl',
 				reportBasicInfo.createdById = $rootScope.currentSession.user.$id;
 
 				/* Check if the report was created on time */
+				let createdDate = new Date();
+				reportBasicInfo.createdOn = createdDate.getTime();
 				if($scope.reportParams.selectedWeek){
 					let weekDuedate = $scope.reportParams.selectedWeek.duedate;
-					let reportDate = $scope.objectDetails.basicInfo.dateMilis;
+					let reportDate = reportBasicInfo.createdOn;
 					reportBasicInfo.onTime = (weekDuedate >= reportDate);
 				}
 				//Persist object to DB
