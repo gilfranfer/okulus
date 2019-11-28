@@ -172,9 +172,9 @@ okulusApp.controller('MembersListCntrl',
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-		'MembersSvc','MemberRequestsSvc','GroupsSvc','ConfigSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
+		'MembersSvc','MemberRequestsSvc','ReportsSvc','GroupsSvc','ConfigSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, MemberRequestsSvc, GroupsSvc, ConfigSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
+		MembersSvc, MemberRequestsSvc, ReportsSvc, GroupsSvc, ConfigSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -215,9 +215,9 @@ okulusApp.controller('MemberDetailsCntrl',
 								$scope.statesList = ConfigSvc.getStatesForCountry(address.country);
 							}
 						});
+						$scope.objectDetails.attendance = MembersSvc.getMemberAttendance(memberId);
 						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
 						// $scope.objectDetails.groups = MembersSvc.getMemberGroups(memberId);
-						// $scope.objectDetails.attendance = MembersSvc.getMemberAttendance(memberId);
 						$scope.prepareViewForEdit(member);
 					}).catch( function(error){
 						$rootScope.response = { error: true, message: error };
@@ -235,6 +235,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.addressInfoExpanded = true;
 		$scope.userInfoExpanded = true;
 		$scope.membershipInfoExpanded = true;
+		$scope.reunionInfoExpanded = false;
 		$scope.auditInfoExpanded = false;
 		$scope.expandSection = function(section, value) {
 			switch (section) {
@@ -250,11 +251,61 @@ okulusApp.controller('MemberDetailsCntrl',
 				case 'membershipInfo':
 					$scope.membershipInfoExpanded = value;
 					break;
+				case 'reunionInfo':
+					$scope.reunionInfoExpanded = value;
+					break;
 				case 'auditInfo':
 					$scope.auditInfoExpanded = value;
 					break;
 				default:
 			}
+		};
+
+		$scope.getReunionDetails = function() {
+			let reportObjsPromises = [];
+			$scope.objectDetails.attendance.$loaded().then(function(attnList) {
+				/* Load each report from the member´s attendance list */
+				attnList.forEach(function(attn){
+					reportObjsPromises.push( ReportsSvc.getReportBasicObj(attn.reportId).$loaded() );
+				});
+				let colors = $rootScope.config.charts.colors.members;
+
+				/* Wait for all reports to be loaded */
+				Promise.all(reportObjsPromises).then(function(reports){
+					$scope.$apply(function(){
+						$scope.memberEditParams.reportsList = reports;
+
+						let series = [];
+						let dataMap = new Map();
+						reports.forEach(function(report){
+							let mapElement = undefined;
+							if(!dataMap.has(report.groupname)){
+								dataMap.set(report.groupname, { group:"", reunions:0 } );
+							}
+							mapElement = dataMap.get(report.groupname);
+							mapElement.group = report.groupname;
+							mapElement.reunions ++;
+						});
+
+						dataMap.forEach(function(data){
+							series.push({name: data.group, data:[data.reunions]});
+						});
+
+						var pie = { chart: { type: 'bar' }, title: { text: '' }, credits: { enabled: false },
+    						xAxis: { categories: [''] },
+    						yAxis: { min: 0, title: {  text: $rootScope.i18n.members.attendedGroups } },
+								tooltip: {  pointFormat: '<b>{point.y}</b> - ({point.percentage:.1f}%)' },
+    						legend: { reversed: true },
+    						plotOptions: { series: { stacking: 'normal'} },
+						    colors:[colors.lead, colors.host, colors.trainee, colors.member, colors.guest],
+								series: series
+						};
+						Highcharts.chart('groupDistributionContainer', pie);
+
+						// console.log(reports);
+					});
+				});
+			});
 		};
 
 		$scope.updateStatesList = function() {
@@ -790,6 +841,11 @@ okulusApp.factory('MembersSvc',
 				if(!whichMember) return;
 				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.db.folders.accessRules));
 			},
+			/* returns $firebaseArray with all access rules in /members/details/:whichMember/access folder*/
+			getMemberAttendance: function(whichMember) {
+				if(!whichMember) return;
+				return $firebaseArray(memberDetailsRef.child(whichMember).child(constants.db.folders.attendance));
+			},
 			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/
 			addAccessRuleToMember: function(whichMemberId, ruleId, ruleRecord){
 				memberDetailsRef.child(whichMemberId).child(constants.db.folders.accessRules).child(ruleId).set(ruleRecord);
@@ -810,11 +866,11 @@ okulusApp.factory('MembersSvc',
 			addReportReferenceToMember: function(memberId,report){
 				let ref = memberDetailsRef.child(memberId).child(constants.db.folders.attendance).child(report.$id);
 				ref.set({
-					reportId: report.$id,
-					weekId:report.weekId,
-					date:report.date,
-					groupId:report.groupId,
-					groupName:report.groupname
+					reportId: report.$id
+					// weekId:report.weekId,
+					// dateMilis: report.dateMilis,
+					// groupId:report.groupId,
+					// groupName:report.groupname
 				});
 			},
 			/*  */

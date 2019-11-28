@@ -215,6 +215,58 @@
   <!-- Alerts to inform user on progress or result -->
   <div ng-include="'views/alerts.html'"></div>
 
+  <!-- User -->
+  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user' && objectDetails.basicInfo.email">
+    <div class="card">
+      <div class="card-body">
+        <!-- Header -->
+        <div class="row">
+          <div class="col">
+            <legend>
+              <i class="clickable far fa-minus-square"
+               data-toggle="collapse" data-target="#userInfo" aria-expanded="false" aria-controls="userInfo"
+              ng-if="userInfoExpanded" ng-click="expandSection('userInfo',false)"></i>
+              <i class="clickable far fa-plus-square"
+               data-toggle="collapse" data-target="#userInfo" aria-expanded="true" aria-controls="userInfo"
+              ng-if="!userInfoExpanded" ng-click="expandSection('userInfo',true)"></i>
+              {{i18n.members.userSection}}
+            </legend>
+          </div>
+        </div>
+        <div id="userInfo" class="collapse show">
+          <hr>
+          <!-- When Member already has User linked -->
+          <div class="row" ng-if="objectDetails.basicInfo.userId">
+            <div class="col">
+              <label class="font-weight-bold" for="">
+                {{i18n.members.memberHasUser}}
+              </label>
+              <a href="#!/users/edit/{{objectDetails.basicInfo.userId}}" class="btn btn-lg btn-primary btn-block">
+                {{i18n.members.goToUser}}
+              </a>
+            </div>
+          </div>
+          <!-- When Member does not has User linked -->
+          <div class="row" ng-if="!objectDetails.basicInfo.userId">
+            <div class="col" ng-if="objectDetails.basicInfo.email && memberBasicInfoForm.email.$valid">
+              <label class="font-weight-bold" for="">
+                {{i18n.members.allowUser}}
+              </label>
+              <button type="button" class="btn btn-lg btn-block btn-primary clickable"
+                ng-if="objectDetails.basicInfo.allowUser" ng-click="allowUser(false)">
+                {{i18n.btns.yesBtn}}
+              </button>
+              <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
+                ng-if="!objectDetails.basicInfo.allowUser" ng-click="allowUser(true)">
+                {{i18n.btns.noBtn}}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
   <!-- Membership Card (Only for Admin) -->
   <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user'">
     <div class="card">
@@ -325,8 +377,8 @@
     </div>
   </article>
 
-  <!-- User -->
-  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user' && objectDetails.basicInfo.email">
+  <!-- Reunions (Only for Admin) -->
+  <article class="mb-3" ng-if="memberEditParams.isEdit && currentSession.user.type != 'user'">
     <div class="card">
       <div class="card-body">
         <!-- Header -->
@@ -334,44 +386,64 @@
           <div class="col">
             <legend>
               <i class="clickable far fa-minus-square"
-               data-toggle="collapse" data-target="#userInfo" aria-expanded="false" aria-controls="userInfo"
-              ng-if="userInfoExpanded" ng-click="expandSection('userInfo',false)"></i>
+               data-toggle="collapse" data-target="#reunionInfo" aria-expanded="false" aria-controls="reunionInfo"
+              ng-if="reunionInfoExpanded" ng-click="expandSection('reunionInfo',false)"></i>
               <i class="clickable far fa-plus-square"
-               data-toggle="collapse" data-target="#userInfo" aria-expanded="true" aria-controls="userInfo"
-              ng-if="!userInfoExpanded" ng-click="expandSection('userInfo',true)"></i>
-              {{i18n.members.userSection}}
+               data-toggle="collapse" data-target="#reunionInfo" aria-expanded="true" aria-controls="reunionInfo"
+              ng-if="!reunionInfoExpanded" ng-click="expandSection('reunionInfo',true);getReunionDetails()"></i>
+              <span class="badge badge-primary">
+                {{objectDetails.attendance.length}}
+              </span>
+              {{i18n.members.reunionsSection}}
             </legend>
           </div>
         </div>
-        <div id="userInfo" class="collapse show">
+        <div id="reunionInfo" class="collapse">
           <hr>
-          <!-- When Member already has User linked -->
-          <div class="row" ng-if="objectDetails.basicInfo.userId">
+          <!-- Search Box and Table -->
+          <div class="alert alert-warning" role="alert" ng-show="!memberEditParams.reportsList" >
+            {{i18n.members.loadingAttnReports}}
+          </div>
+          <div class="alert alert-danger" role="alert" ng-show="memberEditParams.reportsList.length<=0" >
+            {{i18n.members.noAttnReports}}
+          </div>
+          <div class="row mb-3" ng-show="memberEditParams.reportsList.length>0 && memberEditParams.reportsList.length > config.minResultsToshowFilter">
             <div class="col">
-              <label class="font-weight-bold" for="">
-                {{i18n.members.memberHasUser}}
-              </label>
-              <a href="#!/users/edit/{{objectDetails.basicInfo.userId}}" class="btn btn-lg btn-primary btn-block">
-                {{i18n.members.goToUser}}
-              </a>
+              <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control" ng-model="filterText"/>
             </div>
           </div>
-          <!-- When Member does not has User linked -->
-          <div class="row" ng-if="!objectDetails.basicInfo.userId">
-            <div class="col" ng-if="objectDetails.basicInfo.email && memberBasicInfoForm.email.$valid">
-              <label class="font-weight-bold" for="">
-                {{i18n.members.allowUser}}
-              </label>
-              <button type="button" class="btn btn-lg btn-block btn-primary clickable"
-                ng-if="objectDetails.basicInfo.allowUser" ng-click="allowUser(false)">
-                {{i18n.btns.yesBtn}}
-              </button>
-              <button type="button" class="btn btn-lg btn-block btn-secondary clickable"
-                ng-if="!objectDetails.basicInfo.allowUser" ng-click="allowUser(true)">
-                {{i18n.btns.noBtn}}
-              </button>
-            </div>
+          <div class="pre-scrollable mb-4" ng-show="memberEditParams.reportsList.length>0">
+            <table class="table table-responsive-s table-md table-striped">
+              <thead class="">
+                <tr>
+                  <th scope="col">
+                    <span>{{i18n.reportFinder.table.group}}</span>
+                  </th>
+                  <th scope="col">
+                    <span>{{i18n.reportFinder.table.reunionDate}}</span>
+                  </th>
+                  <th scope="col">
+                    <span></span>
+                  </th>
+                  <!-- <th scope="col">
+                    <span>{{i18n.reportFinder.table.week}}</span>
+                  </th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="report in memberEditParams.reportsList | filter:filterText | orderBy:dateMilis:true track by report.$id">
+                  <td scope="row">{{report.groupname}}</td>
+                  <td scope="row">{{report.dateMilis | date: config.formats.date}}</td>
+                  <td scope="row"><a class="clickable fas fa-lg fa-eye"  target="_blank" ng-href="#!/reports/edit/{{report.$id}}"></a></td>
+                  <!-- <td scope="row">{{report.weekId}}</td> -->
+                </tr>
+              </tbody>
+            </table>
           </div>
+          <!-- Chart -->
+          <div class="row"><div class="col">
+            <div id="groupDistributionContainer" style="width:100%; height:200px;"></div>
+          </div></div>
         </div>
       </div>
     </div>

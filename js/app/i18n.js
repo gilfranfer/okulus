@@ -523,10 +523,14 @@ okulusApp.run(function($rootScope) {
 				baseGroupLbl: "Grupo Base", noGroup:"Sin Grupo",
 				notesLbl: "Notas o comentarios",
 				userSection: "Usuario",
+				reunionsSection: "Asistencia a Reuniones",
 				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
 				memberHasNotUser:"Éste Miembro aún no tiene un usuario asociado.",
 				allowUser:"Permitir que este Miembro se registre como Usuario?",
-				setEmailFirst:"El Miembro debe tener un correo electrónico asignado."
+				setEmailFirst:"El Miembro debe tener un correo electrónico asignado.",
+				loadingAttnReports:"Cargando Reportes",
+				noAttnReports:"No se encontraron Reportes",
+				attendedGroups:"Grupos asistidos"
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
@@ -652,7 +656,7 @@ okulusApp.run(function($rootScope) {
 				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
 				table:{
 					reunionStatus:"Reunión", reportStatus:"Reporte",
-					group:"Grupo", week:"Semana",	date:"Fecha",
+					group:"Grupo", week:"Semana",	date:"Fecha", reunionDate:"Fecha de Reunión",
 					duration: "Duración", money: "Ofrenda",
 					attendance: "Asistencia",
 					canceledLbl:"Cancelada", completedLbl:"Completada"
