@@ -581,7 +581,7 @@ okulusApp.run(function($rootScope) {
 				mandatoryFields: "Campos Obligatorios",
 				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión", noTraineeLbl:"Sin Aprendíz",
 				/*Access Rules*/
-				accessTitle:"Control de acccesos al Grupo",
+				accesRulesTitle: "Reglas de Acceso al Grupo",
 				newAccessTitle:"Porporcionar Acceso",
 				accessListTitle:"Usuarios con acccesos al Grupo",
 				loadingRulesSuccess: "Reglas de Acceso Cargadas.",

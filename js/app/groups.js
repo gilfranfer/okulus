@@ -187,9 +187,9 @@ okulusApp.controller('GroupsUserCntrl',
  * It will load the Group for the id passed */
 okulusApp.controller('GroupDetailsCntrl',
 ['$rootScope','$scope','$routeParams','$location','$firebaseAuth',
- 'GroupsSvc','MembersSvc','ConfigSvc','AuditSvc','AuthenticationSvc',
+ 'GroupsSvc','MembersSvc','ConfigSvc','NotificationsSvc','AuditSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location, $firebaseAuth,
-		GroupsSvc, MembersSvc, ConfigSvc, AuditSvc, AuthenticationSvc){
+		GroupsSvc, MembersSvc, ConfigSvc, NotificationsSvc, AuditSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /gorups/new, /groups/view/:groupId or /groups/edit/:groupId */
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
@@ -220,7 +220,6 @@ okulusApp.controller('GroupDetailsCntrl',
 						$scope.statesList = ConfigSvc.getStatesForCountry(group.address.country);
 						$scope.objectDetails.audit = GroupsSvc.getGroupAuditObject(groupId);
 						$scope.objectDetails.roles = GroupsSvc.getGroupRolesObject(groupId);
-						// $scope.objectDetails.access = GroupsSvc.getAccessRulesList(groupId);
 						/*Address is already part of objectDetails.basicInfo.address (same date)
 						But it is needed in this other object for the reusable address html fragments */
 						$scope.objectDetails.address = GroupsSvc.getGroupAddressObject(groupId);
@@ -243,6 +242,7 @@ okulusApp.controller('GroupDetailsCntrl',
 		$scope.rolesInfoExpanded = true;
 		$scope.membersInfoExpanded = false;
 		$scope.auditInfoExpanded = false;
+		$scope.accessInfoExpanded = false;
 		$scope.expandSection = function(section, value) {
 			switch (section) {
 				case 'basicInfo':
@@ -259,6 +259,9 @@ okulusApp.controller('GroupDetailsCntrl',
 					break;
 				case 'membersInfo':
 					$scope.membersInfoExpanded = value;
+					break;
+				case 'accessInfo':
+					$scope.accessInfoExpanded = value;
 					break;
 				case 'auditInfo':
 					$scope.auditInfoExpanded = value;
@@ -606,8 +609,101 @@ okulusApp.controller('GroupDetailsCntrl',
 			}
 		};
 
-	}
-]);
+		/* Access Rules */
+		$scope.getGroupRules = function(group){
+			console.log("Getting Rules");
+			let whichGroup = $routeParams.groupId;
+			$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
+			$scope.objectDetails.basicInfo.$loaded().then(function(group){
+				//Retrieve List of Members that have a User associated
+				$scope.membersList = MembersSvc.getMembersWithUser();
+				//Retrieve List of Users already having access (Some could be invalid Users)
+				$scope.acessRulesList = GroupsSvc.getAccessRulesList(whichGroup);
+				$scope.newRule = {};
+				$scope.rulesResponse = null;
+			});
+		};
+
+		/* Rules are assigned to Members (/members/details/{memberId}/access)
+		 and to groups (/groups/details/{groupId}/access)*/
+		$scope.addRule = function(){
+			$scope.rulesResponse = {working: true, message: systemMsgs.inProgress.creatingRule };
+			let memberObj = $scope.membersList.$getRecord($scope.newRule.memberId);
+			let whichMember = memberObj.$id;
+
+			let existingRuleId = $scope.getExistingRuleId(whichMember);
+			if(existingRuleId){
+				$scope.rulesResponse = {error: true, message: systemMsgs.error.duplicatedRule};
+				//Ensure the access rule (in the Group Folder) has the updated Member shortname and email
+				let index = $scope.acessRulesList.$indexFor(existingRuleId);
+				let ruleObj = $scope.acessRulesList.$getRecord(existingRuleId);
+				ruleObj.memberName = memberObj.shortname;
+				ruleObj.memberEmail = memberObj.email;
+				ruleObj.userId = memberObj.userId;
+				$scope.acessRulesList.$save(index);
+				return;
+			}
+
+			let creationDate = firebase.database.ServerValue.TIMESTAMP;
+			let ruleForGroup = { memberName: memberObj.shortname, memberId: memberObj.$id, memberEmail: memberObj.email,
+														userId:memberObj.userId, date:creationDate};
+			let ruleForMember = { groupName: $scope.group.name, groupId: $scope.group.$id, date:creationDate};
+
+			//Use the Group's access list to create the new rule
+			$scope.acessRulesList.$add(ruleForGroup).then(function(ref) {
+				//Create cross Reference. The Member must have similar rule, with same rule Id.
+				MembersSvc.addAccessRuleToMember(whichMember, ref.key, ruleForMember);
+				let description = memberObj.shortname + " " + systemMsgs.notifications.gotAccessToGroup + $scope.group.name;
+				let notification = { description: description,
+					action: constants.actions.update,
+					onFolder: constants.db.folders.groups,
+					onObject: $scope.group.$id,	url:null };
+				//Notify the Group's Creator, Updator, and ADmins about the rule creation
+				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
+				//Notify the User who got the access about the rule creation
+				NotificationsSvc.notifyUser(memberObj.userId, notification);
+				$scope.rulesResponse = { success: true, message: systemMsgs.success.ruleCreated};
+			}).catch( function(error){
+				$scope.rulesResponse = { error: true, message: systemMsgs.error.creatingRuleError };
+				console.error(error);
+			});
+		};
+
+		$scope.getExistingRuleId = function(whichMember) {
+			let ruleId = undefined;
+			//Review in the current Lists, if a similar rule already exist
+			$scope.acessRulesList.forEach(function(rule) {
+				if(rule.memberId == whichMember){
+					ruleId = rule.$id;
+				};
+			});
+			return ruleId;
+		};
+
+		$scope.deleteRule = function(ruleId, memberName, memberId, userId){
+			$scope.rulesResponse = {working: true, message: systemMsgs.inProgress.deletingRule};
+			var ruleRecord = $scope.acessRulesList.$getRecord(ruleId);
+			let whichGroup = $scope.objectDetails.basicInfo.$id;
+			let groupName = $scope.objectDetails.basicInfo.name;
+
+			$scope.acessRulesList.$remove(ruleRecord).then(function() {
+				//Remove the same rule from the Member's access folder
+				MembersSvc.addAccessRuleToMember(memberId, ruleId, null);
+				let description = memberName + " " + systemMsgs.notifications.lostAccessToGroup + groupName;
+				let notification = { description: description, action: constants.actions.update,
+									onFolder: constants.db.folders.groups, onObject: whichGroup,	url:null };
+				//Notify the Group's Creator, Updator, and Admins about the rule removal
+				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
+				//Notify the User who lost the access
+				NotificationsSvc.notifyUser(userId, notification);
+				$scope.rulesResponse = { success: true, message: systemMsgs.success.ruleRemoved};
+			}).catch( function(error){
+				$scope.rulesResponse = { error: true, message: systemMsgs.error.deletingRuleError };
+				console.error(error);
+			});
+		};
+
+}]);
 
 okulusApp.factory('GroupsSvc',
 ['$rootScope', '$firebaseArray', '$firebaseObject',
@@ -749,128 +845,5 @@ okulusApp.factory('GroupsSvc',
 				}
 			}
 		};//return end
-	}
-]);
-
-//Mapping: /groups/access
-okulusApp.controller('GroupAccessRulesCntrl',
-	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-	'GroupsSvc', 'MembersSvc', 'AuditSvc','NotificationsSvc','AuthenticationSvc',
-	function($rootScope, $scope,$routeParams, $location, $firebaseAuth,
-		GroupsSvc, MembersSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
-
-		$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAccessRules};
-		$firebaseAuth().$onAuthStateChanged( function(authUser){ if(authUser){
-			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user) {
-				if(user.type == constants.roles.user){
-					$rootScope.response = { error:true, message:systemMsgs.error.noPrivileges};
-					$location.path(constants.pages.error);
-					return;
-				}
-
-				let whichGroup = $routeParams.groupId;
-				$scope.group = GroupsSvc.getGroupBasicDataObject(whichGroup);
-				$scope.group.$loaded().then(function(group){
-					if(group.$value === null){
-						$rootScope.response = { error:true, message:systemMsgs.error.inexistingGroup};
-						$location.path(constants.pages.error);
-						return;
-					}
-
-					//Retrieve List of Members that have a User associated
-					$scope.membersList = MembersSvc.getMembersWithUser();
-					//Retrieve List of Users already having access (Some could be invalid Users)
-					$scope.acessRulesList = GroupsSvc.getAccessRulesList(whichGroup);
-					$scope.newRule = {};
-					$scope.response = null;
-				});
-
-			});
-		}});
-
-		/* Rules are assigned to Members (/members/details/{memberId}/access)
-		 and to groups (/groups/details/{groupId}/access)*/
-		$scope.addRule = function(){
-			$scope.response = {working: true, message: systemMsgs.inProgress.creatingRule };
-			let memberObj = $scope.membersList.$getRecord($scope.newRule.memberId);
-			let whichMember = memberObj.$id;
-
-			let existingRuleId = $scope.getExistingRuleId(whichMember);
-			if(existingRuleId){
-				$scope.response = {error: true, message: systemMsgs.error.duplicatedRule};
-				//Ensure the access rule (in the Group Folder) has the updated Member shortname and email
-				let index = $scope.acessRulesList.$indexFor(existingRuleId);
-				let ruleObj = $scope.acessRulesList.$getRecord(existingRuleId);
-				ruleObj.memberName = memberObj.shortname;
-				ruleObj.memberEmail = memberObj.email;
-				ruleObj.userId = memberObj.userId;
-				$scope.acessRulesList.$save(index);
-				return;
-			}
-
-			let creationDate = firebase.database.ServerValue.TIMESTAMP;
-			let ruleForGroup = { memberName: memberObj.shortname, memberId: memberObj.$id, memberEmail: memberObj.email,
-														userId:memberObj.userId ,date:creationDate};
-			let ruleForMember = { groupName: $scope.group.name, groupId: $scope.group.$id, date:creationDate};
-
-			//Use the Group's access list to create the new rule
-			$scope.acessRulesList.$add(ruleForGroup).then(function(ref) {
-				//Create cross Reference. The Member must have similar rule, with same rule Id.
-				MembersSvc.addAccessRuleToMember(whichMember, ref.key, ruleForMember);
-				let description = memberObj.shortname + " " + systemMsgs.notifications.gotAccessToGroup + $scope.group.name;
-				let notification = { description: description,
-					action: constants.actions.update,
-					onFolder: constants.db.folders.groups,
-					onObject: $scope.group.$id,	url:null };
-				//Notify the Group's Creator, Updator, and ADmins about the rule creation
-				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
-				//Notify the User who got the access about the rule creation
-				NotificationsSvc.notifyUser(memberObj.userId, notification);
-				$scope.response = { success: true, message: systemMsgs.success.ruleCreated};
-			}).catch( function(error){
-				$scope.response = { error: true, message: systemMsgs.error.creatingRuleError };
-				console.error(error);
-			});
-		};
-
-		$scope.getExistingRuleId = function(whichMember) {
-			let ruleId = undefined;
-			//Review in the current Lists, if a similar rule already exist
-			$scope.acessRulesList.forEach(function(rule) {
-				if(rule.memberId == whichMember){
-					ruleId = rule.$id;
-				};
-			});
-			return ruleId;
-		};
-
-		$scope.deleteRule = function(ruleId){
-			$scope.response = {working: true, message: systemMsgs.inProgress.deletingRule};
-			var ruleRecord = $scope.acessRulesList.$getRecord(ruleId);
-			let whichGroup = $scope.group.$id;
-			let groupName = $scope.group.name;
-			let whichMember = ruleRecord.memberId;
-			let memberName = ruleRecord.memberName;
-			let userId = ruleRecord.userId;
-
-			$scope.acessRulesList.$remove(ruleRecord).then(function(ref) {
-				//Remove the same rule from the Member's access folder
-				MembersSvc.addAccessRuleToMember(whichMember,ref.key,null);
-				let description = memberName + " " + systemMsgs.notifications.lostAccessToGroup + groupName;
-				let notification = { description: description,
-					action: constants.actions.update,
-					onFolder: constants.db.folders.groups,
-					onObject: $scope.group.$id,	url:null };
-				//Notify the Group's Creator, Updator, and Admins about the rule removal
-				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
-				//Notify the User who lost the access
-				NotificationsSvc.notifyUser(userId, notification);
-				$scope.response = { success: true, message: systemMsgs.success.ruleRemoved};
-			}).catch( function(error){
-				$scope.response = { error: true, message: systemMsgs.error.deletingRuleError };
-				console.error(error);
-			});
-		};
-
 	}
 ]);
