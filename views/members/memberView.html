@@ -182,22 +182,35 @@
               ng-if="userInfoExpanded" ng-click="expandSection('userInfo',false)"></i>
               <i class="clickable far fa-plus-square"
                data-toggle="collapse" data-target="#userInfo" aria-expanded="true" aria-controls="userInfo"
-              ng-if="!userInfoExpanded" ng-click="expandSection('userInfo',true)"></i>
+              ng-if="!userInfoExpanded" ng-click="expandSection('userInfo',true);getUserInfo();"></i>
               {{i18n.members.userSection}}
             </legend>
           </div>
         </div>
-        <div id="userInfo" class="collapse show">
+        <div id="userInfo" class="collapse">
           <hr>
           <!-- When Member already has User linked -->
           <div class="row" ng-if="objectDetails.basicInfo.userId">
             <div class="col">
-              <label class="font-weight-bold" for="">
-                {{i18n.members.memberHasUser}}
-              </label>
-              <a href="#!/users/edit/{{objectDetails.basicInfo.userId}}" class="btn btn-lg btn-primary btn-block">
-                {{i18n.members.goToUser}}
-              </a>
+              <p><span class="font-weight-bold">{{i18n.members.memberLbl}}: </span>
+                <a ng-href="#!/members/view/{{objectDetails.userInfo.memberId}}">{{objectDetails.userInfo.shortname}}</a>
+              </p>
+              <p><span class="font-weight-bold">{{i18n.contact.emailLbl}}: </span>{{objectDetails.userInfo.email}}</p>
+              <p>
+                <span class="font-weight-bold">{{i18n.users.userRoleLbl}}:</span>
+                <span class="badge badge-dark" ng-if="objectDetails.userInfo.type == 'root'">{{i18n.roles.rootLbl}}</span>
+                <span class="badge badge-warning" ng-if="objectDetails.userInfo.type == 'admin'">{{i18n.roles.adminLbl}}</span>
+                <span class="badge badge-primary" ng-if="objectDetails.userInfo.type == 'user'">{{i18n.roles.userLbl}}</span>
+                <span class="font-weight-bold">{{i18n.users.userStatusLbl}}:</span>
+                <span class="badge badge-success" ng-if="objectDetails.userInfo.isActive">{{i18n.users.status.activeLbl}}</span>
+                <span class="badge badge-secondary" ng-if="!objectDetails.userInfo.isActive">{{i18n.users.status.inactiveLbl}}</span>
+              </p>
+              <p><span class="font-weight-bold">{{i18n.profile.sessionStatusLbl}} </span>
+                <span class="badge badge-success" ng-if="objectDetails.userInfo.sessionStatus == 'online'">{{i18n.users.status.onlineLbl}}</span>
+                <span class="badge badge-secondary" ng-if="objectDetails.userInfo.sessionStatus == 'offline'">{{i18n.users.status.offlineLbl}}</span>
+              </p>
+              <p><span class="font-weight-bold">{{i18n.profile.lastLogin}} </span>{{objectDetails.userInfo.lastLoginOn | date: config.formats.datetime}}</p>
+              <p><span class="font-weight-bold">{{i18n.profile.lastActivity}} </span>{{objectDetails.userInfo.lastActivityOn | date: config.formats.datetime}}</p>
             </div>
           </div>
           <!-- When Member does not has User linked -->

@@ -172,9 +172,9 @@ okulusApp.controller('MembersListCntrl',
  * It will load the Member for the id passed */
 okulusApp.controller('MemberDetailsCntrl',
 	['$rootScope', '$scope','$routeParams', '$location','$firebaseAuth',
-		'MembersSvc','MemberRequestsSvc','ReportsSvc','GroupsSvc','ConfigSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
+		'MembersSvc','MemberRequestsSvc','ReportsSvc','UsersSvc','GroupsSvc','ConfigSvc','AuditSvc','NotificationsSvc','AuthenticationSvc',
 	function($rootScope, $scope, $routeParams, $location,$firebaseAuth,
-		MembersSvc, MemberRequestsSvc, ReportsSvc, GroupsSvc, ConfigSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
+		MembersSvc, MemberRequestsSvc, ReportsSvc, UsersSvc, GroupsSvc, ConfigSvc, AuditSvc, NotificationsSvc, AuthenticationSvc){
 
 		/* Init. Executed everytime we enter to /members/new,
 		/members/view/:memberId or /members/edit/:memberId */
@@ -216,7 +216,6 @@ okulusApp.controller('MemberDetailsCntrl',
 							}
 						});
 						$scope.objectDetails.attendance = MembersSvc.getMemberAttendance(memberId);
-						// $scope.objectDetails.user = MembersSvc.getMemberUser(memberId);
 						// $scope.objectDetails.groups = MembersSvc.getMemberGroups(memberId);
 						$scope.prepareViewForEdit(member);
 					}).catch( function(error){
@@ -233,8 +232,8 @@ okulusApp.controller('MemberDetailsCntrl',
 
 		$scope.basicInfoExpanded = true;
 		$scope.addressInfoExpanded = true;
-		$scope.userInfoExpanded = true;
 		$scope.membershipInfoExpanded = true;
+		$scope.userInfoExpanded = false;
 		$scope.reunionInfoExpanded = false;
 		$scope.auditInfoExpanded = false;
 		$scope.expandSection = function(section, value) {
@@ -259,6 +258,12 @@ okulusApp.controller('MemberDetailsCntrl',
 					break;
 				default:
 			}
+		};
+
+		$scope.getUserInfo = function() {
+			let userID = $scope.objectDetails.basicInfo.userId;
+			if(!userID) return;
+			$scope.objectDetails.userInfo = UsersSvc.getUserBasicDataObject(userID);
 		};
 
 		$scope.getReunionDetails = function() {
