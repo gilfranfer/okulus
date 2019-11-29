@@ -833,6 +833,10 @@ okulusApp.factory('GroupsSvc',
 				let ref = groupsRef.child(groupId).child("reports").child(reportId);
 				ref.set(null);
 			},
+			/*Save Access Rule in member folder (/members/details/:whichMember/access/:ruleId)*/
+			addAccessRule: function(groupId, ruleId, ruleRecord){
+				groupDetailsRef.child(groupId).child(constants.db.folders.accessRules).child(ruleId).set(ruleRecord);
+			},
 			/* Receives the member's access rules ( { accessRuleId: {groupId,groupName,date} , ...} ),
 			and use them to delete the member's access to each of those groups.
 			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId

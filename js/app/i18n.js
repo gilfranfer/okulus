@@ -530,7 +530,8 @@ okulusApp.run(function($rootScope) {
 				setEmailFirst:"El Miembro debe tener un correo electrónico asignado.",
 				loadingAttnReports:"Cargando Reportes",
 				noAttnReports:"No se encontraron Reportes",
-				attendedGroups:"Grupos asistidos"
+				attendedGroups:"Grupos asistidos",
+				accesRulesTitle: "Reglas de Acceso a Grupos",
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
@@ -590,6 +591,7 @@ okulusApp.run(function($rootScope) {
 				ruleDeleteBtn:"Eliminar Regla",
 				accessDescription: "Proporcionar acceso a un Miembro le permite crear reportes para el grupo y ver la información histórica del mismo.",
 				aceessInactiveGroup:"No pueden agregarse nuevas reglas a Grupos Inactivos.",
+				aceessInactiveMember:"No pueden agregarse nuevas reglas a Mimebros Inactivos.",
 				noRulesMessage: "No hay reglas de acceso en este grupo",
 				table:{
 					memberName:"Miembro", memberId:"Id", date:"Desde"

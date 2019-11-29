@@ -234,6 +234,7 @@ okulusApp.controller('MemberDetailsCntrl',
 		$scope.addressInfoExpanded = true;
 		$scope.membershipInfoExpanded = true;
 		$scope.userInfoExpanded = false;
+		$scope.accessInfoExpanded = false;
 		$scope.reunionInfoExpanded = false;
 		$scope.auditInfoExpanded = false;
 		$scope.expandSection = function(section, value) {
@@ -243,6 +244,9 @@ okulusApp.controller('MemberDetailsCntrl',
 					break;
 				case 'addressInfo':
 					$scope.addressInfoExpanded = value;
+					break;
+				case 'accessInfo':
+					$scope.accessInfoExpanded = value;
 					break;
 				case 'userInfo':
 					$scope.userInfoExpanded = value;
@@ -628,6 +632,100 @@ okulusApp.controller('MemberDetailsCntrl',
 			});
 		};
 
+		$scope.getMemberRules = function() {
+			let whichMember = $routeParams.memberId;
+			$scope.acessRulesList = MembersSvc.getAccessRulesList(whichMember);
+			if(!$scope.memberEditParams.groupsList){
+				$scope.memberEditParams.groupsList = GroupsSvc.getActiveGroups();
+			}
+			$scope.newRule = {};
+			$scope.rulesResponse = null;
+		};
+
+		/* Rules are assigned to Members (/members/details/{memberId}/access)
+		 and to groups (/groups/details/{groupId}/access)*/
+		$scope.addRule = function(){
+			$scope.rulesResponse = { working: true, message: systemMsgs.inProgress.creatingRule };
+			let whichGroup = $scope.newRule.groupId;
+			let memberObj = $scope.objectDetails.basicInfo;
+			let groupObj = $scope.memberEditParams.groupsList.$getRecord(whichGroup);
+			let existingRuleId = $scope.getExistingRuleId(whichGroup);
+
+			if(existingRuleId){
+				$scope.rulesResponse = {error: true, message: systemMsgs.error.duplicatedRule};
+				//Ensure the access rule (in the Member Folder) has the updated Group name
+				let index = $scope.acessRulesList.$indexFor(existingRuleId);
+				let ruleObj = $scope.acessRulesList.$getRecord(existingRuleId);
+				ruleObj.groupName = groupObj.name;
+				$scope.acessRulesList.$save(index);
+				return;
+			}
+
+			let creationDate = firebase.database.ServerValue.TIMESTAMP;
+			let ruleForMember = { groupName: groupObj.name, groupId: groupObj.$id, date:creationDate};
+			let ruleForGroup = { memberName: memberObj.shortname, memberId: memberObj.$id, memberEmail: memberObj.email,
+														userId: memberObj.userId, date:creationDate};
+
+			//Use the Group's access list to create the new rule
+			$scope.acessRulesList.$add(ruleForMember).then(function(ref) {
+				//Create cross Reference. The Member must have similar rule, with same rule Id.
+				GroupsSvc.addAccessRule(whichGroup, ref.key, ruleForGroup);
+				let description = memberObj.shortname + " " + systemMsgs.notifications.gotAccessToGroup + groupObj.name;
+				let notification = { description: description,
+					action: constants.actions.update,
+					onFolder: constants.db.folders.groups,
+					onObject: groupObj.$id,	url:null };
+				//Notify the Group's Creator, Updator, and ADmins about the rule creation
+				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
+				//Notify the User who got the access about the rule creation
+				NotificationsSvc.notifyUser(memberObj.userId, notification);
+				$scope.rulesResponse = { success: true, message: systemMsgs.success.ruleCreated};
+			}).catch( function(error){
+				$scope.rulesResponse = { error: true, message: systemMsgs.error.creatingRuleError };
+				console.error(error);
+			});
+		};
+
+		$scope.getExistingRuleId = function(groupId) {
+			let ruleId = undefined;
+			//Review in the current Lists, if a similar rule already exist
+			$scope.acessRulesList.forEach(function(rule) {
+				if(rule.groupId == groupId){
+					ruleId = rule.$id;
+				};
+			});
+			return ruleId;
+		};
+
+		$scope.deleteRule = function(rule){
+			$scope.rulesResponse = {working: true, message: systemMsgs.inProgress.deletingRule};
+			// var ruleRecord = $scope.acessRulesList.$getRecord(ruleId);
+			let ruleId = rule.$id;
+			let groupId = rule.groupId;
+			let groupName = rule.groupName;
+			let userId = $scope.objectDetails.basicInfo.userId;
+			let memberName = $scope.objectDetails.basicInfo.shortname;
+
+			console.log(ruleId, groupId, groupName, userId, memberName);
+
+			$scope.acessRulesList.$remove(rule).then(function(ref) {
+				//Remove the same rule from the Member's access folder
+				GroupsSvc.addAccessRule(groupId, ruleId, null);
+				let description = memberName + " " + systemMsgs.notifications.lostAccessToGroup + groupName;
+				let notification = { description: description, action: constants.actions.update,
+									onFolder: constants.db.folders.groups, onObject: groupId,	url:null };
+				//Notify the Group's Creator, Updator, and Admins about the rule removal
+				NotificationsSvc.notifyInvolvedParties(notification.action, notification.onFolder, notification.onObject, notification.description);
+				//Notify the User who lost the access
+				NotificationsSvc.notifyUser(userId, notification);
+				$scope.rulesResponse = { success: true, message: systemMsgs.success.ruleRemoved};
+			}).catch( function(error){
+				$scope.rulesResponse = { error: true, message: systemMsgs.error.deletingRuleError };
+				console.error(error);
+			});
+		};
+
+
 }]);
 
 okulusApp.factory('MembersSvc',
@@ -857,7 +955,7 @@ okulusApp.factory('MembersSvc',
 			},
 			/* Receives the access list from a Group = ( { accessRuleId: {groupId,groupName,date} , ...} ),
 			and use them to delete the groups access from each member in the list.
-			The accessRuleId is the same on groups/:gropuId/access/:accessRuleId
+			The accessRuleId is the same on groups/:groupId/access/:accessRuleId
 			and members/:memberId/access/:accessRuleId */
 			removeAccessRules: function(accessList){
 				if(accessList){

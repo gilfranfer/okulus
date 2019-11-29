@@ -108,8 +108,121 @@
                   <td scope="row">{{rule.memberEmail}}</td>
                   <td scope="row">{{rule.date | date: config.formats.datetime}}</td>
                   <td scope="row">
-                    <span class="clickable fas fa-lg fa-trash" style="color:#dd0000" ng-click="deleteRule(deleteRule(rule.$id, rule.memberName, rule.memberId, rule.userId))"></span>
+                    <span class="clickable fas fa-lg fa-trash" style="color:#dd0000" ng-click="deleteRule(rule.$id, rule.memberName, rule.memberId, rule.userId)"></span>
                     <a class="clickable fas fa-lg fa-eye" style="color:#343a40"  target="_blank" ng-href="#!/users/view/{{rule.userId}}"></a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<article class="mb-3" ng-if="memberEditParams.isEdit && objectDetails.basicInfo.userId">
+  <div class="card">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>
+            <i class="clickable far fa-minus-square"
+             data-toggle="collapse" data-target="#accessInfo" aria-expanded="false" aria-controls="accessInfo"
+            ng-if="accessInfoExpanded" ng-click="expandSection('accessInfo',false)"></i>
+            <i class="clickable far fa-plus-square"
+             data-toggle="collapse" data-target="#accessInfo" aria-expanded="true" aria-controls="accessInfo"
+            ng-if="!accessInfoExpanded" ng-click="expandSection('accessInfo',true);getMemberRules()"></i>
+            {{i18n.members.accesRulesTitle}}
+          </legend>
+        </div>
+      </div>
+      <div id="accessInfo" class="collapse">
+        <hr>
+        <div class="">
+          <p class="lead">
+      			{{i18n.groups.newAccessTitle}}
+      		</p>
+          <span>{{i18n.groups.accessDescription}}</span>
+          <!-- Active Members List -->
+          <form class="mt-3" name="accessForm" novalidate ng-if="objectDetails.basicInfo.isActive" ng-submit="addRule()">
+            <div class="row mb-3">
+              <div class="col-8">
+                <select id="groupSelect" class="form-control form-control-lg" ng-model="newRule.groupId" ng-required="true">
+                  <option ng-repeat="group in memberEditParams.groupsList | orderBy:'name' track by group.$id" value="{{group.$id}}">
+                    {{group.name}}
+                  </option>
+                </select>
+              </div>
+              <div class="col-4">
+                <button type="submit" class="btn btn-lg btn-block btn-success clickable" ng-disabled="accessForm.$invalid">
+                  {{i18n.btns.addBtn}}
+                </button>
+              </div>
+            </div>
+          </form>
+          <div class="alert alert-info mt-4" ng-if="!objectDetails.basicInfo.isActive">
+            {{i18n.groups.aceessInactiveMember}}
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert alert-warning" role="alert" ng-show="rulesResponse.working || rulesResponse.loading" >
+          {{rulesResponse.message}}
+        </div>
+        <div class="alert alert-success" role="alert" ng-show="rulesResponse.success" >
+          {{rulesResponse.message}}
+        </div>
+        <div class="alert alert-danger" role="alert" ng-show="rulesResponse.error" >
+          {{rulesResponse.message}}
+        </div>
+
+        <!-- Search -->
+        <div class="row mb-3">
+          <div class="col">
+            <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control"
+             ng-model="memberEditParams.filterRules" ng-show="memberEditParams.accessRules.length > config.minResultsToshowFilter"/>
+          </div>
+        </div>
+        <!-- Table -->
+        <div class="row mb-3">
+          <div class="pre-scrollable col">
+            <table class="table table-responsive-s table-md table-striped">
+              <thead class="">
+                <tr>
+                  <!-- <th scope="col"></th> -->
+                  <th scope="col">
+                    <span class="clickable fas fa-md fa-sort"
+                      ng-click="chageSort('memberName')" ng-show="sortBy!='memberName'"></span>
+                    <span class="clickable fas fa-md fa-sort-up"
+                      ng-click="chageSort('memberName')" ng-show="(sortBy=='memberName' && descSort)"></span>
+                    <span class="clickable fas fa-md fa-sort-down"
+                      ng-click="chageSort('memberName')" ng-show="(sortBy=='memberName' && !descSort)"></span>
+                    <span>{{i18n.groups.groupLbl}}</span>
+                  </th>
+                  <th scope="col">
+                    <span class="clickable fas fa-md fa-sort"
+                    ng-click="chageSort('date')" ng-show="sortBy!='date'"></span>
+                    <span class="clickable fas fa-md fa-sort-up"
+                    ng-click="chageSort('date')" ng-show="(sortBy=='date' && descSort)"></span>
+                    <span class="clickable fas fa-md fa-sort-down"
+                    ng-click="chageSort('date')" ng-show="(sortBy=='date' && !descSort)"></span>
+                    <span>{{i18n.groups.ruleDate}}</span>
+                  </th>
+                  <th scope="col">
+                    <span></span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="rule in acessRulesList | filter:memberEditParams.filterRules | orderBy:sortBy:descSort track by rule.$id">
+                  <!-- <td scope="row">{{$index + 1}}</td> -->
+                  <td scope="row">{{rule.groupName}}</td>
+                  <td scope="row">{{rule.date | date: config.formats.datetime}}</td>
+                  <td scope="row">
+                    <span class="clickable fas fa-lg fa-trash" style="color:#dd0000" ng-click="deleteRule(rule)"></span>
+                    <a class="clickable fas fa-lg fa-eye" style="color:#343a40"  target="_blank" ng-href="#!/groups/view/{{rule.groupId}}"></a>
                   </td>
                 </tr>
               </tbody>
