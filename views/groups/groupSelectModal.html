@@ -15,7 +15,7 @@
           ng-model="searchFilter.name" ng-show="currentSession.accessGroups.length > config.minResultsToshowFilter"/>
         <!-- List of Groups the Member has access to -->
         <div class="list-group mt-2 pre-scrollable">
-          <div id="group-{{rule.groupId}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
+          <div id="group-{{group.groupId}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
   						ng-repeat="group in currentSession.accessGroups | filter:searchFilter | orderBy:'name'"
               ng-click="closeGroupSelectModal(group)" data-dismiss="modal">
   					<div class="w-100">

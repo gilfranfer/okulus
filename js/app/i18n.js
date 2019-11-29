@@ -402,6 +402,7 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
 				totalAttendanceLbl:"Asistencia  Total",
+				addOtherMembers:"Buscar miembros de otros grupos",
 				membersAttendanceDirections:"Selecciona un miembro de la lista, o agrega a todos",
 				guestsAttendanceDirections:"Escribe el nombre del invitado, o agrega multiples",
 				multipleGuestsDirections:"Multiples invitados? Escribe un nombre genérico.",
@@ -532,6 +533,7 @@ okulusApp.run(function($rootScope) {
 				noAttnReports:"No se encontraron Reportes",
 				attendedGroups:"Grupos asistidos",
 				accesRulesTitle: "Reglas de Acceso a Grupos",
+				selectMemberLbl:"Seleccinar Miembro"
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",

@@ -1032,6 +1032,15 @@ okulusApp.controller('ReportDetailsCntrl',
 			}
 		};
 
+		$scope.findExternalMembers = function() {
+			if($rootScope.currentSession.allMembersList){return;}
+			$rootScope.currentSession.allMembersList = MembersSvc.getAllMembers();
+		};
+
+		$scope.closeMemberSelectModal = function(member){
+			addMemberAttendance({id:member.$id, name: member.shortname, sex:member.sex});
+		};
+
 }]);
 
 /*Controls the Quick "Create Report Button". */

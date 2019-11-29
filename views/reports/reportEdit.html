@@ -332,11 +332,33 @@
                 {{i18n.reports.membersAttendanceDirections}}
                 <span class="btn-link clickable" ng-click="addAllMembersToAteendace()">{{i18n.btns.here}}</span>
               </small>
+              <small class="form-text text-muted">
+                <span class="btn-link clickable" ng-click="findExternalMembers()" data-toggle="modal" data-target="#memberSelectModal">
+                  {{i18n.reports.addOtherMembers}}</span>
+              </small>
+              <div ng-include="'views/members/memberSelectModal.html'"></div>
             </div>
             <div class="col-4">
               <button type="button" class="btn btn-lg btn-block btn-primary clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
                 <span class="fas fa-plus"></span>
               </button>
+            </div>
+          </div>
+          <!-- Alerts -->
+          <div class="row">
+            <div class="col">
+              <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
+                {{i18n.alerts.loading}}
+              </div>
+              <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
+                {{response.membersListOk}}
+              </div>
+              <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
+                {{response.membersListError}}
+              </div>
+              <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.members || objectDetails.attendance.members.length == 0">
+                {{i18n.reports.noMembersList}}
+              </div>
             </div>
           </div>
           <!-- Members Table -->
@@ -358,23 +380,7 @@
               </tbody>
             </table>
           </div>
-          <!-- Alerts -->
-          <div class="row">
-            <div class="col">
-              <div class="alert alert-warning" role="alert" ng-show="loadingAllMembers">
-                {{i18n.alerts.loading}}
-              </div>
-              <div class="alert alert-success" role="alert" ng-show="response.membersListOk">
-                {{response.membersListOk}}
-              </div>
-              <div class="alert alert-danger" role="alert" ng-show="response.membersListError">
-                {{response.membersListError}}
-              </div>
-              <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.members || objectDetails.attendance.members.length == 0">
-                {{i18n.reports.noMembersList}}
-              </div>
-            </div>
-          </div>
+
 
           <!-- Guests Title -->
           <div class="row mt-4">
@@ -421,6 +427,21 @@
               </button>
             </div>
           </div>
+          <!-- Alerts -->
+          <div class="row">
+            <div class="col">
+              <!-- Alerts -->
+              <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.guests || (objectDetails.attendance.guests && objectDetails.attendance.guests.length == 0)">
+                {{i18n.reports.noGuestsList}}
+              </div>
+              <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
+                {{response.guestsListError}}
+              </div>
+              <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
+                {{response.guestsListOk}}
+              </div>
+            </div>
+          </div>
           <!-- Guests Table -->
           <div class="pre-scrollable">
             <table class="table table-md table-striped">
@@ -439,21 +460,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-          <!-- Alerts -->
-          <div class="row">
-            <div class="col">
-              <!-- Alerts -->
-              <div class="alert alert-danger" role="alert" ng-show="!objectDetails.attendance.guests || (objectDetails.attendance.guests && objectDetails.attendance.guests.length == 0)">
-                {{i18n.reports.noGuestsList}}
-              </div>
-              <div class="alert alert-danger" role="alert" ng-show="response.guestsListError">
-                {{response.guestsListError}}
-              </div>
-              <div class="alert alert-success" role="alert" ng-show="response.guestsListOk">
-                {{response.guestsListOk}}
-              </div>
-            </div>
           </div>
         </div>
       </div>
