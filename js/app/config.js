@@ -473,7 +473,7 @@ const defaultConfigs = {
 		maxDuration:300,//minutes
 		showMoneyField: true,
 		maxMultipleGuests: 10,
-		notOnTimeMessage: undefined
+		notOnTimeMessage: null
 	},
 	formats: {
 		date:"MMM dd yyyy",
@@ -482,7 +482,6 @@ const defaultConfigs = {
 	grouptypes:{
 		default:{name:"Default"}
 	},
-
 	charts: {
     colors: {
       members: {
@@ -519,14 +518,16 @@ const defaultConfigs = {
 
 okulusApp.run(function($rootScope) {
 	$rootScope.config = defaultConfigs;
-	console.debug("Getting configurations from DB");
 	/* Load  App Editable Configurations from Firebase */
 	firebase.database().ref().child(constants.db.folders.currentConfig).once('value').then(
 		function(snapshot){
 			if(snapshot.val()){
+				console.debug("Got configurations from Firebase");
 				$rootScope.$apply(function(){
 					$rootScope.config = snapshot.val();
 				});
+			}else{
+				console.error("Configurations not available in Firebase");
 			}
 			//Add todays date that will be used to limit some date selectors
 			var tomorrow = new Date();
