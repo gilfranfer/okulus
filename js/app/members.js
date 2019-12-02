@@ -626,6 +626,7 @@ okulusApp.controller('MemberDetailsCntrl',
 					AuthenticationSvc.updateEmailInAllowedList(memberInfo.$id, null);
 				}
 
+				$scope.response = {allowUserupdate:true, message: description};
 				//Add the email to list of allowed emails
 				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.members, memberInfo.$id, description);
 				// $scope.response = {success:true, message: systemMsgs.success.baseGroupUpdated};

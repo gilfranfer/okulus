@@ -383,6 +383,9 @@
                 ng-if="!objectDetails.basicInfo.allowUser" ng-click="allowUser(true)">
                 {{i18n.btns.noBtn}}
               </button>
+              <div class="alert alert-success" role="alert" ng-show="response.allowUserupdate" >
+                {{response.message}}
+              </div>
             </div>
           </div>
         </div>
