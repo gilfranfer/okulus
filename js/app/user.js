@@ -366,9 +366,13 @@ okulusApp.factory('UsersSvc',
 			updateMemberReferenceInUserObject: function(memberId, memberShortname, userObj){
 				userObj.memberId = memberId;
 				userObj.shortname = memberShortname;
-				if(!memberId){
+				/* When a loggedUser loses the reference to a member ID, the user type has
+					to be forced to "user"*/
+				if(!memberId && userObj.type==constants.roles.admin){
 					//Force User role, in case it was admin
 					userObj.type = constants.roles.user;
+					CountersSvc.decreaseAdminUsers();
+					CountersSvc.increaseNormalUsers();
 				}
 				userObj.$save();
 			},
