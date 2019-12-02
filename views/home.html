@@ -144,7 +144,7 @@
                   <!-- Show Delete option when message was created by current User. Admin can remove any message -->
                   <span class="small font-weight-light clickable"
                       ng-click="removeMessage(message.$id)"
-                      ng-if="(message.createdById == currentSession.user.&id) || (
+                      ng-if="(message.createdById == currentSession.user.$id) || (
                               currentSession.user.type != 'user')">
                     {{i18n.msgCenter.deleteMsg}}
                   </span>
