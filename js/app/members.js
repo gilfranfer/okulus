@@ -415,7 +415,13 @@ okulusApp.controller('MemberDetailsCntrl',
 						if($scope.objectDetails.basicInfo.allowUser){
 							if(!$scope.objectDetails.basicInfo.email){
 								AuthenticationSvc.updateEmailInAllowedList(memberId, null);
+								$scope.objectDetails.basicInfo.isUser = false;
+								$scope.objectDetails.basicInfo.userId = null;
+								$scope.objectDetails.basicInfo.allowUser = false;
+								$scope.objectDetails.basicInfo.$save();
 							}else{
+								// $scope.objectDetails.basicInfo.allowUser = true;
+								// $scope.objectDetails.basicInfo.$save();
 								AuthenticationSvc.updateEmailInAllowedList(memberId, $scope.objectDetails.basicInfo.email);
 							}
 						}

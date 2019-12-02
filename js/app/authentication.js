@@ -74,7 +74,7 @@ okulusApp.controller('AuthenticationCntrl',
 					errorMessage = systemMsgs.error.memberlinkedDoesntExist;
 				}else if(memberDataObj.email != loggedUserObj.email){
 					errorMessage = systemMsgs.error.memberAndUserEmailMismatch;
-				}else if(!memberDataObj.isActive){
+				}else if(!memberDataObj.isActive || !memberDataObj.allowUser){
 					errorMessage = systemMsgs.error.memberNotActiveUser;
 				}else{
 					/* All good: Emails match, and the member isActive.
@@ -110,7 +110,7 @@ okulusApp.controller('AuthenticationCntrl',
 				}else{
 					memberObj = membersFound[0];
 					membersFound.$destroy();
-					if(memberObj.isActive){
+					if(memberObj.isActive && memberObj.allowUser){
 						$rootScope.currentSession.memberData = memberObj;
 						//Create Cross Reference
 						UsersSvc.updateMemberReferenceInUserObject(memberObj.$id, memberObj.shortname, loggedUser);

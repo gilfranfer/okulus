@@ -11,7 +11,7 @@ const systemMsgs = {
 		/* AuthenticationCntrl*/
 		memberlinkedDoesntExist: "El Miembro asociado al Usuario ya no existe.",
 		memberAndUserEmailMismatch: "El Correo del Miembro no coincide con el del Usuario.",
-		memberNotActiveUser: "El Miembro asociado/encontrado no está activo.",
+		memberNotActiveUser: "El Miembro asociado/encontrado está inactivo, o no puedes ser Usuario.",
 		referenceRemoved: "Se ha borrado la referencia entre el Usuario y el Miembro.",
 		contactAdmin: "Contacta al Administrador del Sistema.",
 		noMemberFound: "No se encontró un Miembro con el correo electrónico:",
@@ -527,7 +527,8 @@ okulusApp.run(function($rootScope) {
 				reunionsSection: "Asistencia a Reuniones",
 				memberHasUser:"Éste Miembro ya tiene un usuario asociado.", goToUser:"Ver Usuario",
 				memberHasNotUser:"Éste Miembro aún no tiene un usuario asociado.",
-				allowUser:"Permitir que este Miembro se registre como Usuario?",
+				allowUser:"Permitir que el Miembro se registre como Usuario",
+				dontAllowUser:"Evitar que el Miembro se registre como Usuario",
 				setEmailFirst:"El Miembro debe tener un correo electrónico asignado.",
 				loadingAttnReports:"Cargando Reportes",
 				noAttnReports:"No se encontraron Reportes",
