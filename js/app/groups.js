@@ -282,19 +282,30 @@ okulusApp.controller('GroupDetailsCntrl',
 		};
 
 		$scope.getMembership = function(){
-			if($scope.groupEditParams.membership){
-				return;
+			if(!$scope.groupEditParams.membership){
+				$scope.groupEditParams.membership = MembersSvc.getMembersForBaseGroup($scope.objectDetails.basicInfo.$id);
+				//Adding a watch on the membership
+				$scope.groupEditParams.membership.$watch( function(data){
+					console.log(data);
+					prepareMembershipForCharts($scope.groupEditParams.membership);
+				});
 			}
+			prepareMembershipForCharts($scope.groupEditParams.membership);
+			$scope.groupEditParams.membership.$loaded().then(function(members){
+			});
 
+		};
+
+		prepareMembershipForCharts = function(membershipList){
 			let membershipMetrics = {
 				active:0, inactive:0,
 				male:0, female:0,
 				lead:0, host:0, trainee:0,
 				total:0
 			};
-			$scope.groupEditParams.membership = MembersSvc.getMembersForBaseGroup($scope.objectDetails.basicInfo.$id);
+
 			/* Traverse the members returned to build some metrics */
-			$scope.groupEditParams.membership.$loaded().then(function(members){
+			membershipList.$loaded().then(function(members){
 				members.forEach(function(member){
 					membershipMetrics.total++;
 					if(member.isActive){
@@ -320,9 +331,10 @@ okulusApp.controller('GroupDetailsCntrl',
 					}
 				});
 				$scope.groupEditParams.membershipMetrics = membershipMetrics;
-				buildMembershipCharts(membershipMetrics);
+				if(membershipMetrics.total>0){
+					buildMembershipCharts(membershipMetrics);
+				}
 			});
-
 		};
 
 		buildMembershipCharts = function(membershipMetrics){

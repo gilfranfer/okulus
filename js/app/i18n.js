@@ -575,6 +575,7 @@ okulusApp.run(function($rootScope) {
         loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
 				/* Form Labels */
 				basicInfoTitle:"Información Básica", membershipTitle:"Miembros del Grupo",
+				noMembership:"El Grupo no tiene miembros",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
 				modifyLbl:"Información del", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",

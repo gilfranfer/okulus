@@ -24,8 +24,11 @@
              ng-model="filterText" ng-show="groupEditParams.membership.length > config.minResultsToshowFilter"/>
           </div>
         </div>
+        <div class="alert alert-danger" ng-show="groupEditParams.membership.length <= 0">
+          {{i18n.groups.noMembership}}
+        </div>
         <!-- Table -->
-        <div class="row mb-3">
+        <div class="row mb-3" ng-show="groupEditParams.membership.length > 0">
           <div class="pre-scrollable col">
             <table class="table table-responsive-s table-md table-striped">
               <thead class="">
@@ -72,7 +75,7 @@
           </div>
         </div>
         <!-- Charts -->
-        <div class="row mb-3 mt-3">
+        <div class="row mb-3 mt-3" ng-show="groupEditParams.membership.length > 0">
           <div class="col-sm col-lg-4">
             <div id="activePie" style="width:100%; height:300px;"></div>
           </div>
