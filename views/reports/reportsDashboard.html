@@ -92,7 +92,7 @@
       </div>
     </article>
 
-    <!-- Reports Table -->
+    <!-- Reports List and Charts -->
     <article class="mb-3">
       <div class="card">
         <div class="card-body">
@@ -101,19 +101,19 @@
             <div class="col">
               <legend>
                 <i class="clickable far fa-minus-square"
-                 data-toggle="collapse" data-target="#reportsList" aria-expanded="false" aria-controls="reportsList"
-                ng-if="reportsListExpanded" ng-click="expandSection('reportsList',false)"></i>
+                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="false" aria-controls="reportCharts"
+                ng-if="reportChartsExpanded" ng-click="expandSection('reportCharts',false)"></i>
                 <i class="clickable far fa-plus-square"
-                 data-toggle="collapse" data-target="#reportsList" aria-expanded="true" aria-controls="reportsList"
-                ng-if="!reportsListExpanded" ng-click="expandSection('reportsList',true)"></i>
-                {{i18n.reportFinder.reportsListTitle}}
+                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="true" aria-controls="reportCharts"
+                ng-if="!reportChartsExpanded" ng-click="expandSection('reportCharts',true)"></i>
+                {{i18n.reportFinder.reportsChartsTitle}}
               </legend>
             </div>
           </div>
-          <div id="reportsList" class="collapse show">
+          <div id="reportCharts" class="collapse show">
             <hr>
-            <!-- Search -->
-            <div class="row mb-3">
+            <!-- Report Filter/Search -->
+            <div class="row mb-4">
               <div class="col">
                 <input type="text" placeholder="{{i18n.filterBox.searchHint}}" class="form-control"
                  ng-model="filterText" ng-show="reportsToDisplay.length > config.minResultsToshowFilter"/>
@@ -233,12 +233,27 @@
               </tbody>
             </table>
             </div>
+            <!-- Pie Charts -->
+            <div class="row mb-4 mt-4">
+              <div class="col-sm mb-3">
+                <div id="reportsPieContainer" style="width:100%; height:300px;"></div>
+              </div>
+              <div class="col-sm mb-3">
+                <div id="onTimePieContainer" style="width:100%; height:300px;"></div>
+              </div>
+            </div>
+            <!-- Bar Chart -->
+            <div class="row mb-4">
+              <div class="col">
+                <div id="reportsChartContainer" style="width:100%;"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </article>
 
-    <!-- Reports and Reunions Charts -->
+    <!-- Reunions Charts -->
     <article class="mb-3">
       <div class="card">
         <div class="card-body">
@@ -247,35 +262,29 @@
             <div class="col">
               <legend>
                 <i class="clickable far fa-minus-square"
-                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="false" aria-controls="reportCharts"
-                ng-if="reportChartsExpanded" ng-click="expandSection('reportCharts',false)"></i>
+                 data-toggle="collapse" data-target="#reunionCharts" aria-expanded="false" aria-controls="reunionCharts"
+                ng-if="reunionChartsExpanded" ng-click="expandSection('reunionCharts',false)"></i>
                 <i class="clickable far fa-plus-square"
-                 data-toggle="collapse" data-target="#reportCharts" aria-expanded="true" aria-controls="reportCharts"
-                ng-if="!reportChartsExpanded" ng-click="expandSection('reportCharts',true)"></i>
+                 data-toggle="collapse" data-target="#reunionCharts" aria-expanded="true" aria-controls="reunionCharts"
+                ng-if="!reunionChartsExpanded" ng-click="expandSection('reunionCharts',true)"></i>
                 {{i18n.reportFinder.reunionsChartsTitle}}
               </legend>
             </div>
           </div>
-          <div id="reportCharts" class="collapse show">
+          <div id="reunionCharts" class="collapse show">
             <hr>
-            <!-- Pie Charts -->
-            <div class="row mt-4">
-              <div class="col-sm mb-3">
-                <div id="reportsPieContainer" style="width:100%; height:350px;"></div>
-              </div>
-              <div class="col-sm mb-3">
-                <div id="onTimePieContainer" style="width:100%; height:350px;"></div>
-              </div>
-              <div class="col-sm mb-3">
-                <div id="reunionsPieContainer" style="width:100%; height:350px;"></div>
-              </div>
-            </div>
             <!-- Bar Chart -->
             <div class="row mt-4">
               <div class="col mb-3">
                 <div id="reunionsChartContainer" style="width:100%;"></div>
               </div>
             </div>
+            <!-- Pie Charts -->
+            <!-- <div class="row mt-4">
+              <div class="col-sm mb-3">
+                <div id="reunionsPieContainer" style="width:100%; height:300px;"></div>
+              </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -310,10 +319,10 @@
             <!-- Pie Charts -->
             <div class="row mt-4">
               <div class="col-sm mb-3">
-                <div id="attTypePieContainer" style="width:100%; height:350px;"></div>
+                <div id="attTypePieContainer" style="width:100%; height:300px;"></div>
               </div>
               <div class="col-sm mb-3">
-                <div id="sexPieContainer" style="width:100%; height:350px;"></div>
+                <div id="sexPieContainer" style="width:100%; height:300px;"></div>
               </div>
             </div>
           </div>

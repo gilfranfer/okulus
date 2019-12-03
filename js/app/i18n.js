@@ -655,9 +655,8 @@ okulusApp.run(function($rootScope) {
 				selectAllGroups:"Seleccionar todos los grupos", findReportsBtn:"Buscar Reportes",
 				weeksOrderError: "Verifica el orden de las Semanas seleccionadas",
 				resultsLoaded: "Reportes encontrados",
-				reportsListTitle: "Lista de Reportes",
-				attendanceChartsTitle: "Asistencia de Miembros e Invitados",
-				reunionsChartsTitle: "Reportes y Reuniones",
+				attendanceChartsTitle: "Asistencia",
+				reunionsChartsTitle: "Reuniones", reportsChartsTitle: "Reportes",
 				moneyChartsTitle: "Gráfica de Ofrenda",	durationChartsTitle: "Gráfica de Duración",
 				totalLbl: "Total",
 				noReportsError: "No hay reportes disponibles para las opciones seleccionadas",
@@ -671,8 +670,7 @@ okulusApp.run(function($rootScope) {
 			},
 			charts:{
 				attendanceTitle:"Personas Ministradas",
-				reportsAndReunionsTitle:"Reportes y Reuniones",
-				avgTitle:"Promedio", durationTitle:"Minutos Ministrados", 
+				avgTitle:"Promedio", durationTitle:"Minutos Ministrados",
 				durationLbl:"Duración", durationAvgReunionLbl:"Promedio por Reunión", durationAvgAttnLbl:"Promedio por Asistencia",
 				moneyTitle:"Ofrenda",	moneyAvgReunionTitle:"Promedio por Reunión", moneyAvgAttnTitle:"Promedio por Asistencia",
 				activeSerieLbl:"Miembros Activos", inactiveSerieLbl:"Miembros Inactivos"

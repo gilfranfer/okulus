@@ -4,15 +4,15 @@ okulusApp.controller('StatisticsCntrl',
 	['$rootScope','$scope', 'WeeksSvc','ReportsSvc','GroupsSvc','MembersSvc',
 	function ($rootScope, $scope, WeeksSvc, ReportsSvc, GroupsSvc,MembersSvc) {
 
-		$scope.reportsListExpanded = true;
 		$scope.reportChartsExpanded = true;
+		$scope.reunionChartsExpanded = true;
 		$scope.attnChartsExpanded = true;
 		$scope.moneyChartsExpanded = true;
 		$scope.durationChartsExpanded = true;
 		$scope.expandSection = function(section, value) {
 			switch (section) {
-				case 'reportsList':
-					$scope.reportsListExpanded = value;
+				case 'reunionCharts':
+					$scope.reunionChartsExpanded = value;
 					break;
 				case 'reportCharts':
 					$scope.reportChartsExpanded = value;
@@ -398,12 +398,41 @@ okulusApp.controller('StatisticsCntrl',
 			};
 
 			var reportsPie = getPieChartOptions();
-			reportsPie.title.text = $rootScope.i18n.reports.reportsLbl;
+			// reportsPie.title.text = $rootScope.i18n.reports.reportsLbl;
 			reportsPie.series[0].data =  [
 					{name:$rootScope.i18n.reports.pendingLbl,  y:allReportsTotals.reports.pending, color: colors.reports.pending},
 					{name:$rootScope.i18n.reports.approvedLbl, y:allReportsTotals.reports.approved, color: colors.reports.approved},
 					{name:$rootScope.i18n.reports.rejectedLbl, y:allReportsTotals.reports.rejected, color: colors.reports.rejected}
 			];
+
+			var onTimePie = getPieChartOptions();
+			// onTimePie.title.text = $rootScope.i18n.reportFinder.reportsLbl;
+			onTimePie.series[0].data =  [
+					{name:$rootScope.i18n.reports.onTimeLbl, y:allReportsTotals.reports.onTime, color: colors.reports.ontime},
+					/* Rejected reports are not checked for "onTime", so we take them out */
+					{name:$rootScope.i18n.reports.notOnTimeLbl, y:allReportsTotals.reports.notOnTime, color: colors.reports.due}
+			];
+
+			var reportsChart = {
+				//chart: attendanceChart,
+				title: { text: $rootScope.i18n.charts.reportsLbl }, legend: { reversed: true }, credits: { enabled: false },
+				xAxis: { categories: categories },
+				yAxis: {
+					min:0, title: { text: $rootScope.i18n.reportFinder.reportsLbl },
+					stackLabels: { enabled: true,
+						style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
+					}, plotLines: []
+				},
+				plotOptions: { column: {stacking: 'normal'} },
+				series: [
+					{ type: 'column', stack:'reports', data: approvedSeries, name: $rootScope.i18n.reports.approvedLbl, color: colors.reports.approved},
+					{ type: 'column', stack:'reports', data: pendingSeries, name: $rootScope.i18n.reports.pendingLbl, color: colors.reports.pending},
+					{ type: 'column', stack:'reports', data: rejectedSeries, name: $rootScope.i18n.reports.rejectedLbl, color: colors.reports.rejected},
+					{ type: 'spline', data: dueReportSeries, name: $rootScope.i18n.reports.notOnTimeLbl, color: colors.reports.due, lineWidth:4, label:{enabled:false} },
+					{ type: 'spline', data: onTimeReportSeries , name: $rootScope.i18n.reports.onTimeLbl, color: colors.reports.ontime, lineWidth:4, label:{enabled:false} }
+				]
+			};
+
 
 			var reunionsPie = getPieChartOptions();
 			reunionsPie.title.text = $rootScope.i18n.reportFinder.reunionsLbl;
@@ -412,20 +441,12 @@ okulusApp.controller('StatisticsCntrl',
 					{name:$rootScope.i18n.reports.canceledLbl, y:allReportsTotals.reunions.canceled, color: colors.reunions.canceled}
 			];
 
-			var onTimePie = getPieChartOptions();
-			onTimePie.title.text = $rootScope.i18n.reportFinder.reportsLbl;
-			onTimePie.series[0].data =  [
-					{name:$rootScope.i18n.reports.onTimeLbl, y:allReportsTotals.reports.onTime, color: colors.reports.ontime},
-					/* Rejected reports are not checked for "onTime", so we take them out */
-					{name:$rootScope.i18n.reports.notOnTimeLbl, y:allReportsTotals.reports.notOnTime, color: colors.reports.due}
-			];
-
 			var reunionsChart = {
 				//chart: attendanceChart,
 				title: { text: $rootScope.i18n.charts.reportsLbl }, legend: { reversed: true }, credits: { enabled: false },
 				xAxis: { categories: categories },
 				yAxis: {
-					min:0, title: { text: $rootScope.i18n.charts.reportsAndReunionsTitle },
+					min:0, title: { text: $rootScope.i18n.reportFinder.reunionsLbl },
 					stackLabels: { enabled: true,
 						style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }
 					}, plotLines: []
@@ -433,12 +454,7 @@ okulusApp.controller('StatisticsCntrl',
 				plotOptions: { column: {stacking: 'normal'} },
 				series: [
 					{ type: 'column', stack:'reunion', data: completedSeries, name: $rootScope.i18n.reports.completedLbl, color: colors.reunions.completed },
-					{ type: 'column', stack:'reunion', data: canceledSeries, name: $rootScope.i18n.reports.canceledLbl, color: colors.reunions.canceled },
-					{ type: 'column', stack:'reports', data: approvedSeries, name: $rootScope.i18n.reports.approvedLbl, color: colors.reports.approved},
-					{ type: 'column', stack:'reports', data: pendingSeries, name: $rootScope.i18n.reports.pendingLbl, color: colors.reports.pending},
-					{ type: 'column', stack:'reports', data: rejectedSeries, name: $rootScope.i18n.reports.rejectedLbl, color: colors.reports.rejected},
-					{ type: 'spline', data: dueReportSeries, name: $rootScope.i18n.reports.notOnTimeLbl, color: colors.reports.due, lineWidth:4, label:{enabled:false} },
-					{ type: 'spline', data: onTimeReportSeries , name: $rootScope.i18n.reports.onTimeLbl, color: colors.reports.ontime, lineWidth:4, label:{enabled:false} }
+					{ type: 'column', stack:'reunion', data: canceledSeries, name: $rootScope.i18n.reports.canceledLbl, color: colors.reunions.canceled }
 				]
 			};
 
@@ -484,6 +500,9 @@ okulusApp.controller('StatisticsCntrl',
 				reunionsChart.chart =  { type: 'column', height:600};
 				reunionsChart.yAxis.opposite =  false;
 
+				reportsChart.chart =  { type: 'column', height:400};
+				reportsChart.yAxis.opposite =  false;
+
 				durationByGroupOptions.chart = { type: 'column', inverted: false, height:600 };
 				durationByGroupOptions.yAxis.opposite =  false;
 
@@ -493,6 +512,7 @@ okulusApp.controller('StatisticsCntrl',
 				if(categories.length > 5){
 					attendanceChart.xAxis.labels =  {rotation: -90};
 					reunionsChart.xAxis.labels =  {rotation: -90};
+					reportsChart.xAxis.labels =  {rotation: -90};
 					durationByGroupOptions.xAxis.labels =  {rotation: -90};
 					moneyByGroupOptions.xAxis.labels =  {rotation: -90};
 				}
@@ -502,13 +522,21 @@ okulusApp.controller('StatisticsCntrl',
 				attendanceChart.yAxis.opposite =  true;
 				attendanceChart.xAxis.labels =  {rotation: 0};
 
-				durationByGroupOptions.chart = { type: 'bar', inverted: true, height: (300+(series*20)) };
+				reunionsChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				reunionsChart.yAxis.opposite =  true;
+				reunionsChart.xAxis.labels =  {rotation: 0};
+
+				reportsChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				reportsChart.yAxis.opposite =  true;
+				reportsChart.xAxis.labels =  {rotation: 0};
+
+				durationByGroupOptions.chart = { type: 'bar', height: (300+(series*20)) };
 				durationByGroupOptions.yAxis.opposite =  true;
 				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				moneyByGroupOptions.chart = { type: 'bar', inverted: true, height: (300+(series*20)) };
+				moneyByGroupOptions.chart = { type: 'bar', height: (300+(series*20)) };
 				moneyByGroupOptions.yAxis.opposite =  true;
-				durationByGroupOptions.xAxis.labels =  {rotation: 0};
+				moneyByGroupOptions.xAxis.labels =  {rotation: 0};
 			}
 
 			//Paint Charts
@@ -517,7 +545,8 @@ okulusApp.controller('StatisticsCntrl',
 			Highcharts.chart('attTypePieContainer', attnPie);
 			Highcharts.chart('reportsPieContainer', reportsPie);
 			Highcharts.chart('onTimePieContainer', onTimePie);
-			Highcharts.chart('reunionsPieContainer', reunionsPie);
+			// Highcharts.chart('reunionsPieContainer', reunionsPie);
+			Highcharts.chart('reportsChartContainer', reportsChart);
 			Highcharts.chart('reunionsChartContainer', reunionsChart);
 			Highcharts.chart('durationContainer', durationByGroupOptions);
 			if($rootScope.config.reports.showMoneyField){
