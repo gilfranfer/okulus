@@ -518,23 +518,23 @@ okulusApp.controller('StatisticsCntrl',
 				}
 			}else{
 				//portrait
-				attendanceChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				attendanceChart.chart =  { type: 'bar', height: (300+(series*25)) };
 				attendanceChart.yAxis.opposite =  true;
 				attendanceChart.xAxis.labels =  {rotation: 0};
 
-				reunionsChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				reunionsChart.chart =  { type: 'bar', height: (300+(series*25)) };
 				reunionsChart.yAxis.opposite =  true;
 				reunionsChart.xAxis.labels =  {rotation: 0};
 
-				reportsChart.chart =  { type: 'bar', height: (300+(series*15)) };
+				reportsChart.chart =  { type: 'bar', height: (300+(series*25)) };
 				reportsChart.yAxis.opposite =  true;
 				reportsChart.xAxis.labels =  {rotation: 0};
 
-				durationByGroupOptions.chart = { type: 'bar', height: (300+(series*20)) };
+				durationByGroupOptions.chart = { type: 'bar', height: (300+(series*25)) };
 				durationByGroupOptions.yAxis.opposite =  true;
 				durationByGroupOptions.xAxis.labels =  {rotation: 0};
 
-				moneyByGroupOptions.chart = { type: 'bar', height: (300+(series*20)) };
+				moneyByGroupOptions.chart = { type: 'bar', height: (300+(series*25)) };
 				moneyByGroupOptions.yAxis.opposite =  true;
 				moneyByGroupOptions.xAxis.labels =  {rotation: 0};
 			}
