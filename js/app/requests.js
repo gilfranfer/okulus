@@ -149,6 +149,9 @@ okulusApp.controller('RequestDetailsCntrl',
 				}
 
 				$scope.groupsList = new Array();
+				if($rootScope.currentSession.user.type != constants.roles.user){
+					$scope.groupsList = GroupsSvc.getAllGroups();
+				}
 				//Get the Groups the user has access to
 				MembersSvc.getAccessRulesList(user.memberId).$loaded().then(function(rules){
 					rules.forEach(function(rule) {
