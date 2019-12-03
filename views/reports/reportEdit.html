@@ -73,8 +73,8 @@
                 {{i18n.reports.hostLbl}}
                 <span class="text-danger">*</span>
               </label>
-              <input type="text" disabled class="form-control form-control-lg"
-                ng-if="!reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostName">
+              <input type="text" disabled class="form-control form-control-lg" ng-required="true"
+                ng-if="!reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostName" >
               <select id="hostId" class="form-control form-control-lg" ng-required="true"
                 ng-if="reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostId">
                 <option ng-repeat="host in reportParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
@@ -97,7 +97,7 @@
                 {{i18n.reports.leadLbl}}
                 <span class="text-danger">*</span>
               </label>
-              <input type="text" disabled class="form-control form-control-lg"
+              <input type="text" disabled class="form-control form-control-lg" ng-required="true"
                 ng-if="!reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadName">
               <select id="leadId" class="form-control form-control-lg" ng-required="true"
                 ng-if="reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadId">
@@ -117,7 +117,7 @@
               <label class="font-weight-bold" for="traineeId">
                 {{i18n.reports.traineeLbl}}
               </label>
-              <input type="text" disabled class="form-control form-control-lg"
+              <input type="text" disabled class="form-control form-control-lg" ng-required="false"
                 ng-if="!reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeName">
               <select id="traineeId" class="form-control form-control-lg" ng-required="false"
                 ng-if="reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeId">
@@ -166,7 +166,7 @@
                 <span class="text-danger">*</span>
               </label>
               <input type="text" disabled class="form-control form-control-lg"
-                ng-if="!reportParams.updatingWeek" ng-model="objectDetails.basicInfo.weekName">
+                ng-if="!reportParams.updatingWeek" ng-model="objectDetails.basicInfo.weekName" ng-required="true">
               <select id="week" class="form-control form-control-lg" ng-required="true"
                 ng-if="reportParams.updatingWeek" ng-model="objectDetails.basicInfo.weekId">
                 <option ng-repeat="week in reportParams.weeksList | orderBy:'week.$id' track by week.$id" value="{{week.$id}}" >
