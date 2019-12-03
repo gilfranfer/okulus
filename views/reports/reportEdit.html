@@ -536,9 +536,12 @@
       </div>
       <div id="feedbackInfo" class="collapse show">
         <hr>
-        <label class="font-weight-bold" ng-show="objectDetails.feedback >0">{{i18n.reports.feedbackLbl}}</label>
+        <label class="font-weight-bold">{{i18n.reports.feedbackLbl}}</label>
         <!-- Report Feedback history -->
         <div class="pre-scrollable mb-2" ng-show="objectDetails.feedback">
+          <div class="alert alert-danger" ng-if="!objectDetails.feedback.length">
+            {{i18n.reports.noFeedbackLbl}}
+          </div>
           <div class="row m-0" ng-repeat="message in objectDetails.feedback | orderBy:'time':true track by message.$id" >
             <!-- Message Sent -->
             <div class="mr-2 ml-auto" ng-if="message.fromId == currentSession.user.$id">

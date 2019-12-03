@@ -414,6 +414,7 @@ okulusApp.run(function($rootScope) {
 				noMembersList:"No se ha registrado la asistencia de Miembros",
 				noGuestsList:"No se ha registrado la asistencia de Invitados",
 				reportEvalLegend:"Evaluación del Reporte", feedbackLbl:"Discusión",
+				noFeedbackLbl:"No hay mensajes",
 				onTimeLbl:"A tiempo", notOnTimeLbl:"Atrasados"
 			},
 			weeks:{
