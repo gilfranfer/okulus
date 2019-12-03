@@ -672,7 +672,7 @@ okulusApp.run(function($rootScope) {
 				attendanceTitle:"Personas Ministradas",
 				reportsAndReunionsTitle:"Reportes y Reuniones",
 				durationTitle:"Minutos Ministrados", durationAvgTitle:"Promedios",
-				durationLbl:"Duración", durationAvgReunionLbl:"Promedio por Reunión", durationAvgAttnLbl:"Promedio por Reunión",
+				durationLbl:"Duración", durationAvgReunionLbl:"Promedio por Reunión", durationAvgAttnLbl:"Promedio por Asistencia",
 				moneyTitle:"Ofrenda",	moneyAvgReunionTitle:"Promedio por Reunión", moneyAvgAttnTitle:"Promedio por Asistencia",
 				activeSerieLbl:"Miembros Activos", inactiveSerieLbl:"Miembros Inactivos"
 			},
