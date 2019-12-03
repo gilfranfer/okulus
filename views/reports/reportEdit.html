@@ -548,7 +548,7 @@
                   <span ng-show="message.message">{{message.message}}</span>
                 </div>
                 <div class="text-right">
-                  <small class="font-weight-light">{{message.from}}</small><br>
+                  <!-- <small class="font-weight-light">{{message.from}}</small><br> -->
                   <small class="font-weight-light">{{message.time | date: config.formats.datetime}}</small>
                 </div>
               </div>
@@ -561,6 +561,7 @@
                   <span ng-show="message.message">{{message.message}}</span>
                 </div>
                 <div class="text-right">
+                  <small class="font-weight-light">{{message.from}}</small><br>
                   <small class="font-weight-light">{{message.time | date: config.formats.datetime}}</small>
                 </div>
               </div>
