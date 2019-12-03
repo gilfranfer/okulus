@@ -444,12 +444,12 @@ okulusApp.controller('StatisticsCntrl',
 					yAxis: [{ min:0, title: { text: $rootScope.i18n.charts.durationTitle},
 									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
 									},
-									{ min:0, title: { text: $rootScope.i18n.charts.durationAvgAttnLbl}, opposite:true,
+									{ min:0, title: { text: $rootScope.i18n.charts.avgTitle}, opposite:true,
 										stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
 									}],
 					legend: { reversed: true },
 					series: [ { type: 'column', name: $rootScope.i18n.charts.durationLbl, data: durationSeries, color: colors.reunions.duration },
-					 					{ type: 'spline', name: $rootScope.i18n.charts.durationAvgReunionLbl, data: durationAvgReunionSeries, color: colors.reunions.durationAvgR, lineWidth:4, label:{enabled:false} },
+					 					{ type: 'spline', name: $rootScope.i18n.charts.durationAvgReunionLbl, data: durationAvgReunionSeries, color: colors.reunions.durationAvgR, lineWidth:4, label:{enabled:false},yAxis: 1 },
 					 					{ type: 'spline', name: $rootScope.i18n.charts.durationAvgAttnLbl, data: durationAvgAttnSeries, color: colors.reunions.durationAvgA, lineWidth:4, label:{enabled:false}, yAxis: 1 }
 									]
 			};
@@ -461,12 +461,12 @@ okulusApp.controller('StatisticsCntrl',
 					yAxis: [{ min:0, title: { text: $rootScope.i18n.charts.moneyTitle },
 									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' } }
 								},
-								{ min:0, title: { text: $rootScope.i18n.charts.moneyAvgAttnTitle}, opposite:true,
+								{ min:0, title: { text: $rootScope.i18n.charts.avgTitle}, opposite:true,
 									stackLabels: { enabled: true, style: { fontWeight: 'bold', color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray' }}
 								}],
 					legend: { reversed: true },
 					series: [ { type:'column', name: $rootScope.i18n.charts.moneyTitle , data: moneySeries, color: colors.reunions.money},
-										{ type:'spline', name: $rootScope.i18n.charts.moneyAvgReunionTitle , data: moneyAvgReunionSeries, color: colors.reunions.moneyAvgR, lineWidth:4, label:{enabled:false}},
+										{ type:'spline', name: $rootScope.i18n.charts.moneyAvgReunionTitle , data: moneyAvgReunionSeries, color: colors.reunions.moneyAvgR, lineWidth:4, label:{enabled:false}, yAxis: 1},
 										{ type:'spline', name: $rootScope.i18n.charts.moneyAvgAttnTitle , data: moneyAvgAttnSeries, color: colors.reunions.moneyAvgA, lineWidth:4, label:{enabled:false}, yAxis: 1}
 									]
 			};
