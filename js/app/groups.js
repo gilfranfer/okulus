@@ -284,16 +284,14 @@ okulusApp.controller('GroupDetailsCntrl',
 		$scope.getMembership = function(){
 			if(!$scope.groupEditParams.membership){
 				$scope.groupEditParams.membership = MembersSvc.getMembersForBaseGroup($scope.objectDetails.basicInfo.$id);
-				//Adding a watch on the membership
-				$scope.groupEditParams.membership.$watch( function(data){
-					console.log(data);
-					prepareMembershipForCharts($scope.groupEditParams.membership);
+				$scope.groupEditParams.membership.$loaded().then(function(members){
+					//Adding a watch on the membership, but only after initial load
+					$scope.groupEditParams.membership.$watch( function(data){
+						prepareMembershipForCharts($scope.groupEditParams.membership);
+					});
 				});
 			}
 			prepareMembershipForCharts($scope.groupEditParams.membership);
-			$scope.groupEditParams.membership.$loaded().then(function(members){
-			});
-
 		};
 
 		prepareMembershipForCharts = function(membershipList){
