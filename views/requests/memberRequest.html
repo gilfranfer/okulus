@@ -282,18 +282,18 @@
     <!-- Request can be approved by admin, when it is on pending status -->
     <div class="col mb-2">
       <button type="button" class="btn btn-lg btn-block btn-success clickable"
-      ng-disabled="(memberRequestForm.$invalid || requestNotesForm.$invalid || (objectDetails.address && memberAddressForm.$invalid) )
-      || ( (objectDetails.address && memberAddressForm.$pristine) && memberRequestForm.$pristine && requestNotesForm.$pristine )"
-      ng-click="approveRequest()">
+      ng-click="approveRequest()"
+      ng-disabled="(memberRequestForm.$invalid || requestNotesForm.$invalid || (objectDetails.address && memberAddressForm.$invalid) )">
+      <!-- || ( (objectDetails.address && memberAddressForm.$pristine) && memberRequestForm.$pristine && requestNotesForm.$pristine )" -->
         {{i18n.btns.approveBtn}}
       </button>
     </div>
     <!-- Request can be rejected by admin, when it is on pending status -->
     <div class="col mb-2">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable"
-      ng-disabled="(memberRequestForm.$invalid || requestNotesForm.$invalid || (objectDetails.address && memberAddressForm.$invalid) )
-      || ( (objectDetails.address && memberAddressForm.$pristine) && memberRequestForm.$pristine && requestNotesForm.$pristine )"
-      ng-click="rejectRequest()">
+      ng-click="rejectRequest()"
+      ng-disabled="(memberRequestForm.$invalid || requestNotesForm.$invalid || (objectDetails.address && memberAddressForm.$invalid) )">
+      <!-- || ( (objectDetails.address && memberAddressForm.$pristine) && memberRequestForm.$pristine && requestNotesForm.$pristine )" -->
         {{i18n.btns.rejectBtn}}
       </button>
     </div>
