@@ -61,13 +61,13 @@
             <label class="font-weight-bold">
               {{i18n.contact.emailLbl}}:
             </label>
-            <span>{{objectDetails.basicInfo.email}}</span>
+            <a href="mailto:{{objectDetails.basicInfo.email}}">{{objectDetails.basicInfo.email}}</a>
           </div>
           <div class="col-md form-group" ng-if="objectDetails.basicInfo.phone">
             <label class="font-weight-bold">
               {{i18n.contact.phoneLbl}}:
             </label>
-            <span>{{objectDetails.basicInfo.phone}}</span>
+            <a href="tel:{{objectDetails.basicInfo.phone}}">{{objectDetails.basicInfo.phone}}</a>
           </div>
         </div>
       </div>
