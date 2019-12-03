@@ -152,15 +152,19 @@ okulusApp.controller('StatisticsCntrl',
 					}
 					//Determine the key for the categoriesDataMap
 					let mapKey = undefined;
+					let elementName = undefined;
 					if(selectedGroups.size == 1){
 						/* When only 1 group was selected, the weekId will be the key in the Map */
-						let str = report.weekId;
-						let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
-						mapKey = formattedWeekId;
+						mapKey = report.weekId;//report.weekId;
+						elementName = report.weekName;
+						// let str = report.weekId;
+						// let formattedWeekId = str.substring(0,4)+"-"+str.substring(4);
+						// mapKey = formattedWeekId;
 					}
 					else if(selectedGroups.size > 1){
 						/* When selecting more than one group, we'll use the Group Id as the key */
-						mapKey = report.groupname;
+						mapKey = report.groupId;
+						elementName = report.groupname;
 					}
 
 					/* The map might already have the key because:
@@ -170,6 +174,7 @@ okulusApp.controller('StatisticsCntrl',
 					let mapElement = undefined;
 					if(!categoriesDataMap.has(mapKey)){
 						mapElement = {
+							name: elementName,
 							reports:{ total:0, approved:0, rejected:0, pending:0, onTime:0, notOnTime:0 },
 							reunions:{ total:0,completed:0, canceled:0 },
 							attn:{
@@ -296,7 +301,7 @@ okulusApp.controller('StatisticsCntrl',
 
 			//Prepare all the series for the bar charts
 			categoriesDataMap.forEach(function(reunionTotals, key){
-				categories.push(key); //groupname or weekid
+				categories.push(reunionTotals.name); //groupname or weekname
 				guestsSeries.push(reunionTotals.attn.guests);
 				membersSeries.push(reunionTotals.attn.members);
 				maleSeries.push(reunionTotals.attn.male);
