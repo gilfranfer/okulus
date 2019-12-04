@@ -81,22 +81,12 @@
           <a class="dropdown-item" href="#!/admin/config">{{i18n.navigation.admin.config}}</a>
         </div>
       </li>
-      <!-- Home -->
+      <!-- Home
       <li class="nav-item">
         <a class="d-md-none nav-link" href="#!/home" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.home}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-home" href="#!/home" data-toggle="tooltip" title="{{i18n.navigation.home}}"></a>
-      </li>
+      </li> -->
       <!-- User Menu: if user has an associated Member -->
-      <!-- Statistics -->
-      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/mystatistics" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.statistics}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/mystatistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
-      </li>
-      <!-- My Reports -->
-      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
-        <a class="d-md-none nav-link" href="#!/myreports" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.reports}}</a>
-        <a class="d-none d-md-block nav-link fas fa-lg fa-clipboard-list" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
-      </li>
       <!-- My Groups -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/mygroups" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.groups}}</a>
@@ -106,6 +96,16 @@
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
         <a class="d-md-none nav-link" href="#!/mycontacts" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.contacts}}</a>
         <a class="d-none d-md-block nav-link fas fa-lg fa-address-book" href="#!/mycontacts" data-toggle="tooltip" title="{{i18n.navigation.contacts}}"></a>
+      </li>
+      <!-- My Reports -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
+        <a class="d-md-none nav-link" href="#!/myreports" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.reports}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-clipboard-list" href="#!/myreports" data-toggle="tooltip" title="{{i18n.navigation.reports}}"></a>
+      </li>
+      <!-- Statistics -->
+      <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
+        <a class="d-md-none nav-link" href="#!/mystatistics" data-toggle="collapse" data-target="#appMenu">{{i18n.navigation.statistics}}</a>
+        <a class="d-none d-md-block nav-link fas fa-lg fa-chart-bar" href="#!/mystatistics" data-toggle="tooltip" title="{{i18n.navigation.statistics}}"></a>
       </li>
       <!-- My Requests -->
       <li class="nav-item" ng-if="currentSession.memberData && currentSession.user.type != 'root'">
