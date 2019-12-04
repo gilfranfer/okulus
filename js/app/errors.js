@@ -1,8 +1,6 @@
 okulusApp.controller('ErrorsMonitorCntrl',
-	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MigrationSvc', 'ReportsSvc',
-	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MigrationSvc,ReportsSvc){
+	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth','AuthenticationSvc', 'ErrorsSvc',
+	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth, AuthenticationSvc, ErrorsSvc){
 
 		let noAdminErrorMsg = "Área solo para Administradores.";
 		let baseRef = firebase.database().ref().child(constants.db.folders.root);
@@ -47,100 +45,6 @@ okulusApp.controller('ErrorsMonitorCntrl',
 		/* Remove the error from db */
 		$scope.deleteErrorRecord = function(error){
 			ErrorsSvc.deleteErrorRecord(error);
-		};
-
-		/* MIGRATION FUNCTIONS */
-		/* The metadata folder under contains the id of all unread Notifications.
-		Is better to remove this folder, and keep only the list folder.
-		The totals will be maintaint in the global counters */
-		$scope.migrateNotifications = function () {
-			let baseRef = firebase.database().ref().child(constants.db.folders.root);
-			let metaRef = baseRef.child("notifications/metadata");
-			let listRef = baseRef.child("notifications/list");
-
-			//Get all System Users
-			$firebaseArray(baseRef.child("users")).$loaded().then( function(usersList) {
-				usersList.forEach(function(user){
-					//Use the notifications/metadata length to set the User's unread Count
-					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
-						console.debug("User: "+user.$id+" Unread Notifications: "+list.length);
-						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
-					});
-					//Use the notifications/list length to set the User's total Count
-					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
-						console.debug("User: "+user.$id+" Total Notifications: "+list.length);
-						NotificationsSvc.setTotalNotifications(user.$id,list.length);
-					});
-				});
-			});
-		};
-
-		$scope.migrateWeeks = function () {
-			console.debug("Init Weeks Migration");
-			let weeksListRef = baseRef.child(constants.db.folders.weeksList);
-			let weeksDetailsRef = baseRef.child(constants.db.folders.weeksDetails);
-
-			let weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
-			//Updates in Week Object
-			let allWeeks = $firebaseArray(baseRef.child('weeks'));
-			allWeeks.$loaded().then(function (weeks) {
-				let totalWeeks = 0
-				let openWeeks = 0;
-
-				weeks.forEach(function(week){
-					if(week.$id != "list" && week.$id != "details"){
-						totalWeeks++;
-						//Add year and weekNumber to the DB, from the week id
-						//let index = $rootScope.allWeeks.$indexFor(week.$id);
-						let weekObj = {};
-						let idtxt = week.$id + "";
-						let yearStr = idtxt.substring(0,4);
-						let weekStr = idtxt.substring(4);
-						weekObj.year = Number(yearStr);
-						weekObj.week = Number(weekStr);
-						weekObj.name = week.name;
-						//Add isOpen and isVisible from week status
-						if(week.status == "open"){
-							weekObj.isOpen = true;
-							weekObj.isVisible = true;
-							openWeeks++;
-						}else{
-							weekObj.isOpen = false;
-							weekObj.isVisible = false;
-						}
-						//week.status = null;
-
-						//Get Reports for the week to update week's reportsCount
-						ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
-							weekObj.reportsCount = reports.length;
-							console.debug(week.$id+" has "+reports.length+" reports");
-							weeksDetailsRef.child(week.$id).child("audit").set(week.audit);
-							weeksListRef.child(week.$id).set(weekObj);
-						});
-					}
-				});
-				//Update Global System Counters
-				weeksGlobalCount.total = totalWeeks;
-				weeksGlobalCount.open = openWeeks;
-				weeksGlobalCount.visible = openWeeks;
-				weeksGlobalCount.$save();
-				console.debug("End Weeks Migration", "Total Weeks:"+totalWeeks);
-			});
-		};
-
-		$scope.migrateMembers = function() {
-			console.debug("Initiating Members Migration!!!");
-			//Get Groups from Original Strcuture
-			MigrationSvc.getAllGroups().$loaded().then(function(groups){
-				MigrationSvc.migrateMembers(groups);
-			});
-		};
-
-		$scope.migrateGroups = function() {
-			console.debug("Initiating Groups Migration!!!");
-			MigrationSvc.getMembersList().$loaded().then(function(members){
-				MigrationSvc.migrateGroups(members);
-			});
 		};
 
 }]);

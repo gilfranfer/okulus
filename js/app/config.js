@@ -449,6 +449,15 @@ okulusApp.config(['$routeProvider',
 				templateUrl: 'views/requests/memberRequest.html',
 				controller: 'RequestDetailsCntrl'
 			})
+			.when('/migration', {
+				resolve: {
+					currentAuth: function(AuthenticationSvc){
+						return AuthenticationSvc.isUserLoggedIn();
+					}
+				},
+				templateUrl: 'views/admin/migration.html',
+				controller: 'MigrationCntrl'
+			})
 			.otherwise({
 				redirectTo: '/home'
 			});
