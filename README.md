@@ -25,3 +25,12 @@
 - After member creation, go to the "User" section, and click on "Allow Member to create User"
 - The email provided will now be allowed to register
 - Open a new borwser session and register on: http://127.0.0.1:8080/#!/register
+
+# When can elements be deleted?:
+- Groups:  By Admin, if not active, and no reports associated
+- Members: By Admin, if not active. Access rules will be removed.
+  Attendance records to reunions will remain on Reports.
+- Weeks: By Admin, only when no reports are associated to that week
+- Reports: By Creator, if the report is not Approved.
+- Requests: By Creator, if the request is not Approved.
+- Users: Cannot be deleted at this moment.
