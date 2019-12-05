@@ -108,6 +108,9 @@
             <a ng-if="user.type == 'root'" ng-href="#!/users/edit/{{user.$id}}">
               {{i18n.roles.rootLbl}}
             </a>
+            <a ng-if="!user.shortname" ng-href="#!/users/edit/{{user.$id}}">
+              {{i18n.roles.noNameLbl}}
+            </a>
             <a ng-if="user.type != 'root'" ng-href="#!/users/edit/{{user.$id}}">
               {{user.shortname}}
             </a>

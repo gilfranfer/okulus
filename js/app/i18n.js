@@ -479,7 +479,8 @@ okulusApp.run(function($rootScope) {
 			},
 			roles:{
 				rootLbl:"Super Usuario", adminLbl:"Administrador", userLbl:"Usuario",
-				rootsLbl:"Super Usuarios", adminsLbl:"Administradores", usersLbl:"Usuarios"
+				rootsLbl:"Super Usuarios", adminsLbl:"Administradores", usersLbl:"Usuarios",
+				noNameLbl:"Usuario sin Nombre"
 			},
 			members:{
 				memberLbl:"Miembro", membersLbl:"Miembros",
