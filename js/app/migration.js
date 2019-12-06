@@ -1,321 +1,532 @@
 okulusApp.controller('MigrationCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'ErrorsSvc','WeeksSvc','MigrationSvc', 'ReportsSvc',
+		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'CountersSvc', 'GroupsSvc', 'WeeksSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,ErrorsSvc,WeeksSvc,MigrationSvc,ReportsSvc){
-
-		let noAdminErrorMsg = "Área solo para Administradores.";
-		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let errorsRef = baseRef.child('errors');
+		AuditSvc,AuthenticationSvc,NotificationsSvc,CountersSvc,GroupsSvc,WeeksSvc,ReportsSvc){
 
 		/*Executed when accessing to /admin/monitor, to confirm the user still admin*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type == constants.roles.user){
+					if(user.type != constants.roles.admin){
 						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
-					}else{
-						$scope.loadSystemErrors();
 					}
 				});
 			}
 		});
 
-		$scope.loadSystemErrors = function(){
-			$scope.response = {errorsLoading: true, message: $rootScope.i18n.admin.errors.loading};
-			if(!$scope.errorRecords){
-				$scope.errorRecords = $firebaseArray( errorsRef );
-				$scope.errorRecords.$loaded().then(function(list) {
-					$scope.response = {errorsSuccess: true, message: list.length + " " + $rootScope.i18n.admin.errors.loadingSuccess};
-				})
-				.catch( function(error){
-					$scope.response = {errorsError: true, message: $rootScope.i18n.notifications.loadingError};
-					console.error(error);
-				});
-			}
+    let oldDataRef = firebase.database().ref().child("pibxalapa");
+    let newDataRef = firebase.database().ref().child("okulus/data");
+    let allowedEmailsRef = firebase.database().ref().child("okulus/allowedEmails");
+
+    $scope.loadOldData = function(){
+      $scope.existingReports = $firebaseArray(oldDataRef.child("reports").limitToLast(10));
+      $scope.existingUsers = $firebaseArray(oldDataRef.child("users"));
+      $scope.existingWeeks = $firebaseArray(oldDataRef.child("weeks"));
+      $scope.existingMembers = $firebaseArray(oldDataRef.child("members"));
+      $scope.existingGroups = $firebaseArray(oldDataRef.child("groups"));
+
+      $scope.existingReports.$loaded().then(function(reports){
+        console.log(reports.length," Reports Loaded");
+      });
+      $scope.existingUsers.$loaded().then(function(userd){
+        console.log(userd.length," Users Loaded");
+      });
+      $scope.existingWeeks.$loaded().then(function(weeks){
+        console.log(weeks.length," Weeks Loaded");
+      });
+      $scope.existingMembers.$loaded().then(function(members){
+        console.log(members.length," Members Loaded");
+      });
+      $scope.existingGroups.$loaded().then(function(groups){
+        console.log(groups.length," Groups Loaded");
+      });
+    };
+
+    /* USER MIGRATION FUNCTIONS (Execute First)*/
+		$scope.migrateUsers = function () {
+      console.debug("Init Users Migration");
+      let userListRef = newDataRef.child("users").child("list");
+      let userDetailRef = newDataRef.child("users").child("details");
+
+      $scope.existingUsers.$loaded().then(function(users) {
+        console.log(users.length,"Users Loaded");
+        let timestamp = firebase.database.ServerValue.TIMESTAMP;
+        users.forEach(function(user){
+          //Create record in /users/list/>memberId>
+          let newUser = buildUser(user);
+          userListRef.child(user.$id).set(newUser);
+          CountersSvc.increaseTotalUsers(newUser.type);
+          if(!newUser.isActive){
+            CountersSvc.decreaseActiveUsers();
+          }
+          //Create record in /users/details/>memberId>/audit
+          let audit = buildUserAudit(user.audit, timestamp);
+          userDetailRef.child(user.$id).set(audit);
+          //Update Allowed allowedEmails
+          if(newUser.memberId){
+            allowedEmailsRef.child(newUser.memberId).set({email:newUser.email});
+          }
+        });
+        console.log("Users Migration Completed");
+      });
+
+    };
+
+    buildUser = function(oldUser){
+      // let timestamp = firebase.database.ServerValue.TIMESTAMP;
+      let record = {
+        email: oldUser.email, //isActive
+        lastActivityOn: oldUser.lastActivityOn,
+        lastLoginOn: oldUser.lastLogin,
+        //memberId: oldUser.memberId, shortname
+        sessionStatus: oldUser.sessionStatus,
+        type: oldUser.type,
+        counters:{
+          notifications:{total:0},
+          reports:{approved:0, pending:0, rejected:0, total:0},
+          requests:{members:{approved:0, pending:0, rejected:0, total:0}}
+        }
+      };
+
+      //Get Updated Member shortname
+      if(oldUser.isRoot){
+        //record.memberId = null;
+        record.shortname = constants.roles.rootName;
+        record.isActive = true;
+        record.type = constants.roles.root;
+      }else if(oldUser.memberId){
+        let memberObj = $scope.existingMembers.$getRecord(oldUser.memberId);
+        record.memberId = oldUser.memberId;
+        record.shortname = memberObj.member.shortname;
+        record.isActive = true;
+      }else{
+        //record.memberId = null;
+        //record.shortname = null;
+        record.isActive = false;
+      }
+      return record;
+    };
+
+    buildUserAudit = function(oldAudit, timestamp){
+      let user = $rootScope.currentSession.user;
+      return {createdByName:oldAudit.createdBy, createdOn: oldAudit.createdOn,
+        description: systemMsgs.notifications.userMigrated,
+        lastUpdateByEmail: user.email, lastUpdateById: user.$id,
+        lastUpdateByName: user.shortname, lastUpdateOn: timestamp};
+    };
+
+    /* GROUPS MIGRATION FUNCTION (Execute Second)*/
+    $scope.migrateGroups = function() {
+			console.debug("Init Groups Migration!");
+      let listRef = newDataRef.child(constants.db.folders.groupsList);
+			let detailsRef = newDataRef.child(constants.db.folders.groupsDetails);
+
+      $scope.existingGroups.$loaded().then(function(groups){
+        console.log(groups.length,"Groups Loaded");
+        groups.forEach(function(group){
+          let groupObj = {};
+          let detailsRecord = {};
+          let auditObj = {};
+
+          groupObj.name = group.group.name;
+          groupObj.number = group.group.number;
+          if(group.group.phone){
+            groupObj.phone = group.group.phone;
+          }
+          if(group.group.email){
+            groupObj.email = group.group.email;
+          }
+          if(group.group.status == "active"){
+            groupObj.isActive = true;
+            GroupsSvc.increaseActiveGroupsCount();
+          }else{
+            groupObj.isActive = false;
+          }
+
+          if(group.schedule.time.MM == 0){
+            groupObj.time = group.schedule.time.HH+":00";
+          }else{
+            groupObj.time = group.schedule.time.HH+":"+group.schedule.time.MM;
+          }
+          groupObj.type = group.group.type;
+          groupObj.weekDay = group.schedule.weekday;
+          groupObj.address = group.address;
+
+          //Reports
+          if(group.reports){
+            groupObj.reports = Object.keys(group.reports).length;
+            // detailsRef.child(group.$id).child("reports").set(group.reports);
+          }
+
+          listRef.child(group.$id).set(groupObj);
+          GroupsSvc.increaseTotalGroupsCount();
+
+          //Group details
+          //Audit
+          let user = $rootScope.currentSession.user;
+          let timestamp = firebase.database.ServerValue.TIMESTAMP;
+          auditObj.createdById = group.audit.createdById;
+          auditObj.createdByName = group.audit.createdBy;
+          auditObj.createdByEmail = group.audit.createdBy;
+          auditObj.createdOn =  group.audit.createdOn;
+          auditObj.description =  systemMsgs.notifications.groupMigrated;
+          auditObj.lastUpdateByEmail =  user.email;
+          auditObj.lastUpdateById =  user.$id;
+          auditObj.lastUpdateByName = user.shortname;
+          auditObj.lastUpdateOn =  timestamp;
+          detailsRef.child(group.$id).child("audit").set(auditObj);
+
+          //Roles
+          let rolesObj = {};
+          if(group.group.leadId){
+            let member = $scope.existingMembers.$getRecord(group.group.leadId);
+            if(member){
+              rolesObj.leadId = group.group.leadId;
+              rolesObj.leadName = member.member.shortname;
+            }
+          }
+          if(group.group.hostId){
+            let member = $scope.existingMembers.$getRecord(group.group.hostId);
+            if(member){
+              rolesObj.hostId = group.group.hostId;
+              rolesObj.hostName = member.member.shortname;
+            }
+          }
+          detailsRef.child(group.$id).child("roles").set(rolesObj);
+
+          //Access
+          if(group.access){
+            let rules = Object.values(group.access);
+            let ruleIds = Object.keys(group.access);
+
+            rules.forEach(function(rule,index){
+              // console.log(index,ruleIds[index],rule);
+              let member = $scope.existingMembers.$getRecord(rule.memberId);
+
+              //Get the User Id from users, using the email in the rule
+              let userSearch = $firebaseObject(oldDataRef.child("users").orderByChild("email").equalTo(member.member.email).limitToLast(1));
+              userSearch.$loaded().then(function(u){
+                let keys = Object.keys(u);
+                let userIdFromUser = keys[4];
+
+                // console.log(user);
+                if(!member.user){
+                  console.log("No User in the member", member);
+                  return;
+                  //Ignore this rules
+                }
+
+                if(userIdFromUser != member.user.userId){
+                  console.log("Member ",rule.memberId," is linked to user:",member.user.userId,"But should be:",userIdFromUser);
+                  //Fix the userId in the member
+                }
+
+                let record = {
+                  date: rule.date,
+                  memberId: member.$id,
+                  memberEmail: member.member.email,
+                  memberName: member.member.shortname,
+                  userId: userIdFromUser
+                };
+                detailsRef.child(group.$id).child("access").child(ruleIds[index]).set(record);
+
+              });
+
+            });
+
+          }
+
+        });
+        console.log("Groups Migration Completed");
+      });
 		};
 
-		/*Update the error record's "readed" value. For security, before any update,
-		confirm the error's current "readed" value is different than the new one */
-		$scope.readErrorRecord = function(markReaded, error){
-			if(error.readed != markReaded){
-				ErrorsSvc.updateErrorReadedStatus(error.$id, markReaded);
-			}
-		};
-
-		/* Remove the error from db */
-		$scope.deleteErrorRecord = function(error){
-			ErrorsSvc.deleteErrorRecord(error);
-		};
-
-		/* MIGRATION FUNCTIONS */
-		/* The metadata folder under contains the id of all unread Notifications.
-		Is better to remove this folder, and keep only the list folder.
-		The totals will be maintaint in the global counters */
-		$scope.migrateNotifications = function () {
-			let baseRef = firebase.database().ref().child(constants.db.folders.root);
-			let metaRef = baseRef.child("notifications/metadata");
-			let listRef = baseRef.child("notifications/list");
-
-			//Get all System Users
-			$firebaseArray(baseRef.child("users")).$loaded().then( function(usersList) {
-				usersList.forEach(function(user){
-					//Use the notifications/metadata length to set the User's unread Count
-					$firebaseArray(metaRef.child(user.$id)).$loaded().then(function(list){
-						console.debug("User: "+user.$id+" Unread Notifications: "+list.length);
-						NotificationsSvc.setTotalUnreadNotifications(user.$id,list.length);
-					});
-					//Use the notifications/list length to set the User's total Count
-					$firebaseArray(listRef.child(user.$id)).$loaded().then(function(list){
-						console.debug("User: "+user.$id+" Total Notifications: "+list.length);
-						NotificationsSvc.setTotalNotifications(user.$id,list.length);
-					});
-				});
-			});
-		};
-
+    /* WEEKS MIGRATION FUNCTION (Execute after Reports)*/
 		$scope.migrateWeeks = function () {
 			console.debug("Init Weeks Migration");
-			let weeksListRef = baseRef.child(constants.db.folders.weeksList);
-			let weeksDetailsRef = baseRef.child(constants.db.folders.weeksDetails);
+      let weeksListRef = newDataRef.child(constants.db.folders.weeksList);
+			let weeksDetailsRef = newDataRef.child(constants.db.folders.weeksDetails);
 
-			let weeksGlobalCount = WeeksSvc.getGlobalWeeksCounter();
 			//Updates in Week Object
-			let allWeeks = $firebaseArray(baseRef.child('weeks'));
-			allWeeks.$loaded().then(function (weeks) {
-				let totalWeeks = 0
-				let openWeeks = 0;
+			$scope.existingWeeks.$loaded().then(function (weeks) {
+        console.log(weeks.length,"Weeks Loaded");
+        weeks.forEach(function(week){
+					let weekObj = {};
+					let auditObj = {};
 
-				weeks.forEach(function(week){
-					if(week.$id != "list" && week.$id != "details"){
-						totalWeeks++;
-						//Add year and weekNumber to the DB, from the week id
-						//let index = $rootScope.allWeeks.$indexFor(week.$id);
-						let weekObj = {};
-						let idtxt = week.$id + "";
-						let yearStr = idtxt.substring(0,4);
-						let weekStr = idtxt.substring(4);
-						weekObj.year = Number(yearStr);
-						weekObj.week = Number(weekStr);
-						weekObj.name = week.name;
-						//Add isOpen and isVisible from week status
-						if(week.status == "open"){
-							weekObj.isOpen = true;
-							weekObj.isVisible = true;
-							openWeeks++;
-						}else{
-							weekObj.isOpen = false;
-							weekObj.isVisible = false;
-						}
-						//week.status = null;
-
-						//Get Reports for the week to update week's reportsCount
-						ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
-							weekObj.reportsCount = reports.length;
-							console.debug(week.$id+" has "+reports.length+" reports");
-							weeksDetailsRef.child(week.$id).child("audit").set(week.audit);
-							weeksListRef.child(week.$id).set(weekObj);
-						});
+          WeeksSvc.increaseTotalWeeksCounter();
+					if(week.status == "open"){
+						weekObj.isOpen = true;
+						weekObj.isVisible = true;
+            WeeksSvc.increaseOpenWeeksCounter();
+            WeeksSvc.increaseVisibleWeeksCounter();
+					}else{
+						weekObj.isOpen = false;
+						weekObj.isVisible = false;
 					}
+
+          // weekObj.duedate = null;
+          // weekObj.series = null;
+          // weekObj.study = null;
+          weekObj.name = week.name;
+					let idtxt = week.$id + "";
+					let yearStr = idtxt.substring(0,4);
+					let weekStr = idtxt.substring(4);
+					weekObj.year = Number(yearStr);
+					weekObj.week = Number(weekStr);
+
+          //Audit
+          let user = $rootScope.currentSession.user;
+          let timestamp = firebase.database.ServerValue.TIMESTAMP;
+          auditObj.createdById = week.audit.createdById;
+          auditObj.createdByName = week.audit.createdBy;
+          auditObj.createdByEmail = week.audit.createdBy;
+          auditObj.createdOn =  week.audit.createdOn;
+          auditObj.description =  systemMsgs.notifications.weekMigrated;
+          auditObj.lastUpdateByEmail =  user.email;
+          auditObj.lastUpdateById =  user.$id;
+          auditObj.lastUpdateByName = user.shortname;
+          auditObj.lastUpdateOn =  timestamp;
+
+          weeksListRef.child(week.$id).set(weekObj);
+          weeksDetailsRef.child(week.$id).child("audit").set(auditObj);
+          //Get Reports for the week to update week's reports
+					// ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+					// 	weekObj.reports = reports.length;
+					// 	console.debug(week.$id+" has "+reports.length+" reports");
+					// });
 				});
-				//Update Global System Counters
-				weeksGlobalCount.total = totalWeeks;
-				weeksGlobalCount.open = openWeeks;
-				weeksGlobalCount.visible = openWeeks;
-				weeksGlobalCount.$save();
-				console.debug("End Weeks Migration", "Total Weeks:"+totalWeeks);
+        console.log("Weeks Migration Completed");
 			});
 		};
 
+    /* MEMBERS MIGRATION FUNCTION (Execute Third)*/
 		$scope.migrateMembers = function() {
-			console.debug("Initiating Members Migration!!!");
-			//Get Groups from Original Strcuture
-			MigrationSvc.getAllGroups().$loaded().then(function(groups){
-				MigrationSvc.migrateMembers(groups);
-			});
+			console.debug("Init Members Migration!");
+      let listRef = newDataRef.child(constants.db.folders.membersList);
+			let detailsRef = newDataRef.child(constants.db.folders.membersDetails);
+
+      $scope.existingMembers.$loaded().then(function(members){
+        console.log(members.length,"Members Loaded");
+        members.forEach(function(member){
+          let memberObj = {};
+
+          MembersSvc.increaseTotalMembersCount();
+          if(member.member.status == "active"){
+            memberObj.isActive = true;
+						MembersSvc.increaseActiveMembersCount();
+          }else{
+            memberObj.isActive = false;
+          }
+
+          if(member.member.baseGroup){
+            let group = $scope.existingGroups.$getRecord(member.member.baseGroup);
+            if(group){
+              memberObj.baseGroupId = group.$id;
+              memberObj.baseGroupName = group.group.name;
+            }
+          }
+          if(member.member.bday){
+            memberObj.bday = member.member.bday.substring(0,10);
+          }
+          if(member.member.email){
+            memberObj.email = member.member.email;
+          }
+          if(member.member.phone){
+            memberObj.phone = member.member.phone;
+          }
+          memberObj.firstname = member.member.firstname;
+          memberObj.lastname = member.member.lastname;
+          memberObj.shortname = member.member.shortname;
+          if(member.member.isHost){
+            memberObj.isHost = true;
+            MembersSvc.increaseHostMembersCount();
+          }
+          if(member.member.isLeader){
+            memberObj.isLeader = true;
+            MembersSvc.increaseLeadMembersCount();
+          }
+          if(member.member.isTrainee){
+            memberObj.isTrainee = true;
+            MembersSvc.increaseTraineeMembersCount();
+          }
+          memberObj.sex = 'F'; //Set all as female first
+
+          if(member.user){
+            memberObj.allowUser = true;
+            memberObj.isUser = true;
+            //Get the User Id from users, using the email
+            let userSearch = $firebaseObject(oldDataRef.child("users").orderByChild("email").equalTo(member.member.email).limitToLast(1));
+            userSearch.$loaded().then(function(u){
+              let keys = Object.keys(u);
+              memberObj.userId = keys[4];
+              listRef.child(member.$id).set(memberObj);
+            });
+          }else{
+            listRef.child(member.$id).set(memberObj);
+          }
+
+          //Access
+          if(member.access){
+            detailsRef.child(member.$id).child("access").set(member.access);
+          }
+          //Address
+          if(member.address){
+            detailsRef.child(member.$id).child("address").set(member.address);
+          }
+          //Attendance
+          if(member.attendance){
+            detailsRef.child(member.$id).child("attendance").set(member.attendance);
+          }
+
+          //Audit
+          let auditObj = {};
+          let loggdUser = $rootScope.currentSession.user;
+          let timestamp = firebase.database.ServerValue.TIMESTAMP;
+          auditObj.createdById = member.audit.createdById;
+          auditObj.createdByName = member.audit.createdBy;
+          auditObj.createdByEmail = member.audit.createdBy;
+          auditObj.createdOn =  member.audit.createdOn;
+          auditObj.description =  systemMsgs.notifications.memberMigrated;
+          auditObj.lastUpdateByEmail =  loggdUser.email;
+          auditObj.lastUpdateById =  loggdUser.$id;
+          auditObj.lastUpdateByName = loggdUser.shortname;
+          auditObj.lastUpdateOn =  timestamp;
+          detailsRef.child(member.$id).child("audit").set(auditObj);
+
+        });
+        console.log("Members Migration Completed");
+      });
 		};
 
-		$scope.migrateGroups = function() {
-			console.debug("Initiating Groups Migration!!!");
-			MigrationSvc.getMembersList().$loaded().then(function(members){
-				MigrationSvc.migrateGroups(members);
-			});
+    /* REPORTS MIGRATION FUNCTION (Execute Third)*/
+		$scope.migrateReports = function() {
+			console.debug("Init Reports Migration!");
+      let listRef = newDataRef.child(constants.db.folders.reportsList);
+			let detailsRef = newDataRef.child(constants.db.folders.reportsDetails);
+
+      $scope.existingReports.$loaded().then(function(reports){
+        console.log(reports.length,"Reports Loaded");
+        reports.forEach(function(report){
+          let reportObj = {};
+          let reunionDate = new Date(report.reunion.date.year, report.reunion.date.month-1, report.reunion.date.day);
+
+          reportObj.createdById = report.audit.createdById;
+          reportObj.createdOn = report.audit.createdOn;
+          reportObj.dateMilis = reunionDate.getTime();
+          reportObj.duration = report.reunion.duration;
+          reportObj.money = report.reunion.money;
+          reportObj.groupId = report.reunion.groupId;
+          reportObj.groupname = report.reunion.groupname;
+          reportObj.notes = (report.reunion.notes)?report.reunion.notes:null;
+          reportObj.status = report.reunion.status;
+          reportObj.reviewStatus = report.audit.reportStatus;
+          reportObj.weekId = report.reunion.weekId;
+          reportObj.weekName = $scope.existingWeeks.$getRecord(report.reunion.weekId).name;
+
+          if(report.reunion.hostId){
+            //Get Hostname from existing Members
+            let memberObj = $scope.existingMembers.$getRecord(report.reunion.hostId);
+            if(memberObj){
+              reportObj.hostId = report.reunion.hostId;
+              reportObj.hostName = memberObj.member.shortname;
+            }
+          }
+          if(report.reunion.leadId){
+            //Get Hostname from existing Members
+            let memberObj = $scope.existingMembers.$getRecord(report.reunion.leadId);
+            if(memberObj){
+              reportObj.leadId = report.reunion.leadId;
+              reportObj.leadName = memberObj.member.shortname;
+            }
+          }
+          if(report.reunion.coLeadId){
+            //Get Hostname from existing Members
+            let memberObj = $scope.existingMembers.$getRecord(report.reunion.coLeadId);
+            if(memberObj){
+              reportObj.traineeId = report.reunion.coLeadId;
+              reportObj.traineeName = memberObj.member.shortname;
+            }
+          }
+
+          reportObj.femaleGuests = 0;
+          reportObj.femaleMembers = 0;
+          reportObj.totalFemale = 0;
+          reportObj.totalMale = 0;
+          reportObj.maleGuests = 0;
+          reportObj.maleMembers = 0;
+
+          if(report.attendance){
+            reportObj.guestsAttendance = (report.attendance.guests)?report.attendance.guests.total:0;
+            reportObj.membersAttendance = (report.attendance.members)?report.attendance.members.total:0;
+            reportObj.totalAttendance = reportObj.guestsAttendance + reportObj.membersAttendance;
+          }
+
+          WeeksSvc.increaseReportsCountForWeek(reportObj.weekId);
+					ReportsSvc.increaseTotalReportsCount(report.audit.createdById);
+          if(reportObj.reviewStatus == "approved"){
+            ReportsSvc.increaseApprovedReportsCount(report.audit.createdById);
+          }
+          if(reportObj.reviewStatus == "pending"){
+            ReportsSvc.increasePendingReportsCount(report.audit.createdById);
+          }
+          if(reportObj.reviewStatus == "rejected"){
+            ReportsSvc.increaseRejectedReportsCount(report.audit.createdById);
+          }
+          listRef.child(report.$id).set(reportObj);
+
+          //Study
+          detailsRef.child(report.$id).child("study").set({series:report.reunion.series , study:report.reunion.study});
+
+          //Audit
+          let auditObj = {};
+          let loggdUser = $rootScope.currentSession.user;
+          let timestamp = firebase.database.ServerValue.TIMESTAMP;
+          auditObj.createdById = report.audit.createdById;
+          auditObj.createdByName = report.audit.createdBy;
+          auditObj.createdByEmail = report.audit.createdBy;
+          auditObj.createdOn =  report.audit.createdOn;
+          auditObj.description =  systemMsgs.notifications.reportMigrated;
+          auditObj.lastUpdateByEmail =  loggdUser.email;
+          auditObj.lastUpdateById =  loggdUser.$id;
+          auditObj.lastUpdateByName = loggdUser.shortname;
+          auditObj.lastUpdateOn =  timestamp;
+          if(report.audit.approvedBy){
+            auditObj.approvedById = report.audit.approvedById;
+            auditObj.approvedByName = report.audit.approvedBy;
+            auditObj.approvedByEmail = report.audit.approvedBy;
+            auditObj.approvedOn =  report.audit.approvedOn;
+          }
+          if(report.audit.rejectedBy){
+            auditObj.rejectedById = report.audit.rejectedById;
+            auditObj.rejectedByName = report.audit.rejectedBy;
+            auditObj.rejectedByEmail = report.audit.rejectedBy;
+            auditObj.rejectedOn =  report.audit.rejectedOn;
+          }
+          detailsRef.child(report.$id).child("audit").set(auditObj);
+
+          //Attendance
+          if(report.attendance){
+            let attnObj = {};
+            if(report.attendance.guests){
+              attnObj.guests = report.attendance.guests.list;
+            }
+            if(report.attendance.members){
+              attnObj.members = report.attendance.members.list;
+            }
+            detailsRef.child(report.$id).child("attendance").set(attnObj  );
+          }
+
+        });
+        console.log("Reports Migration Completed");
+      });
 		};
 
-}]);
+    /* PURGE */
+    $scope.purgeOldData = function(){
+      oldDataRef.set(null);
+    };
 
-okulusApp.factory('MigrationSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject', 'GroupsSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, GroupsSvc){
-
-		let baseRef = firebase.database().ref().child(constants.db.folders.root);
-		let memberListRef = baseRef.child(constants.db.folders.membersList);
-		let membersRef = baseRef.child(constants.db.folders.members);
-		let groupsRef = baseRef.child(constants.db.folders.groups);
-
-		return {
-			migrateMembers: function(groups) {
-				let hostCount = 0;
-				let leadCount = 0;
-				let traineeCount = 0;
-				let totalCount = 0;
-				let memberFolderCount = 0;
-				let activeCount = 0;
-				let memberCountersRef = baseRef.child(constants.db.folders.membersCounters);
-				let membersListRef = baseRef.child(constants.db.folders.membersList);
-				let membersDetailsRef = baseRef.child(constants.db.folders.membersDetails);
-				let membersList = $firebaseArray(membersRef.orderByKey());
-
-				membersList.$loaded().then(function(list){
-					list.forEach(function(member) {
-						if(member.$id != "list" && member.$id != "details"){
-							//Move /audit, /access, /attendance, /address into /details
-							let detailsRecord = {};
-							if(member.access){
-								detailsRecord.access = member.access;
-							}
-							if(member.audit){
-								detailsRecord.audit = member.audit;
-							}
-							if(member.attendance){
-								detailsRecord.attendance = member.attendance;
-							}
-							if(member.address){
-								detailsRecord.address = member.address;
-							}
-							membersDetailsRef.child(member.$id).set(detailsRecord);
-
-							//Merge /user with /member and place in /list
-							let basicRecord = member.member;
-							if(basicRecord){
-								basicRecord.isActive = (basicRecord.status == "active");
-								basicRecord.canBeUser = null;
-								basicRecord.status = null;
-								if(basicRecord.baseGroup){
-									basicRecord.baseGroupId = basicRecord.baseGroup;
-									basicRecord.baseGroupName = groups.$getRecord(basicRecord.baseGroup).group.name;
-									basicRecord.baseGroup = null;
-								}
-								if(basicRecord.birthdate){
-									let dayString = (basicRecord.birthdate.day<10)?"0"+basicRecord.birthdate.day:basicRecord.birthdate.day;
-									let monthString = (basicRecord.birthdate.month<10)?"0"+basicRecord.birthdate.month:basicRecord.birthdate.month;
-									basicRecord.bday = basicRecord.birthdate.year+"-"+monthString+"-"+dayString;
-									basicRecord.birthdate = null;
-								}
-								if(member.user && member.user.userId){
-									basicRecord.isUser = true;
-									basicRecord.userId = member.user.userId;
-								}
-								if(!basicRecord.isActive){
-									basicRecord.isHost = false;
-									basicRecord.isLeader = false;
-									basicRecord.isTrainee = false;
-								}else{
-									activeCount++;
-								}
-								if(basicRecord.isHost){
-									hostCount++;
-								}
-								if(basicRecord.isLeader){
-									leadCount++;
-								}
-								if(basicRecord.isTrainee){
-									traineeCount++;
-								}
-								membersListRef.child(member.$id).set(basicRecord);
-								memberFolderCount++;
-							}else{
-								console.error("No member folder",member.$id);
-							}
-							totalCount++;
-						}
-					});
-					console.debug("List Size:",list.length);
-					console.debug("Total Members:",totalCount);
-					console.debug("With member folder",memberFolderCount);
-					console.debug("Active:",activeCount);
-					console.debug("Hosts:",hostCount);
-					console.debug("Leads:",leadCount);
-					console.debug("Trainees:",traineeCount);
-					memberCountersRef.set({active:activeCount,hosts:hostCount,leads:leadCount,total:totalCount, trainees:traineeCount});
-				});
-			},
-			migrateGroups: function(members) {
-
-				let totalCount = 0;
-				let activeCount = 0;
-				let groupFolderCount = 0;
-
-				let groupsCountersRef = baseRef.child(constants.db.folders.groupsCounters);
-				let groupsListRef = baseRef.child(constants.db.folders.groupsList);
-				let groupsDetailsRef = baseRef.child(constants.db.folders.groupsDetails);
-				let groupsList = $firebaseArray(groupsRef.orderByKey());
-
-				groupsList.$loaded().then(function(list){
-					list.forEach(function(group){
-						if(group.$id != "list" && group.$id != "details"){
-							// /access, /audit, /reports create /roles
-							let detailsRecord = {};
-
-							if(group.access){
-								detailsRecord.access = group.access;
-							}
-							if(group.audit){
-								detailsRecord.audit = group.audit;
-							}
-							if(group.reports){
-								detailsRecord.reports = group.reports;
-							}
-							detailsRecord.roles = {};
-							if(group.group.leadId){
-								detailsRecord.roles.leadId = group.group.leadId;
-								detailsRecord.roles.leadName = members.$getRecord(group.group.leadId).shortname;
-								group.group.leadId = null;
-							}
-							if(group.group.hostId){
-								detailsRecord.roles.hostId = group.group.hostId;
-								detailsRecord.roles.hostName = members.$getRecord(group.group.hostId).shortname;
-								group.group.hostId = null;
-							}
-							groupsDetailsRef.child(group.$id).set(detailsRecord);
-
-							// basicRecord ( /group, /schedule, /address )
-							let basicRecord = group.group;
-							if(!basicRecord){
-								console.error("No group folder",group.$id);
-								basicRecord = {};
-							}
-							if(group.address){
-								basicRecord.address = group.address;
-							}
-							if(group.schedule){
-								basicRecord.weekday = group.schedule.weekday;
-								let minutesText = (group.schedule.time.MM<10)?("0"+group.schedule.time.MM):group.schedule.time.MM;
-								basicRecord.time = group.schedule.time.HH +":"+minutesText;
-							}
-							basicRecord.isActive = (basicRecord.status == "active");
-							basicRecord.status = null;
-
-							groupsListRef.child(group.$id).set(basicRecord);
-
-							if(basicRecord.isActive){
-								activeCount++;
-							}
-							totalCount++;
-						}
-					});
-					console.debug("List Size:",list.length);
-					console.debug("Total Groups:",totalCount);
-					console.debug("Active:",activeCount);
-					groupsCountersRef.set({active:activeCount,total:totalCount});
-				});
-			},
-			getAllGroups: function(){
-				return $firebaseArray(groupsRef);
-			},
-			getMembersList: function(){
-				return $firebaseArray(memberListRef.orderByKey());
-			}
-		};
 }]);

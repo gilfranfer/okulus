@@ -316,6 +316,12 @@ okulusApp.factory('WeeksSvc',
 			increaseTotalWeeksCounter: function () {
 				increaseCounter(totalWeeksCounterRef);
 			},
+			increaseVisibleWeeksCounter: function () {
+				increaseCounter(visibleWeeksCounterRef);
+			},
+			increaseOpenWeeksCounter: function () {
+				increaseCounter(openWeeksCounterRef);
+			},
 			/*Used when deleting a Week*/
 			decreaseTotalWeeksCounter: function () {
 				decreaseCounter(totalWeeksCounterRef);

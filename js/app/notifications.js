@@ -281,18 +281,6 @@ okulusApp.factory('NotificationsSvc',
 
 				let notifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
 				notifCounterRef.transaction(function(currentUnread){ return 0; });
-			},
-
-			/*TODO: Remove after migration. Assign specific number to the notification counter and
-			Removing the metadata folder.*/
-			setTotalUnreadNotifications: function(userid, total){
-				//notificationsRef.child("metadata").child(userid).set({});
-				let notifCounterRef = usersRef.child(userid).child(constants.db.folders.unredNotifCount);
-				notifCounterRef.transaction(function(currentUnread){ return total; });
-			},
-			setTotalNotifications: function(userid, total){
-				let notifTotalRef = usersRef.child(userid).child(constants.db.folders.totalNotifCount);
-				notifTotalRef.transaction(function(currentTotal){ return total; });
 			}
 		};
 	}

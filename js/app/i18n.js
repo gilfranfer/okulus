@@ -214,6 +214,11 @@ const systemMsgs = {
 	/* Notification Descriptions */
 	notifications:{
 		userCreated:"Se ha creado un nuevo Usuario.",
+		userMigrated:"Usuario Migrado.",
+		weekMigrated:"Semana Migrada.",
+		groupMigrated:"Grupo Migrado.",
+		memberMigrated:"Miembro Migrado.",
+		reportMigrated:"Reporte Migrado.",
 		rootCreated:"Se ha creado un nuevo Super Usuario.",
 		/* Groups */
 		groupCreated:"Grupo Creado: ",

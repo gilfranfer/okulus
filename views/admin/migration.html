@@ -2,20 +2,33 @@
   <article id="migration" ng-show="true">
     <div class="card h-100">
       <div class="card-body">
-        <h4 class="card-title">Migration</h4>
+        <h4 class="card-title"> Migration fucntions </h4>
         <hr>
-        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateNotifications()">
-          Migrate Notifications
-        </button>
-        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateWeeks()">
-          Migrate Weeks
-        </button>
-        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateMembers()">
-          Migrate Members
-        </button>
-        <button class="btn btn-lg btn-warning" type="button" name="button" ng-click="migrateGroups()">
-          Migrate Groups
-        </button>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-primary" type="button" ng-click="loadOldData()">Load Old Data</button>
+            <!-- <button class="btn btn-lg btn-warning" type="button" ng-click="migrateNotifications()">Migrate Notifications</button> -->
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="migrateUsers()">Migrate Users</button>
+            <!-- <button class="btn btn-lg btn-warning" type="button" ng-click="migrateNotifications()">Migrate Notifications</button> -->
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="migrateGroups()">Migrate Groups</button>
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="migrateMembers()">Migrate Members</button>
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="migrateReports()">Migrate Reports</button>
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="migrateWeeks()">Migrate Weeks</button>
+          </div>
+          <div class="col-6 mb-3">
+            <button class="btn clickable btn-lg btn-block btn-danger" type="button" ng-click="purgeOldData()">Purge Old Data</button>
+          </div>
+        </div>
       </div>
     </div>
   </article>

@@ -1,49 +1,51 @@
 {
   "rules": {
-    "config":{
-      ".read": "true",
-    	".write": "auth != null"
-    },
-    "data":{
-      ".read": "auth != null",
-    	".write": "auth != null",
-      "weeks": {
-        "list":{
-      		".indexOn": ["isOpen", "isVisible"]
-        }
-    	},
-      "members": {
-        "list":{
-          ".indexOn": ["email","isActive", "isLeader", "isTrainee", "isHost","baseGroupId"]
-        }
-    	},
-      "groups": {
-        "list":{
-          ".indexOn": ["isActive"]
-        }
-    	},
-      "reports": {
-        "list":{
-          ".indexOn": ["weekId","reviewStatus","createdById"]
-        }
-    	},
-      "users": {
-        "list":{
-      		".indexOn": ["type","isActive"]
-        }
-    	},
-      "requests": {
-        "members":{
+    "okulus":{
+    	"config":{
+        ".read": "true",
+        ".write": "auth != null"
+      },
+      "data":{
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "weeks": {
           "list":{
-      			".indexOn": ["audit/createdById","status"]
-        	}
+            ".indexOn": ["isOpen", "isVisible"]
+          }
+        },
+        "members": {
+          "list":{
+            ".indexOn": ["email","isActive", "isLeader", "isTrainee", "isHost","baseGroupId"]
+          }
+        },
+        "groups": {
+          "list":{
+            ".indexOn": ["isActive"]
+          }
+        },
+        "reports": {
+          "list":{
+            ".indexOn": ["weekId","reviewStatus","createdById"]
+          }
+        },
+        "users": {
+          "list":{
+            ".indexOn": ["type","isActive"]
+          }
+        },
+        "requests": {
+          "members":{
+            "list":{
+              ".indexOn": ["audit/createdById","status"]
+            }
+          }
         }
-    	}
-    },
-    "allowedEmails":{
-      ".read": "true",
-    	".write": "auth != null",
-      ".indexOn": ["email"]
+      },
+      "allowedEmails":{
+        ".read": "true",
+        ".write": "auth != null",
+        ".indexOn": ["email"]
+      }
     }
   }
 }

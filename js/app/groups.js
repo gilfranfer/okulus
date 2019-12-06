@@ -452,40 +452,38 @@ okulusApp.controller('GroupDetailsCntrl',
 			clearResponse();
 			let groupId = $scope.objectDetails.basicInfo.$id;
 			let groupInfo = $scope.objectDetails.basicInfo;
-			//A group cannot be deleted if isActive
+
+			if(!groupInfo || $rootScope.currentSession.user.type == constants.roles.user){
+				$scope.response = {deleteError:true, message: systemMsgs.error.noPrivileges};
+			}
 			if(groupInfo.isActive){
 				$scope.response = {deleteError:true, message: systemMsgs.error.deletingActiveGroup};
 				return;
 			}
+			if(groupInfo.reports>0){
+				$scope.response = {deleteError:true, message: systemMsgs.error.groupHasReports};
+				return;
+			}
 
 			let deletedGroupName = groupInfo.name;
-			if(groupInfo && $rootScope.currentSession.user.type != constants.roles.user){
-				$scope.response = {working:true, message: systemMsgs.inProgress.deletingGroup};
-				//Remove Group from groups/list
-				let deletedGroupId = undefined;
-				GroupsSvc.getGroupReportsList(groupId).$loaded().then(function(reports){
-					if(reports.length){
-						$scope.response = {deleteError:true, message: systemMsgs.error.groupHasReports};
-					}else{
-						return groupInfo.$remove();
-					}
-				})
-				//After removing Group Basic Info
-				.then(function(deletedGroupRef){
-					deletedGroupId = deletedGroupRef.key;
-					let description = systemMsgs.notifications.groupDeleted + deletedGroupName;
-					AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.groups, deletedGroupId, description);
-					GroupsSvc.decreaseTotalGroupsCount();
-					return GroupsSvc.getAccessRulesList(deletedGroupId).$loaded();
-				})
-				//After loading Group access rules
-				.then(function(accessList){
-					MembersSvc.removeAccessRules(accessList);
-					GroupsSvc.deleteGroupDetails(deletedGroupId);
-					$rootScope.groupResponse = {deleted:true, message: systemMsgs.success.groupRemoved};
-					$location.path(constants.pages.adminGroups);
-				});
-			}
+			$scope.response = {working:true, message: systemMsgs.inProgress.deletingGroup};
+			//Delete from /groups/list
+			let deletedGroupId = undefined;
+			//Removing Group Basic Info
+			groupInfo.$remove().then(function(deletedGroupRef){
+				deletedGroupId = deletedGroupRef.key;
+				let description = systemMsgs.notifications.groupDeleted + deletedGroupName;
+				AuditSvc.saveAuditAndNotify(constants.actions.delete, constants.db.folders.groups, deletedGroupId, description);
+				GroupsSvc.decreaseTotalGroupsCount();
+				//No need to decrease ActiveGroups counter because at this point it was already inactive
+				return GroupsSvc.getAccessRulesList(deletedGroupId).$loaded();
+			}).then(function(accessList){
+				/* After loading Group access rules: Delete all references to this group from member/access */
+				MembersSvc.removeAccessRules(accessList);
+				GroupsSvc.deleteGroupDetails(deletedGroupId);
+				$rootScope.groupResponse = {deleted:true, message: systemMsgs.success.groupRemoved};
+				$location.path(constants.pages.adminGroups);
+			});
 		};
 
 		/* Toogle the Group status.*/
@@ -786,10 +784,6 @@ okulusApp.factory('GroupsSvc',
 			getGroupRolesObject: function(whichGroupId){
 				return $firebaseObject(groupDetailsRef.child(whichGroupId).child(constants.db.folders.roles));
 			},
-			/* Get group roles from firebase and return as object */
-			getGroupReportsList: function(whichGroupId){
-				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.db.folders.reports));
-			},
 			/* Get the list of Access Rules that indicate the members with access to the group */
 			getAccessRulesList: function(whichGroupId) {
 				return $firebaseArray(groupDetailsRef.child(whichGroupId).child(constants.db.folders.accessRules));
@@ -824,19 +818,15 @@ okulusApp.factory('GroupsSvc',
 				let conunterRef = baseRef.child(constants.db.folders.activeGroupsCount);
 				decreaseCounter(conunterRef);
 			},
-			/* Called after Report Creation, to add some Report details in the
-			 Group folder: /groups/details/:groupId/reports */
-			addReportReferenceToGroup: function(report){
-				let groupReportsFolder = groupDetailsRef.child(report.groupId).child(constants.db.folders.reports);
-				groupReportsFolder.child(report.$id).set({
-					reportId:report.$id, weekId:report.weekId,date:report.date
-				});
+			/* Called after Report Creation */
+			increaseReportsCount: function(groupId){
+				let conunterRef = groupListRef.child(groupId).child(constants.db.folders.reports);
+				increaseCounter(conunterRef);
 			},
-			/* Called when deleting Report, to remove the Report details from the
-			 Group folder: /groups/details/:groupId/reports */
-			removeReportReferenceFromGroup: function(groupId,reportId){
-				let groupReportsFolder = groupDetailsRef.child(groupId).child(constants.db.folders.reports);
-				groupReportsFolder.child(reportId).set(null);
+			/* Called when deleting Report  */
+			decreaseReportsCount: function(groupId){
+				let conunterRef = groupListRef.child(groupId).child(constants.db.folders.reports);
+				decreaseCounter(conunterRef);
 			},
 			//Deprecated
 			removeReportReference: function(reportId,groupId){

@@ -468,7 +468,9 @@ okulusApp.controller('ReportDetailsCntrl',
 				});
 				//Prepare dateObj to populate the date input field
 				if(report.date){
-					$scope.reportParams.dateObj = new Date(report.date.year, report.date.month-1, report.date.day);
+					let date = new Date();
+					date.setTime(report.dateMilis);
+					$scope.reportParams.dateObj = date;
 				}
 
 				let roles = {leadId:report.leadId, leadName: report.leadName,
@@ -746,7 +748,7 @@ okulusApp.controller('ReportDetailsCntrl',
 
 			//Preparing Report
 			$scope.response = { working:true, message: systemMsgs.inProgress.preparingReport };
-			$scope.objectDetails.basicInfo.date = ReportsSvc.buildDateJson($scope.reportParams.dateObj);
+			//$scope.objectDetails.basicInfo.date = ReportsSvc.buildDateJson($scope.reportParams.dateObj);
 			$scope.objectDetails.basicInfo.dateMilis = $scope.reportParams.dateObj.getTime();
 			let membersAttndList = $scope.objectDetails.attendance.members;
 			let guestsAttndList = $scope.objectDetails.attendance.guests;
@@ -898,7 +900,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					//ReportsSvc.removeReportRefereceFromMembers($scope.removedMembersMap,report.$id);
 
 					//Save a reference to this Report in the /group/details/reports and /users/details/folders
-					GroupsSvc.addReportReferenceToGroup(report);
+					GroupsSvc.increaseReportsCount(reportBasicInfo.groupId);
 					let description = systemMsgs.notifications.reportCreated;
 					AuditSvc.saveAuditAndNotify(constants.actions.create, constants.db.folders.reports, report.$id, description);
 					$rootScope.reportResponse = { created:true, message: systemMsgs.success.reportCreated };
@@ -931,7 +933,7 @@ okulusApp.controller('ReportDetailsCntrl',
 						return;
 					}
 					//Remove the reference to this Report from the Group folder
-					GroupsSvc.removeReportReferenceFromGroup(groupId,reportId);
+					GroupsSvc.decreaseReportsCount(groupId);
 
 					//Reduce the counters
 					WeeksSvc.decreaseReportsCountForWeek($scope.objectDetails.basicInfo.weekId);

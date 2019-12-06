@@ -9,8 +9,8 @@
 const constants = {
 	db: {
 		folders:{
-			root:"data", currentConfig:"config/app", systemConfigs:"config/fixed",
-			allowedEmails:"allowedEmails",
+			root:"okulus/data", allowedEmails:"okulus/allowedEmails",
+			currentConfig:"okulus/config/app", systemConfigs:"okulus/config/fixed",
 			grouptypes:"grouptypes", errors:"errors",
 			config:"config", counters:"counters", details:"details",
 			audit:"audit", users:"users", weeks:"weeks", roles:"roles",
