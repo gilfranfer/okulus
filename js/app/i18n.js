@@ -648,7 +648,8 @@ okulusApp.run(function($rootScope) {
 			},
 			reportFinder:{
 				title: "Buscador de Reportes",
-				reunionsLbl:"Reuniones", reportsLbl:"Reportes", attendanceLbl:"Asistentes",
+				reunionsLbl:"Reuniones", reportsLbl:"Reportes", attendanceLbl:"Asistentes", moneyLbl:"Ofrenda",
+				moneyTotalLbl: "Total" ,moneyAvgAttnLbl: "Promedio por Reunión", moneyavgReunionLbl:"Promedio por Asistencia",
 				selectGroupLbl:"Seleccione los Grupos", selectWeekLbl:"Seleccione las Semanas",
 				allGroupTypes:"Cualquier tipo",
 				allGroups:"Cualquier estado", activeGroups:"Grupos Activos", inactiveGroups:"Grupos Inactivos",

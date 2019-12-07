@@ -19,7 +19,7 @@
     <!-- Summary Cards -->
     <article class="row mb-3" >
       <!-- Reports Summary -->
-      <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
         <div class="card h-100">
           <div class="card-body">
             <div class="row">
@@ -45,7 +45,7 @@
         </div>
       </div>
       <!-- Reunions Summary -->
-      <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
         <div class="card h-100">
           <div class="card-body">
             <div class="row">
@@ -68,7 +68,7 @@
         </div>
       </div>
       <!-- attendance Summary -->
-      <div class="col-sm-6 col-md-4 col-lg-4">
+      <div class="col-sm-6 col-lg-3">
         <div class="card h-100">
           <div class="card-body">
             <div class="row">
@@ -85,6 +85,32 @@
                 <br>
                 <span class="badge badge-success">{{reunionSummary.attn.guests}}</span>
                 <span>{{i18n.reports.guestsLbl}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Money and Duration Summary -->
+      <div class="col-sm-6 col-lg-3"  ng-if="config.reports.showMoneyField">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="row">
+              <h4 class="col">
+                <!-- <span class="badge badge-warning">{{reunionSummary.duration.total}}</span> -->
+                <span class="card-title">{{i18n.reportFinder.moneyLbl}}</span>
+              </h4>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col">
+                <span class="badge badge-primary">{{reunionSummary.money.total | currency}}</span>
+                <span>{{i18n.reportFinder.moneyTotalLbl}}</span>
+                <br>
+                <span class="badge badge-primary">{{reunionSummary.money.avgCompletedReunion | currency}}</span>
+                <span>{{i18n.reportFinder.moneyAvgAttnLbl}}</span>
+                <br>
+                <span class="badge badge-primary">{{reunionSummary.money.avgAttendance | currency}}</span>
+                <span>{{i18n.reportFinder.moneyavgReunionLbl}}</span>
               </div>
             </div>
           </div>

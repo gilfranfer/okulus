@@ -135,8 +135,8 @@ okulusApp.controller('StatisticsCntrl',
 					guestsMale:0, guestsFemale:0
 				},
 				//Not used in the view right now
-				money:{total:0},
-				duration:{total:0}
+				money:{total:0, avgCompletedReunion:0 , avgAttendance:0},
+				duration:{total:0, avgCompletedReunion:0 , avgAttendance:0}
 			};
 
 			reportsPerWeekArray.forEach(function(reportsOfTheWeek, index){
@@ -259,8 +259,8 @@ okulusApp.controller('StatisticsCntrl',
 					if(report.money){
 						allReportsTotals.money.total += (parseFloat(report.money));
 						mapElement.money.total += (parseFloat(report.money));
-						allReportsTotals.money.avgCompletedReunion = (allReportsTotals.money.total / allReportsTotals.reunions.completed);
-						allReportsTotals.money.avgAttendance = (allReportsTotals.money.total / allReportsTotals.attn.total);
+						allReportsTotals.money.avgCompletedReunion = parseFloat(allReportsTotals.money.total / allReportsTotals.reunions.completed);
+						allReportsTotals.money.avgAttendance = parseFloat(allReportsTotals.money.total / allReportsTotals.attn.total);
 						mapElement.money.avgCompletedReunion = (mapElement.money.total / mapElement.reunions.completed);
 						mapElement.money.avgAttendance = (mapElement.money.total / mapElement.attn.total);
 					}
