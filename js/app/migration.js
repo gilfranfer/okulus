@@ -1,14 +1,14 @@
 okulusApp.controller('MigrationCntrl',
 	['$rootScope','$scope','$location','$firebaseArray','$firebaseObject','$firebaseAuth',
-		'AuditSvc','AuthenticationSvc','NotificationsSvc', 'CountersSvc', 'GroupsSvc', 'WeeksSvc', 'ReportsSvc',
+		'AuditSvc','AuthenticationSvc','MembersSvc', 'CountersSvc', 'GroupsSvc', 'WeeksSvc', 'ReportsSvc',
 	function($rootScope, $scope,$location, $firebaseArray, $firebaseObject,$firebaseAuth,
-		AuditSvc,AuthenticationSvc,NotificationsSvc,CountersSvc,GroupsSvc,WeeksSvc,ReportsSvc){
+		AuditSvc,AuthenticationSvc,MembersSvc,CountersSvc,GroupsSvc,WeeksSvc,ReportsSvc){
 
 		/*Executed when accessing to /admin/monitor, to confirm the user still admin*/
 		$firebaseAuth().$onAuthStateChanged( function(authUser){
     	if(authUser){
 				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function (user) {
-					if(user.type != constants.roles.admin){
+					if(user.type == constants.roles.user){
 						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 						$location.path(constants.pages.error);
 					}
@@ -16,12 +16,13 @@ okulusApp.controller('MigrationCntrl',
 			}
 		});
 
+    let okulusDataRef = firebase.database().ref().child("okulus");
     let oldDataRef = firebase.database().ref().child("pibxalapa");
     let newDataRef = firebase.database().ref().child("okulus/data");
     let allowedEmailsRef = firebase.database().ref().child("okulus/allowedEmails");
 
     $scope.loadOldData = function(){
-      $scope.existingReports = $firebaseArray(oldDataRef.child("reports").limitToLast(10));
+      $scope.existingReports = $firebaseArray(oldDataRef.child("reports"));
       $scope.existingUsers = $firebaseArray(oldDataRef.child("users"));
       $scope.existingWeeks = $firebaseArray(oldDataRef.child("weeks"));
       $scope.existingMembers = $firebaseArray(oldDataRef.child("members"));
@@ -63,7 +64,7 @@ okulusApp.controller('MigrationCntrl',
           }
           //Create record in /users/details/>memberId>/audit
           let audit = buildUserAudit(user.audit, timestamp);
-          userDetailRef.child(user.$id).set(audit);
+          userDetailRef.child(user.$id).child("audit").set(audit);
           //Update Allowed allowedEmails
           if(newUser.memberId){
             allowedEmailsRef.child(newUser.memberId).set({email:newUser.email});
@@ -250,7 +251,7 @@ okulusApp.controller('MigrationCntrl',
 			let weeksDetailsRef = newDataRef.child(constants.db.folders.weeksDetails);
 
 			//Updates in Week Object
-			$scope.existingWeeks.$loaded().then(function (weeks) {
+			$scope.existingWeeks.$loaded().then(function (weeks,index) {
         console.log(weeks.length,"Weeks Loaded");
         weeks.forEach(function(week){
 					let weekObj = {};
@@ -290,15 +291,14 @@ okulusApp.controller('MigrationCntrl',
           auditObj.lastUpdateByName = user.shortname;
           auditObj.lastUpdateOn =  timestamp;
 
-          weeksListRef.child(week.$id).set(weekObj);
-          weeksDetailsRef.child(week.$id).child("audit").set(auditObj);
           //Get Reports for the week to update week's reports
-					// ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
-					// 	weekObj.reports = reports.length;
-					// 	console.debug(week.$id+" has "+reports.length+" reports");
-					// });
+					ReportsSvc.getReportsForWeek(week.$id).$loaded().then(function(reports) {
+						weekObj.reports = reports.length;
+						console.debug(week.$id+" ("+index+") has "+reports.length+" reports");
+						weeksDetailsRef.child(week.$id).child("audit").set(auditObj);
+						weeksListRef.child(week.$id).set(weekObj);
+					});
 				});
-        console.log("Weeks Migration Completed");
 			});
 		};
 
@@ -406,15 +406,24 @@ okulusApp.controller('MigrationCntrl',
 			console.debug("Init Reports Migration!");
       let listRef = newDataRef.child(constants.db.folders.reportsList);
 			let detailsRef = newDataRef.child(constants.db.folders.reportsDetails);
+      let counters = {approved:0, pending:0, rejected:0, total:0};
 
       $scope.existingReports.$loaded().then(function(reports){
         console.log(reports.length,"Reports Loaded");
-        reports.forEach(function(report){
+        reports.forEach(function(report,index){
           let reportObj = {};
           let reunionDate = new Date(report.reunion.date.year, report.reunion.date.month-1, report.reunion.date.day);
 
-          reportObj.createdById = report.audit.createdById;
-          reportObj.createdOn = report.audit.createdOn;
+          if(report.audit.createdById){
+            reportObj.createdById = report.audit.createdById;
+            reportObj.createdOn = report.audit.createdOn;
+          }else if(report.audit.lastUpdateBy){
+            reportObj.createdById = report.audit.lastUpdateBy;
+            reportObj.createdOn = report.audit.lastUpdateOn;
+          } else{
+            console.error("No CreatedBy for this report",report.$id);
+          }
+
           reportObj.dateMilis = reunionDate.getTime();
           reportObj.duration = report.reunion.duration;
           reportObj.money = report.reunion.money;
@@ -424,7 +433,13 @@ okulusApp.controller('MigrationCntrl',
           reportObj.status = report.reunion.status;
           reportObj.reviewStatus = report.audit.reportStatus;
           reportObj.weekId = report.reunion.weekId;
-          reportObj.weekName = $scope.existingWeeks.$getRecord(report.reunion.weekId).name;
+
+          let weekRec = $scope.existingWeeks.$getRecord(report.reunion.weekId);
+          if(!weekRec){
+            console.log("Report Discarded",report.$id);
+            return;
+          }
+          reportObj.weekName = weekRec.name;
 
           if(report.reunion.hostId){
             //Get Hostname from existing Members
@@ -464,30 +479,37 @@ okulusApp.controller('MigrationCntrl',
             reportObj.totalAttendance = reportObj.guestsAttendance + reportObj.membersAttendance;
           }
 
-          WeeksSvc.increaseReportsCountForWeek(reportObj.weekId);
-					ReportsSvc.increaseTotalReportsCount(report.audit.createdById);
+          counters.total++;
+          // ReportsSvc.increaseTotalReportsCount(report.audit.createdById);
           if(reportObj.reviewStatus == "approved"){
-            ReportsSvc.increaseApprovedReportsCount(report.audit.createdById);
+            counters.approved++;
+            // ReportsSvc.increaseApprovedReportsCount(report.audit.createdById);
           }
           if(reportObj.reviewStatus == "pending"){
-            ReportsSvc.increasePendingReportsCount(report.audit.createdById);
+            counters.pending++;
+            // ReportsSvc.increasePendingReportsCount(report.audit.createdById);
           }
           if(reportObj.reviewStatus == "rejected"){
-            ReportsSvc.increaseRejectedReportsCount(report.audit.createdById);
+            counters.rejected++;
+            // ReportsSvc.increaseRejectedReportsCount(report.audit.createdById);
           }
           listRef.child(report.$id).set(reportObj);
 
           //Study
-          detailsRef.child(report.$id).child("study").set({series:report.reunion.series , study:report.reunion.study});
+          if(report.reunion.series){
+            detailsRef.child(report.$id).child("study").set({series:report.reunion.series , study:report.reunion.study});
+          }
 
           //Audit
           let auditObj = {};
           let loggdUser = $rootScope.currentSession.user;
           let timestamp = firebase.database.ServerValue.TIMESTAMP;
-          auditObj.createdById = report.audit.createdById;
-          auditObj.createdByName = report.audit.createdBy;
-          auditObj.createdByEmail = report.audit.createdBy;
-          auditObj.createdOn =  report.audit.createdOn;
+          if(report.audit.createdById){
+            auditObj.createdById = report.audit.createdById;
+            auditObj.createdByName = report.audit.createdBy;
+            auditObj.createdByEmail = report.audit.createdBy;
+            auditObj.createdOn =  report.audit.createdOn;
+          }
           auditObj.description =  systemMsgs.notifications.reportMigrated;
           auditObj.lastUpdateByEmail =  loggdUser.email;
           auditObj.lastUpdateById =  loggdUser.$id;
@@ -510,23 +532,67 @@ okulusApp.controller('MigrationCntrl',
           //Attendance
           if(report.attendance){
             let attnObj = {};
-            if(report.attendance.guests){
+            if(report.attendance.guests.list){
               attnObj.guests = report.attendance.guests.list;
             }
-            if(report.attendance.members){
+            if(report.attendance.members.list){
               attnObj.members = report.attendance.members.list;
             }
-            detailsRef.child(report.$id).child("attendance").set(attnObj  );
+            detailsRef.child(report.$id).child("attendance").set(attnObj);
           }
-
         });
         console.log("Reports Migration Completed");
+        console.log(counters);
+        let repCount = ReportsSvc.getGlobalReportsCounter();
+        repCount.$loaded().then(function(count) {
+          console.log(count);
+          repCount.approved += counters.approved;
+          repCount.pending += counters.pending;
+          repCount.rejected += counters.rejected;
+          repCount.total += counters.total;
+          repCount.$save();
+        });
       });
+		};
+
+		$scope.reportCountByUser = function(){
+			let totals = {pending:0, approved:0, rejected:0, total:0};
+			$scope.newUsers = $firebaseArray(newDataRef.child("users/list"));
+			$scope.newUsers.$loaded().then(function(users) {
+				users.forEach(function(user,index) {
+					ReportsSvc.getReportsCreatedByUser(user.$id).$loaded().then(function(reports) {
+						let userTotals = {pending:0, approved:0, rejected:0, total:0};
+						reports.forEach(function(report) {
+							userTotals.total ++;
+							totals.total ++;
+							if(report.reviewStatus == "pending"){
+								userTotals.pending ++;
+								totals.pending ++;
+							}else if(report.reviewStatus == "approved"){
+								userTotals.approved ++;
+								totals.approved ++;
+							}else if(report.reviewStatus == "rejected"){
+								userTotals.rejected ++;
+								totals.rejected ++;
+							}
+						});
+						newDataRef.child("users/list").child(user.$id).child("counters/reports").set(userTotals);
+						console.log("User:",user.$id,"Rerports:",userTotals);
+					});
+				});
+				console.log(totals);
+			});
 		};
 
     /* PURGE */
     $scope.purgeOldData = function(){
-      oldDataRef.set(null);
+      newDataRef.set(null);
+    };
+
+		$scope.purgeOkulusData = function(){
+      okulusDataRef.child("config").set(null);
+      okulusDataRef.child("allowedEmails").set(null);
+      okulusDataRef.child("data").set(null);
     };
 
 }]);
