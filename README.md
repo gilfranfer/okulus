@@ -4,7 +4,7 @@
 - Create a Firebase project (https://console.firebase.google.com/)
 - Once in the new Project, you should see "Get started by adding Firebase to your app"
 - Select the "Web" Button, and provide an app name
-- Copy the "Firebase configuration" provided (var firebaseConfig) into this file: js/app/datasource.js
+- Copy the "Firebase configuration" provided (var firebaseConfig) into the index.html Header
 - Back into your Firebase project, Continue to console
 - In "Authentication" section, Set up the sign-in method: Enable Email/password authentication
 - Go to "Database" section, and Create a Realtime Database
