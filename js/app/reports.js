@@ -467,7 +467,7 @@ okulusApp.controller('ReportDetailsCntrl',
 					}
 				});
 				//Prepare dateObj to populate the date input field
-				if(report.date){
+				if(report.dateMilis){
 					let date = new Date();
 					date.setTime(report.dateMilis);
 					$scope.reportParams.dateObj = date;
