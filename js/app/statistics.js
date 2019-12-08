@@ -62,7 +62,7 @@ okulusApp.controller('StatisticsCntrl',
 			Promise.all(getReporstForWeekPromises).then(function(reportsPerWeekArray){
 				//Put all inside apply to ensure the view is properly refreshed
 				$scope.$apply(function(){
-					console.debug("Promises fulfilled. Starting to filter reports");
+					//console.debug("Promises fulfilled. Starting to filter reports");
 					$scope.response = {loading:true, message:systemMsgs.inProgress.filteringReports};
 					$scope.filterReports(reportsPerWeekArray, selectedGroupsMap);
 
@@ -147,7 +147,7 @@ okulusApp.controller('StatisticsCntrl',
 				2. The totals in the categoriesDataMap (this will be used later as the Chart's categories and series */
 				reportsOfTheWeek.forEach(function(report, index){
 					if( !selectedGroups.has(report.groupId) ){
-						console.debug("Report Discarted. Group not Selected:", report.groupname);
+						//console.debug("Report Discarted. Group not Selected:", report.groupname);
 						return;
 					}
 					//Determine the key for the categoriesDataMap
@@ -205,7 +205,7 @@ okulusApp.controller('StatisticsCntrl',
 						mapElement.reports.rejected++;
 						/* Data from Rejected Reports will not be considered because it will
 						introduce irrelevant or incorrect values to the totals */
-						console.debug("Report Discarted. Rejected Status");
+						//console.debug("Report Discarted. Rejected Status");
 						return;
 					}
 
@@ -743,7 +743,7 @@ okulusApp.controller('AdminStatisticsCntrl',
 					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
 				}else{
-					console.debug("AdminStatisticsCntrl");
+					//console.debug("AdminStatisticsCntrl");
 					//Pre-defined values for the view
 					$scope.adminViewActive = true;
 					$scope.selectedWeeks = [];
