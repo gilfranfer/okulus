@@ -375,7 +375,7 @@ okulusApp.run(function($rootScope) {
 				loadingSuccess:"Reportes Cargados", loadPending1: "Mostar ", loadPending2: "Reportes restantes.",
 				/* Admin Reports */
 				adminTitle:"Administrador de Reportes",
-			 newLbl: "Nuevo Reporte", reportLbl:"Reporte",
+			  newLbl: "Nuevo Reporte", creationLbl: "Creación",
 				reunionLbl:"Reporte de Reunión", rolesInfoTitle:"Grupo y Roles",
 				/* Buttons */
 				editBtn:"Editar Reporte",

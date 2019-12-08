@@ -59,7 +59,7 @@ okulusApp.controller('GroupsListCntrl',
 		$scope.loadAllGroupsList = function () {
 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllGroups};
 			$rootScope.adminGroupsParams = getParamsByLoader("AllGroupsLoader");
-			$rootScope.adminGroupsList = GroupsSvc.getAllGroups();
+			$rootScope.adminGroupsList = GroupsSvc.getAllGroups($rootScope.config.maxQueryListResults);
 			whenGroupsRetrieved();
 		};
 

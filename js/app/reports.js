@@ -38,9 +38,9 @@ okulusApp.controller('ReportsListCntrl',
 		}});
 
 		/* Sorting */
-		$scope.selectedSortBy="$id";
+		$scope.selectedSortBy="createdOn";
 		$scope.reverseSort=false;
-		$scope.sortOptions=[{text:$scope.i18n.reports.reportLbl, value:"$id",active:"active"},
+		$scope.sortOptions=[{text:$scope.i18n.reports.creationLbl, value:"createdOn",active:"active"},
 												{text:$scope.i18n.groups.groupLbl, value:"groupname",active:""},
 												{text:$scope.i18n.weeks.weekLbl, value:"weekName",active:""}];
 
@@ -63,7 +63,7 @@ okulusApp.controller('ReportsListCntrl',
 		$scope.loadAllReportsList = function () {
 			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllReports};
 			$rootScope.adminReportsParams = getParamsByLoader("AllReportsLoader");
-			$rootScope.adminReportsList = ReportsSvc.getAllReports();
+			$rootScope.adminReportsList = ReportsSvc.getAllReports($rootScope.config.maxQueryListResults);
 			whenReportsRetrieved();
 		};
 
@@ -1097,9 +1097,9 @@ okulusApp.factory('ReportsSvc',
 			/* Return all Reports, using a limit for the query, if specified*/
 			getAllReports: function(limit) {
 				if(limit){
-					return $firebaseArray(reportsListRef.orderByKey().limitToLast(limit));
+					return $firebaseArray(reportsListRef.orderByChild(constants.db.fields.createdOn).limitToLast(limit));
 				}else{
-					return $firebaseArray(reportsListRef.orderByKey());
+					return $firebaseArray(reportsListRef.orderByChild(constants.db.fields.createdOn));
 				}
 			},
 			/* Return all Reports with reviewStatus:'approved', using a limit for the query, if specified*/

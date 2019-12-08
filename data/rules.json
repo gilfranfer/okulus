@@ -25,7 +25,7 @@
         },
         "reports": {
           "list":{
-            ".indexOn": ["weekId","reviewStatus","createdById"]
+            ".indexOn": ["weekId","reviewStatus","createdById","createdOn"]
           }
         },
         "users": {

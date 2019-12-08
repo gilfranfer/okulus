@@ -58,7 +58,7 @@ okulusApp.controller('MembersListCntrl',
 		$scope.loadAllMembersList = function () {
  			$scope.response = {loading:true, message:systemMsgs.inProgress.loadingAllMembers};
  			$rootScope.adminMembersParams = getParamsByLoader("AllMembersLoader");
- 			$rootScope.adminMembersList = MembersSvc.getAllMembers();
+ 			$rootScope.adminMembersList = MembersSvc.getAllMembers($rootScope.config.maxQueryListResults);
  			whenMembersRetrieved();
 		};
 

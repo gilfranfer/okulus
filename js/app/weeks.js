@@ -56,7 +56,7 @@ okulusApp.controller('WeeksCntrl',
 		$scope.loadAllWeeksList = function () {
 			$scope.response = {loading: true, message: systemMsgs.inProgress.loadingAllWeeks};
 			$rootScope.weekListParams = getweekListParams("loadAllWeeksList");
-			$rootScope.weeksList = WeeksSvc.getWeeks();
+			$rootScope.weeksList = WeeksSvc.getWeeks($rootScope.config.maxQueryListResults);
 			weekListLoaded();
 		};
 
