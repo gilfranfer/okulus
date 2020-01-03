@@ -10,18 +10,10 @@
     <link rel="stylesheet" type="text/css" href="css/custom.css">
     <!-- Font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-    <!-- <script type="text/javascript">
-      var firebaseConfig = {
-        apiKey: "",
-        authDomain: "",
-        databaseURL: "",
-        projectId: "",
-        storageBucket: "",
-        messagingSenderId: "",
-        appId: "",
-        measurementId: ""
-      };
-    </script> -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
   </head>
 	<body ng-controller="AuthenticationCntrl">
     <header ng-include="'views/navigation.html'"></header>
@@ -29,10 +21,15 @@
   	<div class="container mt-4 mb-4">
       <main id="main" ng-view></main>
   	</div>
-    <footer class="footer text-center text-light mt-4">
+    <!-- <footer class="footer text-center text-light mt-4">
       <h3 class="m-4">
         <a class="clickable text-light text-decoration-non" href="https://gillab.netlify.com">&copy; Gillab 2020</a>
       </h3>
+    </footer> -->
+    <footer class="footer text-center mt-5">
+      <a class="text-decoration-none d-block text-danger" href="https://gillab.netlify.com">
+        Powered with <i class="fas fa-heart"></i> by Gillab
+      </a>
     </footer>
 
     <!-- Angular -->
