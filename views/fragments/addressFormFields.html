@@ -56,7 +56,7 @@
         {{i18n.address.stateLbl}}
         <span class="text-danger">*</span>
       </label>
-      <select id="gtype" class="form-control form-control-lg"
+      <select id="state" class="form-control form-control-lg"
         ng-model="$parent.objectDetails.address.state" ng-required="true">
         <option ng-repeat="state in statesList | orderBy:'state' track by state" value="{{state}}">
           {{state}}
@@ -68,7 +68,7 @@
         {{i18n.address.countryLbl}}
         <span class="text-danger">*</span>
       </label>
-      <select id="gtype" class="form-control form-control-lg"
+      <select id="country" class="form-control form-control-lg"
         ng-model="$parent.objectDetails.address.country" ng-required="true" ng-change="updateStatesList()">
         <option ng-repeat="country in countriesList | orderBy:'country' track by country" value="{{country}}">
           {{country}}
