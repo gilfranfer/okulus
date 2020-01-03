@@ -682,8 +682,8 @@ okulusApp.controller('AppConfigsCntrl',
 
 /* Service for the Editable Configurations*/
 okulusApp.factory('ConfigSvc',
-['$rootScope', '$firebaseArray', '$firebaseObject','AuditSvc',
-	function($rootScope, $firebaseArray, $firebaseObject, AuditSvc){
+['$rootScope', '$firebaseArray', '$firebaseObject',
+	function($rootScope, $firebaseArray, $firebaseObject){
 		let appConfigRef = firebase.database().ref().child(constants.db.folders.currentConfig);
 		let systemConfigRef = firebase.database().ref().child(constants.db.folders.systemConfigs);
 
