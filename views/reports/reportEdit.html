@@ -620,7 +620,8 @@
   <div class="alert alert-danger" role="alert" ng-show="response.deleteError" >
     {{response.message}}
   </div>
-  <div class="row mb-3" ng-if="reportParams.isEdit && objectDetails.basicInfo.reviewStatus != 'approved' && currentSession.user.$id == objectDetails.basicInfo.createdById">
+  <div class="row mb-3" ng-if="reportParams.isEdit && objectDetails.basicInfo.reviewStatus != 'approved' && 
+                               (currentSession.user.$id == objectDetails.basicInfo.createdById || currentSession.user.type != 'user' )">
     <div class="col">
       <button type="button" class="btn btn-lg btn-block btn-danger clickable"
       data-toggle="collapse" data-target="#collapseDelete" aria-expanded="false" aria-controls="collapseDelete">
