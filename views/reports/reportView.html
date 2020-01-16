@@ -206,8 +206,12 @@
                     {{i18n.reports.noMembersList}}
                   </div>
                   <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.members | orderBy:'memberName' track by element.memberId">
-                    <td class="col-6" scope="row">
+                    <td class="col-8" scope="row">
                       {{element.memberName}}
+                    </td>
+                    <td class="col" scope="row">
+                      <span class="btn btn-sm btn-info fas fa-male" ng-if="element.sex =='M'"></span>
+                      <span class="btn btn-sm btn-light fas fa-female" ng-if="element.sex =='F'"></span>
                     </td>
                   </tr>
                 </tbody>
@@ -233,8 +237,12 @@
                     {{i18n.reports.noGuestsList}}
                   </div>
                   <tr class="row ml-1" ng-repeat="element in objectDetails.attendance.guests | orderBy:'guestName'">
-                    <td class="col-6" scope="row">
+                    <td class="col-8" scope="row">
                       {{element.guestName}}
+                    </td>
+                    <td class="col" scope="row">
+                      <span class="btn btn-sm btn-info fas fa-male" ng-if="element.sex =='M'"></span>
+                      <span class="btn btn-sm btn-light fas fa-female" ng-if="element.sex =='F'"></span>
                     </td>
                   </tr>
                 </tbody>
