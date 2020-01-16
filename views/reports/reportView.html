@@ -26,7 +26,10 @@
   <div class="alert alert-primary" role="alert" ng-show="objectDetails.basicInfo.reviewStatus == 'pending'">
     {{i18n.reports.pendingReport}}
   </div>
-
+  <div class="alert alert-warning" role="alert" ng-show="!objectDetails.basicInfo.onTime && config.reports.notOnTimeMessage">
+    {{config.reports.notOnTimeMessage}}
+  </div>
+  
   <!-- Basic Details Card -->
   <article class="card mb-3">
     <div class="card-body">
