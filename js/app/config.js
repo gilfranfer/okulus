@@ -560,39 +560,41 @@ okulusApp.controller('AppConfigsCntrl',
 				if(user.type == constants.roles.user){
 					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
 					$location.path(constants.pages.error);
-				}else{
-					$scope.countriesList = ConfigSvc.getCountriesList();
-					//Get the editable configurations (current app configs)
-					$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
-					$scope.currentAppConfigs.$loaded().then(function(configDb){
-						/* This is the format of the date in the DB: YYYY-MM-DD
-						JS Date works with months starting from 0 (0-11), so we need to
-						decrease the month from DB by one, to display it properly */
-						$scope.temporal = {};
-						//Report's Min Date
-						let dateSplit = configDb.reports.minDate.split("-");
-						let month = (Number(dateSplit[1])-1);
-						$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-						//Member's Min Birthdate
-						dateSplit = configDb.members.minBirthdate.split("-");
-						month = (Number(dateSplit[1])-1);
-						$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-
-						//Load States according to the Country in DB
-						$scope.statesList = ConfigSvc.getStatesForCountry(configDb.location.country);
-
-						$scope.response = null;
-					});
-
-					//Load the Group types as firebaseArray for an easy manipulation
-					$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
-
-					//System Configurations are values set by the Okules and cannot be modified by the user
-					$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
-					$scope.systemConfigs.$loaded().then(function(options){
-						loadOptionsToArrays(options);
-					});
+					return;
 				}
+
+				$scope.countriesList = ConfigSvc.getCountriesList();
+				//Get the editable configurations (current app configs)
+				$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
+				$scope.currentAppConfigs.$loaded().then(function(configDb){
+					/* This is the format of the date in the DB: YYYY-MM-DD
+					JS Date works with months starting from 0 (0-11), so we need to
+					decrease the month from DB by one, to display it properly */
+					$scope.temporal = {};
+					//Report's Min Date
+					let dateSplit = configDb.reports.minDate.split("-");
+					let month = (Number(dateSplit[1])-1);
+					$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+					//Member's Min Birthdate
+					dateSplit = configDb.members.minBirthdate.split("-");
+					month = (Number(dateSplit[1])-1);
+					$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+
+					//Load States according to the Country in DB
+					$scope.statesList = ConfigSvc.getStatesForCountry(configDb.location.country);
+
+					$scope.response = null;
+				});
+
+				//Load the Group types as firebaseArray for an easy manipulation
+				$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
+
+				//System Configurations are values set by the Okules and cannot be modified by the user
+				$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
+				$scope.systemConfigs.$loaded().then(function(options){
+					loadOptionsToArrays(options);
+				});
+				
 			});
 		}});
 
