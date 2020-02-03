@@ -613,31 +613,54 @@ okulusApp.controller('AppConfigsCntrl',
 			}
 		};
 
-		$scope.addGrouptype = function() {
-				let newType = $scope.configParams.newGroupTypeName;
-				let typeExists = false;
-				$scope.grouptypesList.forEach(function(group){
-					if(group.name == newType){
-						typeExists = true;
-						return;
-					}
-				});
+		//Save the orginal name, in case the user cancels edition
+		$scope.prepareForEditGroupType = function(type) {
+			type.originalName = type.name;
+			type.onEdit = true;
+		};
+		
+		$scope.cancelEditGroupType = function(type) {
+			type.name = type.originalName;
+			type.onEdit = null;
+			type.originalName = null;
+		};
+		
+		$scope.updateGroupType = function(type) {
+			type.onEdit = null;
+			type.originalName = null;
+			
+			let index = $scope.grouptypesList.$indexFor(type.$id);
+			$scope.grouptypesList.$save(index).then(function (ref) {
+			});
 
-				if(typeExists){
-					$scope.response = {grouptypesListError: systemMsgs.error.groupTypeExist };
-				}else{
-					$scope.grouptypesList.$add({name:newType}).then(function(ref) {
-						$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeAdded };
-					}).catch(function(error) {
-						console.error(error);
-						$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotAdded };
-					});
+		};
+
+		$scope.addGrouptype = function() {
+			let newType = $scope.newGrouptype;
+			let typeExists = false;
+
+			$scope.grouptypesList.some(function(type) {
+				if (type.name == newType.name) {
+					typeExists = true;
 				}
-				$scope.configParams.newGroupTypeName = "";
+				return typeExists;
+			});
+
+			if(typeExists){
+				$scope.response = {grouptypesListError: systemMsgs.error.groupTypeExist };
+				return;
+			}
+
+			$scope.grouptypesList.$add({name:newType.name}).then(function(ref) {
+				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeAdded };
+			}).catch(function(error) {
+				console.error(error);
+				$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotAdded };
+			});
+			$scope.newGrouptype.name = "";
 		};
 
 		$scope.removeGrouptype = function(type) {
-			// console.debug(type);
 			$scope.grouptypesList.$remove(type).then(function(ref) {
 				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeRemoved };
 			}).catch(function(error) {

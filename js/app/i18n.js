@@ -715,7 +715,7 @@ okulusApp.run(function($rootScope) {
 				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes",
 				datesTitle:"Fechas",
 				/*Group Confgs*/
-				groupsTitle:"Grupos",	groupTypesLbl:"TIpos de Grupos",
+				groupsTitle:"Grupos",	groupTypesLbl:"Tipos de Grupos",
 				groupTypeDec:"Utiliza solo letras y números",
 				appnameLbl:"Nombre de la Aplicación", appnameHint:"Okulus App",
 				appNameDesc:"El nombre es usado en la barra de navegación.",

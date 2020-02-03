@@ -456,80 +456,95 @@
     </div>
   </form>
 
-  <form id="groupTypeForm" name="groupTypeForm" novalidate ng-submit="testSubmit()">
-    <!-- Group Configs -->
-    <article class="card mb-3">
-      <div class="card-body">
-        <!-- Header -->
+  <article class="card mb-3">
+    <div class="card-body">
+      <!-- Header -->
+      <div class="row">
+        <div class="col">
+          <legend>
+            <span class="badge badge-primary">{{grouptypesList.length}}</span>
+            {{i18n.configs.groupTypesLbl}}
+          </legend>
+        </div>
+      </div>
+      <hr>
+      <!-- Input and button -->
+      <form id="groupTypeForm" class="form-group" name="groupTypeForm" novalidate ng-submit="addGrouptype()">
         <div class="row">
           <div class="col">
-            <!-- <legend>{{i18n.configs.groupsTitle}}</legend> -->
-            <legend>{{i18n.configs.groupTypesLbl}}</legend>
-          </div>
-        </div>
-        <hr>
-        <!-- Group types title -->
-        <div class="row mt-4">
-          <div class="col-8">
-            <h5>
-              <!-- <span class="badge badge-primary">{{objectDetails.attendance.guests.length}}</span> -->
-              <!-- <label class="font-weight-bold" for="memberSelect">{{i18n.configs.groupTypesLbl}}</label> -->
-            </h5>
-          </div>
-        </div>
-        <!-- Group type Input -->
-        <div class="row mb-4">
-          <div class="col">
             <input name="groupTypeInput" type="text" class="form-control form-control-lg"
-              ng-model="configParams.newGroupTypeName"
-              ng-required="false" ng-pattern="groupTypeRegex" />
-            <small class="form-text text-muted">
+              ng-model="newGrouptype.name" ng-required="true"/>
+            <!-- <small class="form-text text-muted">
               {{i18n.configs.groupTypeDec}}
-            </small>
+            </small> -->
           </div>
           <div class="col-4">
-            <button type="submit" class="btn btn-lg btn-block btn-primary clickable"
-              ng-disabled="groupTypeForm.groupTypeInput.$valid"
-            >
-              {{i18n.btns.addBtn}}
+            <button type="submit" class="btn btn-lg btn-block btn-primary clickable" ng-disabled="groupTypeForm.$invalid">
+              <i class="fas fa-plus"></i>
             </button>
           </div>
         </div>
-        <!-- Alerts -->
-        <div class="row">
-          <div class="col">
-            <!-- Alerts -->
-            <div class="alert alert-danger" role="alert" ng-show="!grouptypesList || (grouptypesList && grouptypesList.length == 0)">
-              {{i18n.configs.noGroupTypesList}}
-            </div>
-            <div class="alert alert-danger" role="alert" ng-show="response.grouptypesListError">
-              {{response.grouptypesListError}}
-            </div>
-            <div class="alert alert-success" role="alert" ng-show="response.grouptypesListOk">
-              {{response.grouptypesListOk}}
-            </div>
+      </form>
+      <!-- Alerts -->
+      <div class="row">
+        <div class="col">
+          <div class="alert alert-info alert-dismissible fade show" role="alert" ng-show="!grouptypesList || !grouptypesList.length ">
+            {{i18n.configs.noGroupTypesList}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" ng-show="response.grouptypesListError">
+            {{response.grouptypesListError}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" role="alert" ng-show="response.grouptypesListOk">
+            {{response.grouptypesListOk}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         </div>
-        <!-- Guests Table -->
-        <div class="pre-scrollable" ng-show="grouptypesList">
-          <table class="table table-md table-striped">
-            <thead></thead>
-            <tbody>
-              <tr class="row ml-1" ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id">
-                <td class="col-6" scope="row">
-                  {{type.name}}
-                </td>
-                <td class="col-6" scope="row">
-                  <button type="button" class="btn btn-danger clickable" name="button" ng-click="removeGrouptype(type)">
-                    {{i18n.btns.deleteBtn}}
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
-    </article>
-  </form>
+      <!-- Types Table -->
+      <div class="pre-scrollable" ng-show="grouptypesList">
+        <table class="table table-md table-striped">
+          <thead></thead>
+          <tbody>
+            <tr class="row ml-1" ng-repeat="type in grouptypesList | orderBy:'type.name' track by type.$id">
+              <form novalidate ng-show="type.onEdit" id="form-{{type.$id}}" name="form-{{type.$id}}">
+                <td class="col-8" scope="row">
+                  <span ng-show="!type.onEdit">{{type.name}}</span>
+                  <input ng-show="type.onEdit" type="text" ng-model="type.name" ng-required="true" class="form-control"></input>
+                </td>
+                <td class="col" scope="row">
+                  <!-- Edit Button -->
+                  <button type="button" class="btn btn-sm btn-primary clickable fas fa fa-edit" 
+                    ng-show="!type.onEdit" ng-click="prepareForEditGroupType(type)"></button>
+                  <!-- Save Button -->
+                  <button type="submit" class="btn btn-sm btn-success clickable fas fa fa-save" 
+                    ng-show="type.onEdit" ng-click="updateGroupType(type)" ng-disabled="!type.name"></button>
+                  <!-- Cancel Edit -->
+                  <button type="button" class="btn btn-sm btn-danger clickable fas fa fa-window-close" 
+                    ng-show="type.onEdit" ng-click="cancelEditGroupType(type)"></button>
+                  <!-- Delete -->
+                  <button type="button" class="btn btn-sm btn-danger clickable fas fa fa-trash" 
+                    ng-show="!type.onEdit" ng-click="removeGrouptype(type)"></button>
+                </td>
+              </form>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </article>
 
 </section>
+
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+</script>
