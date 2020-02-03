@@ -394,11 +394,14 @@ okulusApp.controller('GroupDetailsCntrl',
 			$scope.groupEditParams.isEdit = true;
 			$scope.groupEditParams.groupId = groupObject.$id;
 			$scope.response = undefined;
+			if (!groupObject.membersMode){
+				groupObject.membersMode="auto";
+			}
 		};
 
 		$scope.prepareViewForNew = function () {
 			$scope.groupEditParams = {};
-			$scope.objectDetails.basicInfo = {};
+			$scope.objectDetails.basicInfo = { membersMode:"auto"};
 			$scope.groupEditParams.actionLbl = $rootScope.i18n.groups.newLbl;
 			$scope.groupEditParams.isEdit = false;
 			$scope.groupEditParams.groupId = undefined;

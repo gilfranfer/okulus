@@ -576,20 +576,21 @@ okulusApp.run(function($rootScope) {
 				},
 				/*Buttons*/
 				loadBtn:"Todos los Grupos", goToBtn:"Ver Grupos",
-				newBtn:"Nuevo Grupo", saveBtn:"Guardar",
+				newBtn:"Nuevo Grupo", createBtn:"Crear Grupo", saveBtn:"Actualizar Información / Dirección",
 				editBtn:"Editar Grupo", deleteBtn:"Eliminar Grupo",
 				/*Alert Messages*/
-        loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
+				loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
 				/* Form Labels */
-				basicInfoTitle:"Información Básica", membershipTitle:"Miembros del Grupo",
+				basicInfoTitle:"Información", membershipTitle:"Miembros del Grupo",
 				noMembership:"El Grupo no tiene miembros",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
-				modifyLbl:"Información del", newLbl: "Nuevo",
+				modifyLbl:"Editar", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
 				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",
 				typeLbl:"Tipo", scheduleLbl:"Horario", schdTimeHint: "20:00",
 				numberLbl:"Número", numberHint:"0", typeLbl:"Tipo",
 				nameLbl:"Nombre", nameHint:"Semillas de Esperanza",
+				membersModeLbl: "Asignación de Miembros", autoModeLbl: "Automática", manualModeLbl: "Manual",
 				mandatoryFields: "Campos Obligatorios",
 				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión", noTraineeLbl:"Sin Aprendíz",
 				/*Access Rules*/

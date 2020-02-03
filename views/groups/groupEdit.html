@@ -63,7 +63,7 @@
         </div>
         <!-- Type and schedule row -->
         <div class="form-row">
-          <div class="col-12 col-md-4 form-group">
+          <div class="col-12 col-md-6 form-group">
             <label class="font-weight-bold" for="gtype">
               {{i18n.groups.typeLbl}}
               <span class="text-danger">*</span>
@@ -75,7 +75,25 @@
               </option>
             </select>
           </div>
-          <div class="col-6 col-md-4 form-group">
+          <div class="col-12 col-md-6 form-group">
+            <label class="font-weight-bold" for="gtype">
+              {{i18n.groups.membersModeLbl}}
+              <span class="text-danger">*</span>
+            </label><br>
+            <div class="form-check">
+              <input class="form-check-input mx-2" type="radio" name="memberModeOpt" id="memberModeOpt1" 
+                ng-model="objectDetails.basicInfo.membersMode" value="auto">
+              <label class="form-check-label ml-3" for="memberModeOpt1">{{i18n.groups.autoModeLbl}}</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input mx-2" type="radio" name="memberModeOpt" id="memberModeOpt2"
+                ng-model="objectDetails.basicInfo.membersMode" value="manual">
+              <label class="form-check-label ml-3" for="memberModeOpt2">{{i18n.groups.manualModeLbl}}</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-6 form-group">
              <label class="font-weight-bold" for="schdDay">
               {{i18n.groups.scheduleLbl}}
               <span class="text-danger">*</span>
@@ -91,7 +109,7 @@
               <option value="{{i18n.weekdays.sun}}">{{i18n.weekdays.sun}}</option>
             </select>
           </div>
-          <div class="col-6 col-md-4 form-group">
+          <div class="col-6 form-group">
             <label class="font-weight-bold" for="schdTime">&nbsp;</label>
             <input type="time" id="schdTime" class="form-control form-control-lg" placeholder="{{i18n.groups.schdTimeHint}}"
               value="{{objectDetails.basicInfo.time}}" ng-blur="updateTimeModel()">
@@ -149,6 +167,36 @@
       </div>
     </form>
   </article>
+  <div class="mb-3">
+    <span class="text-danger">*</span>
+    <span class="text-muted">{{i18n.groups.mandatoryFields}}</span>
+  </div>
+
+  <!-- Alerts to inform user on progress or result -->
+  <div ng-include="'views/alerts.html'"></div>
+  
+  <!-- Save Buttons (Only for Admin) -->
+  <div ng-if="currentSession.user.type != 'user'">
+    <!-- Create Group -->
+    <div class="row mb-3" ng-show="!groupEditParams.isEdit">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable" ng-click="saveGroup()">
+          {{i18n.groups.createBtn}}
+        </button>
+      </div>
+    </div>
+    <!-- Update Existing Group -->
+    <div class="row mb-3" ng-show="groupEditParams.isEdit">
+      <div class="col">
+        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
+          ng-show="(!groupEditParams.isEdit && !groupForm.$invalid && !groupAddressForm.$invalid) ||
+                      (groupEditParams.isEdit && ( ((!groupForm.$pristine||groupEditParams.timeUpdated) && !groupForm.$invalid) || (!groupAddressForm.$pristine && !groupAddressForm.$invalid) ) )"
+          ng-disabled="groupForm.$invalid || groupAddressForm.$invalid" ng-click="saveGroup()">
+          {{i18n.groups.saveBtn}}
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Groups Additional Info Card (Only for Admin) -->
   <article class="mb-3" ng-if="groupEditParams.isEdit && currentSession.user.type != 'user'">
@@ -256,24 +304,6 @@
       </div>
     </div>
   </article>
-
-  <!-- Alerts to inform user on progress or result -->
-  <div ng-include="'views/alerts.html'"></div>
-
-  <!-- Save Buttons (Only for Admin) -->
-  <div ng-if="currentSession.user.type != 'user'">
-    <div class="row mb-3">
-      <div class="col">
-        <button type="button" class="btn btn-lg btn-block btn-warning clickable"
-          ng-show="(!groupEditParams.isEdit && !groupForm.$invalid && !groupAddressForm.$invalid) ||
-                    (groupEditParams.isEdit && ( ((!groupForm.$pristine||groupEditParams.timeUpdated) && !groupForm.$invalid) || (!groupAddressForm.$pristine && !groupAddressForm.$invalid) ) )"
-          ng-disabled="groupForm.$invalid || groupAddressForm.$invalid"
-          ng-click="saveGroup()">
-          {{i18n.groups.saveBtn}}
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- Group Membership -->
   <article ng-include="'views/groups/groupMembersSection.html'"></article>
