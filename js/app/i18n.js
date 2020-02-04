@@ -408,10 +408,12 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
 				totalAttendanceLbl:"Asistencia  Total",
-				addOtherMembers:"Buscar miembros de otros grupos",
-				membersAttendanceDirections:"Selecciona un miembro de la lista, o agrega a todos",
-				guestsAttendanceDirections:"Escribe el nombre del invitado, o agrega multiples",
-				multipleGuestsDirections:"Multiples invitados? Escribe un nombre genérico.",
+				addOneMember:"Selecciona un miembro de la lista,",
+				addMultipleMembers:"Selección Multiple",
+				addAllMembers:"Agregar a Todos",
+				addOtherMembers:"Miembros de otros Grupos",
+				addMultipleGuests:"Multiples Invitados",
+				addOneGuest:"Normal",
 				multipleGuestsQty:"Max",
 				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
@@ -542,7 +544,7 @@ okulusApp.run(function($rootScope) {
 				noAttnReports:"No se encontraron Reportes",
 				attendedGroups:"Grupos asistidos",
 				accesRulesTitle: "Reglas de Acceso a Grupos",
-				selectMemberLbl:"Seleccinar Miembro"
+				selectMemberLbl:"Seleccinar Miembros"
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
@@ -635,6 +637,7 @@ okulusApp.run(function($rootScope) {
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
 				approveBtn:"Aprobar" , rejectBtn:"Rechazar", requestBtn:"Solicitar",
 				commentBtn:"Comentar", returnBtn:"Regresar",
+				close: "Cerrar", add: "Agregar", markAll: "Marcar Todo", unmarkAll: "Desmarcar Todo",
 				yesBtn: "Sí", noBtn: "No",
 				addBtn: "+", here:"aquí",
 				/** Access Rules **/
