@@ -76,6 +76,7 @@ const systemMsgs = {
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		updating:"Actualizando",
 		loadingRecords:"Cargando Información ...",
 		working:"Estamos trabajando en tu solicitud ...",
 		/*Members JS*/

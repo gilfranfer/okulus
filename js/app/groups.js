@@ -505,13 +505,13 @@ okulusApp.controller('GroupDetailsCntrl',
 				}
 				groupInfo.$save();
 				AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, groupInfo.$id, notificationDesc );
-				$scope.response = {success:true, message: systemMsgs.success.groupStatusUpdated};
+				$scope.response = {groupStatusUpdate: true, message: systemMsgs.success.groupStatusUpdated};
 			}
 		};
 
 		/* Role Update related functions */
 		$scope.prepareForGroupLeadUpdate = function(){
-			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+			$scope.response = {loadingRole:true, message: systemMsgs.inProgress.loading};
 
 			if(!$scope.groupEditParams.leadsList){
 				$scope.groupEditParams.leadsList = MembersSvc.getLeadMembers();
@@ -531,6 +531,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					return;
 				}
 
+				$scope.response = { updatingRole: true, message: systemMsgs.inProgress.updating };
 				if(newLeadRole.leadId){
 					let member = $scope.groupEditParams.leadsList.$getRecord(newLeadRole.leadId);
 					newLeadRole.leadName = member.shortname;
@@ -542,13 +543,13 @@ okulusApp.controller('GroupDetailsCntrl',
 					let description = systemMsgs.notifications.groupLeadUpdated + " " + $scope.objectDetails.basicInfo.name;
 					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description );
 					$scope.groupEditParams.updatingGroupLead = false;
-					$scope.response = {success:true, message: systemMsgs.success.groupLeadUpdated};
+					$scope.response = {roleUpdated:true, message: systemMsgs.success.groupLeadUpdated};
 				});
 			}
 		};
 
 		$scope.prepareForGroupHostUpdate = function(){
-			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+			$scope.response = {loadingRole:true, message: systemMsgs.inProgress.loading};
 
 			if(!$scope.groupEditParams.hostsList){
 				$scope.groupEditParams.hostsList = MembersSvc.getHostMembers();
@@ -567,7 +568,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					$scope.groupEditParams.updatingGroupHost = false;
 					return;
 				}
-
+				
+				$scope.response = { updatingRole: true, message: systemMsgs.inProgress.updating };
 				if(groupRoles.hostId){
 					let member = $scope.groupEditParams.hostsList.$getRecord(groupRoles.hostId);
 					groupRoles.hostName = member.shortname;
@@ -579,13 +581,13 @@ okulusApp.controller('GroupDetailsCntrl',
 					let description = systemMsgs.notifications.groupHostUpdated + " " + $scope.objectDetails.basicInfo.name;
 					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description);
 					$scope.groupEditParams.updatingGroupHost = false;
-					$scope.response = {success:true, message: systemMsgs.success.groupHostUpdated};
+					$scope.response = { roleUpdated:true, message: systemMsgs.success.groupHostUpdated};
 				});
 			}
 		};
 
 		$scope.prepareForGroupTraineeUpdate = function(){
-			$scope.response = {working:true, message: systemMsgs.inProgress.loading};
+			$scope.response = {loadingRole:true, message: systemMsgs.inProgress.loading};
 
 			if(!$scope.groupEditParams.traineesList){
 				$scope.groupEditParams.traineesList = MembersSvc.getTraineeMembers();
@@ -604,6 +606,8 @@ okulusApp.controller('GroupDetailsCntrl',
 					$scope.groupEditParams.updatingGroupTrainee = false;
 					return;
 				}
+				
+				$scope.response = { updatingRole: true, message: systemMsgs.inProgress.updating};
 				if(groupRoles.traineeId){
 					let member = $scope.groupEditParams.traineesList.$getRecord(groupRoles.traineeId);
 					groupRoles.traineeName = member.shortname;
@@ -615,7 +619,7 @@ okulusApp.controller('GroupDetailsCntrl',
 					let description = systemMsgs.notifications.groupTraineeUpdated + " " + $scope.objectDetails.basicInfo.name;
 					AuditSvc.saveAuditAndNotify(constants.actions.update, constants.db.folders.groups, $scope.objectDetails.basicInfo.$id, description);
 					$scope.groupEditParams.updatingGroupTrainee = false;
-					$scope.response = {success:true, message: systemMsgs.success.groupTraineeUpdated};
+					$scope.response = { roleUpdated:true, message: systemMsgs.success.groupTraineeUpdated};
 				});
 			}
 		};

@@ -7,8 +7,12 @@
 <section id="groupEdit" ng-show="!response.loading">
 
   <!-- Informs a Group was created (used after redirect from groups/new to groups/edit) -->
-  <div class="alert alert-success" role="alert" ng-show="groupResponse.created" >
+  <div class="alert alert-success alert-dismissible fade show" role="alert"
+    ng-show="groupResponse.created">
     {{groupResponse.message}}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 
   <!-- Title -->
@@ -172,7 +176,7 @@
     <span class="text-muted">{{i18n.groups.mandatoryFields}}</span>
   </div>
 
-  <!-- Alerts to inform user on progress or result -->
+  <!-- Generic Alerts to inform user on operation progress or results -->
   <div ng-include="'views/alerts.html'"></div>
   
   <!-- Save Buttons (Only for Admin) -->
@@ -189,9 +193,9 @@
     <div class="row mb-3" ng-show="groupEditParams.isEdit">
       <div class="col">
         <button type="button" class="btn btn-lg btn-block btn-warning clickable"
-          ng-show="(!groupEditParams.isEdit && !groupForm.$invalid && !groupAddressForm.$invalid) ||
-                      (groupEditParams.isEdit && ( ((!groupForm.$pristine||groupEditParams.timeUpdated) && !groupForm.$invalid) || (!groupAddressForm.$pristine && !groupAddressForm.$invalid) ) )"
-          ng-disabled="groupForm.$invalid || groupAddressForm.$invalid" ng-click="saveGroup()">
+          ng-disabled="groupForm.$invalid || groupAddressForm.$invalid || 
+            (groupAddressForm.$pristine && groupForm.$pristine && !groupEditParams.timeUpdated)"
+          ng-click="saveGroup()">
           {{i18n.groups.saveBtn}}
         </button>
       </div>
@@ -216,8 +220,25 @@
             </legend>
           </div>
         </div>
+        <!-- Roles -->
         <div id="rolesInfo" class="collapse show">
           <hr>
+          <!-- Alerts -->
+          <div class="alert alert-warning alert-dismissible fade show" role="alert"
+            ng-show="response.loadingRole || response.updating">
+            {{response.message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="alert alert-success alert-dismissible fade show" role="alert"
+           ng-show="response.roleUpdated || response.groupStatusUpdate">
+            {{response.message}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
           <!-- Host and Lead -->
           <div class="form-row">
             <div class="col-11 col-md-5 form-group">
@@ -229,7 +250,7 @@
               <select id="groupLead" class="form-control form-control-lg" ng-required="false"
                 ng-if="groupEditParams.updatingGroupLead" ng-model="objectDetails.roles.leadId">
                 <option value="">{{i18n.groups.noLeadLbl}}</option>
-                <option ng-repeat="lead in groupEditParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
+                <option ng-repeat="lead in groupEditParams.leadsList | orderBy:'shortname' track by lead.$id" value="{{lead.$id}}" >
                   {{lead.shortname}}
                 </option>
               </select>
@@ -250,7 +271,7 @@
               <select id="groupHost" class="form-control form-control-lg" ng-required="false"
                 ng-if="groupEditParams.updatingGroupHost" ng-model="objectDetails.roles.hostId">
                 <option value="">{{i18n.groups.noHostLbl}}</option>
-                <option ng-repeat="host in groupEditParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
+                <option ng-repeat="host in groupEditParams.hostsList | orderBy:'shortname' track by host.$id" value="{{host.$id}}" >
                   {{host.shortname}}
                 </option>
               </select>
@@ -274,7 +295,7 @@
               <select id="groupTrainee" class="form-control form-control-lg" ng-required="false"
                 ng-if="groupEditParams.updatingGroupTrainee" ng-model="objectDetails.roles.traineeId">
                 <option value="">{{i18n.groups.noTraineeLbl}}</option>
-                <option ng-repeat="trainee in groupEditParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
+                <option ng-repeat="trainee in groupEditParams.traineesList | orderBy:'shortname' track by trainee.$id" value="{{trainee.$id}}" >
                   {{trainee.shortname}}
                 </option>
               </select>
