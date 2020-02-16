@@ -1,4 +1,6 @@
-<article class="modal fade" id="memberSelectModal" tabindex="-1" role="dialog" aria-labelledby="memberSelectModalLabel" aria-hidden="true">
+<article id="memberSelectModal"  class="modal fade" tabindex="-1" role="dialog" 
+        aria-labelledby="memberSelectModalLabel" aria-hidden="true">
+  
   <div ng-include="'views/alerts.html'"></div>
 
   <div class="modal-dialog" role="document">
@@ -11,32 +13,50 @@
         </button>
       </div>
 
+      <!-- Modal body -->
       <div class="modal-body">
-        <!-- FIlter box: filter on the groupName only -->
+        <!-- FIlter box: filter on the shortname only -->
         <input type="text" placeholder="{{i18n.filterBox.filterHint}}" class="form-control"
-          ng-model="searchFilter.shortname" ng-show="currentSession.allMembersList.length > config.minResultsToshowFilter"/>
-        <!-- List of Groups the Member has access to -->
+          ng-model="searchFilter.shortname" 
+          ng-show="membersForModal.length > config.minResultsToshowFilter"/>
+        <!-- Select / Unselect all -->
+        <small class="form-text btn-link clickable d-inline" ng-click="selectAllMembers(true)">
+          {{i18n.btns.markAll}}
+        </small>
+        <small class="form-text text-muted d-inline">/</small>
+        <small class="form-text btn-link clickable d-inline" ng-click="selectAllMembers(false)">
+          {{i18n.btns.unmarkAll}}
+        </small>
+        <!-- List of Members -->
         <div class="list-group mt-2 pre-scrollable">
-          <div id="member-{{member.memberId}}" class="list-group-item list-group-item-action flex-column align-items-start clickable"
-  						ng-repeat="member in currentSession.allMembersList | filter:searchFilter | orderBy:'shortname'"
-              ng-click="closeMemberSelectModal(member)" data-dismiss="modal">
+          <div id="member-{{member.memberId}}" 
+              class="list-group-item list-group-item-action flex-column align-items-start"
+  						ng-repeat="member in membersForModal | filter:searchFilter | orderBy:'shortname' track by member.$id">
   					<div class="w-100">
               <div class="row">
                 <div class="col">
+                  <input id="{{member.$id}}" type="checkbox" ng-model="member.isSelected" value="true" 
+                    ng-checked="member.isSelected">
                   <span class="mb-1 font-weight-bold">{{member.shortname}}</span>
                 </div>
                 <div class="col">
                   <span class="float-right badge badge-success" ng-if="member.isActive">
                     {{i18n.members.status.activeLbl}}</span>
-                    <span class="float-right badge badge-danger" ng-if="!member.isActive">
-                      {{i18n.members.status.inactiveLbl}}</span>
+                  <span class="float-right badge badge-danger" ng-if="!member.isActive">
+                    {{i18n.members.status.inactiveLbl}}</span>
                 </div>
               </div>
   					</div>
   				</div>
 				</div>
 
-      </div> <!-- Modal body -->
+      </div> 
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary clickable" ng-click="addModalSelection()"  data-dismiss="modal">{{i18n.btns.add}}</button>
+        <button type="button" class="btn btn-secondary clickable" data-dismiss="modal">{{i18n.btns.close}}</button>
+      </div>
     </div>
   </div>
 </article>

@@ -556,44 +556,46 @@ okulusApp.controller('AppConfigsCntrl',
 		$scope.groupTypeRegex = "[a-zA-Z0-9\\s]+";
 
 		$firebaseAuth().$onAuthStateChanged(function(authUser){ if(authUser){
-				AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
-					if(user.type == constants.roles.user){
-						$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
-						$location.path(constants.pages.error);
-					}else{
-						$scope.countriesList = ConfigSvc.getCountriesList();
-						//Get the editable configurations (current app configs)
-						$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
-						$scope.currentAppConfigs.$loaded().then(function(configDb){
-							/* This is the format of the date in the DB: YYYY-MM-DD
-							JS Date works with months starting from 0 (0-11), so we need to
-							decrease the month from DB by one, to display it properly */
-							$scope.temporal = {};
-							//Report's Min Date
-							let dateSplit = configDb.reports.minDate.split("-");
-							let month = (Number(dateSplit[1])-1);
-							$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
-							//Member's Min Birthdate
-							dateSplit = configDb.members.minBirthdate.split("-");
-							month = (Number(dateSplit[1])-1);
-							$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+			AuthenticationSvc.loadSessionData(authUser.uid).$loaded().then(function(user){
+				if(user.type == constants.roles.user){
+					$rootScope.response = {error:true, showHomeButton: true, message:systemMsgs.error.noPrivileges};
+					$location.path(constants.pages.error);
+					return;
+				}
 
-							//Load States according to the Country in DB
-							$scope.statesList = ConfigSvc.getStatesForCountry(configDb.location.country);
+				$scope.countriesList = ConfigSvc.getCountriesList();
+				//Get the editable configurations (current app configs)
+				$scope.currentAppConfigs = ConfigSvc.getCurrentConfigurationsObj();
+				$scope.currentAppConfigs.$loaded().then(function(configDb){
+					/* This is the format of the date in the DB: YYYY-MM-DD
+					JS Date works with months starting from 0 (0-11), so we need to
+					decrease the month from DB by one, to display it properly */
+					$scope.temporal = {};
+					//Report's Min Date
+					let dateSplit = configDb.reports.minDate.split("-");
+					let month = (Number(dateSplit[1])-1);
+					$scope.temporal.minDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
+					//Member's Min Birthdate
+					dateSplit = configDb.members.minBirthdate.split("-");
+					month = (Number(dateSplit[1])-1);
+					$scope.temporal.minBDateTemp = new Date(dateSplit[0],month,dateSplit[2]);
 
-							$scope.response = null;
-						});
+					//Load States according to the Country in DB
+					$scope.statesList = ConfigSvc.getStatesForCountry(configDb.location.country);
 
-						//Load the Group types as firebaseArray for an easy manipulation
-						$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
-
-						//System Configurations are values set by the Okules and cannot be modified by the user
-						$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
-						$scope.systemConfigs.$loaded().then(function(options){
-							loadOptionsToArrays(options);
-						});
-					}
+					$scope.response = null;
 				});
+
+				//Load the Group types as firebaseArray for an easy manipulation
+				$scope.grouptypesList = ConfigSvc.getGroupTypesArray();
+
+				//System Configurations are values set by the Okules and cannot be modified by the user
+				$scope.systemConfigs = ConfigSvc.getSystemConfigurations();
+				$scope.systemConfigs.$loaded().then(function(options){
+					loadOptionsToArrays(options);
+				});
+				
+			});
 		}});
 
 		loadOptionsToArrays = function(options){
@@ -611,31 +613,54 @@ okulusApp.controller('AppConfigsCntrl',
 			}
 		};
 
-		$scope.addGrouptype = function() {
-				let newType = $scope.configParams.newGroupTypeName;
-				let typeExists = false;
-				$scope.grouptypesList.forEach(function(group){
-					if(group.name == newType){
-						typeExists = true;
-						return;
-					}
-				});
+		//Save the orginal name, in case the user cancels edition
+		$scope.prepareForEditGroupType = function(type) {
+			type.originalName = type.name;
+			type.onEdit = true;
+		};
+		
+		$scope.cancelEditGroupType = function(type) {
+			type.name = type.originalName;
+			type.onEdit = null;
+			type.originalName = null;
+		};
+		
+		$scope.updateGroupType = function(type) {
+			type.onEdit = null;
+			type.originalName = null;
+			
+			let index = $scope.grouptypesList.$indexFor(type.$id);
+			$scope.grouptypesList.$save(index).then(function (ref) {
+			});
 
-				if(typeExists){
-					$scope.response = {grouptypesListError: systemMsgs.error.groupTypeExist };
-				}else{
-					$scope.grouptypesList.$add({name:newType}).then(function(ref) {
-						$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeAdded };
-					}).catch(function(error) {
-						console.error(error);
-						$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotAdded };
-					});
+		};
+
+		$scope.addGrouptype = function() {
+			let newType = $scope.newGrouptype;
+			let typeExists = false;
+
+			$scope.grouptypesList.some(function(type) {
+				if (type.name == newType.name) {
+					typeExists = true;
 				}
-				$scope.configParams.newGroupTypeName = "";
+				return typeExists;
+			});
+
+			if(typeExists){
+				$scope.response = {grouptypesListError: systemMsgs.error.groupTypeExist };
+				return;
+			}
+
+			$scope.grouptypesList.$add({name:newType.name}).then(function(ref) {
+				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeAdded };
+			}).catch(function(error) {
+				console.error(error);
+				$scope.response = {grouptypesListError: systemMsgs.error.groupTypeNotAdded };
+			});
+			$scope.newGrouptype.name = "";
 		};
 
 		$scope.removeGrouptype = function(type) {
-			// console.debug(type);
 			$scope.grouptypesList.$remove(type).then(function(ref) {
 				$scope.response = {grouptypesListOk: systemMsgs.success.groupTypeRemoved };
 			}).catch(function(error) {
