@@ -402,25 +402,27 @@ okulusApp.controller('ReportDetailsCntrl',
 			MembersSvc.getMembersForBaseGroup(whichGroup).$loaded().then(function(list){
 				list.forEach(function(member){
 					if(member.$id != undefined){
-						$scope.reportParams.groupMembersList.push({id:member.$id,name:member.shortname,sex:member.sex});
+						$scope.reportParams.groupMembersList.push(
+							{$id:member.$id, id:member.$id, shortname: member.shortname, sex:member.sex});
 					}
 				});
 				//Proceed to add Roles to the Members list
 				if(roles.leadId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.leadId, name: roles.leadName, sex:sex.$value})
+						pushMemberToAttendanceSelectList({ id: roles.leadId, shortname: roles.leadName, sex:sex.$value})
 					});
 				}
 				if(roles.hostId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.hostId, name: roles.hostName, sex:sex.$value})
+						pushMemberToAttendanceSelectList({ id: roles.hostId, shortname: roles.hostName, sex:sex.$value})
 					});
 				}
 				if(roles.traineeId){
 					MembersSvc.getMemberSex(roles.leadId).$loaded().then(function(sex) {
-						pushMemberToAttendanceSelectList({id:roles.traineeId, name: roles.traineeName, sex:sex.$value})
+						pushMemberToAttendanceSelectList({ id: roles.traineeId, shortname: roles.traineeName, sex:sex.$value})
 					});
 				}
+				
 			});
 		};
 
@@ -436,7 +438,8 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 
 			if(!memberExist){
-				$scope.reportParams.groupMembersList.push({id:memberObj.id, name:memberObj.name, sex:memberObj.sex})
+				//$id added for ng-repeat track by $id
+				$scope.reportParams.groupMembersList.push({ $id: memberObj.id, id: memberObj.id, shortname: memberObj.shortname, sex:memberObj.sex})
 			}
 		};
 
@@ -511,6 +514,10 @@ okulusApp.controller('ReportDetailsCntrl',
 		4. Remove member from  "removedMembersMap", if there */
 		addMemberAttendance = function(memberObj){
 			let memberExist = false;
+			if (!memberObj.id){
+				memberObj.id = memberObj.$id;
+			}
+
 			$scope.objectDetails.attendance.members.some(function(member){
 				if(member.memberId == memberObj.id){
 					memberExist = true;
@@ -519,9 +526,9 @@ okulusApp.controller('ReportDetailsCntrl',
 			});
 
 			if(memberExist){
-				$scope.response = { membersListError: memberObj.name + " "+ systemMsgs.error.duplicatedAttendance};
+				$scope.response = { membersListError: memberObj.shortname + " "+ systemMsgs.error.duplicatedAttendance};
 			}else{
-				$scope.objectDetails.attendance.members.push({memberId:memberObj.id, memberName:memberObj.name, sex:memberObj.sex});
+				$scope.objectDetails.attendance.members.push({memberId:memberObj.id, memberName:memberObj.shortname, sex:memberObj.sex});
 				$scope.response = null;
 				/* The removedMembersMap is used to track the members that must be removed from the report,
 				and the report should be removed from /member/details/:memberId/attendance
@@ -622,7 +629,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(hostId){
 				let member = $scope.reportParams.hostsList.$getRecord(hostId);
 				$scope.objectDetails.basicInfo.hostName = member.shortname;
-				pushMemberToAttendanceSelectList({id:hostId, name:member.shortname, sex:member.sex})
+				pushMemberToAttendanceSelectList({ id: hostId, shortname:member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.hostId = null;
 				$scope.objectDetails.basicInfo.hostName = null;
@@ -650,7 +657,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(leadId){
 				let member = $scope.reportParams.leadsList.$getRecord(leadId);
 				$scope.objectDetails.basicInfo.leadName = member.shortname;
-				pushMemberToAttendanceSelectList({id:leadId, name: member.shortname, sex:member.sex})
+				pushMemberToAttendanceSelectList({ id: leadId, shortname: member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.leadId = null;
 				$scope.objectDetails.basicInfo.leadName = null;
@@ -678,7 +685,7 @@ okulusApp.controller('ReportDetailsCntrl',
 			if(traineeId){
 				let member = $scope.reportParams.traineesList.$getRecord(traineeId);
 				$scope.objectDetails.basicInfo.traineeName = member.shortname;
-				pushMemberToAttendanceSelectList({id:traineeId, name: member.shortname, sex:member.sex})
+				pushMemberToAttendanceSelectList({ id: traineeId, shortname: member.shortname, sex:member.sex})
 			}else{
 				$scope.objectDetails.basicInfo.traineeId = null;
 				$scope.objectDetails.basicInfo.traineeName = null;
@@ -1034,14 +1041,33 @@ okulusApp.controller('ReportDetailsCntrl',
 			}
 		};
 
-		$scope.findExternalMembers = function() {
-			if($rootScope.currentSession.allMembersList){return;}
-			$rootScope.currentSession.allMembersList = MembersSvc.getAllMembers();
+		$scope.getMembersForModal = function(membersType) {
+			$scope.membersForModal = undefined;
+			if (membersType=='all'){
+				$scope.membersForModal = MembersSvc.getAllMembers();
+			}else{
+				$scope.membersForModal = $scope.reportParams.groupMembersList;
+				console.log($scope.reportParams.groupMembersList);
+			}
 		};
 
-		$scope.closeMemberSelectModal = function(member){
-			addMemberAttendance({id:member.$id, name: member.shortname, sex:member.sex});
+		/* From Modal, you can mark all members as selected */
+		$scope.selectAllMembers = function (value) {
+			$scope.membersForModal.forEach(function (member) {
+				member.isSelected = value;
+			});
 		};
+
+		$scope.addModalSelection = function () {
+			$scope.membersForModal.forEach(function (member) {
+				if (member.isSelected){
+					console.log(member);
+					addMemberAttendance(member);
+				}
+			});
+		};
+
+
 
 }]);
 

@@ -76,6 +76,7 @@ const systemMsgs = {
 		logingUser: "Iniciando sesión...",
 		registeringUser: "Registrando Usuario...",
 		loading:"Cargando ...",
+		updating:"Actualizando",
 		loadingRecords:"Cargando Información ...",
 		working:"Estamos trabajando en tu solicitud ...",
 		/*Members JS*/
@@ -407,10 +408,12 @@ okulusApp.run(function($rootScope) {
 				membersAttendanceLbl:"Asistencia de Miembros",
 				guestsAttendanceLbl:"Asistencia de Invitados",
 				totalAttendanceLbl:"Asistencia  Total",
-				addOtherMembers:"Buscar miembros de otros grupos",
-				membersAttendanceDirections:"Selecciona un miembro de la lista, o agrega a todos",
-				guestsAttendanceDirections:"Escribe el nombre del invitado, o agrega multiples",
-				multipleGuestsDirections:"Multiples invitados? Escribe un nombre genérico.",
+				addOneMember:"Selecciona un miembro de la lista,",
+				addMultipleMembers:"Selección Multiple",
+				addAllMembers:"Agregar a Todos",
+				addOtherMembers:"Miembros de otros Grupos",
+				addMultipleGuests:"Multiples Invitados",
+				addOneGuest:"Normal",
 				multipleGuestsQty:"Max",
 				clicHere:"clic aquí",
 				membersLbl: "Miembros", guestsLbl: "Invitados",
@@ -541,7 +544,7 @@ okulusApp.run(function($rootScope) {
 				noAttnReports:"No se encontraron Reportes",
 				attendedGroups:"Grupos asistidos",
 				accesRulesTitle: "Reglas de Acceso a Grupos",
-				selectMemberLbl:"Seleccinar Miembro"
+				selectMemberLbl:"Seleccinar Miembros"
 			},
 			requests:{
 				requestLbl:"Solicitud", requestsLbl:"Solicitudes",
@@ -576,20 +579,21 @@ okulusApp.run(function($rootScope) {
 				},
 				/*Buttons*/
 				loadBtn:"Todos los Grupos", goToBtn:"Ver Grupos",
-				newBtn:"Nuevo Grupo", saveBtn:"Guardar",
+				newBtn:"Nuevo Grupo", createBtn:"Crear Grupo", saveBtn:"Actualizar Información / Dirección",
 				editBtn:"Editar Grupo", deleteBtn:"Eliminar Grupo",
 				/*Alert Messages*/
-        loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
+				loadingSuccess: "Grupos Cargados.", loadPending1: "Mostar ", loadPending2: "Grupos restantes.",
 				/* Form Labels */
-				basicInfoTitle:"Información Básica", membershipTitle:"Miembros del Grupo",
+				basicInfoTitle:"Información", membershipTitle:"Miembros del Grupo",
 				noMembership:"El Grupo no tiene miembros",
 				additionalInfoTitle:"Roles", contactTitle:"Datos de Contacto",
-				modifyLbl:"Información del", newLbl: "Nuevo",
+				modifyLbl:"Editar", newLbl: "Nuevo",
 				statusLbl:"Estado del Grupo",
 				activeStatusLbl:"Grupo Activo", inactiveStatusLbl:"Grupo Inactivo",
 				typeLbl:"Tipo", scheduleLbl:"Horario", schdTimeHint: "20:00",
 				numberLbl:"Número", numberHint:"0", typeLbl:"Tipo",
 				nameLbl:"Nombre", nameHint:"Semillas de Esperanza",
+				membersModeLbl: "Asignación de Miembros", autoModeLbl: "Automática", manualModeLbl: "Manual",
 				mandatoryFields: "Campos Obligatorios",
 				noLeadLbl:"Sin Líder", noHostLbl:"Sin Anfitrión", noTraineeLbl:"Sin Aprendíz",
 				/*Access Rules*/
@@ -633,6 +637,7 @@ okulusApp.run(function($rootScope) {
 				saveBtn: "Guardar", newBtn: "Nuevo", deleteBtn: "Eliminar", updateBtn:"Actualizar",
 				approveBtn:"Aprobar" , rejectBtn:"Rechazar", requestBtn:"Solicitar",
 				commentBtn:"Comentar", returnBtn:"Regresar",
+				close: "Cerrar", add: "Agregar", markAll: "Marcar Todo", unmarkAll: "Desmarcar Todo",
 				yesBtn: "Sí", noBtn: "No",
 				addBtn: "+", here:"aquí",
 				/** Access Rules **/
@@ -715,7 +720,7 @@ okulusApp.run(function($rootScope) {
 				title:"Configuraciones", generalTitle:"General", reportsTitle:"Reportes",
 				datesTitle:"Fechas",
 				/*Group Confgs*/
-				groupsTitle:"Grupos",	groupTypesLbl:"TIpos de Grupos",
+				groupsTitle:"Grupos",	groupTypesLbl:"Tipos de Grupos",
 				groupTypeDec:"Utiliza solo letras y números",
 				appnameLbl:"Nombre de la Aplicación", appnameHint:"Okulus App",
 				appNameDesc:"El nombre es usado en la barra de navegación.",

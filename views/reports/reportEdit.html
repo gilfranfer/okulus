@@ -77,7 +77,7 @@
                 ng-if="!reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostName" >
               <select id="hostId" class="form-control form-control-lg" ng-required="true"
                 ng-if="reportParams.updatingHost" ng-model="objectDetails.basicInfo.hostId">
-                <option ng-repeat="host in reportParams.hostsList | orderBy:'host.shortname' track by host.$id" value="{{host.$id}}" >
+                <option ng-repeat="host in reportParams.hostsList | orderBy:'shortname' track by host.$id" value="{{host.$id}}" >
               		{{host.shortname}}
               	</option>
               </select>
@@ -101,7 +101,7 @@
                 ng-if="!reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadName">
               <select id="leadId" class="form-control form-control-lg" ng-required="true"
                 ng-if="reportParams.updatingLead" ng-model="objectDetails.basicInfo.leadId">
-                <option ng-repeat="lead in reportParams.leadsList | orderBy:'lead.shortname' track by lead.$id" value="{{lead.$id}}" >
+                <option ng-repeat="lead in reportParams.leadsList | orderBy:'shortname' track by lead.$id" value="{{lead.$id}}" >
               		{{lead.shortname}}
               	</option>
               </select>
@@ -122,7 +122,7 @@
               <select id="traineeId" class="form-control form-control-lg" ng-required="false"
                 ng-if="reportParams.updatingTrainee" ng-model="objectDetails.basicInfo.traineeId">
                 <option value=""></option>
-                <option ng-repeat="trainee in reportParams.traineesList | orderBy:'trainee.shortname' track by trainee.$id" value="{{trainee.$id}}" >
+                <option ng-repeat="trainee in reportParams.traineesList | orderBy:'shortname' track by trainee.$id" value="{{trainee.$id}}" >
               		{{trainee.shortname}}
               	</option>
               </select>
@@ -312,7 +312,7 @@
           <hr>
           <!-- Members Title -->
           <div class="row">
-            <div class="col-8">
+            <div class="col">
               <h5>
                 <span class="badge badge-primary">{{objectDetails.attendance.members.length}}</span>
                 <label class="font-weight-bold" for="memberSelect">{{i18n.reports.membersLbl}}</label>
@@ -320,23 +320,14 @@
             </div>
           </div>
           <!-- Members Select -->
-          <div class="row mb-4">
+          <div class="row mb-1">
             <div class="col-8">
               <select id="memberSelect" class="form-control form-control-lg"
                   ng-model="reportParams.addMemberId" ng-required="false">
-                <option ng-repeat="member in reportParams.groupMembersList | orderBy:'name' track by member.id" value="{{member.id}}">
-                  {{member.name}}
+                <option ng-repeat="member in reportParams.groupMembersList | orderBy:'shortname' track by member.id" value="{{member.id}}">
+                  {{member.shortname}}
                 </option>
               </select>
-              <small class="form-text text-muted">
-                {{i18n.reports.membersAttendanceDirections}}
-                <span class="btn-link clickable" ng-click="addAllMembersToAteendace()">{{i18n.btns.here}}</span>
-              </small>
-              <small class="form-text text-muted">
-                <span class="btn-link clickable" ng-click="findExternalMembers()" data-toggle="modal" data-target="#memberSelectModal">
-                  {{i18n.reports.addOtherMembers}}</span>
-              </small>
-              <div ng-include="'views/members/memberSelectModal.html'"></div>
             </div>
             <div class="col-4">
               <button type="button" class="btn btn-lg btn-block btn-primary clickable" ng-click="addSelectedMemberToAttendancelist()" ng-disabled="!reportParams.addMemberId">
@@ -344,6 +335,25 @@
               </button>
             </div>
           </div>
+          <div class="row mb-4">
+            <div class="col">
+              <small class="form-text btn-link clickable d-inline" ng-click="addAllMembersToAteendace()">
+                {{i18n.reports.addAllMembers}}
+              </small>
+              <small class="form-text text-muted d-inline" >/</small>
+              <small class="form-text btn-link clickable d-inline" ng-click="getMembersForModal('group')" data-toggle="modal"
+                  data-target="#memberSelectModal">
+                  {{i18n.reports.addMultipleMembers}}
+              </small>
+              <small class="form-text text-muted d-inline" >/</small>
+              <small class="form-text btn-link clickable d-inline"  ng-click="getMembersForModal('all')" data-toggle="modal"
+                  data-target="#memberSelectModal">
+                {{i18n.reports.addOtherMembers}}
+              </small>
+            </div>
+            <div ng-include="'views/members/memberSelectModal.html'"></div>
+          </div>
+
           <!-- Alerts -->
           <div class="row">
             <div class="col">
@@ -381,10 +391,9 @@
             </table>
           </div>
 
-
           <!-- Guests Title -->
           <div class="row mt-4">
-            <div class="col-8">
+            <div class="col">
               <h5>
                 <span class="badge badge-primary">{{objectDetails.attendance.guests.length}}</span>
                 <label class="font-weight-bold" for="memberSelect">{{i18n.reports.guestsLbl}}</label>
@@ -392,39 +401,41 @@
             </div>
           </div>
           <!-- Guest Input -->
-          <div class="row mb-4">
-            <div class="col">
+          <div class="row">
+            <div class="col-6 col-sm mb-2">
               <input type="text" class="form-control form-control-lg" placeholder="{{i18n.members.fnameLbl}}"
                 ng-model="reportParams.addGuestName" ng-required="false"/>
-              <small id="" class="form-text text-muted" ng-show="!multipleGuestActive">
-                {{i18n.reports.guestsAttendanceDirections}}
-                <span class="btn-link clickable" ng-click="multipleGuestActive=true">{{i18n.btns.here}}</span>
-              </small>
-              <small id="" class="form-text text-muted" ng-show="multipleGuestActive">
-                {{i18n.reports.multipleGuestsDirections}}
-                <span class="btn-link clickable" ng-click="multipleGuestActive=false">x</span>
-              </small>
               <!-- <input type="number" class="form-control form-control-lg" ng-model="reportParams.addGuestName" ng-required="false"/> -->
             </div>
-            <div class="col">
+            <div class="col-6 col-sm mb-2">
               <select id="sexSelect" class="form-control form-control-lg" ng-model="reportParams.addGuestSex" ng-required="false">
                 <option value="" >{{i18n.members.sexLbl}}</option>
                 <option value="M" >{{i18n.members.maleLbl}}</option>
                 <option value="F" >{{i18n.members.femaleLbl}}</option>
               </select>
             </div>
-            <div class="col-2" ng-show="multipleGuestActive" >
+            <div class="col-6 col-sm-2" ng-show="multipleGuestActive" >
               <input type="number" min="1" max="{{config.reports.maxMultipleGuests}}" class="form-control form-control-lg"
                 ng-model="reportParams.addGuestNameQty" ng-required="false"/>
               <small id="" class="form-text text-muted" ng-show="multipleGuestActive">
                 {{i18n.reports.multipleGuestsQty}} {{config.reports.maxMultipleGuests}}
               </small>
             </div>
-            <div class="col-2">
+            <div class="col-6 col-sm-2">
               <button type="button" ng-click="addGuestToAttendanceList()" class="btn btn-lg btn-block btn-primary clickable"
                 ng-disabled="!reportParams.addGuestName || !reportParams.addGuestSex || (multipleGuestActive && !reportParams.addGuestNameQty)">
                 <span class="fas fa-plus"></span>
               </button>
+            </div>
+          </div>
+          <div class="row  mb-4">
+            <div class="col">
+              <small class="form-text btn-link clickable" ng-show="!multipleGuestActive" ng-click="multipleGuestActive=true">
+                {{i18n.reports.addMultipleGuests}}
+              </small>
+              <small class="form-text btn-link clickable" ng-show="multipleGuestActive" ng-click="multipleGuestActive=false">
+                {{i18n.reports.addOneGuest}}
+              </small>
             </div>
           </div>
           <!-- Alerts -->
